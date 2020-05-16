@@ -44,7 +44,10 @@ export default class Signup extends Component {
                     })
                     this.props.navigation.navigate('Login')
                 })
-                .catch(error => this.setState({ errorMessage: error.message }))
+                .catch(error => this.setState({
+                    isLoading: false,
+                    errorMessage: error.message
+                }))
         }
     }
 
@@ -83,6 +86,8 @@ export default class Signup extends Component {
                     title="Signup"
                     onPress={() => this.registerUser()}
                 />
+
+                <Text>{this.state.errorMessage}</Text>
 
                 <Text
                     style={styles.loginText}

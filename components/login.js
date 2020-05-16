@@ -10,7 +10,8 @@ export default class Login extends Component {
         this.state = {
             email: '',
             password: '',
-            isLoading: false
+            isLoading: false,
+            errorMessage: ''
         }
     }
 
@@ -20,6 +21,9 @@ export default class Login extends Component {
         this.setState(state);
     }
 
+    /**
+     * 
+     */
     userLogin = () => {
         if (this.state.email === '' && this.state.password === '') {
             Alert.alert('Enter details to signin!')
@@ -40,7 +44,10 @@ export default class Login extends Component {
                     })
                     this.props.navigation.navigate('Dashboard')
                 })
-                .catch(error => this.setState({ errorMessage: error.message }))
+                .catch(error => this.setState({
+                    errorMessage: error.message,
+                    isLoading: false
+                }))
         }
     }
 
@@ -73,6 +80,8 @@ export default class Login extends Component {
                     title="Signin"
                     onPress={() => this.userLogin()}
                 />
+                {/* style this */}
+                <Text>{this.state.errorMessage}</Text>
 
                 <Text
                     style={styles.loginText}
