@@ -1,56 +1,50 @@
-import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import * as React from "react";
+import { Text, View } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Provider } from "react-redux";
+import * as Facebook from "expo-facebook";
 
-import Login from './components/login';
-import Signup from './components/signup';
-import Dashboard from './components/dashboard';
+import store from "./store";
+import AuthScreen from "./components/AuthScreen";
+import WelcomeScreen from "./components/WelcomeScreen";
+import Timeline from "./components/Timeline";
+import Genre from "./components/Genre";
+import Finalized from "./components/Finalized";
 
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
-function MyStack() {
+// might use tab navigator and define a static property
+// to allow other test facebook email go to fb expo roles to add
+// cover up bottom screens
+const mainFlow = () => {
   return (
-    <Stack.Navigator
-      initialRouteName="Signup"
-      screenOptions={{
-        headerTitleAlign: 'center',
-        headerStyle: {
-          backgroundColor: '#3740FE',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
-      }}>
-      <Stack.Screen
-        name="Signup"
-        component={Signup}
-        options={{ title: 'Signup' }}
-      />
-      <Stack.Screen
-        name="Login"
-        component={Login}
-        options={
-          { title: 'Login' },
-          { headerLeft: null }
-        }
-      />
-      <Stack.Screen
-        name="Dashboard"
-        component={Dashboard}
-        options={
-          { title: 'Dashboard' },
-          { headerLeft: null }
-        }
-      />
-    </Stack.Navigator>
+    <Tab.Navigator>
+      <Tab.Screen name="Timeline" component={Timeline} />
+      <Tab.Screen name="Genre" component={Genre} />
+      <Tab.Screen name="Finalized" component={Finalized} />
+    </Tab.Navigator>
   );
-}
+};
+
+const MainNavigator = () => {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Welcome" component={WelcomeScreen} />
+      <Tab.Screen name="Auth" component={AuthScreen} />
+      <Tab.Screen name="mainFlow" component={mainFlow} />
+    </Tab.Navigator>
+  );
+};
 
 export default function App() {
+  Facebook.initializeAsync("710198546414299", "AuthTest");
+
   return (
-    <NavigationContainer>
-      <MyStack />
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <MainNavigator />
+      </NavigationContainer>
+    </Provider>
   );
 }
