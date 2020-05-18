@@ -13,18 +13,26 @@ const WelcomeScreen = (props) => {
     { text: "Get your finalized timeline" },
   ];
 
+  /**
+   * after reaching the last slide, direct to Auth page
+   */
   onSlidesComplete = () => {
     props.navigation.navigate("Auth");
   };
 
   React.useEffect(() => {
     props.isLoggedIn();
+    //AsyncStorage.removeItem("fb_token");
     onAuthComplete(props);
   });
 
+  /**
+   * takes in global state token to check if token exists, if it does, navigate straight to Timeline
+   * @param {*} props 
+   */
   const onAuthComplete = (props) => {
     if (props.token) {
-      props.navigation.navigate("mainFlow");
+      props.navigation.navigate("Timeline");
     }
   };
 

@@ -12,7 +12,7 @@ const AuthScreen = (props) => {
 
   const onAuthComplete = (props) => {
     if (props.token) {
-      props.navigation.navigate("mainFlow");
+      props.navigation.navigate("Timeline");
     }
   };
   return (
