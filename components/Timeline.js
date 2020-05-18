@@ -7,21 +7,48 @@ import Draggable from 'react-native-draggable'; // Library to allow draggable ob
 class Timeline extends React.Component {
 
   /**
-   * Handles when the object is dragged to change the time.
+   * Get starting time of the time period based on the object's position 
+   * We represent time in integers 8-24. Which is  0800hrs-2400hrs
+   * Every 16px movement in Y direction represents a 30min change in time
    */
-  changeTime = (event, gestureState) => {
-    alert(gestureState.moveX)
+  startTime = (event, gestureState) => {
+    const initY = 48; // At Y.coord = 48, represents starting time: 0800hrs 
+    const curY = gestureState.moveY;
+    const time = Math.floor((curY - initY) / 16) * 0.5; // Time in hrs,
+  }
+
+  /**
+   * Get ending time of the time peroid based on the object's position 
+   */
+  endTime = (event, gestureState) => {
+    const initY = 560; // End time: 2359hrs
+    const curY = gestureState.moveY;
   }
 
   render() {
     return (
       <View>
-        <Draggable x={75} y={100} renderSize={56}
-          renderColor='black' renderText='T'
-          isCircle
-          onShortPressRelease={() => alert('touched!!')}
-          onDrag={this.changeTime}
+        <Draggable x={20} y={48} renderSize={30}
+          maxX={20} minX={20} // Fix the circles to only be able to move along x=20 axis
+          minY={48}
+          renderColor='black' renderText='S'
+          isCircle // Make the object a circle
+          onShortPressRelease={() => alert('This is the starting time')}
+          onDrag={this.startTime}
         />
+
+        <Draggable x={20} y={520} renderSize={30}
+          maxX={20} minX={20}
+          maxY={560}
+          renderColor='black' renderText='E'
+          isCircle
+          onShortPressRelease={() => alert('This is the end time')}
+          onDrag={this.endTime}
+        />
+
+        <View style={{ marginStart: 100, marginTop: 48 }}>
+          <Text style={{ fontSize: 12 }}> -- Starting time: 0800hrs</Text>
+        </View>
 
         <View style={styles.timing}>
           <Text style={{ textAlign: "center", fontSize: 15 }}>Current Time Period</Text>
