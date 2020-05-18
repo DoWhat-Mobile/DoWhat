@@ -1,19 +1,43 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React, { Component } from "react";
+import { connect } from 'react-redux'
+import { View, Text, StyleSheet } from "react-native";
 import Draggable from 'react-native-draggable'; // Library to allow draggable objects, for better UI
 
 // might use tab navigator and define a static property
-const Timeline = () => {
-  return (
-    <View>
-      <Draggable x={75} y={100} renderSize={56} renderColor='black' renderText='A' isCircle shouldReverse onShortPressRelease={() => alert('touched!!')} />
-      <Draggable x={200} y={300} renderColor='red' renderText='B' />
-      <Draggable />
-      <Draggable x={50} y={50}>
-        <Text>Drag me</Text>
-      </Draggable>
-    </View>
-  );
-};
+class Timeline extends React.Component {
 
-export default Timeline;
+  /**
+   * Handles when the object is dragged to change the time.
+   */
+  changeTime = (event, gestureState) => {
+    alert(gestureState.moveX)
+  }
+
+  render() {
+    return (
+      <View>
+        <Draggable x={75} y={100} renderSize={56}
+          renderColor='black' renderText='T'
+          isCircle
+          onShortPressRelease={() => alert('touched!!')}
+          onDrag={this.changeTime}
+        />
+
+        <View style={styles.timing}>
+          <Text style={{ textAlign: "center", fontSize: 15 }}>Current Time Period</Text>
+        </View>
+      </View >
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  timing: {
+    borderWidth: 1,
+    borderColor: "lightblue",
+    marginTop: 400,
+
+  }
+})
+
+export default connect()(Timeline);
