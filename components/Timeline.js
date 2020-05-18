@@ -15,7 +15,7 @@ class Timeline extends React.Component {
     const initY = 48; // At Y.coord = 48, represents starting time: 0800hrs 
     const curY = gestureState.moveY;
     const time = 8 + (Math.floor((curY - initY) / 16) * 0.5); // Time in hrs,
-    alert(time)
+    this.end_time = time;
   }
 
   /**
@@ -25,8 +25,12 @@ class Timeline extends React.Component {
     const initY = 560; // End time: 2359hrs
     const curY = gestureState.moveY;
     const time = 24 - (Math.ceil((initY - curY) / 16) * 0.5);
-    alert(time)
+    this.end_time = time;
   }
+
+  start_time;
+  end_time;
+  time_interval = this.end_time - this.start_time;
 
   render() {
     return (
@@ -54,7 +58,7 @@ class Timeline extends React.Component {
         </View>
 
         <View style={styles.timing}>
-          <Text style={{ textAlign: "center", fontSize: 15 }}>Current Time Period</Text>
+          <Text style={{ textAlign: "center", fontSize: 15 }}>{this.time_interval}</Text>
         </View>
       </View >
     );
