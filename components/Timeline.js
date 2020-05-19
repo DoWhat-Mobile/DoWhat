@@ -2,35 +2,10 @@ import React, { Component } from "react";
 import { connect } from 'react-redux'
 import { View, Text, StyleSheet } from "react-native";
 import Draggable from 'react-native-draggable'; // Library to allow draggable objects, for better UI
+import * as actions from "../actions";
 
 // might use tab navigator and define a static property
 class Timeline extends React.Component {
-
-  /**
-   * Get starting time of the time period based on the object's position 
-   * We represent time in integers 8-24. Which is  0800hrs-2400hrs
-   * Every 16px movement in Y direction represents a 30min change in time
-   */
-  startTime = (event, gestureState) => {
-    const initY = 48; // At Y.coord = 48, represents starting time: 0800hrs 
-    const curY = gestureState.moveY;
-    const time = 8 + (Math.floor((curY - initY) / 16) * 0.5); // Time in hrs,
-    this.end_time = time;
-  }
-
-  /**
-   * Get ending time of the time peroid based on the object's position 
-   */
-  endTime = (event, gestureState) => {
-    const initY = 560; // End time: 2359hrs
-    const curY = gestureState.moveY;
-    const time = 24 - (Math.ceil((initY - curY) / 16) * 0.5);
-    this.end_time = time;
-  }
-
-  start_time;
-  end_time;
-  time_interval = this.end_time - this.start_time;
 
   render() {
     return (
@@ -40,8 +15,8 @@ class Timeline extends React.Component {
           minY={48}
           renderColor='black' renderText='S'
           isCircle // Make the object a circle
-          onShortPressRelease={() => alert('This is the starting time')}
-          onDrag={this.startTime}
+          onShortPressRelease={() => alert(this.props.startTime)}
+          onDrag={this.props.change_start_time}
         />
 
         <Draggable x={20} y={520} renderSize={30}
@@ -50,7 +25,7 @@ class Timeline extends React.Component {
           renderColor='black' renderText='E'
           isCircle
           onShortPressRelease={() => alert('This is the end time')}
-          onDrag={this.endTime}
+          onDrag={this.props.change_end_time}
         />
 
         <View style={{ marginStart: 100, marginTop: 48 }}>
@@ -58,7 +33,7 @@ class Timeline extends React.Component {
         </View>
 
         <View style={styles.timing}>
-          <Text style={{ textAlign: "center", fontSize: 15 }}>{this.time_interval}</Text>
+          <Text style={{ textAlign: "center", fontSize: 15 }}>{this.props.endTime}</Text>
         </View>
       </View >
     );
@@ -74,4 +49,12 @@ const styles = StyleSheet.create({
   }
 })
 
-export default connect()(Timeline);
+
+const mapStateToProps = (state) => {
+  return {
+    startTime: state.timeline.initial_time,
+    endTime: state.timeline.end_time
+  }
+}
+
+export default connect(mapStateToProps, actions)(Timeline);
