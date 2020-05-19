@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
 
 
 const mapStateToProps = (state) => {
-  console.log(state.timeline.end_Y_Coord)
   return {
     startTime: state.timeline.initial_time,
     endTime: state.timeline.end_time,

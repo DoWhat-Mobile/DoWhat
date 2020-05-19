@@ -7,7 +7,7 @@ import { CHANGE_END_TIME, CHANGE_START_TIME } from "../actions/types";
  * Keep track of start time, end time and time interval for scheduleing of events
  */
 const initState = {
-    start_Y_Coord: 148,
+    start_Y_Coord: 148, // Coordinates used to ensure start draggable component doesnt exceed the end
     end_Y_Coord: 680,
     initial_time: 8,
     end_time: 24,

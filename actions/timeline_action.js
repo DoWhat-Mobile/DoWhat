@@ -4,7 +4,6 @@ import { CHANGE_START_TIME, CHANGE_END_TIME } from "./types";
  * File defining actions for timeline input feature of application
  */
 export const change_start_time = (event, gestureState) => dispatch => {
-    console.log('Y Coord is ' + gestureState.moveY)
     const initY = 100 + 48; // At Y.coord = 48, represents starting time: 0800hrs 
     const curY = gestureState.moveY < 148 ? 148 : (gestureState.moveY > 660 ? 660 : gestureState.moveY); // Limit movement
     var time = 8 + (Math.floor((curY - initY) / 16) * 0.5); // Time in hrs
