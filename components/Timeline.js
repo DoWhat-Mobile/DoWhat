@@ -13,6 +13,7 @@ class Timeline extends React.Component {
         <Draggable x={20} y={48} renderSize={30}
           maxX={20} minX={20} // Fix the circles to only be able to move along x=20 axis
           minY={48}
+          maxY={560 - (this.props.endTime * 0.5)}
           renderColor='black' renderText='S'
           isCircle // Make the object a circle
           onShortPressRelease={() => alert(this.props.startTime)}
@@ -21,6 +22,7 @@ class Timeline extends React.Component {
 
         <Draggable x={20} y={520} renderSize={30}
           maxX={20} minX={20}
+          minY={48 + (this.props.startTime * 0.5)}
           maxY={560}
           renderColor='black' renderText='E'
           isCircle
@@ -33,7 +35,7 @@ class Timeline extends React.Component {
         </View>
 
         <View style={styles.timing}>
-          <Text style={{ textAlign: "center", fontSize: 15 }}>{this.props.endTime}</Text>
+          <Text style={{ textAlign: "center", fontSize: 15 }}>Time Interval is {this.props.timeInterval} hours</Text>
         </View>
       </View >
     );
@@ -51,9 +53,11 @@ const styles = StyleSheet.create({
 
 
 const mapStateToProps = (state) => {
+  console.log(state)
   return {
     startTime: state.timeline.initial_time,
-    endTime: state.timeline.end_time
+    endTime: state.timeline.end_time,
+    timeInterval: state.timeline.time_interval
   }
 }
 
