@@ -3,6 +3,9 @@ import * as Facebook from "expo-facebook";
 
 import { FACEBOOK_LOGIN_SUCCESS, FACEBOOK_LOGIN_FAIL } from "./types";
 
+/**
+ * checks for token, if it exists, set it to global state token, else render facebook login popup
+ */
 export const facebookLogin = () => async (dispatch) => {
   let token = await AsyncStorage.getItem("fb_token");
   if (token) {
@@ -12,6 +15,9 @@ export const facebookLogin = () => async (dispatch) => {
   }
 };
 
+/**
+ * check if user has logged in before or not
+ */
 export const isLoggedIn = () => async (dispatch) => {
   let token = await AsyncStorage.getItem("fb_token");
   if (token) {
@@ -21,6 +27,10 @@ export const isLoggedIn = () => async (dispatch) => {
   }
 };
 
+/**
+ * faecbook login set up, if user authorizes account, token will be created in asyncstorage
+ * @param {*} dispatch 
+ */
 const doFacebookLogin = async (dispatch) => {
   let { type, token } = await Facebook.logInWithReadPermissionsAsync(
     "710198546414299",

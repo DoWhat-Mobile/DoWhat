@@ -13,6 +13,10 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 const Slides = (props) => {
   const { data, onSlidesComplete } = props;
 
+  /**
+   * renders a button component only on the last slide
+   * @param {*} index 
+   */
   const lastSlideButton = (index) => {
     if (index === data.length - 1) {
       return (
