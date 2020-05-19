@@ -13,26 +13,22 @@ class Timeline extends React.Component {
         <Draggable x={20} y={48} renderSize={30}
           maxX={20} minX={20} // Fix the circles to only be able to move along x=20 axis
           minY={48}
-          maxY={560 - (this.props.endTime * 0.5)}
+          maxY={this.props.end_Y_Coord - 100} // - 100 because the timeline nav bar takes up 100 pixels, and the props of Draggable library doesnt account for it
           renderColor='black' renderText='S'
           isCircle // Make the object a circle
-          onShortPressRelease={() => alert(this.props.startTime)}
+          onShortPressRelease={() => alert('Start time is ' + (Math.floor(this.props.startTime)) + '00 hrs')}
           onDrag={this.props.change_start_time}
         />
 
-        <Draggable x={20} y={520} renderSize={30}
+        <Draggable x={20} y={560} renderSize={30}
           maxX={20} minX={20}
-          minY={48 + (this.props.startTime * 0.5)}
+          minY={this.props.start_Y_Coord - 100}
           maxY={560}
           renderColor='black' renderText='E'
           isCircle
-          onShortPressRelease={() => alert('This is the end time')}
+          onShortPressRelease={() => alert('End time is ' + (Math.floor(this.props.endTime)) + '00hrs')}
           onDrag={this.props.change_end_time}
         />
-
-        <View style={{ marginStart: 100, marginTop: 48 }}>
-          <Text style={{ fontSize: 12 }}> -- Starting time: 0800hrs</Text>
-        </View>
 
         <View style={styles.timing}>
           <Text style={{ textAlign: "center", fontSize: 15 }}>Time Interval is {this.props.timeInterval} hours</Text>
@@ -53,11 +49,14 @@ const styles = StyleSheet.create({
 
 
 const mapStateToProps = (state) => {
-  console.log(state)
+  console.log(state.timeline.end_Y_Coord)
   return {
     startTime: state.timeline.initial_time,
     endTime: state.timeline.end_time,
-    timeInterval: state.timeline.time_interval
+    timeInterval: state.timeline.time_interval,
+    end_Y_Coord: state.timeline.end_Y_Coord,
+    start_Y_Coord: state.timeline.start_Y_Coord,
+
   }
 }
 
