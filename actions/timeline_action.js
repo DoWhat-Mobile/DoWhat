@@ -1,4 +1,4 @@
-import { CHANGE_START_TIME, CHANGE_END_TIME } from "./types";
+import { CHANGE_START_TIME, CHANGE_END_TIME, ADD_FRIEND, FINALIZE } from "./types";
 
 /**
  * File defining actions for timeline input feature of application
@@ -10,7 +10,7 @@ export const change_start_time = (event, gestureState) => dispatch => {
     const newState = {
         type: CHANGE_START_TIME,
         payload: time,
-        start_Y_Coord: gestureState.moveY
+        start_y_coord: gestureState.moveY
     }
 
     dispatch(newState);
@@ -26,7 +26,29 @@ export const change_end_time = (event, gestureState) => dispatch => {
     const newState = {
         type: CHANGE_END_TIME,
         payload: time,
-        end_Y_Coord: gestureState.moveY
+        end_y_coord: gestureState.moveY
+    }
+
+    dispatch(newState);
+}
+
+/**
+ * Action creator that adds friend's timeline to the list of available timings
+ */
+export const add_friend = () => dispatch => {
+    const newState = {
+        type: ADD_FRIEND,
+    }
+
+    dispatch(newState);
+}
+
+/**
+ * Action creator that finalizes timeline input
+ */
+export const finalize = () => dispatch => {
+    const newState = {
+        type: FINALIZE,
     }
 
     dispatch(newState);
