@@ -8,5 +8,4 @@ export const FACEBOOK_LOGIN_FAIL = "facebook_login_fail";
  * Actions for timeline feature
  */
 export const CHANGE_TIME = 'CHANGE_TIME';
-export const ADD_FRIEND = 'ADD_FRIEND';
-export const FINALIZE = 'FINALIZE';
+export const CHANGE_INTERVAL = 'CHANGE_INTERVAL'

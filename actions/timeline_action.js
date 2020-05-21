@@ -1,4 +1,4 @@
-import { ADD_FRIEND, FINALIZE, CHANGE_TIME } from "./types";
+import { ADD_FRIEND, FINALIZE, CHANGE_TIME, CHANGE_INTERVAL } from "./types";
 import { cloneElement } from "react";
 
 /**
@@ -16,21 +16,10 @@ export const change_time = (values) => dispatch => {
 /**
  * Action creator that adds friend's timeline to the list of available timings
  */
-export const add_friend = (values) => dispatch => {
+export const change_interval = (values) => dispatch => {
     const newState = {
-        type: ADD_FRIEND,
+        type: CHANGE_INTERVAL,
         payload: values,
-    }
-
-    dispatch(newState);
-}
-
-/**
- * Action creator that finalizes timeline input
- */
-export const finalize = () => dispatch => {
-    const newState = {
-        type: FINALIZE,
     }
 
     dispatch(newState);

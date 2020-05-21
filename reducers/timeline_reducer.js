@@ -1,7 +1,7 @@
 /**
  * File for all the reducers invovled in the timeline input feature of the application
  */
-import { CHANGE_TIME, ADD_FRIEND, FINALIZE } from "../actions/types";
+import { CHANGE_TIME, ADD_FRIEND, FINALIZE, CHANGE_INTERVAL } from "../actions/types";
 
 /**
  * Keep track of start time, end time and time interval for scheduleing of events
@@ -15,7 +15,7 @@ const initState = {
 /**
  * Helper method for logic of finding overlapping time interval between friends
  */
-const add_friend = (state, action) => {
+const update_interval = (state, action) => {
     const cur_time_interval = action.payload;
     let final_time_interval = state.time_interval;
 
@@ -47,12 +47,8 @@ export default function (state = initState, action) {
             return Object.assign({}, state, {
                 values: action.payload
             });
-        case FINALIZE:
-            return Object.assign({}, state, {
-
-            })
-        case ADD_FRIEND:
-            return add_friend(state, action);
+        case CHANGE_INTERVAL:
+            return update_interval(state, action);
         default:
             return state;
     }

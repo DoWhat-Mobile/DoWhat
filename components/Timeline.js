@@ -10,6 +10,10 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
  */
 class Timeline extends React.Component {
 
+  finalize = (values) => {
+    this.props.change_interval(values)
+    this.props.navigation.navigate("Genre");
+  }
   render() {
     return (
       <View style={styles.container} >
@@ -30,8 +34,8 @@ class Timeline extends React.Component {
             snapped
           />
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center' }}>
-            <Button title="Finalize" />
-            <Button title="Add Friend" onPress={() => this.props.add_friend([this.props.values_start, this.props.values_end])} />
+            <Button title="Finalize" onPress={() => this.finalize([this.props.values_start, this.props.values_end])}/>
+            <Button title="Add Friend" onPress={() => this.props.change_interval([this.props.values_start, this.props.values_end])} />
           </View>
         </View>
 
