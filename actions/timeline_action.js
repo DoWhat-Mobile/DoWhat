@@ -1,43 +1,25 @@
-import { CHANGE_START_TIME, CHANGE_END_TIME, ADD_FRIEND, FINALIZE } from "./types";
+import { ADD_FRIEND, FINALIZE, CHANGE_TIME } from "./types";
+import { cloneElement } from "react";
 
 /**
- * File defining actions for timeline input feature of application
+ *  Action creator that changes the start and end time state
  */
-export const change_start_time = (event, gestureState) => dispatch => {
-    const initY = 100 + 48; // At Y.coord = 48, represents starting time: 0800hrs 
-    const curY = gestureState.moveY < 148 ? 148 : (gestureState.moveY > 660 ? 660 : gestureState.moveY); // Limit movement
-    var time = 8 + (Math.floor((curY - initY) / 16) * 0.5); // Time in hrs
+export const change_time = (values) => dispatch => {
     const newState = {
-        type: CHANGE_START_TIME,
-        payload: time,
-        start_y_coord: gestureState.moveY
+        type: CHANGE_TIME,
+        payload: values,
+
     }
-
-    dispatch(newState);
-}
-
-/**
- * Action creator that creates the action to change end_time for timeline
- */
-export const change_end_time = (event, gestureState) => dispatch => {
-    const initY = 100 + 560; // End time: 2359hrs
-    const curY = gestureState.moveY > 660 ? 660 : (gestureState.moveY < 148 ? 148 : gestureState.moveY); // Limit movement
-    var time = 24 - (Math.floor((initY - curY) / 16) * 0.5);
-    const newState = {
-        type: CHANGE_END_TIME,
-        payload: time,
-        end_y_coord: gestureState.moveY
-    }
-
     dispatch(newState);
 }
 
 /**
  * Action creator that adds friend's timeline to the list of available timings
  */
-export const add_friend = () => dispatch => {
+export const add_friend = (values) => dispatch => {
     const newState = {
         type: ADD_FRIEND,
+        payload: values,
     }
 
     dispatch(newState);
