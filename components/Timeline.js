@@ -33,7 +33,7 @@ class Timeline extends React.Component {
         </View>
 
         <View>
-          <Text>Time interval is {this.props.time_interval}</Text>
+          <Text>Time interval is {this.props.errorMessage ? 'invalid for this friend :(' : this.props.time_interval}</Text>
         </View>
       </View>
     );

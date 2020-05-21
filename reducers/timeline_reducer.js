@@ -9,17 +9,17 @@ import { CHANGE_TIME, ADD_FRIEND, FINALIZE } from "../actions/types";
 const initState = {
     values: [8, 24],
     time_interval: [8, 24],
-    errorMessage: false // Boolean flag to check if new person's schedule doesnt match other schedules
+    //errorMessage: false // Boolean flag to check if new person's schedule doesnt match other schedules
 }
 
 /**
  * Helper method for logic of finding overlapping time interval between friends
  */
 const add_friend = (state, action) => {
-    //const newObj = Object.assign({}, state);
     const cur_time_interval = action.payload;
     let final_time_interval = state.time_interval;
 
+    let a = [0, 0];
     if (cur_time_interval[1] < final_time_interval[0] || cur_time_interval[0] > final_time_interval[1]) {
         return {
             ...state,
@@ -27,19 +27,18 @@ const add_friend = (state, action) => {
             time_interval: final_time_interval,
             errorMessage: true
         };
+    } else {
+        // Take bigger start time
+        a[0] = final_time_interval[0] = cur_time_interval[0] < final_time_interval[0] ? final_time_interval[0] : cur_time_interval[0];
+        // Take smaller end time
+        a[1] = final_time_interval[1] = cur_time_interval[1] < final_time_interval[1] ? cur_time_interval[1] : final_time_interval[1]
+        return {
+            ...state,
+            values: [8, 24],
+            time_interval: a,
+            errorMessage: false
+        };
     }
-
-    // Take bigger start time
-    final_time_interval[0] = cur_time_interval[0] < final_time_interval[0] ? final_time_interval[0] : cur_time_interval[0];
-    // Take smaller end time
-    final_time_interval[1] = cur_time_interval[1] < final_time_interval[1] ? cur_time_interval[1] : final_time_interval[1]
-
-    return {
-        ...state,
-        values: [8, 24],
-        time_interval: final_time_interval,
-        errorMessage: false
-    };
 }
 
 export default function (state = initState, action) {
