@@ -4,7 +4,10 @@ import { StyleSheet, View, Text, Button } from 'react-native';
 import { connect } from 'react-redux'
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
-
+/**
+ * This component allows users to input their available timings as well as their friends. The global state will keep track of
+ * the common overlapping intervals of time as the user inputs more and more timings.
+ */
 class Timeline extends React.Component {
 
   render() {
