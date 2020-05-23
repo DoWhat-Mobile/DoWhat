@@ -10,15 +10,11 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
  */
 class Timeline extends React.Component {
 
-  startInterval = this.props.time_interval_start < 10 ? "0" +
-    this.props.time_interval_start + '00hrs' : this.props.time_interval_start + '00hrs';
-  endInterval = this.props.time_interval_end < 10 ? "0" + this.props.time_interval_end +
-    '00hrs' : this.props.time_interval_end + '00hrs';
-
   finalize = (values) => {
     this.props.change_interval(values)
     this.props.navigation.navigate("Genre");
   }
+
   render() {
     return (
       <View style={styles.container} >
@@ -46,7 +42,13 @@ class Timeline extends React.Component {
 
         <View>
           <Text>Time interval is
-            {this.props.errorMessage ? 'invalid for this friend :(' : ' from ' + this.startInterval + ' to ' + this.endInterval}
+            {this.props.errorMessage ? 'invalid for this friend :(' : ' from ' +
+              (this.props.time_interval_start < 10 ? "0" +
+                this.props.time_interval_start + '00hrs' : this.props.time_interval_start + '00hrs') +
+              ' to ' +
+              (this.props.time_interval_end < 10 ? "0" + this.props.time_interval_end +
+                '00hrs' : this.props.time_interval_end + '00hrs')
+            }
           </Text>
         </View>
 
@@ -87,7 +89,6 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => {
-  console.log(state.timeline.time_interval)
   return {
     values_start: state.timeline.values[0],
     values_end: state.timeline.values[1],
