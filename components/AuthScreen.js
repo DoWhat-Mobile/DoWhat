@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, AsyncStorage } from "react-native";
+import { View, Text, AsyncStorage, Button } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 
@@ -16,12 +16,10 @@ const AuthScreen = (props) => {
     }
   };
   return (
-    <View>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>AuthScreen</Text>
-      <Text>AuthScreen</Text>
-      <Text>AuthScreen</Text>
-      <Text>AuthScreen</Text>
-      <Text>AuthScreen</Text>
+      <Button title='Continue Wtihout Login' onPress={() => props.navigation.navigate("Timeline")} />
+
     </View>
   );
 };
