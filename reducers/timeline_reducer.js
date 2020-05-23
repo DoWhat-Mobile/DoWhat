@@ -1,7 +1,7 @@
 /**
  * File for all the reducers invovled in the timeline input feature of the application
  */
-import { CHANGE_TIME, ADD_FRIEND, FINALIZE, CHANGE_INTERVAL } from "../actions/types";
+import { CHANGE_TIME, ADD_FRIEND, FINALIZE, CHANGE_INTERVAL, RESET_INTERVAL } from "../actions/types";
 
 /**
  * Keep track of start time, end time and time interval for scheduleing of events
@@ -9,7 +9,7 @@ import { CHANGE_TIME, ADD_FRIEND, FINALIZE, CHANGE_INTERVAL } from "../actions/t
 const initState = {
     values: [8, 24],
     time_interval: [8, 24],
-    //errorMessage: false // Boolean flag to check if new person's schedule doesnt match other schedules
+    errorMessage: false // Boolean flag to check if new person's schedule doesnt match other schedules
 }
 
 /**
@@ -49,6 +49,12 @@ export default function (state = initState, action) {
             });
         case CHANGE_INTERVAL:
             return update_interval(state, action);
+        case RESET_INTERVAL:
+            return Object.assign({}, state, {
+                values: action.payload,
+                time_interval: action.payload,
+                errorMessage: false
+            });
         default:
             return state;
     }

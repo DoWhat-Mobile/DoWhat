@@ -1,4 +1,4 @@
-import { ADD_FRIEND, FINALIZE, CHANGE_TIME, CHANGE_INTERVAL } from "./types";
+import { ADD_FRIEND, FINALIZE, CHANGE_TIME, CHANGE_INTERVAL, RESET_INTERVAL } from "./types";
 import { cloneElement } from "react";
 
 /**
@@ -19,6 +19,18 @@ export const change_time = (values) => dispatch => {
 export const change_interval = (values) => dispatch => {
     const newState = {
         type: CHANGE_INTERVAL,
+        payload: values,
+    }
+
+    dispatch(newState);
+}
+
+/**
+ * Action creator to reset timeline interval when user inputs the wrong timings
+ */
+export const reset_interval = (values) => dispatch => {
+    const newState = {
+        type: RESET_INTERVAL,
         payload: values,
     }
 

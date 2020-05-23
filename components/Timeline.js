@@ -10,6 +10,11 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
  */
 class Timeline extends React.Component {
 
+  startInterval = this.props.time_interval_start < 10 ? "0" +
+    this.props.time_interval_start + '00hrs' : this.props.time_interval_start + '00hrs';
+  endInterval = this.props.time_interval_end < 10 ? "0" + this.props.time_interval_end +
+    '00hrs' : this.props.time_interval_end + '00hrs';
+
   finalize = (values) => {
     this.props.change_interval(values)
     this.props.navigation.navigate("Genre");
@@ -34,14 +39,24 @@ class Timeline extends React.Component {
             snapped
           />
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center' }}>
-            <Button title="Finalize" onPress={() => this.finalize([this.props.values_start, this.props.values_end])}/>
+            <Button title="Reset" onPress={() => this.props.reset_interval([8, 24])} />
             <Button title="Add Friend" onPress={() => this.props.change_interval([this.props.values_start, this.props.values_end])} />
           </View>
         </View>
 
         <View>
-          <Text>Time interval is {this.props.errorMessage ? 'invalid for this friend :(' : this.props.time_interval}</Text>
+          <Text>Time interval is
+            {this.props.errorMessage ? 'invalid for this friend :(' : ' from ' + this.startInterval + ' to ' + this.endInterval}
+          </Text>
         </View>
+
+        <View
+          style={{ alignSelf: 'flex-end', bottom: 0, position: 'absolute' }}
+        >
+          <Button title="Finalize"
+            onPress={() => this.finalize([this.props.values_start, this.props.values_end])} />
+        </View>
+
       </View>
     );
   }
@@ -76,7 +91,8 @@ const mapStateToProps = (state) => {
   return {
     values_start: state.timeline.values[0],
     values_end: state.timeline.values[1],
-    time_interval: state.timeline.time_interval,
+    time_interval_start: state.timeline.time_interval[0],
+    time_interval_end: state.timeline.time_interval[1],
     errorMessage: state.timeline.errorMessage
   }
 }

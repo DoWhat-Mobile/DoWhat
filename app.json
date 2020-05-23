@@ -23,6 +23,11 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "android": {
+      "package": "com.DoWhat.DoWhat",
+      "versionCode": 1
+    },
+    "description": ""
   }
 }
