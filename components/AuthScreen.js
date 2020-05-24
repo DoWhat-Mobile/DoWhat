@@ -4,22 +4,25 @@ import { connect } from "react-redux";
 import * as actions from "../actions";
 
 const AuthScreen = (props) => {
-  React.useEffect(() => {
+  const loginToFacebook = () => {
     props.facebookLogin();
-    //AsyncStorage.removeItem("fb_token");
+    AsyncStorage.removeItem("fb_token");
     onAuthComplete(props);
-  });
+  };
 
   const onAuthComplete = (props) => {
     if (props.token) {
-      props.navigation.navigate("SyncGoogleCalendar");
+      props.navigation.navigate("GoogleCalendarInput");
     }
   };
+
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>AuthScreen</Text>
       <Button title='Continue Wtihout Login'
-        onPress={() => props.navigation.navigate("SyncGoogleCalendar")} />
+        onPress={() => props.navigation.navigate("GoogleCalendarInput")} />
+      <Button title="Login with Facebook"
+        onPress={() => loginToFacebook()} />
     </View>
   );
 };

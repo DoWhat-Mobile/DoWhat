@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => {
+  console.log(state)
   return {
     values_start: state.timeline.values[0],
     values_end: state.timeline.values[1],

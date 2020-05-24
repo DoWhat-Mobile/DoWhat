@@ -19,6 +19,7 @@
     "@react-navigation/stack": "^5.3.9",
     "expo": "^37.0.12",
     "expo-facebook": "~8.1.0",
+    "expo-google-app-auth": "^8.1.0",
     "firebase": "7.9.0",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",

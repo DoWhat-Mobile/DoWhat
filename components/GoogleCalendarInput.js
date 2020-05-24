@@ -1,15 +1,16 @@
-import React from "react";
-import { View, Text, AsyncStorage, Button, StyleSheet } from "react-native";
-import { connect } from "react-redux";
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
-
 /**
  * Page for first step of application flow: Uploading of google calendar to get free timings
  * If a user does not want to upload google calendar, the user will skip and move on to manual
  * input of free timings instead.
  */
-class SyncGoogleCalendar extends React.Component {
+import React from "react";
+import { View, Text, AsyncStorage, Button, StyleSheet } from "react-native";
+import { connect } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import * as actions from '../actions';
+
+class GoogleCalendarInput extends React.Component {
     render() {
         return (
             <View style={style.container}>
@@ -21,15 +22,24 @@ class SyncGoogleCalendar extends React.Component {
                     <Text style={style.subHeader}>
                         Upload your Google calendar for automated planning
                     </Text>
+                    <Text>{this.props.token}</Text>
                 </View>
                 <Button title="Skip"
                     onPress={() => this.props.navigation.navigate("Timeline")} />
+                <Button title="Continue"
+                    onPress={() => this.props.googleLogin()} />
             </View>
         );
     }
 }
 
-export default connect()(SyncGoogleCalendar);
+const mapStateToProps = (state) => {
+    return {
+        token: state.token,
+    }
+}
+
+export default connect(mapStateToProps, actions)(GoogleCalendarInput);
 
 const style = StyleSheet.create({
     container: {

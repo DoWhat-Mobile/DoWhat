@@ -12,7 +12,7 @@ import WelcomeScreen from "./components/WelcomeScreen";
 import Timeline from "./components/Timeline";
 import Genre from "./components/Genre";
 import Finalized from "./components/Finalized";
-import SyncGoogleCalendar from "./components/SyncGoogleCalendar";
+import GoogleCalendarInput from "./components/GoogleCalendarInput";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator()
@@ -33,7 +33,7 @@ const MainNavigator = () => {
       <Stack.Screen name="Timeline" component={Timeline} options={{ headerLeft: null }} />
       <Stack.Screen name="Genre" component={Genre} />
       <Stack.Screen name="Finalized" component={Finalized} />
-      <Stack.Screen name="SyncGoogleCalendar" component={SyncGoogleCalendar} />
+      <Stack.Screen name="GoogleCalendarInput" component={GoogleCalendarInput} />
     </Stack.Navigator>
 
   );
