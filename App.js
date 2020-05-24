@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, View,Button } from "react-native";
+import { Text, View, Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,6 +12,7 @@ import WelcomeScreen from "./components/WelcomeScreen";
 import Timeline from "./components/Timeline";
 import Genre from "./components/Genre";
 import Finalized from "./components/Finalized";
+import SyncGoogleCalendar from "./components/SyncGoogleCalendar";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator()
@@ -29,11 +30,12 @@ const MainNavigator = () => {
     <Stack.Navigator>
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
       <Stack.Screen name="Auth" component={AuthScreen} />
-      <Stack.Screen name="Timeline" component={Timeline} options={{headerLeft:null}}/>
+      <Stack.Screen name="Timeline" component={Timeline} options={{ headerLeft: null }} />
       <Stack.Screen name="Genre" component={Genre} />
       <Stack.Screen name="Finalized" component={Finalized} />
+      <Stack.Screen name="SyncGoogleCalendar" component={SyncGoogleCalendar} />
     </Stack.Navigator>
-    
+
   );
 };
 

@@ -12,14 +12,14 @@ const AuthScreen = (props) => {
 
   const onAuthComplete = (props) => {
     if (props.token) {
-      props.navigation.navigate("Timeline");
+      props.navigation.navigate("SyncGoogleCalendar");
     }
   };
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>AuthScreen</Text>
-      <Button title='Continue Wtihout Login' onPress={() => props.navigation.navigate("Timeline")} />
-
+      <Button title='Continue Wtihout Login'
+        onPress={() => props.navigation.navigate("SyncGoogleCalendar")} />
     </View>
   );
 };
