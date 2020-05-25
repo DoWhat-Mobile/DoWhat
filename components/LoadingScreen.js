@@ -4,7 +4,7 @@
  * successful sign in, the user will be redirected to the Genre selection page.
  */
 import React, { Component } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Button } from 'react-native';
 import firebase from 'firebase';
 
 class LoadingScreen extends Component {
@@ -27,8 +27,8 @@ class LoadingScreen extends Component {
         return (
             <View style={styles.container}>
                 <ActivityIndicator size="large" />
+                <Button title="Sign out of Google" onPress={() => firebase.auth().signOut()} />
             </View>
-
         );
     }
 }
