@@ -10,9 +10,3 @@ export const FACEBOOK_LOGIN_FAIL = "facebook_login_fail";
 export const CHANGE_TIME = 'CHANGE_TIME';
 export const CHANGE_INTERVAL = 'CHANGE_INTERVAL';
 export const RESET_INTERVAL = 'RESET_INTERVAL';
-
-/**
- * Actions for google calendar input feature
- */
-export const GOOGLE_LOGIN_SUCCESS = "GOOGLE_LOGIN_SUCCESS";
-export const GOOGLE_LOGIN_FAIL = 'GOOGLE_LOGIN_FAIL';

@@ -81,7 +81,6 @@ class GoogleLogin extends Component {
     signInWithGoogleAsync = async () => {
         try {
             const result = await Google.logInAsync({
-                //behavior: 'web',
                 androidClientId: '119205196255-0hi8thq9lm1759jr8k5o1ld8h239olr5.apps.googleusercontent.com',
                 iosClientId: '119205196255-ofp61a7qv7g38812gmafsdo37si7l4q5.apps.googleusercontent.com',
                 scopes: ['profile', 'email'],
