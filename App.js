@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { Text, View, Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Provider } from 'react-redux';
 import * as Facebook from 'expo-facebook';
+import firebase from 'firebase';
+import { firebaseConfig } from './database/firebase';
 
 import store from './store';
 import AuthScreen from './components/AuthScreen';
@@ -14,6 +15,7 @@ import Genre from './components/Genre';
 import Finalized from './components/Finalized';
 import GoogleCalendarInput from './components/GoogleCalendarInput';
 import LoadingScreen from './components/LoadingScreen';
+import GoogleLogin from './components/GoogleLogin';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator()
@@ -36,10 +38,13 @@ const MainNavigator = () => {
       <Stack.Screen name='Finalized' component={Finalized} />
       <Stack.Screen name='GoogleCalendarInput' component={GoogleCalendarInput} />
       <Stack.Screen name='LoadingScreen' component={LoadingScreen} />
+      <Stack.Screen name='GoogleLogin' component={GoogleLogin} />
     </Stack.Navigator>
 
   );
 };
+
+firebase.initializeApp(firebaseConfig);
 
 export default function App() {
   Facebook.initializeAsync('710198546414299', 'AuthTest');

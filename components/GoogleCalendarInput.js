@@ -4,23 +4,23 @@
  * input of free timings instead.
  */
 import React from 'react';
-import { View, Text, AsyncStorage, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import * as actions from '../actions';
 
 class GoogleCalendarInput extends React.Component {
-    onAuthComplete() {
-        if (token) {
-            props.navigation.navigate('Genre');
-        }
-    }
+    //onAuthComplete() {
+    //    if (token) {
+    //        props.navigation.navigate('Genre');
+    //    }
+    //}
 
     loginToGoogle() {
         this.props.navigation.navigate('LoadingScreen');
-        this.props.googleLogin();
-        this.onAuthComplete(token);
+        // this.props.googleLogin();
+        // this.onAuthComplete(token);
     }
 
     render() {
