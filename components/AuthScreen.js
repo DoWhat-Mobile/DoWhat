@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, AsyncStorage, Button } from "react-native";
+import { View, Text, AsyncStorage, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 
@@ -19,11 +19,22 @@ const AuthScreen = (props) => {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>AuthScreen</Text>
-      <Button title='Continue Wtihout Login'
-        onPress={() => props.navigation.navigate("GoogleCalendarInput")} />
-      <Button title="Login with Facebook"
-        onPress={() => loginToFacebook()} />
+      <Text>Login Screen</Text>
+      <View style={style.icons}>
+        <TouchableOpacity onPress={() => loginToFacebook()}>
+          <Image source={require('../assets/facebook.png')} style={style.facebook} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => props.navigation.navigate("LoadingScreen")}>
+          <Image source={require('../assets/google.png')} stlye={style.google} />
+        </TouchableOpacity>
+      </View>
+
+      <View>
+        <TouchableOpacity onPress={() => props.navigation.navigate("GoogleCalendarInput")} >
+          <Text style={{ color: 'blue' }}>Proceed Without Login</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -34,3 +45,18 @@ function mapStateToProps({ auth }) {
 }
 
 export default connect(mapStateToProps, actions)(AuthScreen);
+
+const style = StyleSheet.create({
+  google: {
+    resizeMode: 'contain',
+
+  },
+  facebook: {
+    width: 40,
+    height: 40,
+  },
+  icons: {
+    flexDirection: "row",
+    justifyContent: 'center'
+  }
+})
