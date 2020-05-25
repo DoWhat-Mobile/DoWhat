@@ -13,9 +13,6 @@ export default function (state = {}, action) {
             return { token: null };
 
         default:
-            console.log(action.type)
-            console.log("Default case")
-            console.log(action.payload)
             return state;
 
     }

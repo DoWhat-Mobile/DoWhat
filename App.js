@@ -1,18 +1,19 @@
-import * as React from "react";
-import { Text, View, Button } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import * as React from 'react';
+import { Text, View, Button } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Provider } from "react-redux";
-import * as Facebook from "expo-facebook";
+import { Provider } from 'react-redux';
+import * as Facebook from 'expo-facebook';
 
-import store from "./store";
-import AuthScreen from "./components/AuthScreen";
-import WelcomeScreen from "./components/WelcomeScreen";
-import Timeline from "./components/Timeline";
-import Genre from "./components/Genre";
-import Finalized from "./components/Finalized";
-import GoogleCalendarInput from "./components/GoogleCalendarInput";
+import store from './store';
+import AuthScreen from './components/AuthScreen';
+import WelcomeScreen from './components/WelcomeScreen';
+import Timeline from './components/Timeline';
+import Genre from './components/Genre';
+import Finalized from './components/Finalized';
+import GoogleCalendarInput from './components/GoogleCalendarInput';
+import LoadingScreen from './components/LoadingScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator()
@@ -28,19 +29,20 @@ const Stack = createStackNavigator()
 const MainNavigator = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Welcome" component={WelcomeScreen} />
-      <Stack.Screen name="Auth" component={AuthScreen} />
-      <Stack.Screen name="Timeline" component={Timeline} options={{ headerLeft: null }} />
-      <Stack.Screen name="Genre" component={Genre} />
-      <Stack.Screen name="Finalized" component={Finalized} />
-      <Stack.Screen name="GoogleCalendarInput" component={GoogleCalendarInput} />
+      <Stack.Screen name='Welcome' component={WelcomeScreen} />
+      <Stack.Screen name='Auth' component={AuthScreen} />
+      <Stack.Screen name='Timeline' component={Timeline} options={{ headerLeft: null }} />
+      <Stack.Screen name='Genre' component={Genre} />
+      <Stack.Screen name='Finalized' component={Finalized} />
+      <Stack.Screen name='GoogleCalendarInput' component={GoogleCalendarInput} />
+      <Stack.Screen name='LoadingScreen' component={LoadingScreen} />
     </Stack.Navigator>
 
   );
 };
 
 export default function App() {
-  Facebook.initializeAsync("710198546414299", "AuthTest");
+  Facebook.initializeAsync('710198546414299', 'AuthTest');
 
   return (
     <Provider store={store}>

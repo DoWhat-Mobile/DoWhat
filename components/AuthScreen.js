@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import * as actions from "../actions";
 
 const AuthScreen = (props) => {
+
   const loginToFacebook = () => {
     props.facebookLogin();
     AsyncStorage.removeItem("fb_token");
@@ -25,6 +26,7 @@ const AuthScreen = (props) => {
         onPress={() => loginToFacebook()} />
     </View>
   );
+
 };
 
 function mapStateToProps({ auth }) {
