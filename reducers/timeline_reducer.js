@@ -47,14 +47,17 @@ export default function (state = initState, action) {
             return Object.assign({}, state, {
                 values: action.payload
             });
+
         case CHANGE_INTERVAL:
             return update_interval(state, action);
+
         case RESET_INTERVAL:
             return Object.assign({}, state, {
                 values: action.payload,
                 time_interval: action.payload,
                 errorMessage: false
             });
+
         default:
             return state;
     }
