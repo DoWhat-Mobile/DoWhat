@@ -15,7 +15,7 @@ class LoadingScreen extends Component {
     checkIfLoggedIn = () => {
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                this.props.navigation.navigate("Genre");
+                this.props.navigation.navigate("GoogleCalendarInput");
             } else {
                 this.props.navigation.navigate("GoogleLogin")
 

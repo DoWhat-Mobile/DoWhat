@@ -9,18 +9,21 @@ import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import * as actions from '../actions';
+import firebase from 'firebase';
 
 class GoogleCalendarInput extends React.Component {
-    //onAuthComplete() {
-    //    if (token) {
-    //        props.navigation.navigate('Genre');
-    //    }
-    //}
-
     loginToGoogle() {
         this.props.navigation.navigate('LoadingScreen');
-        // this.props.googleLogin();
-        // this.onAuthComplete(token);
+    }
+
+    checkIfLoggedIn = () => {
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                this.props.navigation.navigate("Genre");
+            } else {
+                this.loginToGoogle();
+            }
+        })
     }
 
     render() {
@@ -39,7 +42,7 @@ class GoogleCalendarInput extends React.Component {
                 <Button title='Skip'
                     onPress={() => this.props.navigation.navigate('Timeline')} />
                 <Button title='Continue'
-                    onPress={() => this.loginToGoogle()} />
+                    onPress={() => this.checkIfLoggedIn()} />
             </View>
         );
     }

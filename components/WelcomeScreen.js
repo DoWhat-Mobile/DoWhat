@@ -1,3 +1,7 @@
+/**
+ * Welcome screen is shown to users that are not yet logged into Facebook. If they have already
+ * logged into facebook, the user will be directed immediately to the calendar input page.
+ */
 import React from "react";
 import { View, Text, AsyncStorage } from "react-native";
 import { AppLoading } from "expo";
@@ -27,12 +31,12 @@ const WelcomeScreen = (props) => {
   });
 
   /**
-   * takes in global state token to check if token exists, if it does, navigate straight to Timeline
+   * takes in global state token to check if token exists, if it does, navigate straight to GoogleCalendarInput
    * @param {*} props 
    */
   const onAuthComplete = (props) => {
     if (props.token) {
-      props.navigation.navigate("Timeline");
+      props.navigation.navigate("GoogleCalendarInput");
     }
   };
 
