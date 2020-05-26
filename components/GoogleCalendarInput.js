@@ -19,7 +19,7 @@ class GoogleCalendarInput extends React.Component {
     checkIfLoggedIn = () => {
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                this.props.navigation.navigate("Genre");
+                this.props.navigation.navigate("ExtractGcalAvails");
             } else {
                 this.loginToGoogle();
             }
