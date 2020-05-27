@@ -1,6 +1,5 @@
 import { AsyncStorage } from 'react-native';
 import * as Facebook from 'expo-facebook';
-
 import { FACEBOOK_LOGIN_SUCCESS, FACEBOOK_LOGIN_FAIL } from "./types";
 
 /**

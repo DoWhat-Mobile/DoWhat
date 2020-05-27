@@ -10,3 +10,8 @@ export const FACEBOOK_LOGIN_FAIL = "facebook_login_fail";
 export const CHANGE_TIME = 'CHANGE_TIME';
 export const CHANGE_INTERVAL = 'CHANGE_INTERVAL';
 export const RESET_INTERVAL = 'RESET_INTERVAL';
+
+/**
+ * Actions for Google authentication, for Google API calls
+ */
+export const SET_ACCESS_TOKEN = 'SET_ACCESS_TOKEN';
