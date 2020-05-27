@@ -48,7 +48,7 @@ class ExtractGcalAvails extends Component {
 
     getGcalAuthorization = () => {
         try {
-            https://www.googleapis.com/auth/calendar
+            // https://www.googleapis.com/auth/calendar
         } catch (e) {
             console.log(e);
         }
