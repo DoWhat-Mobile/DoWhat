@@ -15,3 +15,5 @@ export const RESET_INTERVAL = 'RESET_INTERVAL';
  * Actions for Google authentication, for Google API calls
  */
 export const SET_ACCESS_TOKEN = 'SET_ACCESS_TOKEN';
+
+export const FINALIZE_GENRE = "FINALIZE_GENRE";
