@@ -3,6 +3,8 @@
  */
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, Button } from 'react-native';
+import { connect } from 'react-redux'
+import * as actions from '../actions';
 import * as Google from 'expo-google-app-auth';
 import firebase from 'firebase';
 
@@ -34,6 +36,7 @@ class GoogleLogin extends Component {
                     googleUser.idToken,
                     googleUser.accessToken
                 );
+
                 // Sign in with credential from the Google user.
                 firebase
                     .auth()
@@ -49,7 +52,9 @@ class GoogleLogin extends Component {
                                     profile_picture_url: result.additionalUserInfo.profile.picture,
                                     first_name: result.additionalUserInfo.profile.given_name,
                                     last_name: result.additionalUserInfo.profile.family_name,
-                                    created_at: Date.now()
+                                    created_at: Date.now(),
+                                    refresh_token: googleUser.refresh_token,
+                                    access_token: googleUser.access_token
                                 })
                                 .then(function (snapshot) {
                                     // console.log('Snapshot ', snapshot);
@@ -62,6 +67,7 @@ class GoogleLogin extends Component {
                                 })
                         }
                     })
+
                     .catch(function (error) {
                         // Handle Errors here.
                         var errorCode = error.code;
@@ -70,8 +76,8 @@ class GoogleLogin extends Component {
                         var email = error.email;
                         // The firebase.auth.AuthCredential type that was used.
                         var credential = error.credential;
-                        // ...
                     });
+
             } else {
                 console.log('User already signed-in Firebase.');
             }
@@ -108,7 +114,7 @@ class GoogleLogin extends Component {
     }
 }
 
-export default GoogleLogin;
+export default connect(null, actions)(GoogleLogin);
 
 const styles = StyleSheet.create({
     container: {
