@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Button, Platform, Text, StyleSheet, ImagePropTypes } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import GoogleCalendarInput from './GoogleCalendarInput';
+import { connect } from 'react-redux';
+import { selectDate } from '../actions/date_select_action';
 
 const DateSelection = (props) => {
     const [date, setDate] = useState(new Date()); // new Date() gives today's date
@@ -12,6 +13,7 @@ const DateSelection = (props) => {
         const currentDate = selectedDate || date;
         setShow(Platform.OS === 'ios');
         setDate(currentDate);
+        props.selectDate(currentDate);
     };
 
     const showMode = currentMode => {
@@ -52,7 +54,18 @@ const DateSelection = (props) => {
     );
 };
 
-export default DateSelection;
+const mapStateToProps = (state, ownProps) => {
+    console.log(state);
+    return {
+        currDate: state
+    }
+}
+
+const mapDispatchToProps = {
+    selectDate
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DateSelection);
 
 const styles = StyleSheet.create({
     container: {
