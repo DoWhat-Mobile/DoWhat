@@ -11,6 +11,7 @@ import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import * as actions from '../actions';
 import firebase from 'firebase';
 import * as AppAuth from 'expo-app-auth';
+import * as Linking from 'expo-linking';
 
 const OAuthConfig = {
     issuer: 'https://accounts.google.com',
@@ -18,62 +19,84 @@ const OAuthConfig = {
     // If get Authorization Error 400: redirect_uri_mismatch -> Ensure clientId is from DoWhat Android dev
     clientId: '119205196255-0hi8thq9lm1759jr8k5o1ld8h239olr5.apps.googleusercontent.com',
     // All available scopes for Gapi found here : https://developers.google.com/identity/protocols/oauth2/scopes#calendar
-    scopes: ['https://www.googleapis.com/auth/calendar']
+    scopes: ['https://www.googleapis.com/auth/calendar', 'profile', 'email']
 }
 
 const url = 'https://www.googleapis.com/calendar/v3/freeBusy?key=AIzaSyA98MBxh0oZKqPJC6SvGspEz60ImpEaW9Q'
 
-const data = JSON.stringify({
-    'timeMin': '2020-04-28T08:00:00+08:00',
-    'timeMax': '2020-04-28T20:00:00+08:00',
-    'timeZone': 'UTC+08:00',
-    'items': [
-        {
-            'id': 'hansybastian@gmail.com'
-        }
-    ]
-})
 
-const getAvailableTimings = async (token) => {
-    try {
-        fetch(url, {
-            method: 'POST',
-            body: data,
-            headers: new Headers({
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + token.accessToken
-            })
-        })
-            .then(response => response.json())
-            .then(data => console.log(data))
-    } catch (e) {
-        console.log(e);
-    }
+const shareWithTelegram = (url) => {
+    Linking.openURL('https://t.me/share/url?url=' + url + '&text=Here is the link to input your' +
+        'calendar availability!');
 }
 
-const getGcalAuthorization = async () => {
-    try {
-        const tokenResponse = await AppAuth.authAsync(OAuthConfig);
-        getAvailableTimings(tokenResponse);
-    } catch (e) {
-        console.log(e);
-    }
+const shareWithWhatsapp = (url) => {
+    Linking.openURL('whatsapp://send?' +
+        'text=Here is the link to input your calendar availability!' +
+        '')
 }
 
 class GoogleCalendarInput extends React.Component {
-    loginToGoogle() {
-        this.props.navigation.navigate('LoadingScreen');
+    authenticateAndGetBusyPeriods = async () => {
+        try {
+            // Get Oauth2 token
+            const tokenResponse = await AppAuth.authAsync(OAuthConfig);
+            this.getUserEmailAndBusyPeriods(tokenResponse);
+            this.props.navigation.navigate("Genre");
+        } catch (e) {
+            console.log(e);
+        }
     }
 
-    checkIfLoggedIn = () => {
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                this.props.navigation.navigate("ExtractGcalAvails");
-            } else {
-                this.loginToGoogle();
+    // Extract free/busy timings from the selected date, and the extracted user email
+    getData = userEmail => JSON.stringify({
+        'timeMin': this.props.date + 'T08:00:00+08:00',
+        'timeMax': this.props.date + 'T23:59:00+08:00',
+        'timeZone': 'UTC+08:00',
+        'items': [
+            {
+                'id': userEmail
             }
-        })
+        ]
+    })
+
+    //Google Calendar free/busy API call
+    getBusyPeriods = async (token, userEmail) => {
+        try {
+            fetch(url, {
+                method: 'POST',
+                body: this.getData(userEmail),
+                headers: new Headers({
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + token.accessToken
+                })
+            })
+                .then(response => response.json())
+                .then(data => console.log(data))
+
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    getUserEmailAndBusyPeriods = async (token) => {
+        try {
+            // Get user email
+            fetch('https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + token.accessToken,
+                {
+                    method: 'GET',
+                    headers: new Headers({
+                        Accept: 'application/json'
+                    })
+                })
+                .then(response => response.json())
+                // Use the user's email to get the user's busy periods
+                .then(data => this.getBusyPeriods(token, data.email))
+
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     render() {
@@ -92,17 +115,30 @@ class GoogleCalendarInput extends React.Component {
                 <Button title='Skip'
                     onPress={() => this.props.navigation.navigate('Timeline')} />
                 <Button title='Continue'
-                    onPress={() => this.checkIfLoggedIn()} />
-                <Button title='Get Authorization'
-                    onPress={() => getGcalAuthorization()} />
+                    onPress={() => this.authenticateAndGetBusyPeriods()} />
+                <Button title='Share with Telegram'
+                    onPress={() => shareWithTelegram(Linking.makeUrl())} />
+                <Button title='Share with Whatsapp'
+                    onPress={() => shareWithWhatsapp(Linking.makeUrl())} />
             </View>
         );
     }
 }
 
+const formatDateToString = date => {
+    const year = date.getFullYear().toString();
+    var month = date.getMonth() + 1; // Offset by 1 due to Javascrip Date object format
+    month = month >= 10 ? month.toString() : '0' + month.toString();
+    const day = date.getDate().toString();
+    const dateString = year + '-' + month.toString() + '-' + day;
+    return dateString;
+}
+
+// Get previously inputted date from DateSelection for API call
 const mapStateToProps = (state) => {
+    const dateInString = formatDateToString(state.date_select.date);
     return {
-        token: state.token,
+        date: dateInString
     }
 }
 

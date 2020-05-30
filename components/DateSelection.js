@@ -13,7 +13,7 @@ const DateSelection = (props) => {
         const currentDate = selectedDate || date;
         setShow(Platform.OS === 'ios');
         setDate(currentDate);
-        props.selectDate(currentDate);
+        props.selectDate(currentDate); // Set date in redux state
     };
 
     const showMode = currentMode => {
@@ -44,7 +44,7 @@ const DateSelection = (props) => {
             )}
             <View>
                 <Text>
-                    The date is  {date.getDate()} {date.getMonth()}  {date.getFullYear()}
+                    The selected date is {date.toString()}
                 </Text>
             </View>
             <View style={styles.proceed}>
@@ -54,18 +54,11 @@ const DateSelection = (props) => {
     );
 };
 
-const mapStateToProps = (state, ownProps) => {
-    console.log(state);
-    return {
-        currDate: state.date_select.date
-    }
-}
-
 const mapDispatchToProps = {
     selectDate
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DateSelection);
+export default connect(null, mapDispatchToProps)(DateSelection);
 
 const styles = StyleSheet.create({
     container: {

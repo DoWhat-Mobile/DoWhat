@@ -1,7 +1,7 @@
 import { DATE_SELECT } from '../actions/types';
 
 const initState = {
-    date: new Date()
+    date: new Date() // Start inital date with current date
 }
 
 export default function (state = initState, action) {
