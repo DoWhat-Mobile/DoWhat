@@ -14,11 +14,14 @@ import * as AppAuth from 'expo-app-auth';
 
 const OAuthConfig = {
     issuer: 'https://accounts.google.com',
-    clientId: '119205196255-0hi8thq9lm1759jr8k5o1ld8h239olr5.apps.googleusercontent.com', // From Google Dev Console credentials
-    scopes: ['https://www.googleapis.com/auth/calendar'] // All available scopes for Gapi found here : https://developers.google.com/identity/protocols/oauth2/scopes#calendar
+    // From Google Dev Console credentials (Use Do what Android dev when testing on emulator, use standalone when for expo build)
+    // If get Authorization Error 400: redirect_uri_mismatch -> Ensure clientId is from DoWhat Android dev
+    clientId: '119205196255-0hi8thq9lm1759jr8k5o1ld8h239olr5.apps.googleusercontent.com',
+    // All available scopes for Gapi found here : https://developers.google.com/identity/protocols/oauth2/scopes#calendar
+    scopes: ['https://www.googleapis.com/auth/calendar']
 }
 
-const url = 'https://www.googleapis.com/calendar/v3/freeBusy?key=AIzaSyB3DcUhK37rpYdmO2C8_tKoM8-ugnlInaQ'
+const url = 'https://www.googleapis.com/calendar/v3/freeBusy?key=AIzaSyA98MBxh0oZKqPJC6SvGspEz60ImpEaW9Q'
 
 const data = JSON.stringify({
     'timeMin': '2020-04-28T08:00:00+08:00',

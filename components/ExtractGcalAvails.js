@@ -4,12 +4,24 @@ import { connect } from 'react-redux';
 import * as Linking from 'expo-linking';
 
 const ExtractGcalAvails = (props) => {
+    const shareWithTelegram = (url) => {
+        Linking.openURL('https://t.me/share/url?url=' + url + '&text=Here is the link to input your' +
+            'calendar availability!');
+    }
+
+    const shareWithWhatsapp = (url) => {
+        Linking.openURL('whatsapp://send?' +
+            'text=Here is the link to input your calendar availability!' +
+            '')
+    }
+
     return (
         <View style={style.container}>
-            <Button title='Linking'
-                onPress={() => Linking.openURL(Linking.makeUrl())} />
-            <Button title='Get this URL'
-                onPress={() => alert(Linking.makeUrl())} />
+            <Button title='Share with Telegram'
+                onPress={() => shareWithTelegram(Linking.makeUrl())} />
+            <Button title='Share with Whatsapp'
+                onPress={() => shareWithWhatsapp(Linking.makeUrl())} />
+
         </View>
     );
 }
