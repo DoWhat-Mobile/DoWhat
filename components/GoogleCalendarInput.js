@@ -19,11 +19,8 @@ const OAuthConfig = {
     // If get Authorization Error 400: redirect_uri_mismatch -> Ensure clientId is from DoWhat Android dev
     clientId: '119205196255-0hi8thq9lm1759jr8k5o1ld8h239olr5.apps.googleusercontent.com',
     // All available scopes for Gapi found here : https://developers.google.com/identity/protocols/oauth2/scopes#calendar
-    scopes: ['https://www.googleapis.com/auth/calendar', 'profile', 'email']
+    scopes: ['https://www.googleapis.com/auth/calendar', 'profile', 'email'],
 }
-
-const url = 'https://www.googleapis.com/calendar/v3/freeBusy?key=AIzaSyA98MBxh0oZKqPJC6SvGspEz60ImpEaW9Q'
-
 
 const shareWithTelegram = (url) => {
     Linking.openURL('https://t.me/share/url?url=' + url + '&text=Here is the link to input your' +
@@ -60,20 +57,24 @@ class GoogleCalendarInput extends React.Component {
         ]
     })
 
-    //Google Calendar free/busy API call
+    // Google Calendar free/busy API call
     getBusyPeriods = async (token, userEmail) => {
         try {
-            fetch(url, {
-                method: 'POST',
-                body: this.getData(userEmail),
-                headers: new Headers({
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer ' + token.accessToken
+            fetch('https://www.googleapis.com/calendar/v3/freeBusy?key=AIzaSyA98MBxh0oZKqPJC6SvGspEz60ImpEaW9Q',
+                {
+                    method: 'POST',
+                    body: this.getData(userEmail),
+                    headers: new Headers({
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: 'Bearer ' + token.accessToken
+                    })
                 })
-            })
                 .then(response => response.json())
-                .then(data => console.log(data))
+                .then(data => {
+                    console.log(data)
+
+                })
 
         } catch (e) {
             console.log(e);

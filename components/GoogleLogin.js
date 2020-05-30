@@ -8,46 +8,6 @@ import * as actions from '../actions';
 import * as Google from 'expo-google-app-auth';
 import firebase from 'firebase';
 
-const OAuthConfig = {
-    issuer: 'https://accounts.google.com',
-    // From Google Dev Console credentials (Use Do what Android dev when testing on emulator, use standalone when for expo build)
-    clientId: '119205196255-v694sr5re0uaqrpl1t6hbpgtecmd5spp.apps.googleusercontent.com',
-    // All available scopes for Gapi found here : https://developers.google.com/identity/protocols/oauth2/scopes#calendar
-    scopes: ['https://www.googleapis.com/auth/calendar'],
-}
-
-// API Key must be changed accordingly. Depending whther its a standalone build or from expo.
-const url = 'https://www.googleapis.com/calendar/v3/freeBusy?key=AIzaSyA98MBxh0oZKqPJC6SvGspEz60ImpEaW9Q'
-
-const data = JSON.stringify({
-    'timeMin': '2020-04-28T08:00:00+08:00',
-    'timeMax': '2020-04-28T20:00:00+08:00',
-    'timeZone': 'UTC+08:00',
-    'items': [
-        {
-            'id': 'hansybastian@gmail.com'
-        }
-    ]
-})
-
-const getAvailableTimings = async (token) => {
-    try {
-        fetch(url, {
-            method: 'POST',
-            body: data,
-            headers: new Headers({
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + token.accessToken
-            })
-        })
-            .then(response => response.json())
-            .then(data => console.log(data))
-    } catch (e) {
-        console.log(e);
-    }
-}
-
 class GoogleLogin extends Component {
     isUserEqual = (googleUser, firebaseUser) => {
         if (firebaseUser) {
