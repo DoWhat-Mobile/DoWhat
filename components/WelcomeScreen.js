@@ -1,6 +1,5 @@
 /**
- * Welcome screen is shown to users that are not yet logged into Facebook. If they have already
- * logged into facebook, the user will be directed immediately to the calendar input page.
+ * Welcome screen, without FB authentication anymore. 
  */
 import React from "react";
 import { View, Text, AsyncStorage } from "react-native";
@@ -24,22 +23,6 @@ const WelcomeScreen = (props) => {
     props.navigation.navigate("Auth");
   };
 
-  React.useEffect(() => {
-    props.isLoggedIn();
-    //AsyncStorage.removeItem("fb_token");
-    onAuthComplete(props);
-  });
-
-  /**
-   * takes in global state token to check if token exists, if it does, navigate straight to GoogleCalendarInput
-   * @param {*} props 
-   */
-  const onAuthComplete = (props) => {
-    if (props.token) {
-      props.navigation.navigate("GoogleCalendarInput");
-    }
-  };
-
   return (
     <View>
       <Slides data={data} onSlidesComplete={onSlidesComplete} />
@@ -47,7 +30,4 @@ const WelcomeScreen = (props) => {
   );
 };
 
-function mapStateToProps({ auth }) {
-  return { token: auth.token };
-}
-export default connect(mapStateToProps, actions)(WelcomeScreen);
+export default connect()(WelcomeScreen);

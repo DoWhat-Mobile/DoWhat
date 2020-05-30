@@ -57,7 +57,7 @@ const DateSelection = (props) => {
 const mapStateToProps = (state, ownProps) => {
     console.log(state);
     return {
-        currDate: state
+        currDate: state.date_select.date
     }
 }
 

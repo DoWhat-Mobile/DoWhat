@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Provider } from 'react-redux';
-import * as Facebook from 'expo-facebook';
 import firebase from 'firebase';
 import { firebaseConfig } from './database/firebase';
 
@@ -51,7 +50,6 @@ const MainNavigator = () => {
 firebase.initializeApp(firebaseConfig);
 
 export default function App() {
-  Facebook.initializeAsync('710198546414299', 'AuthTest');
 
   return (
     <Provider store={store}>

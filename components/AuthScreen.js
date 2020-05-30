@@ -120,11 +120,7 @@ class AuthScreen extends Component {//= (props) => {
   }
 }
 
-function mapStateToProps({ auth }) {
-  return { token: auth.token };
-}
-
-export default connect(mapStateToProps, actions)(AuthScreen);
+export default connect(null, actions)(AuthScreen);
 
 const style = StyleSheet.create({
   google: {

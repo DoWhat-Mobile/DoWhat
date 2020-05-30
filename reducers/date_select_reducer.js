@@ -1,6 +1,10 @@
 import { DATE_SELECT } from '../actions/types';
 
-export default function (state = {}, action) {
+const initState = {
+    date: new Date()
+}
+
+export default function (state = initState, action) {
     switch (action.type) {
         case DATE_SELECT:
             return { date: action.payload };
