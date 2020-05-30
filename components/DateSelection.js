@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Button, Platform } from 'react-native';
+import { View, Button, Platform, Text, StyleSheet, ImagePropTypes } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import GoogleCalendarInput from './GoogleCalendarInput';
 
-const DateSelection = () => {
-    const [date, setDate] = useState(new Date(1598051730000));
+const DateSelection = (props) => {
+    const [date, setDate] = useState(new Date()); // new Date() gives today's date
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
 
@@ -22,17 +23,10 @@ const DateSelection = () => {
         showMode('date');
     };
 
-    const showTimepicker = () => {
-        showMode('time');
-    };
-
     return (
-        <View>
+        <View style={styles.container}>
             <View>
-                <Button onPress={showDatepicker} title="Show date picker!" />
-            </View>
-            <View>
-                <Button onPress={showTimepicker} title="Show time picker!" />
+                <Button onPress={showDatepicker} title="Select Date!" />
             </View>
             {show && (
                 <DateTimePicker
@@ -41,12 +35,33 @@ const DateSelection = () => {
                     value={date}
                     mode={mode}
                     is24Hour={true}
-                    display="default"
+                    display="calendar"
+                    minimumDate={new Date()}
                     onChange={onChange}
                 />
             )}
+            <View>
+                <Text>
+                    The date is  {date.getDate()} {date.getMonth()}  {date.getFullYear()}
+                </Text>
+            </View>
+            <View style={styles.proceed}>
+                <Button title="Proceed" onPress={() => props.navigation.navigate('GoogleCalendarInput')} />
+            </View>
         </View>
     );
 };
 
 export default DateSelection;
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    proceed: {
+        alignItems: 'flex-end',
+        flexDirection: 'column'
+    }
+});
