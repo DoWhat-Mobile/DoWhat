@@ -99,26 +99,11 @@ class AuthScreen extends Component {//= (props) => {
     }
   }
 
-  loginToFacebook = () => {
-    this.props.facebookLogin();
-    AsyncStorage.removeItem("fb_token");
-    this.onAuthComplete(this.props);
-  };
-
-  onAuthComplete = (props) => {
-    if (props.token) {
-      props.navigation.navigate("GoogleCalendarInput");
-    }
-  };
-
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Text>Login Screen</Text>
         <View style={style.icons}>
-          <TouchableOpacity onPress={() => this.loginToFacebook()}>
-            <Image source={require('../assets/facebook.png')} style={style.facebook} />
-          </TouchableOpacity>
 
           <TouchableOpacity onPress={() => this.props.navigation.navigate("LoadingScreen")}>
             <Image source={require('../assets/google.png')} stlye={style.google} />
