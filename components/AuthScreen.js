@@ -126,7 +126,7 @@ class AuthScreen extends Component {//= (props) => {
         </View>
 
         <View>
-          <TouchableOpacity onPress={() => this.props.navigation.navigate("GoogleCalendarInput")} >
+          <TouchableOpacity onPress={() => this.props.navigation.navigate("DateSelection")} >
             <Text style={{ color: 'blue' }}>Proceed Without Login</Text>
           </TouchableOpacity>
         </View>
