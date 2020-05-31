@@ -18,7 +18,6 @@ const OAuthConfig = {
     // From Google Dev Console credentials (Use Do what Android dev when testing on emulator, use standalone when for expo build)
     // If get Authorization Error 400: redirect_uri_mismatch -> Ensure clientId is from DoWhat Android dev
     clientId: '119205196255-0hi8thq9lm1759jr8k5o1ld8h239olr5.apps.googleusercontent.com',
-    // All available scopes for Gapi found here : https://developers.google.com/identity/protocols/oauth2/scopes#calendar
     scopes: ['https://www.googleapis.com/auth/calendar', 'profile', 'email'],
 }
 
@@ -34,11 +33,75 @@ const shareWithWhatsapp = (url) => {
 }
 
 class GoogleCalendarInput extends React.Component {
+    isUserEqual = (googleUser, firebaseUser) => {
+        if (firebaseUser) {
+            var providerData = firebaseUser.providerData;
+            for (var i = 0; i < providerData.length; i++) {
+                if (providerData[i].providerId === firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
+                    providerData[i].uid === googleUser.getBasicProfile().getId()) {
+                    // We don't need to reauth the Firebase connection.
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    onSignIn = (googleUser) => {
+        // We need to register an Observer on Firebase Auth to make sure auth is initialized.
+        var unsubscribe = firebase.auth().onAuthStateChanged((firebaseUser) => {
+            unsubscribe();
+            // console.log("Google User: ", googleUser);
+            // Check if the user trying to sign in is the same as the currently signed in user
+            if (!this.isUserEqual(googleUser, firebaseUser)) {
+                // Build Firebase credential with the Google ID token.
+                var credential = firebase.auth.GoogleAuthProvider.credential(
+                    googleUser.idToken,
+                    googleUser.accessToken
+                );
+                // Sign in with credential from the Google user.
+                firebase
+                    .auth()
+                    .signInWithCredential(credential)
+                    .then(function (result) { // Add user information to DB
+                        console.log("User is signed in")
+                        if (result.additionalUserInfo.isNewUser) {
+                            firebase
+                                .database()
+                                .ref('/users/' + result.user.uid) // Add user node to the DB with unique ID
+                                .set({
+                                    gmail: result.user.email,
+                                    profile_picture_url: result.additionalUserInfo.profile.picture,
+                                    first_name: result.additionalUserInfo.profile.given_name,
+                                    last_name: result.additionalUserInfo.profile.family_name,
+                                    created_at: Date.now(),
+                                    refresh_token: googleUser.refreshToken,
+                                    access_token: googleUser.accessToken
+                                });
+
+                        } else { // User is not a new user, just update the last logged in time
+                            firebase
+                                .database()
+                                .ref('/users/' + result.user.uid).update({
+                                    last_logged_in: Date.now()
+                                })
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+
+            } else {
+                console.log('User already signed-in Firebase.');
+            }
+        });
+    }
+
     authenticateAndGetBusyPeriods = async () => {
         try {
             // Get Oauth2 token
             const tokenResponse = await AppAuth.authAsync(OAuthConfig);
-            this.getUserEmailAndBusyPeriods(tokenResponse);
+            this.getUserEmailThenBusyPeriod(tokenResponse);
             this.props.navigation.navigate("Genre");
         } catch (e) {
             console.log(e);
@@ -57,9 +120,16 @@ class GoogleCalendarInput extends React.Component {
         ]
     })
 
-    // Google Calendar free/busy API call
-    getBusyPeriods = async (token, userEmail) => {
+    /**
+     * Google Calendar free/busy API call, user's free/busy period will be stored into firebase as well.
+     **/
+    findAndStoreBusyPeriod = async (token, userEmail) => {
         try {
+            var accessToken = token.accessToken;
+            if (this.checkIfTokenExpired(token.accessTokenExpirationDate)) {
+                accessToken = await AppAuth.refreshAsync(OAuthConfig, token.refreshToken);
+            }
+
             fetch('https://www.googleapis.com/calendar/v3/freeBusy?key=AIzaSyA98MBxh0oZKqPJC6SvGspEz60ImpEaW9Q',
                 {
                     method: 'POST',
@@ -67,11 +137,12 @@ class GoogleCalendarInput extends React.Component {
                     headers: new Headers({
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        Authorization: 'Bearer ' + token.accessToken
+                        Authorization: 'Bearer ' + accessToken
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
+                    // Store busy data into firebase
                     console.log(data)
 
                 })
@@ -81,7 +152,7 @@ class GoogleCalendarInput extends React.Component {
         }
     }
 
-    getUserEmailAndBusyPeriods = async (token) => {
+    getUserEmailThenBusyPeriod = async (token) => {
         try {
             // Get user email
             fetch('https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + token.accessToken,
@@ -93,11 +164,60 @@ class GoogleCalendarInput extends React.Component {
                 })
                 .then(response => response.json())
                 // Use the user's email to get the user's busy periods
-                .then(data => this.getBusyPeriods(token, data.email))
+                .then(data => {
+                    data['accessToken'] = token.accessToken; // Append additional props for use in google sign in
+                    data['idToken'] = token.idToken;
+                    data['refreshToken'] = token.refreshToken;
+                    this.onSignIn(data); // Sign in to Google's firebase
+                    this.findAndStoreBusyPeriod(token, data.email);
+                })
 
         } catch (e) {
             console.log(e);
         }
+    }
+
+    userAlreadyLoggedIn = () => {
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                return true;
+            } else {
+                return false;
+            }
+        })
+    }
+
+    getBusyPeriods = () => {
+        if (this.userAlreadyLoggedIn()) {
+            this.useFirebaseDataAndGetBusyPeriod();
+        } else {
+            this.authenticateAndGetBusyPeriods();
+        }
+    }
+
+    useFirebaseDataAndGetBusyPeriod = async () => {
+        try {
+            const userId = firebase.auth().currentUser.uid;
+            firebase.database().ref('users/' + userId).once('value')
+                .then((snapshot) => {
+                    const userData = snapshot.val();
+                    // token is object for compatibility with findAndStoreBusyPeriod input
+                    const token = {
+                        accessToken: userData.access_token,
+                        refreshToken: userData.refresh_token,
+                        accessTokenExpirationDate: userData.access_token_expiration
+                    };
+                    const userEmail = userData.gmail;
+                    this.findAndStoreBusyPeriod(token, userEmail);
+                })
+
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    checkIfTokenExpired = (accessTokenExpirationDate) => {
+        return new Date(accessTokenExpirationDate) < new Date();
     }
 
     render() {
@@ -116,7 +236,7 @@ class GoogleCalendarInput extends React.Component {
                 <Button title='Skip'
                     onPress={() => this.props.navigation.navigate('Timeline')} />
                 <Button title='Continue'
-                    onPress={() => this.authenticateAndGetBusyPeriods()} />
+                    onPress={() => this.useFirebaseDataAndGetBusyPeriod()} />
                 <Button title='Share with Telegram'
                     onPress={() => shareWithTelegram(Linking.makeUrl())} />
                 <Button title='Share with Whatsapp'

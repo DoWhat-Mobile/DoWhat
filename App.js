@@ -13,8 +13,6 @@ import Timeline from './components/Timeline';
 import Genre from './components/Genre';
 import Finalized from './components/Finalized';
 import GoogleCalendarInput from './components/GoogleCalendarInput';
-import LoadingScreen from './components/LoadingScreen';
-import GoogleLogin from './components/GoogleLogin';
 import DateSelection from './components/DateSelection';
 
 const Tab = createBottomTabNavigator();
@@ -37,8 +35,6 @@ const MainNavigator = () => {
       <Stack.Screen name='Genre' component={Genre} />
       <Stack.Screen name='Finalized' component={Finalized} />
       <Stack.Screen name='GoogleCalendarInput' component={GoogleCalendarInput} />
-      <Stack.Screen name='LoadingScreen' component={LoadingScreen} />
-      <Stack.Screen name='GoogleLogin' component={GoogleLogin} />
       <Stack.Screen name='DateSelection' component={DateSelection} />
     </Stack.Navigator>
 
