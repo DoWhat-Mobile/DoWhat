@@ -76,7 +76,8 @@ class GoogleCalendarInput extends React.Component {
                                     last_name: result.additionalUserInfo.profile.family_name,
                                     created_at: Date.now(),
                                     refresh_token: googleUser.refreshToken,
-                                    access_token: googleUser.accessToken
+                                    access_token: googleUser.accessToken,
+                                    access_token_expiration: googleUser.accessTokenExpirationDate
                                 });
 
                         } else { // User is not a new user, just update the last logged in time
@@ -127,7 +128,8 @@ class GoogleCalendarInput extends React.Component {
         try {
             var accessToken = token.accessToken;
             if (this.checkIfTokenExpired(token.accessTokenExpirationDate)) {
-                accessToken = await AppAuth.refreshAsync(OAuthConfig, token.refreshToken);
+                // Use refresh token to generate new access token if access token has expired
+                accessToken = (await AppAuth.refreshAsync(OAuthConfig, token.refreshToken)).accessToken;
             }
 
             fetch('https://www.googleapis.com/calendar/v3/freeBusy?key=AIzaSyA98MBxh0oZKqPJC6SvGspEz60ImpEaW9Q',
@@ -143,8 +145,10 @@ class GoogleCalendarInput extends React.Component {
                 .then(response => response.json())
                 .then(data => {
                     // Store busy data into firebase
-                    console.log(data)
-
+                    const userId = firebase.auth().currentUser.uid;
+                    firebase.database().ref('users/' + userId)
+                        .child('busy_periods')
+                        .set(data.calendars[userEmail].busy)
                 })
 
         } catch (e) {
