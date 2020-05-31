@@ -1,5 +1,13 @@
 import firebase from 'firebase';
 
+export const OAuthConfig = {
+    issuer: 'https://accounts.google.com',
+    // From Google Dev Console credentials (Use Do what Android dev when testing on emulator, use standalone when for expo build)
+    // If get Authorization Error 400: redirect_uri_mismatch -> Ensure clientId is from DoWhat Android dev clientId: '119205196255-0hi8thq9lm1759jr8k5o1ld8h239olr5.apps.googleusercontent.com',
+    clientId: '119205196255-0hi8thq9lm1759jr8k5o1ld8h239olr5.apps.googleusercontent.com',
+    scopes: ['https://www.googleapis.com/auth/calendar', 'profile', 'email'],
+}
+
 const isUserEqual = (googleUser, firebaseUser) => {
     if (firebaseUser) {
         var providerData = firebaseUser.providerData;
