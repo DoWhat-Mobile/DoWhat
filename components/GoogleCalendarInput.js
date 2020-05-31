@@ -12,6 +12,7 @@ import * as actions from '../actions';
 import firebase from 'firebase';
 import * as AppAuth from 'expo-app-auth';
 import * as Linking from 'expo-linking';
+import { onSignIn } from '../reusable-functions/google_authentication_functions';
 
 const OAuthConfig = {
     issuer: 'https://accounts.google.com',
@@ -33,77 +34,11 @@ const shareWithWhatsapp = (url) => {
 }
 
 class GoogleCalendarInput extends React.Component {
-    isUserEqual = (googleUser, firebaseUser) => {
-        if (firebaseUser) {
-            var providerData = firebaseUser.providerData;
-            for (var i = 0; i < providerData.length; i++) {
-                if (providerData[i].providerId === firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
-                    providerData[i].uid === googleUser.getBasicProfile().getId()) {
-                    // We don't need to reauth the Firebase connection.
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    onSignIn = (googleUser) => {
-        // We need to register an Observer on Firebase Auth to make sure auth is initialized.
-        var unsubscribe = firebase.auth().onAuthStateChanged((firebaseUser) => {
-            unsubscribe();
-            // console.log("Google User: ", googleUser);
-            // Check if the user trying to sign in is the same as the currently signed in user
-            if (!this.isUserEqual(googleUser, firebaseUser)) {
-                // Build Firebase credential with the Google ID token.
-                var credential = firebase.auth.GoogleAuthProvider.credential(
-                    googleUser.idToken,
-                    googleUser.accessToken
-                );
-                // Sign in with credential from the Google user.
-                firebase
-                    .auth()
-                    .signInWithCredential(credential)
-                    .then(function (result) { // Add user information to DB
-                        console.log("User is signed in")
-                        if (result.additionalUserInfo.isNewUser) {
-                            firebase
-                                .database()
-                                .ref('/users/' + result.user.uid) // Add user node to the DB with unique ID
-                                .set({
-                                    gmail: result.user.email,
-                                    profile_picture_url: result.additionalUserInfo.profile.picture,
-                                    first_name: result.additionalUserInfo.profile.given_name,
-                                    last_name: result.additionalUserInfo.profile.family_name,
-                                    created_at: Date.now(),
-                                    refresh_token: googleUser.refreshToken,
-                                    access_token: googleUser.accessToken,
-                                    access_token_expiration: googleUser.accessTokenExpirationDate
-                                });
-
-                        } else { // User is not a new user, just update the last logged in time
-                            firebase
-                                .database()
-                                .ref('/users/' + result.user.uid).update({
-                                    last_logged_in: Date.now()
-                                })
-                        }
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-
-            } else {
-                console.log('User already signed-in Firebase.');
-            }
-        });
-    }
-
     authenticateAndGetBusyPeriods = async () => {
         try {
             // Get Oauth2 token
             const tokenResponse = await AppAuth.authAsync(OAuthConfig);
             this.getUserEmailThenBusyPeriod(tokenResponse);
-            this.props.navigation.navigate("Genre");
         } catch (e) {
             console.log(e);
         }
@@ -172,7 +107,7 @@ class GoogleCalendarInput extends React.Component {
                     data['accessToken'] = token.accessToken; // Append additional props for use in google sign in
                     data['idToken'] = token.idToken;
                     data['refreshToken'] = token.refreshToken;
-                    this.onSignIn(data); // Sign in to Google's firebase
+                    onSignIn(data); // Sign in to Google's firebase
                     this.findAndStoreBusyPeriod(token, data.email);
                 })
 
@@ -182,16 +117,16 @@ class GoogleCalendarInput extends React.Component {
     }
 
     userAlreadyLoggedIn = () => {
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                return true;
-            } else {
-                return false;
-            }
-        })
+        var user = firebase.auth().currentUser;
+        if (user) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     getBusyPeriods = () => {
+        this.props.navigation.navigate("Genre");
         if (this.userAlreadyLoggedIn()) {
             this.useFirebaseDataAndGetBusyPeriod();
         } else {
@@ -240,7 +175,7 @@ class GoogleCalendarInput extends React.Component {
                 <Button title='Skip'
                     onPress={() => this.props.navigation.navigate('Timeline')} />
                 <Button title='Continue'
-                    onPress={() => this.useFirebaseDataAndGetBusyPeriod()} />
+                    onPress={() => this.getBusyPeriods()} />
                 <Button title='Share with Telegram'
                     onPress={() => shareWithTelegram(Linking.makeUrl())} />
                 <Button title='Share with Whatsapp'
