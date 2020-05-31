@@ -1,3 +1,7 @@
+/**
+ * Script to find overlapping interval
+ */
+
 const calendar = {
     "calendars": {
         "hansybastian@gmail.com": {
@@ -62,14 +66,8 @@ const mapBusyPeriodToTimeline = (calendar) => {
             const endTime = convertTo15MinuteInterval(endHour, endMinute);
             timeline = markTimelineArray(startTime, endTime, timeline);
         })
+    console.log(timeline);
     return timeline;
 }
 
-getStringRepresentationForBusyTimings = (calendar, userID) => {
-    calendar.calendars[userID].busy
-        .
-}
-
-// mapBusyPeriodToTimeline(calendar);
-
-console.log('2020-06-06T12:30:00+08:00'.toString());
+mapBusyPeriodToTimeline(calendar);

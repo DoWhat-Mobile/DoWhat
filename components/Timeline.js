@@ -1,14 +1,37 @@
-import React, { Component } from 'react';
+import React from 'react';
 import * as actions from '../actions';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import { StyleSheet, View, Text, Button, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux'
-import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 /**
  * This component allows users to input their available timings as well as their friends. The global state will keep track of
  * the common overlapping intervals of time as the user inputs more and more timings.
  */
 class Timeline extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      date: new Date(),
+      mode: 'date',
+      show: false
+    };
+  }
+
+  onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    this.setState({ show: Platform.OS === 'ios' });
+    this.setState({ date: currentDate });
+  };
+
+  showMode = currentMode => {
+    this.setState({ show: true });
+    this.setState({ mode: currentMode });
+  };
+
+  showTimepicker = () => {
+    this.showMode('time');
+  };
 
   finalize = (values) => {
     this.props.change_interval(values)
@@ -19,37 +42,24 @@ class Timeline extends React.Component {
     return (
       <View style={styles.container} >
         <Text style={styles.title}>Timeline</Text>
-        <View style={styles.sliders}>
-          <View style={styles.sliderOne}>
-            <Text style={styles.text}>{this.props.values_start < 10 ? "0" + this.props.values_start + '00hrs' : this.props.values_start + '00hrs'} </Text>
-            <Text style={styles.text}>{this.props.values_end < 10 ? "0" + this.props.values_end + "00hrs" : this.props.values_end + '00hrs'}</Text>
-          </View>
-          <MultiSlider
-            values={[this.props.values_start, this.props.values_end]}
-            sliderLength={250}
-            onValuesChange={this.props.change_time}
-            min={8}
-            max={24}
-            step={1}
-            allowOverlap
-            snapped
-          />
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center' }}>
-            <Button title="Reset" onPress={() => this.props.reset_interval([8, 24])} />
-            <Button title="Add Friend" onPress={() => this.props.change_interval([this.props.values_start, this.props.values_end])} />
-          </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center' }}>
+          <Button title="Add Friend" onPress={() => this.props.change_interval([this.props.values_start, this.props.values_end])} />
         </View>
 
         <View>
-          <Text>Time interval is
-            {this.props.errorMessage ? ' invalid for this friend :(' : ' from ' +
-              (this.props.time_interval_start < 10 ? "0" +
-                this.props.time_interval_start + '00hrs' : this.props.time_interval_start + '00hrs') +
-              ' to ' +
-              (this.props.time_interval_end < 10 ? "0" + this.props.time_interval_end +
-                '00hrs' : this.props.time_interval_end + '00hrs')
-            }
-          </Text>
+          <TouchableOpacity onPress={this.showTimepicker}>
+            <Text>
+              Start Time is {this.state.date.toString()}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View>
+          <TouchableOpacity onPress={this.showTimepicker}>
+            <Text>
+              End Time is {this.state.date.toString()}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <View
@@ -59,6 +69,17 @@ class Timeline extends React.Component {
             onPress={() => this.finalize([this.props.values_start, this.props.values_end])} />
         </View>
 
+        {this.state.show && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            timeZoneOffsetInMinutes={0}
+            value={this.state.date}
+            mode={this.state.mode}
+            is24Hour={true}
+            display="default"
+            onChange={this.onChange}
+          />
+        )}
       </View>
     );
   }
