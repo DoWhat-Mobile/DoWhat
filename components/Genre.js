@@ -10,7 +10,7 @@ const Genre = (props) => {
   const [visible, setVisible] = React.useState(false);
   const [selected, setSelected] = React.useState([]);
   const [dining, setDining] = React.useState([]);
-  const genreType = ["Adventure", "Arts", "Leisure", "Nature", "Nightlife"];
+  const genreType = ["adventure", "arts", "leisure", "nature", "nightlife"];
   const finalized = [];
 
   const onClose = () => setVisible(false);
@@ -40,7 +40,7 @@ const Genre = (props) => {
    */
   const handleFoodPress = () => {
     if (selected.includes("Food")) {
-      setSelected(selected.filter((s) => s !== "Food"));
+      setSelected(selected.filter((s) => s !== "food"));
       dining.pop();
     } else {
       setVisible(true);

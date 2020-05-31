@@ -3,7 +3,7 @@ import { View, Text, Picker, StyleSheet } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 
 const PickerModal = (props) => {
-  const dining = ["Restaurants", "Cafes", "Hawker"];
+  const dining = ["restaurants", "cafes", "hawker"];
   const [pickerValue, setValue] = React.useState("Restaurants");
   const { onClose, handlePress, selectDining } = props;
 
