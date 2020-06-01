@@ -12,16 +12,22 @@ class Timeline extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      date: new Date(),
+      startTime: new Date(),
+      endTime: new Date(),
       mode: 'date',
-      show: false
+      show: false,
+      modifyingStartTime: false
     };
   }
 
   onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     this.setState({ show: Platform.OS === 'ios' });
-    this.setState({ date: currentDate });
+    if (this.state.modifyingStartTime) {
+      this.setState({ startTime: currentDate });
+    } else {
+      this.setState({ endTime: currentDate });
+    }
   };
 
   showMode = currentMode => {
@@ -38,33 +44,52 @@ class Timeline extends React.Component {
     this.props.navigation.navigate("Genre");
   }
 
+  modifyStartTime = () => {
+    this.setState({ modifyingStartTime: true });
+    this.showTimepicker();
+  }
+
+  modifyEndTime = () => {
+    this.setState({ modifyingStartTime: false });
+    this.showTimepicker();
+  }
+
+  addFriend = () => {
+
+  }
+
   render() {
     return (
       <View style={styles.container} >
         <Text style={styles.title}>Timeline</Text>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center' }}>
-          <Button title="Add Friend" onPress={() => this.props.change_interval([this.props.values_start, this.props.values_end])} />
+          <Button title="Add Friend" onPress={this.addFriend()} />
         </View>
 
-        <View>
-          <TouchableOpacity onPress={this.showTimepicker}>
+        <View style={{ marginTop: 20 }}>
+          <TouchableOpacity onPress={this.modifyStartTime}>
             <Text>
-              Start Time is {this.state.date.toString()}
+              Start Time is {this.state.startTime.toString()}
             </Text>
           </TouchableOpacity>
         </View>
 
-        <View>
-          <TouchableOpacity onPress={this.showTimepicker}>
+        <View style={{ marginTop: 20 }}>
+          <TouchableOpacity onPress={this.modifyEndTime}>
             <Text>
-              End Time is {this.state.date.toString()}
+              End Time is {this.state.endTime.toString()}
             </Text>
           </TouchableOpacity>
+        </View>
+
+        <View style={{ marginTop: 20 }}>
+          <Text>
+            You are adding for friend number
+          </Text>
         </View>
 
         <View
-          style={{ alignSelf: 'flex-end', bottom: 0, position: 'absolute' }}
-        >
+          style={{ alignSelf: 'flex-end', bottom: 0, position: 'absolute' }}>
           <Button title="Finalize"
             onPress={() => this.finalize([this.props.values_start, this.props.values_end])} />
         </View>
@@ -73,7 +98,7 @@ class Timeline extends React.Component {
           <DateTimePicker
             testID="dateTimePicker"
             timeZoneOffsetInMinutes={0}
-            value={this.state.date}
+            value={this.state.modifyingStartTime ? this.state.startTime : this.state.endTime}
             mode={this.state.mode}
             is24Hour={true}
             display="default"
@@ -92,20 +117,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  sliders: {
-    margin: 20,
-    width: 280,
-  },
   text: {
     alignSelf: 'center',
     paddingVertical: 20,
   },
   title: {
     fontSize: 30,
-  },
-  sliderOne: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
   },
 });
 

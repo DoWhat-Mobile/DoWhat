@@ -14,6 +14,7 @@ import Genre from './components/Genre';
 import Finalized from './components/Finalized';
 import GoogleCalendarInput from './components/GoogleCalendarInput';
 import DateSelection from './components/DateSelection';
+import FriendInput from './components/FriendInput';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator()
@@ -36,6 +37,7 @@ const MainNavigator = () => {
       <Stack.Screen name='Finalized' component={Finalized} />
       <Stack.Screen name='GoogleCalendarInput' component={GoogleCalendarInput} />
       <Stack.Screen name='DateSelection' component={DateSelection} />
+      <Stack.Screen name='FriendInput' component={FriendInput} />
     </Stack.Navigator>
 
   );

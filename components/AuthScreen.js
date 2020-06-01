@@ -75,6 +75,11 @@ class AuthScreen extends Component {
             <Text style={{ color: 'blue' }}>Proceed Without Login</Text>
           </TouchableOpacity>
         </View>
+        <View>
+          <TouchableOpacity onPress={() => firebase.auth().signOut()} >
+            <Text style={{ color: 'blue' }}>Sign out of account</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }

@@ -11,19 +11,7 @@ import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import * as actions from '../actions';
 import firebase from 'firebase';
 import * as AppAuth from 'expo-app-auth';
-import * as Linking from 'expo-linking';
 import { onSignIn, OAuthConfig } from '../reusable-functions/google_authentication_functions';
-
-const shareWithTelegram = (url) => {
-    Linking.openURL('https://t.me/share/url?url=' + url + '&text=Here is the link to input your' +
-        'calendar availability!');
-}
-
-const shareWithWhatsapp = (url) => {
-    Linking.openURL('whatsapp://send?' +
-        'text=Here is the link to input your calendar availability!' +
-        '')
-}
 
 class GoogleCalendarInput extends React.Component {
     authenticateAndGetBusyPeriods = async () => {
@@ -118,7 +106,7 @@ class GoogleCalendarInput extends React.Component {
     }
 
     getBusyPeriods = () => {
-        this.props.navigation.navigate("Genre");
+        this.props.navigation.navigate("FriendInput");
         if (this.userAlreadyLoggedIn()) {
             this.useFirebaseDataAndGetBusyPeriod();
         } else {
@@ -168,10 +156,6 @@ class GoogleCalendarInput extends React.Component {
                     onPress={() => this.props.navigation.navigate('Timeline')} />
                 <Button title='Continue'
                     onPress={() => this.getBusyPeriods()} />
-                <Button title='Share with Telegram'
-                    onPress={() => shareWithTelegram(Linking.makeUrl())} />
-                <Button title='Share with Whatsapp'
-                    onPress={() => shareWithWhatsapp(Linking.makeUrl())} />
             </View>
         );
     }
