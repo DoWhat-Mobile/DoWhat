@@ -1,8 +1,10 @@
 import React from 'react';
-import * as actions from '../actions';
+import { addFriend } from '../actions/timeline_actions';
 import { StyleSheet, View, Text, Button, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux'
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * This component allows users to input their available timings as well as their friends. The global state will keep track of
@@ -40,7 +42,6 @@ class Timeline extends React.Component {
   };
 
   finalize = (values) => {
-    this.props.change_interval(values)
     this.props.navigation.navigate("Genre");
   }
 
@@ -55,6 +56,22 @@ class Timeline extends React.Component {
   }
 
   addFriend = () => {
+    // Call Redux action
+    this.props.addFriend({
+      startTime: this.state.startTime.toJSON(),
+      endTime: this.state.endTime.toJSON()
+    });
+    this.setState({
+      startTime: new Date(),
+      endTime: new Date()
+    });
+  }
+
+  previousFriend = () => {
+
+  }
+
+  nextFriend = () => {
 
   }
 
@@ -63,7 +80,7 @@ class Timeline extends React.Component {
       <View style={styles.container} >
         <Text style={styles.title}>Timeline</Text>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center' }}>
-          <Button title="Add Friend" onPress={this.addFriend()} />
+          <Button title="Add Friend" onPress={this.addFriend} />
         </View>
 
         <View style={{ marginTop: 20 }}>
@@ -88,11 +105,24 @@ class Timeline extends React.Component {
           </Text>
         </View>
 
+        <View style={styles.arrows}>
+
+          <TouchableOpacity onPress={this.previousFriend()}>
+            <FontAwesomeIcon icon={faArrowLeft} size={30} />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={this.nextFriend()}>
+            <FontAwesomeIcon icon={faArrowRight} size={30} />
+          </TouchableOpacity>
+
+        </View>
+
         <View
           style={{ alignSelf: 'flex-end', bottom: 0, position: 'absolute' }}>
           <Button title="Finalize"
             onPress={() => this.finalize([this.props.values_start, this.props.values_end])} />
         </View>
+
 
         {this.state.show && (
           <DateTimePicker
@@ -124,16 +154,23 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
   },
+  arrows: {
+    marginTop: 20,
+    flexDirection: 'row',
+    padding: 20,
+    justifyContent: 'space-between',
+  }
 });
 
+const mapDispatchToProps = {
+  addFriend
+}
+
 const mapStateToProps = (state) => {
+  console.log(state.timeline.availableTimings);
   return {
-    values_start: state.timeline.values[0],
-    values_end: state.timeline.values[1],
-    time_interval_start: state.timeline.time_interval[0],
-    time_interval_end: state.timeline.time_interval[1],
-    errorMessage: state.timeline.errorMessage
+
   }
 }
 
-export default connect(mapStateToProps, actions)(Timeline)
+export default connect(mapStateToProps, mapDispatchToProps)(Timeline)

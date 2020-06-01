@@ -2,7 +2,7 @@
  * Actions for timeline feature
  */
 export const CHANGE_TIME = 'CHANGE_TIME';
-export const CHANGE_INTERVAL = 'CHANGE_INTERVAL';
+export const ADD_FRIEND = 'ADD_FRIEND';
 
 /**
  * Actions for Google authentication, for Google API calls

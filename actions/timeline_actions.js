@@ -1,9 +1,9 @@
-import { CHANGE_TIME, CHANGE_INTERVAL } from "./types";
+import { CHANGE_TIME, ADD_FRIEND } from "./types";
 
 /**
  *  Action creator that changes the start and end time state
  */
-export const change_time = (values) => (dispatch) => {
+export const changeTime = (values) => (dispatch) => {
   const newState = {
     type: CHANGE_TIME,
     payload: values,
@@ -12,13 +12,14 @@ export const change_time = (values) => (dispatch) => {
 };
 
 /**
- * Action creator that adds friend's timeline to the list of available timings
+ * Saves the state of the current user's startTime and endTime, before 
+ * starting afresh for the new friend. 
+ * @param {} values is a object which has the user's start and end time. 
  */
-export const change_interval = (values) => (dispatch) => {
+export const addFriend = (values) => dispatch => {
   const newState = {
-    type: CHANGE_INTERVAL,
-    payload: values,
+    type: ADD_FRIEND,
+    payload: values
   };
-
   dispatch(newState);
-};
+}
