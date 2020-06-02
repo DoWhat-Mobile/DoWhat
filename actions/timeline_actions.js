@@ -1,4 +1,4 @@
-import { CHANGE_TIME, ADD_FRIEND } from "./types";
+import { CHANGE_TIME, ADD_FRIEND, GO_BACK, GO_FORWARD } from "./types";
 
 /**
  *  Action creator that changes the start and end time state
@@ -20,6 +20,28 @@ export const addFriend = (values) => dispatch => {
   const newState = {
     type: ADD_FRIEND,
     payload: values
+  };
+  dispatch(newState);
+}
+
+/**
+ * Toggle back to the previous user to edit the previous user's start and end time.
+ * @param {*} values 
+ */
+export const goBack = () => dispatch => {
+  const newState = {
+    type: GO_BACK,
+  };
+  dispatch(newState);
+}
+
+/**
+ * Toggle forward to the next user to edit the next user's start and end time.
+ * @param {*} values 
+ */
+export const goForward = () => dispatch => {
+  const newState = {
+    type: GO_FORWARD,
   };
   dispatch(newState);
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { addFriend } from '../actions/timeline_actions';
+import { addFriend, goForward, goBack } from '../actions/timeline_actions';
 import { StyleSheet, View, Text, Button, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux'
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -68,10 +68,11 @@ class Timeline extends React.Component {
   }
 
   previousFriend = () => {
-
+    this.props.goBack()
   }
 
   nextFriend = () => {
+    this.props.goForward()
 
   }
 
@@ -163,11 +164,11 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  addFriend
+  addFriend, goForward, goBack
 }
 
 const mapStateToProps = (state) => {
-  console.log(state.timeline.availableTimings);
+  console.log(state.timeline);
   return {
 
   }
