@@ -9,6 +9,7 @@ import * as Linking from 'expo-linking';
  */
 class FriendInput extends React.Component {
     shareWithTelegram = (url) => {
+        // Deep linking
         Linking.openURL('https://t.me/share/url?url=' + url + '&text=Here is the link to input your' +
             'calendar availability!');
     }
@@ -21,7 +22,7 @@ class FriendInput extends React.Component {
 
     render() {
         return (
-            <View>
+            <View style={styles.container}>
                 <Text>
                     Invite some friends
                 </Text>
