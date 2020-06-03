@@ -1,7 +1,7 @@
 /**
  * Actions for timeline feature
  */
-export const CHANGE_TIME = 'CHANGE_TIME';
+export const UPDATE_CURR_FOUCS_TIME = 'UPDATE_CURR_FOCUS_TIME';
 export const ADD_FRIEND = 'ADD_FRIEND';
 export const GO_BACK = 'GO_BACK';
 export const GO_FORWARD = 'GO_FORWARD';

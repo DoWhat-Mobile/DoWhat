@@ -1,12 +1,13 @@
-import { CHANGE_TIME, ADD_FRIEND, GO_BACK, GO_FORWARD } from "./types";
+import { UPDATE_CURR_FOUCS_TIME, ADD_FRIEND, GO_BACK, GO_FORWARD } from "./types";
 
 /**
  *  Action creator that changes the start and end time state
  */
-export const changeTime = (values) => (dispatch) => {
+export const updateCurrFocusTime = (availTimingsIndex, newTime) => (dispatch) => {
   const newState = {
-    type: CHANGE_TIME,
-    payload: values,
+    type: UPDATE_CURR_FOUCS_TIME,
+    index: availTimingsIndex,
+    newTiming: newTime
   };
   dispatch(newState);
 };

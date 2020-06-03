@@ -1,5 +1,5 @@
 import React from 'react';
-import { addFriend, goForward, goBack } from '../actions/timeline_actions';
+import { addFriend, updateCurrFocusTime, goForward, goBack } from '../actions/timeline_actions';
 import { StyleSheet, View, Text, Button, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux'
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -14,8 +14,6 @@ class Timeline extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      startTime: new Date(),
-      endTime: new Date(),
       mode: 'date',
       show: false,
       modifyingStartTime: false
@@ -23,13 +21,26 @@ class Timeline extends React.Component {
   }
 
   onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
+    const currentDate = selectedDate || (this.state.modifyingStartTime ? this.props.currTimeFocus.startTime : this.props.currTimeFocus.endTime);
     this.setState({ show: Platform.OS === 'ios' });
     if (this.state.modifyingStartTime) {
-      this.setState({ startTime: currentDate });
+      this.setState({
+        startTime: currentDate,
+        endTime: this.props.currTimeFocus.endTime
+      });
+
     } else {
-      this.setState({ endTime: currentDate });
+      this.setState({
+        endTime: currentDate,
+        startTime: this.props.currTimeFocus.startTime
+      });
     }
+    // Update Redux state
+    this.props.updateCurrFocusTime(this.props.currFocus,
+      {
+        startTime: this.state.startTime,
+        endTime: this.state.endTime
+      });
   };
 
   showMode = currentMode => {
@@ -56,14 +67,10 @@ class Timeline extends React.Component {
   }
 
   addFriend = () => {
-    // Call Redux action
+    // Call Redux action, reset date for next input
     this.props.addFriend({
-      startTime: this.state.startTime.toJSON(),
-      endTime: this.state.endTime.toJSON()
-    });
-    this.setState({
-      startTime: new Date(),
-      endTime: new Date()
+      startTime: new Date().toJSON(),
+      endTime: new Date().toJSON()
     });
   }
 
@@ -73,7 +80,6 @@ class Timeline extends React.Component {
 
   nextFriend = () => {
     this.props.goForward()
-
   }
 
   render() {
@@ -87,7 +93,7 @@ class Timeline extends React.Component {
         <View style={{ marginTop: 20 }}>
           <TouchableOpacity onPress={this.modifyStartTime}>
             <Text>
-              Start Time is {this.state.startTime.toString()}
+              Start Time is {this.props.currTimeFocus.startTime.toString()}
             </Text>
           </TouchableOpacity>
         </View>
@@ -95,7 +101,7 @@ class Timeline extends React.Component {
         <View style={{ marginTop: 20 }}>
           <TouchableOpacity onPress={this.modifyEndTime}>
             <Text>
-              End Time is {this.state.endTime.toString()}
+              End Time is {this.props.currTimeFocus.endTime.toString()}
             </Text>
           </TouchableOpacity>
         </View>
@@ -108,11 +114,11 @@ class Timeline extends React.Component {
 
         <View style={styles.arrows}>
 
-          <TouchableOpacity onPress={this.previousFriend()}>
+          <TouchableOpacity onPress={this.previousFriend}>
             <FontAwesomeIcon icon={faArrowLeft} size={30} />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={this.nextFriend()}>
+          <TouchableOpacity onPress={this.nextFriend}>
             <FontAwesomeIcon icon={faArrowRight} size={30} />
           </TouchableOpacity>
 
@@ -129,7 +135,7 @@ class Timeline extends React.Component {
           <DateTimePicker
             testID="dateTimePicker"
             timeZoneOffsetInMinutes={0}
-            value={this.state.modifyingStartTime ? this.state.startTime : this.state.endTime}
+            value={this.state.modifyingStartTime ? this.props.currTimeFocus.startTime : this.props.currTimeFocus.endTime}
             mode={this.state.mode}
             is24Hour={true}
             display="default"
@@ -164,13 +170,18 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  addFriend, goForward, goBack
+  addFriend, goForward, goBack, updateCurrFocusTime
 }
 
 const mapStateToProps = (state) => {
   console.log(state.timeline);
+  const selectedFriendIndex = state.timeline.currFocus;
+  const selectedFriendTime = state.timeline.availableTimings[selectedFriendIndex];
+  console.log("Current Focus : ", selectedFriendTime)
+  console.log("---------------------------------------------")
   return {
-
+    currTimeFocus: selectedFriendTime,
+    currFocus: selectedFriendIndex
   }
 }
 
