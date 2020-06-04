@@ -174,11 +174,8 @@ const mapDispatchToProps = {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state.timeline);
   const selectedFriendIndex = state.timeline.currFocus;
   const selectedFriendTime = state.timeline.availableTimings[selectedFriendIndex];
-  console.log("Current Focus : ", selectedFriendTime)
-  console.log("---------------------------------------------")
   return {
     currTimeFocus: selectedFriendTime,
     currFocus: selectedFriendIndex

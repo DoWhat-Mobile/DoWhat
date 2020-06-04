@@ -31,6 +31,8 @@ class FriendInput extends React.Component {
                     onPress={() => this.shareWithTelegram(Linking.makeUrl())} />
                 <Button title='Share with Whatsapp'
                     onPress={() => this.shareWithWhatsapp(Linking.makeUrl())} />
+                <Button title='Know their schedule?'
+                    onPress={() => this.props.navigation.navigate('Timeline')} />
             </View>
         );
     }

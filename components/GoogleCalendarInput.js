@@ -155,7 +155,7 @@ class GoogleCalendarInput extends React.Component {
                 <Button title='Skip'
                     onPress={() => this.props.navigation.navigate('Timeline')} />
                 <Button title='Continue'
-                    onPress={() => this.getBusyPeriods()} />
+                    onPress={() => this.props.navigation.navigate('FriendInput')} /*this.getBusyPeriods()*/ />
             </View>
         );
     }
