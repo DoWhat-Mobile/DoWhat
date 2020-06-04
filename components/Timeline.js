@@ -135,7 +135,7 @@ class Timeline extends React.Component {
           <DateTimePicker
             testID="dateTimePicker"
             timeZoneOffsetInMinutes={0}
-            value={this.state.modifyingStartTime ? this.props.currTimeFocus.startTime : this.props.currTimeFocus.endTime}
+            value={this.state.modifyingStartTime ? new Date(this.props.currTimeFocus.startTime) : new Date(this.props.currTimeFocus.endTime)}
             mode={this.state.mode}
             is24Hour={true}
             display="default"
