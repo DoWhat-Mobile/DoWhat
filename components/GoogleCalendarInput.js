@@ -142,20 +142,26 @@ class GoogleCalendarInput extends React.Component {
     render() {
         return (
             <View style={style.container}>
-                <View style={style.calendar}>
-                    <FontAwesomeIcon icon={faCalendarAlt} size={80} />
-                </View>
-                <View>
-                    <Text style={style.header}>Sync Google Calendar</Text>
-                    <Text style={style.subHeader}>
-                        Upload your Google calendar for automated planning
+
+                <View style={style.body}>
+                    <View style={style.calendar}>
+                        <FontAwesomeIcon icon={faCalendarAlt} size={80} />
+                    </View>
+                    <View style={style.bodyText}>
+                        <Text style={style.header}>Sync Google Calendar</Text>
+                        <Text style={style.subHeader}>
+                            Upload your Google calendar for automated planning
                     </Text>
-                    <Text>{this.props.token}</Text>
+                    </View>
                 </View>
-                <Button title='Skip'
-                    onPress={() => this.props.navigation.navigate('Timeline')} />
-                <Button title='Continue'
-                    onPress={() => this.props.navigation.navigate('FriendInput')} /*this.getBusyPeriods()*/ />
+
+                <View style={style.footer}>
+                    <Button title='Skip'
+                        onPress={() => this.props.navigation.navigate('Timeline')} />
+                    <Button title='Continue'
+                        onPress={() => this.props.navigation.navigate('FriendInput')} /*this.getBusyPeriods()*/ />
+                </View>
+
             </View>
         );
     }
@@ -183,22 +189,35 @@ export default connect(mapStateToProps, actions)(GoogleCalendarInput);
 const style = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        flexDirection: 'column',
-        alignItems: 'center'
+    },
+    body: {
+        flex: 8,
+        marginTop: '20%',
+        marginBottom: '10%',
     },
     calendar: {
-        marginBottom: 50,
+        borderRadius: 50,
+        borderWidth: 0.5,
+        padding: 30,
+        alignSelf: 'center'
+    },
+    bodyText: {
+        marginTop: '10%',
     },
     header: {
         fontSize: 32,
-        color: '#7385d9',
         textAlign: 'center',
+        fontFamily: 'serif'
     },
     subHeader: {
         fontSize: 16,
-        color: '#7385d9',
         textAlign: 'center',
+        fontFamily: 'serif'
+    },
+    footer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     }
 
 });

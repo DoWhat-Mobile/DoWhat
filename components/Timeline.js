@@ -85,42 +85,59 @@ class Timeline extends React.Component {
   render() {
     return (
       <View style={styles.container} >
-        <Text style={styles.title}>Timeline</Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center' }}>
-          <Button title="Add Friend" onPress={this.addFriend} />
+
+        <View style={styles.header}>
+          <Text style={styles.title}>Available timings</Text>
         </View>
 
-        <View style={{ marginTop: 20 }}>
-          <TouchableOpacity onPress={this.modifyStartTime}>
+        <View style={styles.body}>
+          <View style={{ flexDirection: 'row', alignSelf: 'flex-start', flex: 1, marginTop: '30%' }}>
+            <Button title="+ Add Friend" onPress={this.addFriend} />
+          </View>
+
+          <View style={{ flexDirection: 'column', flex: 4, justifyContent: 'space-evenly' }}>
+            <View style={styles.timeSelection}>
+              <Text style={styles.time}>
+                From:
+              </Text>
+              <TouchableOpacity onPress={this.modifyStartTime}>
+                <Text style={{ textDecorationLine: 'underline', fontSize: 20 }}>
+                  {this.props.currTimeFocus.startTime.toLocaleTimeString()}hrs
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.timeSelection}>
+              <Text style={styles.time}>
+                To:
+              </Text>
+              <TouchableOpacity onPress={this.modifyEndTime}>
+                <Text style={{ textDecorationLine: 'underline', fontSize: 20 }}>
+                  {this.props.currTimeFocus.endTime.toLocaleTimeString()}hrs
+              </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.footer}>
+
+          <View style={styles.arrows}>
+
+            <TouchableOpacity onPress={this.previousFriend}>
+              <FontAwesomeIcon icon={faArrowLeft} size={30} />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={this.nextFriend}>
+              <FontAwesomeIcon icon={faArrowRight} size={30} />
+            </TouchableOpacity>
+
+          </View>
+          <View style={{ marginTop: 20 }}>
             <Text>
-              Start Time is {this.props.currTimeFocus.startTime.toString()}
+              You are adding for friend number {this.props.currFocus + 1}
             </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={{ marginTop: 20 }}>
-          <TouchableOpacity onPress={this.modifyEndTime}>
-            <Text>
-              End Time is {this.props.currTimeFocus.endTime.toString()}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={{ marginTop: 20 }}>
-          <Text>
-            You are adding for friend number
-          </Text>
-        </View>
-
-        <View style={styles.arrows}>
-
-          <TouchableOpacity onPress={this.previousFriend}>
-            <FontAwesomeIcon icon={faArrowLeft} size={30} />
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={this.nextFriend}>
-            <FontAwesomeIcon icon={faArrowRight} size={30} />
-          </TouchableOpacity>
+          </View>
 
         </View>
 
@@ -129,7 +146,6 @@ class Timeline extends React.Component {
           <Button title="Finalize"
             onPress={() => this.finalize([this.props.values_start, this.props.values_end])} />
         </View>
-
 
         {this.state.show && (
           <DateTimePicker
@@ -150,9 +166,21 @@ class Timeline extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
+  },
+  header: {
+    flex: 1,
+  },
+  body: {
+    flex: 6,
+    marginRight: 15,
+    flexDirection: 'row-reverse'
+  },
+  footer: {
+    flex: 2,
+  },
+  time: {
+    fontFamily: 'serif',
+    fontSize: 15
   },
   text: {
     alignSelf: 'center',
@@ -160,6 +188,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
+    fontFamily: 'serif',
+    marginTop: '10%',
+    marginLeft: 15
   },
   arrows: {
     marginTop: 20,
