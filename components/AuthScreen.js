@@ -63,31 +63,37 @@ class AuthScreen extends Component {
   render() {
     return (
       <View style={style.container}>
-        <Text>Login Screen</Text>
 
-        <View style={style.icons}>
-          <Icon.Button
-            name="google"
-            backgroundColor="white"
-            color='grey'
-            iconStyle={{}}
-            borderRadius={10}
-            onPress={this.signInToGoogle}
-          >
-            Sign in with Google
-            </Icon.Button>
+        <View style={style.headers}>
+          <Text style={{ fontFamily: 'serif', fontSize: 20, fontWeight: '500' }}>Welcome to DoWhat!</Text>
+          <Text style={{ fontFamily: 'serif', fontSize: 14, color: 'grey' }}>No plan? No problem.</Text>
         </View>
 
-        <View>
-          <TouchableOpacity onPress={() => this.props.navigation.navigate("DateSelection")} >
-            <Text style={{ color: 'blue' }}>Proceed Without Login</Text>
-          </TouchableOpacity>
+        <View style={style.body}>
+          <Text> (Insert some nice animated image here) </Text>
         </View>
-        <View>
+
+        <View style={style.footer}>
           <TouchableOpacity onPress={() => firebase.auth().signOut()} >
             <Text style={{ color: 'blue' }}>Sign out of account</Text>
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate("DateSelection")} >
+            <Text style={{ color: 'blue' }}>Proceed Without Login</Text>
+          </TouchableOpacity>
+          <View style={style.icons}>
+            <Icon.Button
+              name="google"
+              backgroundColor="white"
+              color='grey'
+              iconStyle={{}}
+              borderRadius={10}
+              onPress={this.signInToGoogle}
+            >
+              Sign in with Google
+            </Icon.Button>
+          </View>
         </View>
+
       </View>
     );
   }
@@ -98,17 +104,39 @@ export default connect(null, actions)(AuthScreen);
 const style = StyleSheet.create({
   container: {
     flex: 1,
+  },
+
+  headers: {
+    flex: 1,
+    marginLeft: '10%',
+    marginTop: '10%',
+  },
+
+  body: {
+    flex: 5,
     alignItems: 'center',
+    alignContent: 'center',
     justifyContent: 'center'
   },
+
+  footer: {
+    alignContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column-reverse',
+    marginBottom: '10%'
+
+  },
+
   google: {
     resizeMode: 'contain',
 
   },
+
   facebook: {
     width: 40,
     height: 40,
   },
+
   icons: {
     flexDirection: "row",
     justifyContent: 'center',
