@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Button, Platform, Text, StyleSheet, ImagePropTypes } from 'react-native';
+import { TouchableOpacity, View, Button, Platform, Text, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { connect } from 'react-redux';
 import { selectDate } from '../actions/date_select_action';
@@ -25,11 +25,29 @@ const DateSelection = (props) => {
         showMode('date');
     };
 
+    const formatDate = (day, month, date) => {
+        const possibleDays = ['Sunday', 'Monday', 'Tuesday', 'Wenesday', 'Thursday', 'Friday', 'Saturday'];
+        const possibleMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+            'October', 'November', 'December'];
+        const curDay = possibleDays[day];
+        const curMonth = possibleMonths[month];
+        return curDay + ', ' + curMonth + ' ' + date;
+    }
+
     return (
         <View style={styles.container}>
-            <View>
-                <Button onPress={showDatepicker} title="Select Date!" />
+            <View style={styles.dateInput}>
+                <Text style={styles.header}>
+                    I want to go out on
+            </Text>
+
+                <TouchableOpacity onPress={showDatepicker}>
+                    <Text style={styles.date}>
+                        {formatDate(date.getDay(), date.getMonth(), date.getDate())}
+                    </Text>
+                </TouchableOpacity>
             </View>
+
             {show && (
                 <DateTimePicker
                     testID="dateTimePicker"
@@ -42,14 +60,12 @@ const DateSelection = (props) => {
                     onChange={onChange}
                 />
             )}
-            <View>
-                <Text>
-                    The selected date is {date.toString()}
-                </Text>
-            </View>
-            <View style={styles.proceed}>
-                <Button title="Proceed" onPress={() => props.navigation.navigate('GoogleCalendarInput')} />
-            </View>
+
+            <TouchableOpacity style={styles.continue} onPress={() => props.navigation.navigate('GoogleCalendarInput')}>
+                <Text style={styles.button}>
+                    Continue
+                     </Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -63,11 +79,41 @@ export default connect(null, mapDispatchToProps)(DateSelection);
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
-    proceed: {
-        alignItems: 'flex-end',
-        flexDirection: 'column'
+    continue: {
+        flex: 1,
+        flexDirection: 'column',
+        alignSelf: 'stretch',
+        alignContent: 'stretch',
+        marginLeft: '5%',
+        marginRight: '5%',
+    },
+    header: {
+        fontWeight: '200',
+        fontSize: 15,
+        fontFamily: 'sans-serif-thin',
+    },
+    date: {
+        textDecorationLine: 'underline',
+        fontSize: 20,
+        fontFamily: 'serif'
+    },
+    dateInput: {
+        flex: 5,
+        alignContent: 'flex-start',
+        alignItems: 'flex-start',
+        marginTop: '20%',
+        marginLeft: '10%',
+    },
+    button: {
+        fontSize: 20,
+        fontFamily: 'serif',
+        borderWidth: 0.2,
+        textAlign: 'center',
+        borderRadius: 10,
+        backgroundColor: '#cc5327',
+        color: '#fcf5f2'
+
     }
+
 });

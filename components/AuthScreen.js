@@ -8,6 +8,7 @@ import * as actions from "../actions";
 import firebase from 'firebase'
 import * as AppAuth from 'expo-app-auth';
 import { onSignIn, OAuthConfig } from '../reusable-functions/google_authentication_functions';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 class AuthScreen extends Component {
   componentDidMount() {
@@ -61,13 +62,20 @@ class AuthScreen extends Component {
 
   render() {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={style.container}>
         <Text>Login Screen</Text>
-        <View style={style.icons}>
 
-          <TouchableOpacity onPress={() => this.signInToGoogle()}>
-            <Image source={require('../assets/google.png')} stlye={style.google} />
-          </TouchableOpacity>
+        <View style={style.icons}>
+          <Icon.Button
+            name="google"
+            backgroundColor="white"
+            color='grey'
+            iconStyle={{}}
+            borderRadius={10}
+            onPress={this.signInToGoogle}
+          >
+            Sign in with Google
+            </Icon.Button>
         </View>
 
         <View>
@@ -88,6 +96,11 @@ class AuthScreen extends Component {
 export default connect(null, actions)(AuthScreen);
 
 const style = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   google: {
     resizeMode: 'contain',
 
@@ -98,6 +111,6 @@ const style = StyleSheet.create({
   },
   icons: {
     flexDirection: "row",
-    justifyContent: 'center'
+    justifyContent: 'center',
   }
 })
