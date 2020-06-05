@@ -1,5 +1,5 @@
 export const firebaseConfig = {
-    apiKey: "AIzaSyB3DcUhK37rpYdmO2C8_tKoM8-ugnlInaQ",
+    apiKey: "AIzaSyA98MBxh0oZKqPJC6SvGspEz60ImpEaW9Q", // When on standalone app, use API key that's for Android. Else, use the no restriction key.
     authDomain: "dowhat-278213.firebaseapp.com",
     databaseURL: "https://dowhat-278213.firebaseio.com",
     projectId: "dowhat-278213",

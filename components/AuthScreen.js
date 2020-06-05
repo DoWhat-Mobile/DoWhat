@@ -2,156 +2,143 @@
  * Authentication page for login with Facebook, Google, or proceed without logging in
  */
 import React, { Component } from "react";
-import { View, Text, AsyncStorage, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../actions";
-import * as Google from 'expo-google-app-auth';
 import firebase from 'firebase'
+import * as AppAuth from 'expo-app-auth';
+import { onSignIn, OAuthConfig } from '../reusable-functions/google_authentication_functions';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-class AuthScreen extends Component {//= (props) => {
-  isUserEqual = (googleUser, firebaseUser) => {
-    if (firebaseUser) {
-      var providerData = firebaseUser.providerData;
-      for (var i = 0; i < providerData.length; i++) {
-        if (providerData[i].providerId === firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
-          providerData[i].uid === googleUser.getBasicProfile().getId()) {
-          // We don't need to reauth the Firebase connection.
-          return true;
-        }
-      }
-    }
-    return false;
+class AuthScreen extends Component {
+  componentDidMount() {
+    this.checkIfLoggedIn();
   }
 
-  onSignIn = (googleUser) => {
-    console.log('Google Auth Response', googleUser);
-    // We need to register an Observer on Firebase Auth to make sure auth is initialized.
-    var unsubscribe = firebase.auth().onAuthStateChanged((firebaseUser) => {
-      unsubscribe();
-
-      // Check if the user trying to sign in is the same as the currently signed in user
-      if (!this.isUserEqual(googleUser, firebaseUser)) {
-        // Build Firebase credential with the Google ID token.
-        var credential = firebase.auth.GoogleAuthProvider.credential(
-          googleUser.idToken,
-          googleUser.accessToken
-        );
-        // Sign in with credential from the Google user.
-        firebase
-          .auth()
-          .signInWithCredential(credential)
-          .then(function (result) { // Add user information to DB
-            console.log("User is signed in")
-            if (result.additionalUserInfo.isNewUser) {
-              firebase
-                .database()
-                .ref('/users/' + result.user.uid) // Add user node to the DB with unique ID
-                .set({
-                  gmail: result.user.email,
-                  profile_picture_url: result.additionalUserInfo.profile.picture,
-                  first_name: result.additionalUserInfo.profile.given_name,
-                  last_name: result.additionalUserInfo.profile.family_name,
-                  created_at: Date.now()
-                })
-                .then(function (snapshot) {
-                  // console.log('Snapshot ', snapshot);
-                });
-            } else { // User is not a new user, just update the last logged in time
-              firebase
-                .database()
-                .ref('/users/' + result.user.uid).update({
-                  last_logged_in: Date.now()
-                })
-            }
-          })
-          .catch(function (error) {
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            // The email of the user's account used.
-            var email = error.email;
-            // The firebase.auth.AuthCredential type that was used.
-            var credential = error.credential;
-            // ...
-          });
-      } else {
-        console.log('User already signed-in Firebase.');
+  // If user already logged in, direct user to Gcal input
+  checkIfLoggedIn = () => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.props.navigation.navigate("DateSelection");
       }
-    });
+    })
   }
 
-  signInWithGoogleAsync = async () => {
+
+  signInToGoogle = async () => {
     try {
-      const result = await Google.logInAsync({
-        androidClientId: '119205196255-0hi8thq9lm1759jr8k5o1ld8h239olr5.apps.googleusercontent.com',
-        iosClientId: '119205196255-ofp61a7qv7g38812gmafsdo37si7l4q5.apps.googleusercontent.com',
-        scopes: ['profile', 'email'],
-      });
-
-      if (result.type === 'success') {
-        this.onSignIn(result);
-        return result.accessToken;
-      } else {
-        return { cancelled: true };
-      }
+      // Get Oauth2 token
+      const tokenResponse = await AppAuth.authAsync(OAuthConfig);
+      this.getUserInfoAndSignIn(tokenResponse);
     } catch (e) {
-      return { error: true };
+      console.log(e);
     }
   }
 
-  loginToFacebook = () => {
-    this.props.facebookLogin();
-    AsyncStorage.removeItem("fb_token");
-    this.onAuthComplete(this.props);
-  };
+  getUserInfoAndSignIn = async (token) => {
+    try {
+      // Get user email
+      fetch('https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + token.accessToken,
+        {
+          method: 'GET',
+          headers: new Headers({
+            Accept: 'application/json'
+          })
+        })
+        .then(response => response.json())
+        // Use the user's email to get the user's busy periods
+        .then(data => {
+          data['accessToken'] = token.accessToken; // Append additional props for use in google sign in
+          data['idToken'] = token.idToken;
+          data['refreshToken'] = token.refreshToken;
+          data['accessTokenExpirationDate'] = token.accessTokenExpirationDate
+          onSignIn(data); // Sign in to Google's firebase
+        })
 
-  onAuthComplete = (props) => {
-    if (props.token) {
-      props.navigation.navigate("GoogleCalendarInput");
+    } catch (e) {
+      console.log(e);
     }
-  };
+  }
 
   render() {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Login Screen</Text>
-        <View style={style.icons}>
-          <TouchableOpacity onPress={() => this.loginToFacebook()}>
-            <Image source={require('../assets/facebook.png')} style={style.facebook} />
-          </TouchableOpacity>
+      <View style={style.container}>
 
-          <TouchableOpacity onPress={() => this.props.navigation.navigate("LoadingScreen")}>
-            <Image source={require('../assets/google.png')} stlye={style.google} />
-          </TouchableOpacity>
+        <View style={style.headers}>
+          <Text style={{ fontFamily: 'serif', fontSize: 20, fontWeight: '500' }}>Welcome to DoWhat!</Text>
+          <Text style={{ fontFamily: 'serif', fontSize: 14, color: 'grey' }}>No plan? No problem.</Text>
         </View>
 
-        <View>
-          <TouchableOpacity onPress={() => this.props.navigation.navigate("GoogleCalendarInput")} >
+        <View style={style.body}>
+          <Text> (Insert some nice animated image here) </Text>
+        </View>
+
+        <View style={style.footer}>
+          <TouchableOpacity onPress={() => firebase.auth().signOut()} >
+            <Text style={{ color: 'blue' }}>Sign out of account</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate("DateSelection")} >
             <Text style={{ color: 'blue' }}>Proceed Without Login</Text>
           </TouchableOpacity>
+          <View style={style.icons}>
+            <Icon.Button
+              name="google"
+              backgroundColor="white"
+              color='grey'
+              iconStyle={{}}
+              borderRadius={10}
+              onPress={this.signInToGoogle}
+            >
+              Sign in with Google
+            </Icon.Button>
+          </View>
         </View>
+
       </View>
     );
   }
 }
 
-function mapStateToProps({ auth }) {
-  return { token: auth.token };
-}
-
-export default connect(mapStateToProps, actions)(AuthScreen);
+export default connect(null, actions)(AuthScreen);
 
 const style = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+
+  headers: {
+    flex: 1,
+    marginLeft: '10%',
+    marginTop: '10%',
+  },
+
+  body: {
+    flex: 5,
+    alignItems: 'center',
+    alignContent: 'center',
+    justifyContent: 'center'
+  },
+
+  footer: {
+    alignContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column-reverse',
+    marginBottom: '10%'
+
+  },
+
   google: {
     resizeMode: 'contain',
 
   },
+
   facebook: {
     width: 40,
     height: 40,
   },
+
   icons: {
     flexDirection: "row",
-    justifyContent: 'center'
+    justifyContent: 'center',
   }
 })

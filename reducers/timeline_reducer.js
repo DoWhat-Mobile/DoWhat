@@ -1,70 +1,59 @@
 /**
  * File for all the reducers invovled in the timeline input feature of the application
  */
-import { CHANGE_TIME, CHANGE_INTERVAL, RESET_INTERVAL } from "../actions/types";
+import { UPDATE_CURR_FOUCS_TIME, ADD_FRIEND, GO_BACK, GO_FORWARD } from "../actions/types";
 
 /**
  * Keep track of start time, end time and time interval for scheduleing of events
  */
 const initState = {
-  values: [8, 24],
-  time_interval: [8, 24],
-  errorMessage: false, // Boolean flag to check if new person's schedule doesnt match other schedules
+  availableTimings: [{ startTime: new Date(), endTime: new Date() }],
+  totalInputs: 0, //Start count from 0, as its used as array index
+  currFocus: 0,
 };
 
-/**
- * Helper method for logic of finding overlapping time interval between friends
- */
-const update_interval = (state, action) => {
-  const cur_time_interval = action.payload;
-  let final_time_interval = state.time_interval;
+const addToTiming = (availableTimings, timeObject) => {
+  var newAvailableTimings = availableTimings.slice(); // copy array
+  newAvailableTimings.push(timeObject);
+  return newAvailableTimings;
+}
 
-  let a = [0, 0];
-  if (
-    cur_time_interval[1] < final_time_interval[0] ||
-    cur_time_interval[0] > final_time_interval[1]
-  ) {
-    return {
-      ...state,
-      values: [8, 24],
-      time_interval: final_time_interval,
-      errorMessage: true,
-    };
-  } else {
-    // Take bigger start time
-    a[0] = final_time_interval[0] =
-      cur_time_interval[0] < final_time_interval[0]
-        ? final_time_interval[0]
-        : cur_time_interval[0];
-    // Take smaller end time
-    a[1] = final_time_interval[1] =
-      cur_time_interval[1] < final_time_interval[1]
-        ? cur_time_interval[1]
-        : final_time_interval[1];
-    return {
-      ...state,
-      values: [8, 24],
-      time_interval: a,
-      errorMessage: false,
-    };
-  }
-};
+const updateSelectedTime = (availableTimings, selectedIndex, newTiming) => {
+  var newAvailableTimings = availableTimings.slice(); // Copy arry
+  newAvailableTimings[selectedIndex] = newTiming; // Change selected timing
+  return newAvailableTimings;
+}
+
+const decrementIfPossible = (currFocus) => {
+  return currFocus <= 0 ? 0 : currFocus - 1;
+}
+
+const incrementIfPossible = (currFocus, limit) => {
+  return currFocus >= limit ? limit : currFocus + 1;
+}
 
 export default function (state = initState, action) {
   switch (action.type) {
-    case CHANGE_TIME:
+    case UPDATE_CURR_FOUCS_TIME:
       return Object.assign({}, state, {
-        values: action.payload,
+        availableTimings: updateSelectedTime(state.availableTimings, action.index, action.newTiming),
       });
 
-    case CHANGE_INTERVAL:
-      return update_interval(state, action);
-
-    case RESET_INTERVAL:
+    case ADD_FRIEND:
       return Object.assign({}, state, {
-        values: action.payload,
-        time_interval: action.payload,
-        errorMessage: false,
+        availableTimings: addToTiming(state.availableTimings, action.payload),
+        totalInputs: state.totalInputs + 1,
+        currFocus: state.currFocus + 1
+      });
+
+    case GO_BACK:
+      return Object.assign({}, state, {
+        currFocus: decrementIfPossible(state.currFocus)
+      });
+
+    case GO_FORWARD:
+      return Object.assign({}, state, {
+        currFocus: incrementIfPossible(state.currFocus, state.totalInputs)
       });
 
     default:

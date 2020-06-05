@@ -1,36 +1,48 @@
-import { CHANGE_TIME, CHANGE_INTERVAL, RESET_INTERVAL } from "./types";
+import { UPDATE_CURR_FOUCS_TIME, ADD_FRIEND, GO_BACK, GO_FORWARD } from "./types";
 
 /**
  *  Action creator that changes the start and end time state
  */
-export const change_time = (values) => (dispatch) => {
+export const updateCurrFocusTime = (availTimingsIndex, newTime) => (dispatch) => {
   const newState = {
-    type: CHANGE_TIME,
-    payload: values,
+    type: UPDATE_CURR_FOUCS_TIME,
+    index: availTimingsIndex,
+    newTiming: newTime
   };
   dispatch(newState);
 };
 
 /**
- * Action creator that adds friend's timeline to the list of available timings
+ * Saves the state of the current user's startTime and endTime, before 
+ * starting afresh for the new friend. 
+ * @param {} values is a object which has the user's start and end time. 
  */
-export const change_interval = (values) => (dispatch) => {
+export const addFriend = (values) => dispatch => {
   const newState = {
-    type: CHANGE_INTERVAL,
-    payload: values,
+    type: ADD_FRIEND,
+    payload: values
   };
-
   dispatch(newState);
-};
+}
 
 /**
- * Action creator to reset timeline interval when user inputs the wrong timings
+ * Toggle back to the previous user to edit the previous user's start and end time.
+ * @param {*} values 
  */
-export const reset_interval = (values) => (dispatch) => {
+export const goBack = () => dispatch => {
   const newState = {
-    type: RESET_INTERVAL,
-    payload: values,
+    type: GO_BACK,
   };
-
   dispatch(newState);
-};
+}
+
+/**
+ * Toggle forward to the next user to edit the next user's start and end time.
+ * @param {*} values 
+ */
+export const goForward = () => dispatch => {
+  const newState = {
+    type: GO_FORWARD,
+  };
+  dispatch(newState);
+}

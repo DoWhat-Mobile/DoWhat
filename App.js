@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Provider } from 'react-redux';
-import * as Facebook from 'expo-facebook';
 import firebase from 'firebase';
 import { firebaseConfig } from './database/firebase';
 
@@ -14,9 +13,8 @@ import Timeline from './components/Timeline';
 import Genre from './components/Genre';
 import Finalized from './components/Finalized';
 import GoogleCalendarInput from './components/GoogleCalendarInput';
-import LoadingScreen from './components/LoadingScreen';
-import GoogleLogin from './components/GoogleLogin';
-import ExtractGcalAvails from './components/ExtractGcalAvails';
+import DateSelection from './components/DateSelection';
+import FriendInput from './components/FriendInput';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator()
@@ -38,9 +36,8 @@ const MainNavigator = () => {
       <Stack.Screen name='Genre' component={Genre} />
       <Stack.Screen name='Finalized' component={Finalized} />
       <Stack.Screen name='GoogleCalendarInput' component={GoogleCalendarInput} />
-      <Stack.Screen name='LoadingScreen' component={LoadingScreen} />
-      <Stack.Screen name='GoogleLogin' component={GoogleLogin} />
-      <Stack.Screen name='ExtractGcalAvails' component={ExtractGcalAvails} />
+      <Stack.Screen name='DateSelection' component={DateSelection} />
+      <Stack.Screen name='FriendInput' component={FriendInput} />
     </Stack.Navigator>
 
   );
@@ -49,7 +46,6 @@ const MainNavigator = () => {
 firebase.initializeApp(firebaseConfig);
 
 export default function App() {
-  Facebook.initializeAsync('710198546414299', 'AuthTest');
 
   return (
     <Provider store={store}>

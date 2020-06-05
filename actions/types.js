@@ -1,15 +1,10 @@
 /**
- * Actions for Facebook login feature
- */
-export const FACEBOOK_LOGIN_SUCCESS = "facebook_login_success";
-export const FACEBOOK_LOGIN_FAIL = "facebook_login_fail";
-
-/**
  * Actions for timeline feature
  */
-export const CHANGE_TIME = 'CHANGE_TIME';
-export const CHANGE_INTERVAL = 'CHANGE_INTERVAL';
-export const RESET_INTERVAL = 'RESET_INTERVAL';
+export const UPDATE_CURR_FOUCS_TIME = 'UPDATE_CURR_FOCUS_TIME';
+export const ADD_FRIEND = 'ADD_FRIEND';
+export const GO_BACK = 'GO_BACK';
+export const GO_FORWARD = 'GO_FORWARD';
 
 /**
  * Actions for Google authentication, for Google API calls
@@ -17,3 +12,8 @@ export const RESET_INTERVAL = 'RESET_INTERVAL';
 export const SET_ACCESS_TOKEN = 'SET_ACCESS_TOKEN';
 
 export const FINALIZE_GENRE = "FINALIZE_GENRE";
+
+/**
+ * Actions for date selection
+ */
+export const DATE_SELECT = 'DATE_SELECT';
