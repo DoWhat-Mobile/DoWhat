@@ -69,8 +69,8 @@ class Timeline extends React.Component {
   addFriend = () => {
     // Call Redux action, reset date for next input
     this.props.addFriend({
-      startTime: new Date().toJSON(),
-      endTime: new Date().toJSON()
+      startTime: new Date(),
+      endTime: new Date()
     });
   }
 
@@ -154,7 +154,6 @@ class Timeline extends React.Component {
             value={this.state.modifyingStartTime ? new Date(this.props.currTimeFocus.startTime) : new Date(this.props.currTimeFocus.endTime)}
             mode={this.state.mode}
             is24Hour={true}
-            display="default"
             onChange={this.onChange}
           />
         )}
