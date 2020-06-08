@@ -7,7 +7,7 @@ import {
 } from "../actions/timeline_actions";
 import { StyleSheet, View, Text, Button, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
@@ -19,12 +19,6 @@ const Timeline = (props) => {
     const [mode, setMode] = React.useState("date");
     const [show, setShow] = React.useState(false);
     const [modifyingStartTime, setModifyingStartTime] = React.useState(false);
-    const [timeInterval, setTimeInterval] = React.useState({});
-
-    React.useEffect(() => {
-        console.log(props.currTimeFocus.startTime.toLocaleTimeString());
-        setTimeInterval();
-    });
 
     const onChange = (event, selectedDate) => {
         const currentDate =
@@ -33,26 +27,22 @@ const Timeline = (props) => {
                 ? props.currTimeFocus.startTime
                 : props.currTimeFocus.endTime);
         setShow(Platform.OS === "ios");
+
         if (modifyingStartTime) {
-            setTimeInterval({
+            props.updateCurrFocusTime(props.currFocus, {
                 startTime: currentDate,
                 endTime: props.currTimeFocus.endTime,
             });
         } else {
-            setTimeInterval({
-                endTime: currentDate,
+            props.updateCurrFocusTime(props.currFocus, {
                 startTime: props.currTimeFocus.startTime,
+                endTime: currentDate,
             });
         }
-        // Update Redux state
-        props.updateCurrFocusTime(props.currFocus, {
-            startTime: timeInterval.startTime,
-            endTime: timeInterval.endTime,
-        });
     };
 
     const showMode = (currentMode) => {
-        setShow(true);
+        setShow(!show);
         setMode(currentMode);
     };
 
@@ -173,6 +163,7 @@ const Timeline = (props) => {
                 }}
             >
                 <Button
+                    style={{ position: "fixed" }}
                     title="Finalize"
                     onPress={() =>
                         finalize([props.values_start, props.values_end])
@@ -181,7 +172,7 @@ const Timeline = (props) => {
             </View>
 
             {show && (
-                <DateTimePicker
+                <RNDateTimePicker
                     testID="dateTimePicker"
                     timeZoneOffsetInMinutes={0}
                     value={
@@ -193,6 +184,9 @@ const Timeline = (props) => {
                     is24Hour={true}
                     display="default"
                     onChange={onChange}
+                    style={{
+                        marginBottom: 110,
+                    }}
                 />
             )}
         </View>
@@ -215,7 +209,6 @@ const styles = StyleSheet.create({
         flex: 2,
     },
     time: {
-        fontFamily: "serif",
         fontSize: 15,
     },
     text: {
@@ -224,7 +217,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 30,
-        fontFamily: "serif",
+
         marginTop: "10%",
         marginLeft: 15,
     },
