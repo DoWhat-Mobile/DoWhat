@@ -10,14 +10,16 @@ import * as Linking from 'expo-linking';
 class FriendInput extends React.Component {
     shareWithTelegram = (url) => {
         // Deep linking
-        Linking.openURL('https://t.me/share/url?url=' + url + '&text=Here is the link to input your' +
-            'calendar availability!');
+        Linking.openURL('https://t.me/share/url?url=' + url + '&text=' +
+            "\n" +
+            'Here is the link to input your calendar availability!');
     }
 
     shareWithWhatsapp = (url) => {
         Linking.openURL('whatsapp://send?' +
-            'text=Here is the link to input your calendar availability!' +
-            '')
+            'text=Here is the link to input your calendar availability! ' +
+            "\n" +
+            url)
     }
 
     render() {
@@ -28,9 +30,9 @@ class FriendInput extends React.Component {
                 </Text>
 
                 <Button title='Share with Telegram'
-                    onPress={() => this.shareWithTelegram(Linking.makeUrl())} />
+                    onPress={() => this.shareWithTelegram('https://master.da00s432t0f9l.amplifyapp.com/')} />
                 <Button title='Share with Whatsapp'
-                    onPress={() => this.shareWithWhatsapp(Linking.makeUrl())} />
+                    onPress={() => this.shareWithWhatsapp('https://master.da00s432t0f9l.amplifyapp.com/')} />
                 <Button title='Know their schedule?'
                     onPress={() => this.props.navigation.navigate('Timeline')} />
             </View>
