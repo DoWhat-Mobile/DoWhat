@@ -29,7 +29,7 @@ const Finalized = (props) => {
     }
 
     const data = [];
-    let startTime = testTime[0];
+    let startTime = props.finalTiming[0];
 
     const renderTruncatedFooter = (handlePress) => {
         return (
@@ -76,7 +76,7 @@ const Finalized = (props) => {
             ),
         };
         startTime += event.duration;
-        if (startTime > testTime[1]) break;
+        if (startTime > props.finalTiming[1]) break;
     }
 
     return (
