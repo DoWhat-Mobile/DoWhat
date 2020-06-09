@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Button, Text, StyleSheet } from 'react-native';
 import * as Linking from 'expo-linking';
+import { connect } from "react-redux";
+import firebase from "firebase";
 
 /**
  * This component is a page for user to determine how many friends will be added to find the 
@@ -22,6 +24,14 @@ class FriendInput extends React.Component {
             url)
     }
 
+    encodeUserInfoToURL = (url) => {
+        const userId = '#' + firebase.auth().currentUser.uid; // Add # for marking, so can extract from web-app
+        return url + encodeURIComponent(userId);
+    }
+
+    // Hosted on AWS Amplify
+    DoWhatWebURL = 'https://master.da00s432t0f9l.amplifyapp.com/'
+
     render() {
         return (
             <View style={styles.container}>
@@ -30,9 +40,9 @@ class FriendInput extends React.Component {
                 </Text>
 
                 <Button title='Share with Telegram'
-                    onPress={() => this.shareWithTelegram('https://master.da00s432t0f9l.amplifyapp.com/')} />
+                    onPress={() => this.shareWithTelegram(this.encodeUserInfoToURL(this.DoWhatWebURL))} />
                 <Button title='Share with Whatsapp'
-                    onPress={() => this.shareWithWhatsapp('https://master.da00s432t0f9l.amplifyapp.com/')} />
+                    onPress={() => this.shareWithWhatsapp(this.encodeUserInfoToURL(this.DoWhatWebURL))} />
                 <Button title='Know their schedule?'
                     onPress={() => this.props.navigation.navigate('Timeline')} />
             </View>
@@ -40,7 +50,14 @@ class FriendInput extends React.Component {
     }
 }
 
-export default FriendInput
+const mapStateToProps = (state) => {
+    console.log(state);
+    return {
+        userID: state
+    };
+};
+
+export default connect(mapStateToProps, null)(FriendInput);
 
 const styles = StyleSheet.create({
     container: {

@@ -6,11 +6,6 @@ export const ADD_FRIEND = 'ADD_FRIEND';
 export const GO_BACK = 'GO_BACK';
 export const GO_FORWARD = 'GO_FORWARD';
 
-/**
- * Actions for Google authentication, for Google API calls
- */
-export const SET_ACCESS_TOKEN = 'SET_ACCESS_TOKEN';
-
 export const FINALIZE_GENRE = "FINALIZE_GENRE";
 
 /**
