@@ -20,6 +20,7 @@ const Finalized = (props) => {
             .then((snapshot) => {
                 setEvents(snapshot.val());
                 setIsLoading(false);
+                console.log(props.finalTiming);
             });
     }, []);
 
@@ -110,6 +111,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         finalGenres: state.genre.genres,
+        finalTiming: state.timeline.finalTiming,
     };
 };
 

@@ -4,6 +4,7 @@ import {
     updateCurrFocusTime,
     goForward,
     goBack,
+    finalizeTimeline,
 } from "../actions/timeline_actions";
 import { StyleSheet, View, Text, Button, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
@@ -51,7 +52,42 @@ const Timeline = (props) => {
         showMode("time");
     };
 
+    const setfinalTime = () => {
+        let finalTiming = [0, 24];
+        for (i = 0; i < props.allTimings.length; i++) {
+            startState = props.allTimings[i].startTime;
+            start = parseInt(
+                moment(startState)
+                    .tz("Asia/Singapore")
+                    .format("HH:mm")
+                    .substring(0, 2)
+            );
+            if (finalTiming[0] < start) {
+                finalTiming[0] = start;
+            }
+        }
+        for (i = 0; i < props.allTimings.length; i++) {
+            endState = props.allTimings[i].endTime;
+            end = parseInt(
+                moment(endState)
+                    .tz("Asia/Singapore")
+                    .format("HH:mm")
+                    .substring(0, 2)
+            );
+            if (finalTiming[1] > end) {
+                finalTiming[1] = end;
+            }
+        }
+        props.finalizeTimeline(finalTiming);
+    };
+
     const finalize = (values) => {
+        setfinalTime();
+        // console.log(
+        //     moment(props.allTimings[0].endTime)
+        //         .tz("Asia/Singapore")
+        //         .format("HH:mm")
+        // );
         props.navigation.navigate("Genre");
     };
 
@@ -67,9 +103,11 @@ const Timeline = (props) => {
 
     const addFriend = () => {
         // Call Redux action, reset date for next input;
+
+        const date = new Date();
         props.addFriend({
-            startTime: new Date(),
-            endTime: new Date(),
+            startTime: moment(date).tz("Asia/Singapore"),
+            endTime: moment(date).tz("Asia/Singapore"),
         });
     };
 
@@ -236,6 +274,7 @@ const mapDispatchToProps = {
     goForward,
     goBack,
     updateCurrFocusTime,
+    finalizeTimeline,
 };
 
 const mapStateToProps = (state) => {
@@ -245,6 +284,8 @@ const mapStateToProps = (state) => {
     return {
         currTimeFocus: selectedFriendTime,
         currFocus: selectedFriendIndex,
+        allTimings: state.timeline.availableTimings,
+        finalTiming: state.timeline.finalTiming,
     };
 };
 

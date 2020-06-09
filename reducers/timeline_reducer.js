@@ -6,6 +6,7 @@ import {
     ADD_FRIEND,
     GO_BACK,
     GO_FORWARD,
+    FINALIZE_TIMELINE,
 } from "../actions/types";
 import moment from "moment-timezone";
 /**
@@ -21,6 +22,7 @@ const initState = {
     ],
     totalInputs: 0, //Start count from 0, as its used as array index
     currFocus: 0,
+    finalTiming: [],
 };
 
 const addToTiming = (availableTimings, timeObject) => {
@@ -75,6 +77,11 @@ export default function (state = initState, action) {
                     state.currFocus,
                     state.totalInputs
                 ),
+            });
+
+        case FINALIZE_TIMELINE:
+            return Object.assign({}, state, {
+                finalTiming: action.payload,
             });
 
         default:
