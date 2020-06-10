@@ -55,8 +55,8 @@ const Timeline = (props) => {
     const setfinalTime = () => {
         let finalTiming = [0, 24];
         for (i = 0; i < props.allTimings.length; i++) {
-            startState = props.allTimings[i].startTime;
-            start = parseInt(
+            let startState = props.allTimings[i].startTime;
+            let start = parseInt(
                 moment(startState)
                     .tz("Asia/Singapore")
                     .format("HH:mm")
@@ -67,13 +67,14 @@ const Timeline = (props) => {
             }
         }
         for (i = 0; i < props.allTimings.length; i++) {
-            endState = props.allTimings[i].endTime;
-            end = parseInt(
+            let endState = props.allTimings[i].endTime;
+            let val = parseInt(
                 moment(endState)
                     .tz("Asia/Singapore")
                     .format("HH:mm")
                     .substring(0, 2)
             );
+            end = val === 0 ? 24 : val;
             if (finalTiming[1] > end) {
                 finalTiming[1] = end;
             }

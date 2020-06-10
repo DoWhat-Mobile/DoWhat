@@ -10,7 +10,7 @@ const Finalized = (props) => {
     const [events, setEvents] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(true);
     const testEvents = props.finalGenres;
-    const testTime = [5, 11];
+    const testTime = [5, 11]; // [adv, nature, cafe]
 
     React.useEffect(() => {
         firebase
@@ -27,9 +27,6 @@ const Finalized = (props) => {
     if (isLoading) {
         return <Text>Loading..</Text>;
     }
-
-    const data = [];
-    let startTime = props.finalTiming[0];
 
     const renderTruncatedFooter = (handlePress) => {
         return (
@@ -53,29 +50,48 @@ const Finalized = (props) => {
         );
     };
 
-    for (i = 0; i < testEvents.length; i++) {
-        const genre = testEvents[i];
-        console.log(genre);
-        const numEvents = events[genre].length;
-        const randomNumber = Math.floor(Math.random() * numEvents);
-        const event = events[genre][randomNumber];
-        data[i] = {
-            time: startTime + ":00",
-            title: `${event.name}`,
+    const data = [];
+    let startTime = props.finalTiming[0];
+    let food =
+        (testEvents.includes("hawker") ||
+            testEvents.includes("restaurants") ||
+            testEvents.includes("cafes")) &&
+        startTime <= 13
+            ? 1
+            : 0;
+    while (testEvents.length !== 0) {
+        for (i = 0; i < testEvents.length; i++) {
+            const genre = testEvents[i];
+            const eventObject = events[genre]["list"];
+            const numEvents = eventObject.length;
+            const randomNumber = Math.floor(Math.random() * numEvents);
+            const event = eventObject[randomNumber];
+            if (events[genre].slots.includes(startTime)) {
+                let activity = {
+                    time: startTime + ":00",
+                    title: `${event.name}`,
 
-            description: (
-                <ReadMore
-                    numberOfLines={4}
-                    renderTruncatedFooter={renderTruncatedFooter}
-                    renderRevealedFooter={renderRevealedFooter}
-                >
-                    <Text>
-                        {event.location} {"\n\n"} {event.description}
-                    </Text>
-                </ReadMore>
-            ),
-        };
-        startTime += event.duration;
+                    description: (
+                        <ReadMore
+                            numberOfLines={4}
+                            renderTruncatedFooter={renderTruncatedFooter}
+                            renderRevealedFooter={renderRevealedFooter}
+                        >
+                            <Text>
+                                {event.location} {"\n\n"} {event.description}
+                            </Text>
+                        </ReadMore>
+                    ),
+                };
+                data.push(activity);
+                testEvents.splice(i, 1);
+                console.log(testEvents);
+                startTime += event.duration;
+            }
+        }
+        startTime++; // in case the start time is too early and there are no time slots to schedule
+        if (food === 1 && startTime >= 18 && startTime < 20)
+            testEvents.push("hawker");
         if (startTime > props.finalTiming[1]) break;
     }
 
