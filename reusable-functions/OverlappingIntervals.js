@@ -1,6 +1,17 @@
 /**
  * Script to find overlapping interval
+ * Run node script using [ctrl] + [alt] + n
  */
+const otherAvail = () => {
+    firebase
+        .database()
+        .ref("users/" + userId)
+        .once("value")
+        .then((snapshot) => {
+            const userData = snapshot.val();
+            console.log(userData.all_attendees)
+        })
+}
 
 const calendar = {
     "calendars": {
@@ -71,3 +82,4 @@ const mapBusyPeriodToTimeline = (calendar) => {
 }
 
 mapBusyPeriodToTimeline(calendar);
+// otherAvail();

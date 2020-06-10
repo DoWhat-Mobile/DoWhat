@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Button, Text, StyleSheet } from 'react-native';
 import * as Linking from 'expo-linking';
-import { connect } from "react-redux";
 import firebase from "firebase";
 
 /**
@@ -50,14 +49,7 @@ class FriendInput extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    console.log(state);
-    return {
-        userID: state
-    };
-};
-
-export default connect(mapStateToProps, null)(FriendInput);
+export default FriendInput;
 
 const styles = StyleSheet.create({
     container: {
