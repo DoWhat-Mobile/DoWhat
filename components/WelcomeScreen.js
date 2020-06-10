@@ -7,8 +7,10 @@ import { AppLoading } from "expo";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 import Slides from "./Slides";
+import { YellowBox } from "react-native";
 
 const WelcomeScreen = (props) => {
+    YellowBox.ignoreWarnings(["Setting a timer"]);
     const data = [
         { text: "Welcome to DoWhat" },
         { text: "Choose your timings" },

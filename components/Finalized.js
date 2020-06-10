@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Button } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 import Timeline from "react-native-timeline-flatlist";
-import firebase from "firebase";
+import firebase from "../database/firebase";
 import ReadMore from "react-native-read-more-text";
 
 const Finalized = (props) => {
@@ -86,7 +86,7 @@ const Finalized = (props) => {
                 data.push(activity);
                 testEvents.splice(i, 1);
                 console.log(testEvents);
-                startTime += event.duration;
+                startTime += events[genre]["duration"];
             }
         }
         startTime++; // in case the start time is too early and there are no time slots to schedule
