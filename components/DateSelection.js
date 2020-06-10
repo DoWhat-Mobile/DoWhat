@@ -10,7 +10,7 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { connect } from "react-redux";
 import { selectDate } from "../actions/date_select_action";
-import firebase from "firebase";
+import firebase from "../database/firebase";
 
 const DateSelection = (props) => {
     const [date, setDate] = useState(new Date()); // new Date() gives today's date
@@ -71,13 +71,12 @@ const DateSelection = (props) => {
             .ref("users/" + userId)
             .child("selected_date")
             .set(date.toDateString()); // date comes from component's state
-    }
+    };
 
     const syncWithFirebaseThenNavigate = () => {
         addSelectedDateToFirebase();
-        props.navigation.navigate("GoogleCalendarInput")
-
-    }
+        props.navigation.navigate("GoogleCalendarInput");
+    };
 
     return (
         <View style={styles.container}>

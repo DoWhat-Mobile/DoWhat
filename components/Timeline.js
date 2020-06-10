@@ -4,12 +4,14 @@ import {
     updateCurrFocusTime,
     goForward,
     goBack,
+    finalizeTimeline,
 } from "../actions/timeline_actions";
 import { StyleSheet, View, Text, Button, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import moment from "moment-timezone";
 
 /**
  * This component allows users to input their available timings as well as their friends. The global state will keep track of
@@ -50,7 +52,43 @@ const Timeline = (props) => {
         showMode("time");
     };
 
+    const setfinalTime = () => {
+        let finalTiming = [0, 24];
+        for (i = 0; i < props.allTimings.length; i++) {
+            let startState = props.allTimings[i].startTime;
+            let start = parseInt(
+                moment(startState)
+                    .tz("Asia/Singapore")
+                    .format("HH:mm")
+                    .substring(0, 2)
+            );
+            if (finalTiming[0] < start) {
+                finalTiming[0] = start;
+            }
+        }
+        for (i = 0; i < props.allTimings.length; i++) {
+            let endState = props.allTimings[i].endTime;
+            let val = parseInt(
+                moment(endState)
+                    .tz("Asia/Singapore")
+                    .format("HH:mm")
+                    .substring(0, 2)
+            );
+            end = val === 0 ? 24 : val;
+            if (finalTiming[1] > end) {
+                finalTiming[1] = end;
+            }
+        }
+        props.finalizeTimeline(finalTiming);
+    };
+
     const finalize = (values) => {
+        setfinalTime();
+        // console.log(
+        //     moment(props.allTimings[0].endTime)
+        //         .tz("Asia/Singapore")
+        //         .format("HH:mm")
+        // );
         props.navigation.navigate("Genre");
     };
 
@@ -65,11 +103,12 @@ const Timeline = (props) => {
     };
 
     const addFriend = () => {
-        //console.log(props.currTimeFocus.startTime.toLocaleTimeString());
-        // Call Redux action, reset date for next input
+        // Call Redux action, reset date for next input;
+
+        const date = new Date();
         props.addFriend({
-            startTime: new Date(),
-            endTime: new Date(),
+            startTime: moment(date).tz("Asia/Singapore"),
+            endTime: moment(date).tz("Asia/Singapore"),
         });
     };
 
@@ -115,8 +154,9 @@ const Timeline = (props) => {
                                     fontSize: 20,
                                 }}
                             >
-                                {props.currTimeFocus.startTime.toLocaleTimeString()}
-                                hrs
+                                {moment(props.currTimeFocus.startTime)
+                                    .tz("Asia/Singapore")
+                                    .format("HH:mm")}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -130,8 +170,9 @@ const Timeline = (props) => {
                                     fontSize: 20,
                                 }}
                             >
-                                {props.currTimeFocus.endTime.toLocaleTimeString()}
-                                hrs
+                                {moment(props.currTimeFocus.endTime)
+                                    .tz("Asia/Singapore")
+                                    .format("HH:mm")}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -174,7 +215,7 @@ const Timeline = (props) => {
             {show && (
                 <RNDateTimePicker
                     testID="dateTimePicker"
-                    timeZoneOffsetInMinutes={0}
+                    timeZoneOffsetInMinutes={480}
                     value={
                         modifyingStartTime
                             ? new Date(props.currTimeFocus.startTime)
@@ -234,6 +275,7 @@ const mapDispatchToProps = {
     goForward,
     goBack,
     updateCurrFocusTime,
+    finalizeTimeline,
 };
 
 const mapStateToProps = (state) => {
@@ -243,6 +285,8 @@ const mapStateToProps = (state) => {
     return {
         currTimeFocus: selectedFriendTime,
         currFocus: selectedFriendIndex,
+        allTimings: state.timeline.availableTimings,
+        finalTiming: state.timeline.finalTiming,
     };
 };
 

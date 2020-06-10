@@ -5,7 +5,7 @@ import React, { Component } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../actions";
-import firebase from "firebase";
+import firebase from "../database/firebase";
 import * as AppAuth from "expo-app-auth";
 import {
     onSignIn,

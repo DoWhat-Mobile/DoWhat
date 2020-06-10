@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import * as actions from "../actions";
-import firebase from "firebase";
+import firebase from "../database/firebase";
 import * as AppAuth from "expo-app-auth";
 import {
     onSignIn,
