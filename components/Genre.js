@@ -15,6 +15,7 @@ const Genre = (props) => {
     const [isLoading, setIsLoading] = React.useState(true);
     const genreType = ["adventure", "arts", "leisure", "nature", "nightlife"];
     const finalized = [];
+    const route = route.params.route;
 
     const [freeTime, setFreeTime] = React.useState([]);
 
