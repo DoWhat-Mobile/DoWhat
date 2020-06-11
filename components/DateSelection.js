@@ -64,8 +64,6 @@ const DateSelection = (props) => {
 
     const addSelectedDateToFirebase = () => {
         const userId = firebase.auth().currentUser.uid;
-        console.log("user ID is :", userId);
-        console.log("Date is , : ", date);
         firebase
             .database()
             .ref("users/" + userId)

@@ -62,6 +62,10 @@ class FriendInput extends React.Component {
                     title="Know their schedule?"
                     onPress={() => this.props.navigation.navigate("Timeline")}
                 />
+                <Button
+                    title="Navigate to Genre"
+                    onPress={() => this.props.navigation.navigate("Genre")}
+                />
             </View>
         );
     }

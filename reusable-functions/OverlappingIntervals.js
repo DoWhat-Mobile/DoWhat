@@ -1,85 +1,143 @@
 /**
- * Script to find overlapping interval
- * Run node script using [ctrl] + [alt] + n
+ * Algorithm for finding overlapping interval from data from firebase. 
  */
-const otherAvail = () => {
-    firebase
-        .database()
-        .ref("users/" + userId)
-        .once("value")
-        .then((snapshot) => {
-            const userData = snapshot.val();
-            console.log(userData.all_attendees)
-        })
+
+import moment from "moment-timezone";
+
+/**
+ * 1) Loop through all the attendees and get their busy period. (Date Object)
+ * 2) getTime() from busy period start and end. Round off to the hours. EG 11:15 & 11:45 will round off to 11.
+ * 3) Convert the busy period to the corresponding availble periods, just look at the flip side. ([0 0 0 1 1 1 0 0 0 0 1 1 0 0 0])
+ * 4) Mark out overlapping timings amongst all the attendees 
+ * 5) Find the longest sequence of free timings found in 4). 
+ * 6) Have a minimum overlapping time cut off at 2h. This prevents time intervals from being too small. **NOT IMPLEMENTED**
+ * 7) Omit anyone who can not be included in the min 2h time interval **NOT IMPLEMENTED**
+ */
+export const findOverlappingIntervals = (allAttendees, mainUserBusyPeriod) => {
+    var allAvailabilities = [];
+
+    // Add formatted avails to the array of all availabilities
+    allAvailabilities.push(handleMainUserData(mainUserBusyPeriod));
+    const allAttendeeAvails = handleAllAttendeesData(allAttendees);
+    allAttendeeAvails.forEach(attendeeAvailData => {
+        allAvailabilities.push(attendeeAvailData);
+    })
+
+    const timeline = markFreeBlocksOfTime(allAvailabilities);
+    const finalizedAvailRange = takeLargestBlockOfTimeFrom(timeline);
+    return finalizedAvailRange; // Array [20, 24]
 }
 
-const calendar = {
-    "calendars": {
-        "hansybastian@gmail.com": {
-            "busy": [
-                {
-                    "end": "2020-06-06T10:30:00+08:00",
-                    "start": "2020-06-06T10:00:00+08:00",
-                },
-                {
-                    "end": "2020-06-06T13:15:00+08:00",
-                    "start": "2020-06-06T12:30:00+08:00",
-                },
-            ],
-        },
-    },
-    "kind": "calendar#freeBusy",
-    "timeMax": "2020-06-06T15:59:00.000Z",
-    "timeMin": "2020-06-06T00:00:00.000Z",
-}
+const takeLargestBlockOfTimeFrom = (timeline) => {
+    var longestCount = 0;
+    var currCount = 0;
+    var endIndex = 0;
 
-const findOverlaps = (dateTime) => {
+    for (var i = 0; i < timeline.length; i++) {
+        if (i == 23 && timeline[i] == 5) { // Last entry, corner case
+            currCount++;
+            if (currCount > longestCount) {
+                // Update longestCount, start & end indexes
+                longestCount = currCount;
+                endIndex = 24;
+            }
 
+        } else if (timeline[i] == 0) { // End of the continuous sequence
+            if (currCount > longestCount) {
+                // Update longestCount, start & end indexes
+                longestCount = currCount;
+                endIndex = i - 1;
+            }
+            currCount = 0; // Reset curr count once hit a busy period. No longer continuous availability
+
+        } else {
+            // If entry is '5' and its not last entry, meaning its a free hour slot for scheduling
+            currCount++;
+        }
+    }
+    return [endIndex - longestCount + 1, endIndex];
 }
 
 /**
- * Convert the datetime input to pointers for timeline array
+ * Mark a free hour block with a value '5' in an array with 24 entries, each entry representing one hour.
  */
-const convertTo15MinuteInterval = (hours, minutes) => {
-    if (minutes % 15 != 0) {
-        throw new Error("Minutes must be in multiples of 15")
-    }
-    const hoursToArrayIndex = hours * 4;
-    const minutesToArrayIndex = minutes / 15;
-    const timelineArrayIndex = (hoursToArrayIndex + minutesToArrayIndex);
-    return timelineArrayIndex;
-}
+const markFreeBlocksOfTime = (allAvailabilities) => {
+    var timeline = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    for (var i = 7; i < 24; i++) { // Pointer for the timeline array, starting at 0800-0900hrs (8th position in arr)
+        var shouldMarkAsAvail = true;
 
-/**
- * 
- * @param {*} startTime is an integer from 0 to 96 representing 15min intervals in 24h 
- * @param {*} endTime is an integer from 0 to 96 representing 15min intervals in 24h 
- */
-const markTimelineArray = (startIndex, endIndex, timelineArray) => {
-    for (i = startIndex; i < endIndex; i++) {
-        timelineArray[i] = 1; // Mark as busy
-    }
-    return timelineArray;
-}
-
-const mapBusyPeriodToTimeline = (calendar) => {
-    const userID = 'hansybastian@gmail.com'
-    // 24h timeline with 15min intervals, start from 0000hrs, 0 --> no event, 1 --> has event
-    var timeline = Array(96).fill(0);
-    calendar.calendars[userID].busy
-        .map(event => {
-            const startHour = new Date(event.start).getHours();
-            const endHour = new Date(event.end).getHours();
-            const startMinute = new Date(event.start).getMinutes();
-            const endMinute = new Date(event.end).getMinutes();
-
-            const startTime = convertTo15MinuteInterval(startHour, startMinute);
-            const endTime = convertTo15MinuteInterval(endHour, endMinute);
-            timeline = markTimelineArray(startTime, endTime, timeline);
+        allAvailabilities.forEach(obj => {
+            for (var attendee in obj) {
+                const availArray = obj[attendee].split(',');
+                // Look at hour of the day of the attendee's availabilities, if *ALL* the attendees are available at that hour, mark it.
+                shouldMarkAsAvail = shouldMarkAsAvail && (availArray[i] == 0)
+                break;
+            }
         })
-    console.log(timeline);
+
+        if (shouldMarkAsAvail) {
+            timeline[i] = 5; // Rando number 5 to mark that this hour slot is good for scheduling
+        }
+    }
     return timeline;
 }
 
-mapBusyPeriodToTimeline(calendar);
-// otherAvail();
+// Returns object with array representing availability of the main user 
+const handleMainUserData = (mainUserBusyPeriod) => {
+    var mainUserAvails = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    // Handle data for main user and insert into allAvailabilities array
+    for (var i = 0; i < mainUserBusyPeriod.length; i++) {
+        const timeRange = mainUserBusyPeriod[i];
+
+        const startTime = timeRange.start;
+        const endTime = timeRange.end
+
+        // Time format in array is the beginning of the hour. EG a '1' at the 13th position in the array means 1300-1400hrs is BUSY.
+        const formattedStartTime = formatTime(startTime) - 1;
+        const formattedEndTime = formatTime(endTime) - 1;
+
+        mainUserAvails.fill(1, formattedStartTime, formattedEndTime);
+    }
+
+    const mainUserData = {};
+    mainUserData['main'] = mainUserAvails.toString();
+    return mainUserData;
+}
+
+// Returns an array consisting of objects with attendee email and array representing availability of each attendee
+const handleAllAttendeesData = (allAttendees) => {
+    var allAvailabilities = [];
+
+    // Handle data for all the other attendees and insert into allAvailabilities array
+    for (var attendee in allAttendees) {
+        const busyPeriodsOfAttendee = allAttendees[attendee].busy_periods; // Object with > 1 start&end busy periods
+        var currAttendeeAvails = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+        for (var timeRange in busyPeriodsOfAttendee) {
+            const startTime = busyPeriodsOfAttendee[timeRange].start;
+            const endTime = busyPeriodsOfAttendee[timeRange].end
+
+            // Time format in array is the beginning of the hour. EG a '1' at the 13th position in the array means 1300-1400hrs is BUSY.
+            const formattedStartTime = formatTime(startTime) - 1;
+            const formattedEndTime = formatTime(endTime) - 1;
+
+            currAttendeeAvails.fill(1, formattedStartTime, formattedEndTime);
+        }
+        const availsAndAttendee = {};
+        availsAndAttendee[attendee] = currAttendeeAvails.toString();
+
+        allAvailabilities.push(availsAndAttendee);
+    }
+    return allAvailabilities;
+}
+
+// Format time to an integer from 1 - 24. Only the hours are taken. ***NOTE: ALL ROUNDED TO THE HOUR.***
+const formatTime = (time) => {
+    return parseInt(
+        moment(time)
+            .tz("Asia/Singapore")
+            .format("HH:mm")
+            .substring(0, 2)
+    );
+
+}
