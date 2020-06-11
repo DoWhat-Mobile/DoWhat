@@ -5,7 +5,7 @@ import React, { Component } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../actions";
-import firebase from "../database/firebase";
+const firebase = require('firebase');
 import * as AppAuth from "expo-app-auth";
 import {
     onSignIn,
@@ -32,6 +32,7 @@ class AuthScreen extends Component {
             // Get Oauth2 token
             const tokenResponse = await AppAuth.authAsync(OAuthConfig);
             this.getUserInfoAndSignIn(tokenResponse);
+            this.props.navigation.navigate("DateSelection");
         } catch (e) {
             console.log(e);
         }

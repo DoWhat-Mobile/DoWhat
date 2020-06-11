@@ -1,4 +1,4 @@
-import firebase from "../database/firebase";
+const firebase = require('firebase');
 
 export const OAuthConfig = {
     issuer: "https://accounts.google.com",
@@ -15,7 +15,7 @@ const isUserEqual = (googleUser, firebaseUser) => {
         for (var i = 0; i < providerData.length; i++) {
             if (
                 providerData[i].providerId ===
-                    firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
+                firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
                 providerData[i].uid === googleUser.getBasicProfile().getId()
             ) {
                 // We don't need to reauth the Firebase connection.
@@ -30,14 +30,13 @@ export const onSignIn = (googleUser) => {
     // We need to register an Observer on Firebase Auth to make sure auth is initialized.
     var unsubscribe = firebase.auth().onAuthStateChanged((firebaseUser) => {
         unsubscribe();
-        // console.log("Google User: ", googleUser);
         // Check if the user trying to sign in is the same as the currently signed in user
         if (!isUserEqual(googleUser, firebaseUser)) {
             // Build Firebase credential with the Google ID token.
             var credential = firebase.auth.GoogleAuthProvider.credential(
-                googleUser.idToken,
-                googleUser.accessToken
-            );
+                googleUser.idToken, googleUser.accessToken
+            )
+
             // Sign in with credential from the Google user.
             firebase
                 .auth()
