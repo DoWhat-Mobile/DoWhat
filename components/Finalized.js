@@ -23,10 +23,14 @@ const Finalized = (props) => {
 
     if (isLoading) {
         return <Text>Loading..</Text>;
-
     } else {
         const testEvents = props.finalGenres[0];
-        const timeFromLink = props.finalGenres[1];
+        // const timeFromLink = props.finalGenres[1];
+
+        const timeline =
+            props.route.params.route === "manual"
+                ? props.finalTiming
+                : props.finalGenres[1];
 
         const renderTruncatedFooter = (handlePress) => {
             return (
@@ -51,12 +55,12 @@ const Finalized = (props) => {
         };
 
         const data = [];
-        let startTime = timeFromLink[0]//props.finalTiming[0];
+        let startTime = timeline[0];
         let food =
             (testEvents.includes("hawker") ||
                 testEvents.includes("restaurants") ||
                 testEvents.includes("cafes")) &&
-                startTime <= 13
+            startTime <= 13
                 ? 1
                 : 0;
         while (testEvents.length !== 0) {
@@ -78,7 +82,8 @@ const Finalized = (props) => {
                                 renderRevealedFooter={renderRevealedFooter}
                             >
                                 <Text>
-                                    {event.location} {"\n\n"} {event.description}
+                                    {event.location} {"\n\n"}{" "}
+                                    {event.description}
                                 </Text>
                             </ReadMore>
                         ),
@@ -92,7 +97,7 @@ const Finalized = (props) => {
             startTime++; // in case the start time is too early and there are no time slots to schedule
             if (food === 1 && startTime >= 18 && startTime < 20)
                 testEvents.push("hawker");
-            if (startTime > timeFromLink[1]) break; //props.finalTiming[1]
+            if (startTime > timeline[1]) break; //props.finalTiming[1]
         }
 
         return (
@@ -109,8 +114,8 @@ const Finalized = (props) => {
                 />
             </View>
         );
-    };
-}
+    }
+};
 
 const styles = StyleSheet.create({
     container: {

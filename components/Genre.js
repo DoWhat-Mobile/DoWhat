@@ -1,10 +1,10 @@
-import React, { Component } from "react";
+import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import PickerModal from "./PickerModal";
 import { connect } from "react-redux";
 import * as actions from "../actions";
-import { findOverlappingIntervals } from '../reusable-functions/OverlappingIntervals';
+import { findOverlappingIntervals } from "../reusable-functions/OverlappingIntervals";
 import firebase from "../database/firebase";
 
 // might use tab navigator and define a static property
@@ -15,9 +15,9 @@ const Genre = (props) => {
     const [isLoading, setIsLoading] = React.useState(true);
     const genreType = ["adventure", "arts", "leisure", "nature", "nightlife"];
     const finalized = [];
-    const route = route.params.route;
 
     const [freeTime, setFreeTime] = React.useState([]);
+    const manual = props.route.params.route;
 
     /**
      * Get data from firebase and initiate algo to find overlapping time intervals.
@@ -30,16 +30,26 @@ const Genre = (props) => {
             .once("value")
             .then((snapshot) => {
                 const userData = snapshot.val();
-                const allAttendees = userData.all_attendees;
+                const allAttendees = userData.all_attendees; // Undefined if no friends synced their Gcal
                 const mainUserBusyPeriod = userData.busy_periods;
-                const finalizedTimeRange = findOverlappingIntervals(allAttendees, mainUserBusyPeriod); // Returns finalized available range [20,24]
-                return finalizedTimeRange;
+                const finalizedTimeRange = findOverlappingIntervals(
+                    allAttendees,
+                    mainUserBusyPeriod
+                );
+                // Returns finalized available range [20,24]
+                return resultingTimeRange;
             })
-            .then(finalRange => {
-                setFreeTime(finalRange); // Set state
+            .then((resultRange) => {
+                // resultRange is undefined if no friends synced their Gcal
+                setFreeTime(resultRange); // Set state
                 setIsLoading(false);
             })
-    })
+            .catch((err) => {
+                // Error occurs when no friends synced their Gcal, then we will use the manual input timings
+                setFreeTime(props.finalTiming);
+                setIsLoading(false);
+            });
+    });
 
     if (isLoading) {
         return <Text>Wait for all friends to input their time</Text>;
@@ -53,7 +63,7 @@ const Genre = (props) => {
             if (element !== "Food") finalized.push(element);
         });
         props.onFinalize([finalized, freeTime]);
-        props.navigation.navigate("Finalized");
+        props.navigation.navigate("Finalized", { route: manual });
     };
 
     /**
@@ -196,6 +206,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         finalGenres: state.genre.genres,
+        finalTiming: state.timeline.finalTiming,
     };
 };
 

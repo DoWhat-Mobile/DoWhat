@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, View, Button, Text, StyleSheet } from "react-native";
+import { Image, View, Text, StyleSheet } from "react-native";
 import * as Linking from "expo-linking";
 import firebase from "../database/firebase";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -41,6 +41,7 @@ class FriendInput extends React.Component {
     render() {
         return (
             <View style={styles.container}>
+
                 <View style={styles.header}>
                     <Text style={styles.titleText}>Invite your friends</Text>
                 </View>
@@ -52,31 +53,33 @@ class FriendInput extends React.Component {
                     </Text>
 
                     <View style={styles.shareButtons}>
-                        <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#0088CC' }]}
+                        <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#0088CC', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
                             onPress={() => this.shareWithTelegram(
                                 this.encodeUserInfoToURL(this.DoWhatWebURL))}>
-                            <Text style={{ color: 'white' }}>Share with Telegram</Text>
+                            <Text style={{ fontSize: 11, color: 'white' }}>Share with Telegram</Text>
                         </TouchableOpacity>
 
                         <Text> | </Text>
 
-                        <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#25D366' }]}
+                        <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#25D366', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
                             onPress={() => this.shareWithWhatsapp(
                                 this.encodeUserInfoToURL(this.DoWhatWebURL))}>
-                            <Text style={{ color: 'white' }}>Share with Whatsapp</Text>
+                            <Text style={{ fontSize: 11, color: 'white' }}>Share with Whatsapp</Text>
                         </TouchableOpacity>
                     </View>
 
                 </View>
 
                 <View style={styles.footer}>
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate("Timeline")}>
-                        <Text style={{ color: 'grey' }}>
+                    <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
+                        onPress={() => this.props.navigation.navigate("Timeline")}>
+                        <Text style={{ fontSize: 11, color: 'white' }}>
                             I know my friends' schedules
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate("Genre")}>
-                        <Text style={{ color: 'grey' }}>
+                    <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
+                        onPress={() => this.props.navigation.navigate("Genre")}>
+                        <Text style={{ fontSize: 11, color: 'white' }}>
                             Done
                         </Text>
                     </TouchableOpacity>
@@ -106,9 +109,11 @@ const styles = StyleSheet.create({
     },
     footer: {
         flex: 1,
-        flexDirection: 'row',
+        flexDirection: 'column',
         margin: '5%',
-        justifyContent: 'space-between',
+        alignContent: 'center',
+        alignItems: 'center',
+        justifyContent: 'space-around',
     },
     titleText: {
         fontFamily: 'serif',
