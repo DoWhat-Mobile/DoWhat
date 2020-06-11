@@ -79,7 +79,7 @@ class AuthScreen extends Component {
                 </View>
 
                 <View style={style.body}>
-                    <Text> (Insert some nice animated image here) </Text>
+                    <Image style={style.image} source={require('../assets/Singapore.png')} />
                 </View>
 
                 <View style={style.footer}>
@@ -147,4 +147,14 @@ const style = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
     },
+    image: {
+        width: '90%',
+        borderTopWidth: 30,
+        marginBottom: '15%',
+        borderRadius: 15,
+        borderWidth: 0.2,
+        borderColor: 'grey',
+        backgroundColor: '#e2d5d1',
+        height: 450
+    }
 });

@@ -84,7 +84,7 @@ const Timeline = (props) => {
 
     const finalize = (values) => {
         setfinalTime();
-        props.navigation.navigate("Genre", { route: "manual" });
+        props.navigation.navigate("Genre", { route: 'manual' });
     };
 
     const modifyStartTime = () => {

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import PickerModal from "./PickerModal";
