@@ -13,6 +13,7 @@ import Finalized from "./components/Finalized";
 import GoogleCalendarInput from "./components/GoogleCalendarInput";
 import DateSelection from "./components/DateSelection";
 import FriendInput from "./components/FriendInput";
+import { YellowBox } from "react-native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -26,23 +27,25 @@ const Stack = createStackNavigator();
  * forward button on timeline screen to access genre page
  */
 const MainNavigator = () => {
+    YellowBox.ignoreWarnings(["Setting a timer"]);
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Welcome" component={WelcomeScreen} />
-            <Stack.Screen name="Auth" component={AuthScreen} />
+            {/* <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ title: null }} /> */}
+            <Stack.Screen name="Auth" component={AuthScreen} options={{ title: null }} />
             <Stack.Screen
                 name="Timeline"
                 component={Timeline}
-                options={{ headerLeft: null }}
+                options={{ title: null }}
             />
-            <Stack.Screen name="Genre" component={Genre} />
-            <Stack.Screen name="Finalized" component={Finalized} />
+            <Stack.Screen name="Genre" component={Genre} options={{ title: null }} />
+            <Stack.Screen name="Finalized" component={Finalized} options={{ title: null }} />
             <Stack.Screen
                 name="GoogleCalendarInput"
                 component={GoogleCalendarInput}
+                options={{ title: null }}
             />
-            <Stack.Screen name="DateSelection" component={DateSelection} />
-            <Stack.Screen name="FriendInput" component={FriendInput} />
+            <Stack.Screen name="DateSelection" component={DateSelection} options={{ title: null }} />
+            <Stack.Screen name="FriendInput" component={FriendInput} options={{ title: null }} />
         </Stack.Navigator>
     );
 };

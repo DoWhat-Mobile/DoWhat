@@ -22,16 +22,28 @@ export const findOverlappingIntervals = (allAttendees, mainUserBusyPeriod) => {
     allAttendeeAvails.forEach(attendeeAvailData => {
         allAvailabilities.push(attendeeAvailData);
     })
-
     const timeline = markFreeBlocksOfTime(allAvailabilities);
     const finalizedAvailRange = takeLargestBlockOfTimeFrom(timeline);
-    return finalizedAvailRange; // Array [20, 24]
+    return finalizedAvailRange; // Array [11, 16], supposed to be [12, 17]
 }
+
+// Array[
+//     Object {
+//     "main": "0,0,0,0,0,0,0,0,1,0,1,0 || ,0,0,0,0,0,0,1,0,0,0,0,0",
+//   },
+// Object {
+//     "changruifeng98": "0,0,0,0,0,0,0,1,1,1,1,0, || 0,0,0,0,0,1,1,1,1,1,0,0",
+//   },
+// Object {
+//     "hansworkstuff": "0,0,0,0,0,0,0,1,1,1,0,0 || ,0,0,0,0,0,0,1,1,0,0,0,0",
+//   },
+// ]
+// 0,0,0,0,0,0,0,0,0,0,0,5, || 5,5,5,5,5,0,0,0,0,0,5,5
 
 const takeLargestBlockOfTimeFrom = (timeline) => {
     var longestCount = 0;
     var currCount = 0;
-    var endIndex = 0;
+    var endHour = 0; // This hour corresponds to the 24 hour clock. So we count from 1 instead of 0.
 
     for (var i = 0; i < timeline.length; i++) {
         if (i == 23 && timeline[i] == 5) { // Last entry, corner case
@@ -39,14 +51,14 @@ const takeLargestBlockOfTimeFrom = (timeline) => {
             if (currCount > longestCount) {
                 // Update longestCount, start & end indexes
                 longestCount = currCount;
-                endIndex = 24;
+                endHour = 24;
             }
 
         } else if (timeline[i] == 0) { // End of the continuous sequence
             if (currCount > longestCount) {
                 // Update longestCount, start & end indexes
                 longestCount = currCount;
-                endIndex = i - 1;
+                endHour = i; // When arr[i] == 0, means the (i-1)th hour is available
             }
             currCount = 0; // Reset curr count once hit a busy period. No longer continuous availability
 
@@ -55,7 +67,7 @@ const takeLargestBlockOfTimeFrom = (timeline) => {
             currCount++;
         }
     }
-    return [endIndex - longestCount + 1, endIndex];
+    return [endHour - longestCount + 1, endHour];
 }
 
 /**

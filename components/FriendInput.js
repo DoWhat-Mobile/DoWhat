@@ -78,7 +78,7 @@ class FriendInput extends React.Component {
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
-                        onPress={() => this.props.navigation.navigate("Genre")}>
+                        onPress={() => this.props.navigation.navigate("Genre", { route: "link" })}>
                         <Text style={{ fontSize: 11, color: 'white' }}>
                             Done
                         </Text>

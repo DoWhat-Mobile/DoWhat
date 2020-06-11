@@ -1,8 +1,8 @@
 /**
- * Welcome screen, without FB authentication anymore.
+ * THIS SCREEN IS NOT IN USE CURRENTLY. NAVIGATES STRAIGHT TO AUTHSCREEN 
  */
 import React from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import Slides from "./Slides";
 import { YellowBox } from "react-native";
@@ -26,10 +26,40 @@ const WelcomeScreen = (props) => {
     };
 
     return (
-        <View>
-            <Slides data={data} onSlidesComplete={onSlidesComplete} />
-        </View>
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <Text>Hi</Text>
+            </View>
+
+            <View style={styles.body}>
+                <Text>Hi</Text>
+            </View>
+
+            <View style={styles.footer}>
+                <Text>Hi</Text>
+                <Button title="Let's get started" onPress={() => onSlidesComplete()} />
+            </View>
+
+        </View >
     );
 };
 
 export default connect()(WelcomeScreen);
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    header: {
+        flex: 1,
+        backgroundColor: 'blue',
+    },
+    body: {
+        flex: 5,
+        backgroundColor: 'yellow',
+    },
+    footer: {
+        flex: 1,
+        backgroundColor: 'pink',
+    },
+});

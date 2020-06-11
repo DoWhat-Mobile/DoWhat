@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 import Timeline from "react-native-timeline-flatlist";
@@ -9,6 +9,8 @@ import ReadMore from "react-native-read-more-text";
 const Finalized = (props) => {
     const [events, setEvents] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(true);
+
+    console.log("Finalized time from Gcal is: ", props.finalGenres[1]);
 
     React.useEffect(() => {
         firebase
@@ -60,9 +62,10 @@ const Finalized = (props) => {
             (testEvents.includes("hawker") ||
                 testEvents.includes("restaurants") ||
                 testEvents.includes("cafes")) &&
-            startTime <= 13
+                startTime <= 13
                 ? 1
                 : 0;
+
         while (testEvents.length !== 0) {
             for (i = 0; i < testEvents.length; i++) {
                 const genre = testEvents[i];
@@ -100,18 +103,33 @@ const Finalized = (props) => {
             if (startTime > timeline[1]) break; //props.finalTiming[1]
         }
 
+        // Sends invite to all attendees of the finalized event
+        const sendGcalInvite = () => {
+
+        }
+
         return (
             <View style={styles.container}>
-                <Timeline
-                    data={data}
-                    timeStyle={{
-                        textAlign: "center",
-                        backgroundColor: "#ff9797",
-                        color: "white",
-                        padding: 5,
-                        borderRadius: 13,
-                    }}
-                />
+                <View style={styles.body}>
+                    <Timeline
+                        data={data}
+                        timeStyle={{
+                            textAlign: "center",
+                            backgroundColor: "#ff9797",
+                            color: "white",
+                            padding: 5,
+                            borderRadius: 13,
+                        }}
+                    />
+                </View>
+
+                <View style={styles.footer}>
+                    <TouchableOpacity onPress={sendGcalInvite}>
+                        <Text style={styles.proceed}>
+                            Proceed
+                            </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     }
@@ -120,14 +138,31 @@ const Finalized = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    body: {
+        flex: 10,
         padding: 20,
         paddingTop: 65,
         backgroundColor: "white",
+    },
+    footer: {
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: 'white',
     },
     list: {
         flex: 1,
         marginTop: 20,
     },
+    proceed: {
+        borderWidth: 0.5,
+        marginBottom: '5%',
+        paddingTop: '1%',
+        paddingBottom: '1%',
+        paddingLeft: '20%',
+        paddingRight: '20%',
+        borderRadius: 5,
+    }
 });
 
 const mapStateToProps = (state) => {

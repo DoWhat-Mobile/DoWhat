@@ -178,8 +178,8 @@ class GoogleCalendarInput extends React.Component {
                     <Button
                         title="Continue"
                         onPress={() =>
-                            this.props.navigation.navigate("FriendInput")
-                        } /*this.getBusyPeriods() <-- Use this to link to API*/
+                            this.getBusyPeriods()
+                        } /*this.props.navigation.navigate("FriendInput")*/
                     />
                 </View>
             </View>

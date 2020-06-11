@@ -37,7 +37,7 @@ const Genre = (props) => {
                     mainUserBusyPeriod
                 );
                 // Returns finalized available range [20,24]
-                return resultingTimeRange;
+                return finalizedTimeRange;
             })
             .then((resultRange) => {
                 // resultRange is undefined if no friends synced their Gcal
@@ -132,7 +132,7 @@ const Genre = (props) => {
             </Modal>
 
             <View style={styles.textContainer}>
-                <Text style={{ fontSize: 20 }}>
+                <Text style={{ fontFamily: 'serif', fontSize: 20 }}>
                     Choose your favourite genres!
                 </Text>
             </View>

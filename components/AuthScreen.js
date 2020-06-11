@@ -154,7 +154,7 @@ const style = StyleSheet.create({
         borderRadius: 15,
         borderWidth: 0.2,
         borderColor: 'grey',
-        backgroundColor: '#e2d5d1',
-        height: 450
+        backgroundColor: '#F4F3EE',
+        height: '90%'
     }
 });
