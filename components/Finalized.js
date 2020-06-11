@@ -9,8 +9,6 @@ import ReadMore from "react-native-read-more-text";
 const Finalized = (props) => {
     const [events, setEvents] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(true);
-    const testEvents = props.finalGenres;
-    const testTime = [5, 11]; // [adv, nature, cafe]
 
     React.useEffect(() => {
         firebase
@@ -20,96 +18,99 @@ const Finalized = (props) => {
             .then((snapshot) => {
                 setEvents(snapshot.val());
                 setIsLoading(false);
-                console.log(props.finalTiming);
             });
     }, []);
 
     if (isLoading) {
         return <Text>Loading..</Text>;
-    }
 
-    const renderTruncatedFooter = (handlePress) => {
-        return (
-            <Text
-                style={{ color: "#595959", marginTop: 5 }}
-                onPress={handlePress}
-            >
-                Read more
-            </Text>
-        );
-    };
+    } else {
+        const testEvents = props.finalGenres[0];
+        const timeFromLink = props.finalGenres[1];
 
-    const renderRevealedFooter = (handlePress) => {
-        return (
-            <Text
-                style={{ color: "#595959", marginTop: 5 }}
-                onPress={handlePress}
-            >
-                Show less
-            </Text>
-        );
-    };
+        const renderTruncatedFooter = (handlePress) => {
+            return (
+                <Text
+                    style={{ color: "#595959", marginTop: 5 }}
+                    onPress={handlePress}
+                >
+                    Read more
+                </Text>
+            );
+        };
 
-    const data = [];
-    let startTime = props.finalTiming[0];
-    let food =
-        (testEvents.includes("hawker") ||
-            testEvents.includes("restaurants") ||
-            testEvents.includes("cafes")) &&
-        startTime <= 13
-            ? 1
-            : 0;
-    while (testEvents.length !== 0) {
-        for (i = 0; i < testEvents.length; i++) {
-            const genre = testEvents[i];
-            const eventObject = events[genre]["list"];
-            const numEvents = eventObject.length;
-            const randomNumber = Math.floor(Math.random() * numEvents);
-            const event = eventObject[randomNumber];
-            if (events[genre].slots.includes(startTime)) {
-                let activity = {
-                    time: startTime + ":00",
-                    title: `${event.name}`,
+        const renderRevealedFooter = (handlePress) => {
+            return (
+                <Text
+                    style={{ color: "#595959", marginTop: 5 }}
+                    onPress={handlePress}
+                >
+                    Show less
+                </Text>
+            );
+        };
 
-                    description: (
-                        <ReadMore
-                            numberOfLines={4}
-                            renderTruncatedFooter={renderTruncatedFooter}
-                            renderRevealedFooter={renderRevealedFooter}
-                        >
-                            <Text>
-                                {event.location} {"\n\n"} {event.description}
-                            </Text>
-                        </ReadMore>
-                    ),
-                };
-                data.push(activity);
-                testEvents.splice(i, 1);
-                console.log(testEvents);
-                startTime += events[genre]["duration"];
+        const data = [];
+        let startTime = timeFromLink[0]//props.finalTiming[0];
+        let food =
+            (testEvents.includes("hawker") ||
+                testEvents.includes("restaurants") ||
+                testEvents.includes("cafes")) &&
+                startTime <= 13
+                ? 1
+                : 0;
+        while (testEvents.length !== 0) {
+            for (i = 0; i < testEvents.length; i++) {
+                const genre = testEvents[i];
+                const eventObject = events[genre]["list"];
+                const numEvents = eventObject.length;
+                const randomNumber = Math.floor(Math.random() * numEvents);
+                const event = eventObject[randomNumber];
+                if (events[genre].slots.includes(startTime)) {
+                    let activity = {
+                        time: startTime + ":00",
+                        title: `${event.name}`,
+
+                        description: (
+                            <ReadMore
+                                numberOfLines={4}
+                                renderTruncatedFooter={renderTruncatedFooter}
+                                renderRevealedFooter={renderRevealedFooter}
+                            >
+                                <Text>
+                                    {event.location} {"\n\n"} {event.description}
+                                </Text>
+                            </ReadMore>
+                        ),
+                    };
+                    data.push(activity);
+                    testEvents.splice(i, 1);
+                    console.log(testEvents);
+                    startTime += events[genre]["duration"];
+                }
             }
+            startTime++; // in case the start time is too early and there are no time slots to schedule
+            if (food === 1 && startTime >= 18 && startTime < 20)
+                testEvents.push("hawker");
+            if (startTime > timeFromLink[1]) break; //props.finalTiming[1]
         }
-        startTime++; // in case the start time is too early and there are no time slots to schedule
-        if (food === 1 && startTime >= 18 && startTime < 20)
-            testEvents.push("hawker");
-        if (startTime > props.finalTiming[1]) break;
-    }
 
-    return (
-        <View style={styles.container}>
-            <Timeline
-                data={data}
-                timeStyle={{
-                    textAlign: "center",
-                    backgroundColor: "#ff9797",
-                    color: "white",
-                    padding: 5,
-                    borderRadius: 13,
-                }}
-            />
-        </View>
-    );
-};
+        return (
+            <View style={styles.container}>
+                <Timeline
+                    data={data}
+                    timeStyle={{
+                        textAlign: "center",
+                        backgroundColor: "#ff9797",
+                        color: "white",
+                        padding: 5,
+                        borderRadius: 13,
+                    }}
+                />
+            </View>
+        );
+    };
+}
 
 const styles = StyleSheet.create({
     container: {

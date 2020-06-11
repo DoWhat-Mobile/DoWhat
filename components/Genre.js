@@ -4,14 +4,45 @@ import { AntDesign } from "@expo/vector-icons";
 import PickerModal from "./PickerModal";
 import { connect } from "react-redux";
 import * as actions from "../actions";
+import { findOverlappingIntervals } from '../reusable-functions/OverlappingIntervals';
+import firebase from "../database/firebase";
 
 // might use tab navigator and define a static property
 const Genre = (props) => {
     const [visible, setVisible] = React.useState(false);
     const [selected, setSelected] = React.useState([]);
     const [dining, setDining] = React.useState([]);
+    const [isLoading, setIsLoading] = React.useState(true);
     const genreType = ["adventure", "arts", "leisure", "nature", "nightlife"];
     const finalized = [];
+
+    const [freeTime, setFreeTime] = React.useState([]);
+
+    /**
+     * Get data from firebase and initiate algo to find overlapping time intervals.
+     */
+    React.useEffect(() => {
+        const userId = firebase.auth().currentUser.uid; //Firebase UID of current user
+        firebase
+            .database()
+            .ref("users/" + userId)
+            .once("value")
+            .then((snapshot) => {
+                const userData = snapshot.val();
+                const allAttendees = userData.all_attendees;
+                const mainUserBusyPeriod = userData.busy_periods;
+                const finalizedTimeRange = findOverlappingIntervals(allAttendees, mainUserBusyPeriod); // Returns finalized available range [20,24]
+                return finalizedTimeRange;
+            })
+            .then(finalRange => {
+                setFreeTime(finalRange); // Set state
+                setIsLoading(false);
+            })
+    })
+
+    if (isLoading) {
+        return <Text>Wait for all friends to input their time</Text>;
+    }
 
     const onClose = () => setVisible(false);
 
@@ -20,16 +51,17 @@ const Genre = (props) => {
         selected.forEach((element) => {
             if (element !== "Food") finalized.push(element);
         });
-        props.onFinalize(finalized);
+        props.onFinalize([finalized, freeTime]);
         props.navigation.navigate("Finalized");
     };
+
     /**
      * Allows toggling background color and interaction between multiple buttons
      * @param {*} genre
      */
     const handlePress = (genre) => {
-        console.log(selected);
-        console.log(dining);
+        // console.log(selected);
+        // console.log(dining);
         selected.includes(genre)
             ? setSelected(selected.filter((s) => s !== genre))
             : setSelected([...selected, genre]);
@@ -127,7 +159,7 @@ const Genre = (props) => {
                         size={32}
                         onPress={() => {
                             onComplete();
-                            console.log(props.finalGenres);
+                            //console.log(props.finalGenres);
                         }}
                     />
                 </TouchableOpacity>

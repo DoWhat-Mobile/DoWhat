@@ -84,11 +84,6 @@ const Timeline = (props) => {
 
     const finalize = (values) => {
         setfinalTime();
-        // console.log(
-        //     moment(props.allTimings[0].endTime)
-        //         .tz("Asia/Singapore")
-        //         .format("HH:mm")
-        // );
         props.navigation.navigate("Genre");
     };
 
@@ -103,8 +98,6 @@ const Timeline = (props) => {
     };
 
     const addFriend = () => {
-        // Call Redux action, reset date for next input;
-
         const date = new Date();
         props.addFriend({
             startTime: moment(date).tz("Asia/Singapore"),

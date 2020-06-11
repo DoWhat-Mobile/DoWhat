@@ -85,7 +85,7 @@ class GoogleCalendarInput extends React.Component {
             // Get user email
             fetch(
                 "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" +
-                    token.accessToken,
+                token.accessToken,
                 {
                     method: "GET",
                     headers: new Headers({
@@ -179,7 +179,7 @@ class GoogleCalendarInput extends React.Component {
                         title="Continue"
                         onPress={() =>
                             this.props.navigation.navigate("FriendInput")
-                        } /*this.getBusyPeriods()*/
+                        } /*this.getBusyPeriods() <-- Use this to link to API*/
                     />
                 </View>
             </View>

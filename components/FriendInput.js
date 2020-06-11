@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Button, Text, StyleSheet } from "react-native";
 import * as Linking from "expo-linking";
-import { connect } from "react-redux";
 import firebase from "../database/firebase";
 
 /**
@@ -14,19 +13,19 @@ class FriendInput extends React.Component {
         // Deep linking
         Linking.openURL(
             "https://t.me/share/url?url=" +
-                url +
-                "&text=" +
-                "\n" +
-                "Here is the link to input your calendar availability!"
+            url +
+            "&text=" +
+            "\n" +
+            "Here is the link to input your calendar availability!"
         );
     };
 
     shareWithWhatsapp = (url) => {
         Linking.openURL(
             "whatsapp://send?" +
-                "text=Here is the link to input your calendar availability! " +
-                "\n" +
-                url
+            "text=Here is the link to input your calendar availability! " +
+            "\n" +
+            url
         );
     };
 
@@ -63,19 +62,16 @@ class FriendInput extends React.Component {
                     title="Know their schedule?"
                     onPress={() => this.props.navigation.navigate("Timeline")}
                 />
+                <Button
+                    title="Navigate to Genre"
+                    onPress={() => this.props.navigation.navigate("Genre")}
+                />
             </View>
         );
     }
 }
 
-const mapStateToProps = (state) => {
-    console.log(state);
-    return {
-        userID: state,
-    };
-};
-
-export default connect(mapStateToProps, null)(FriendInput);
+export default FriendInput;
 
 const styles = StyleSheet.create({
     container: {

@@ -42,7 +42,7 @@ class AuthScreen extends Component {
             // Get user email
             fetch(
                 "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" +
-                    token.accessToken,
+                token.accessToken,
                 {
                     method: "GET",
                     headers: new Headers({
@@ -87,15 +87,7 @@ class AuthScreen extends Component {
                             Sign out of account
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() =>
-                            this.props.navigation.navigate("DateSelection")
-                        }
-                    >
-                        <Text style={{ color: "blue" }}>
-                            Proceed Without Login
-                        </Text>
-                    </TouchableOpacity>
+
                     <View style={style.icons}>
                         <Icon.Button
                             name="google"

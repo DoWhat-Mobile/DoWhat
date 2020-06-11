@@ -2,15 +2,15 @@
  * Welcome screen, without FB authentication anymore.
  */
 import React from "react";
-import { View, Text, AsyncStorage } from "react-native";
-import { AppLoading } from "expo";
+import { View, Text, Button } from "react-native";
 import { connect } from "react-redux";
-import * as actions from "../actions";
 import Slides from "./Slides";
 import { YellowBox } from "react-native";
 
+
 const WelcomeScreen = (props) => {
     YellowBox.ignoreWarnings(["Setting a timer"]);
+
     const data = [
         { text: "Welcome to DoWhat" },
         { text: "Choose your timings" },
@@ -21,7 +21,7 @@ const WelcomeScreen = (props) => {
     /**
      * after reaching the last slide, direct to Auth page
      */
-    onSlidesComplete = () => {
+    const onSlidesComplete = () => {
         props.navigation.navigate("Auth");
     };
 
