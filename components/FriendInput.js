@@ -26,8 +26,8 @@ class FriendInput extends React.Component {
             "whatsapp://send?" +
             "text=Here is the link to input your calendar availability! " +
             "\n" +
-            url
-        );
+            url)
+            .catch(err => alert("Please download WhatsApp to use this feature"))
     };
 
     encodeUserInfoToURL = (url) => {
@@ -49,38 +49,38 @@ class FriendInput extends React.Component {
                     <Image style={styles.image} source={require('../assets/FriendsHangout.png')} />
                     <Text style={styles.subtitleText}>
                         You have successfully synced your Google calendar! Now invite some of your friends to join you!
-                        </Text>
+                    </Text>
+
+                    <View style={styles.shareButtons}>
+                        <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#0088CC' }]}
+                            onPress={() => this.shareWithTelegram(
+                                this.encodeUserInfoToURL(this.DoWhatWebURL))}>
+                            <Text style={{ color: 'white' }}>Share with Telegram</Text>
+                        </TouchableOpacity>
+
+                        <Text> | </Text>
+
+                        <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#25D366' }]}
+                            onPress={() => this.shareWithWhatsapp(
+                                this.encodeUserInfoToURL(this.DoWhatWebURL))}>
+                            <Text style={{ color: 'white' }}>Share with Whatsapp</Text>
+                        </TouchableOpacity>
+                    </View>
+
                 </View>
 
                 <View style={styles.footer}>
-
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate("Timeline")}>
+                        <Text style={{ color: 'grey' }}>
+                            I know my friends' schedules
+                        </Text>
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => this.props.navigation.navigate("Genre")}>
                         <Text style={{ color: 'grey' }}>
                             Done
                         </Text>
                     </TouchableOpacity>
                 </View>
-
-                <Button
-                    title="Share with Telegram"
-                    onPress={() =>
-                        this.shareWithTelegram(
-                            this.encodeUserInfoToURL(this.DoWhatWebURL)
-                        )
-                    }
-                />
-                <Button
-                    title="Share with Whatsapp"
-                    onPress={() =>
-                        this.shareWithWhatsapp(
-                            this.encodeUserInfoToURL(this.DoWhatWebURL)
-                        )
-                    }
-                />
-                <Button
-                    title="Know their schedule?"
-                    onPress={() => this.props.navigation.navigate("Timeline")}
-                />
             </View>
         );
     }
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        flex: 3,
+        flex: 1,
         alignContent: 'center',
         alignItems: 'center',
         marginTop: '10%',
@@ -102,12 +102,13 @@ const styles = StyleSheet.create({
         flex: 3,
         alignContent: 'center',
         alignItems: 'center',
-        margin: '5%'
+        margin: '5%',
     },
     footer: {
         flex: 1,
-        alignContent: 'center',
-        alignItems: 'center',
+        flexDirection: 'row',
+        margin: '5%',
+        justifyContent: 'space-between',
     },
     titleText: {
         fontFamily: 'serif',
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
         width: 200,
         height: 200,
         borderRadius: 100,
-        borderWidth: 1,
+        borderWidth: 0.5,
         borderColor: 'black'
     },
     subtitleText: {
@@ -126,6 +127,20 @@ const styles = StyleSheet.create({
         fontFamily: 'serif',
         color: 'grey',
         textAlign: 'center',
+        marginTop: 20
 
-    }
+    },
+    shareButtons: {
+        flexDirection: "row",
+        marginTop: 20,
+        justifyContent: 'space-around',
+        width: '100%',
+    },
+    shareWithButton: {
+        borderRadius: 15,
+        borderWidth: 0.5,
+        borderColor: 'black',
+        paddingLeft: 3,
+        paddingRight: 3,
+    },
 });
