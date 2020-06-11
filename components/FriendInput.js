@@ -13,19 +13,19 @@ class FriendInput extends React.Component {
         // Deep linking
         Linking.openURL(
             "https://t.me/share/url?url=" +
-            url +
-            "&text=" +
-            "\n" +
-            "Here is the link to input your calendar availability!"
+                url +
+                "&text=" +
+                "\n" +
+                "Here is the link to input your calendar availability!"
         );
     };
 
     shareWithWhatsapp = (url) => {
         Linking.openURL(
             "whatsapp://send?" +
-            "text=Here is the link to input your calendar availability! " +
-            "\n" +
-            url
+                "text=Here is the link to input your calendar availability! " +
+                "\n" +
+                url
         );
     };
 
@@ -64,7 +64,11 @@ class FriendInput extends React.Component {
                 />
                 <Button
                     title="Navigate to Genre"
-                    onPress={() => this.props.navigation.navigate("Genre")}
+                    onPress={() =>
+                        this.props.navigation.navigate("Genre", {
+                            route: "link",
+                        })
+                    }
                 />
             </View>
         );
