@@ -12,7 +12,7 @@ import {
     Text,
     Button,
     TouchableOpacity,
-    Image,
+    ImageBackground,
 } from "react-native";
 import { connect } from "react-redux";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
@@ -121,7 +121,16 @@ const Timeline = (props) => {
     };
 
     return (
-        <View style={styles.container}>
+        <ImageBackground
+            style={{
+                width: "100%",
+                height: "100%",
+                flex: 1,
+                alignSelf: "center",
+            }}
+            source={require("../assets/Manual.jpeg")}
+            resizeMode="cover"
+        >
             <View style={styles.header}>
                 <Text style={styles.title}>Available timings</Text>
             </View>
@@ -135,7 +144,9 @@ const Timeline = (props) => {
                         marginTop: "30%",
                     }}
                 >
-                    <Button title="+ Add Friend" onPress={addFriend} />
+                    <TouchableOpacity onPress={addFriend}>
+                        <Text style={{ fontSize: 20 }}>Add Friend</Text>
+                    </TouchableOpacity>
                 </View>
 
                 <View
@@ -151,7 +162,8 @@ const Timeline = (props) => {
                             <Text
                                 style={{
                                     textDecorationLine: "underline",
-                                    fontSize: 20,
+                                    fontSize: 35,
+                                    marginBottom: 60,
                                 }}
                             >
                                 {moment(props.currTimeFocus.startTime)
@@ -167,7 +179,7 @@ const Timeline = (props) => {
                             <Text
                                 style={{
                                     textDecorationLine: "underline",
-                                    fontSize: 20,
+                                    fontSize: 35,
                                 }}
                             >
                                 {moment(props.currTimeFocus.endTime)
@@ -184,15 +196,15 @@ const Timeline = (props) => {
                     <TouchableOpacity onPress={previousFriend}>
                         <FontAwesomeIcon icon={faArrowLeft} size={30} />
                     </TouchableOpacity>
-
+                    <View>
+                        <Text>
+                            You are adding for friend number{" "}
+                            {props.currFocus + 1}
+                        </Text>
+                    </View>
                     <TouchableOpacity onPress={nextFriend}>
                         <FontAwesomeIcon icon={faArrowRight} size={30} />
                     </TouchableOpacity>
-                </View>
-                <View style={{ marginTop: 20 }}>
-                    <Text>
-                        You are adding for friend number {props.currFocus + 1}
-                    </Text>
                 </View>
             </View>
 
@@ -203,13 +215,14 @@ const Timeline = (props) => {
                     position: "absolute",
                 }}
             >
-                <Button
-                    style={{ position: "fixed" }}
-                    title="Finalize"
+                <TouchableOpacity
+                    style={{ marginBottom: 20, marginRight: 20 }}
                     onPress={() =>
                         finalize([props.values_start, props.values_end])
                     }
-                />
+                >
+                    <Text style={{ fontSize: 20 }}>Finalize</Text>
+                </TouchableOpacity>
             </View>
 
             {show && (
@@ -230,7 +243,7 @@ const Timeline = (props) => {
                     }}
                 />
             )}
-        </View>
+        </ImageBackground>
     );
 };
 
@@ -250,11 +263,12 @@ const styles = StyleSheet.create({
         flex: 2,
     },
     time: {
-        fontSize: 15,
+        fontSize: 25,
     },
     text: {
         alignSelf: "center",
         paddingVertical: 20,
+        fontSize: 40,
     },
     title: {
         fontSize: 30,
