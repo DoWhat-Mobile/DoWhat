@@ -16,29 +16,30 @@ import moment from "moment-timezone";
 export const findOverlappingIntervals = (allAttendees, mainUserBusyPeriod) => {
     var allAvailabilities = [];
 
-    // Add formatted avails to the array of all availabilities
-    allAvailabilities.push(handleMainUserData(mainUserBusyPeriod));
-    const allAttendeeAvails = handleAllAttendeesData(allAttendees);
-    allAttendeeAvails.forEach(attendeeAvailData => {
-        allAvailabilities.push(attendeeAvailData);
-    })
+    if (mainUserBusyPeriod == undefined && allAttendees == undefined) { // Everyone is available
+        return [8, 24]; // Start from 0800hrs
+
+    } else if (mainUserBusyPeriod == undefined) { // Main user is available
+        const allAttendeeAvails = handleAllAttendeesData(allAttendees);
+        allAttendeeAvails.forEach(attendeeAvailData => {
+            allAvailabilities.push(attendeeAvailData);
+        })
+
+    } else if (allAttendees == undefined) { // Attendees are available
+        allAvailabilities.push(handleMainUserData(mainUserBusyPeriod));
+
+    } else {
+        // Add formatted avails to the array of all availabilities
+        allAvailabilities.push(handleMainUserData(mainUserBusyPeriod));
+        const allAttendeeAvails = handleAllAttendeesData(allAttendees);
+        allAttendeeAvails.forEach(attendeeAvailData => {
+            allAvailabilities.push(attendeeAvailData);
+        })
+    }
     const timeline = markFreeBlocksOfTime(allAvailabilities);
     const finalizedAvailRange = takeLargestBlockOfTimeFrom(timeline);
     return finalizedAvailRange; // Array [11, 16], supposed to be [12, 17]
 }
-
-// Array[
-//     Object {
-//     "main": "0,0,0,0,0,0,0,0,1,0,1,0 || ,0,0,0,0,0,0,1,0,0,0,0,0",
-//   },
-// Object {
-//     "changruifeng98": "0,0,0,0,0,0,0,1,1,1,1,0, || 0,0,0,0,0,1,1,1,1,1,0,0",
-//   },
-// Object {
-//     "hansworkstuff": "0,0,0,0,0,0,0,1,1,1,0,0 || ,0,0,0,0,0,0,1,1,0,0,0,0",
-//   },
-// ]
-// 0,0,0,0,0,0,0,0,0,0,0,5, || 5,5,5,5,5,0,0,0,0,0,5,5
 
 const takeLargestBlockOfTimeFrom = (timeline) => {
     var longestCount = 0;
@@ -151,5 +152,4 @@ const formatTime = (time) => {
             .format("HH:mm")
             .substring(0, 2)
     );
-
 }
