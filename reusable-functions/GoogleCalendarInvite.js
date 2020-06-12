@@ -4,7 +4,7 @@
  */
 const firebase = require('firebase');
 
-export const handleProcess = (formattedData) => {
+export const handleProcess = (formattedData, timingsArray) => {
     try {
         const userId = firebase.auth().currentUser.uid;
         firebase
@@ -17,7 +17,7 @@ export const handleProcess = (formattedData) => {
                 return formatAttendeeEmails(attendees);
             })
             .then(formattedAttendeeEmails => {
-                formatRequestAndMakeAPICall(formattedAttendeeEmails, formattedData);
+                formatRequestAndMakeAPICall(formattedAttendeeEmails, formattedData, timingsArray);
             });
 
     } catch (e) {
@@ -28,23 +28,30 @@ export const handleProcess = (formattedData) => {
 // Change to format usable with Gcal Event insert API.
 const formatAttendeeEmails = (attendees) => {
     if (attendees == undefined) { // No attendees joining
-        return { attendees: [] }; // Means no attendees are free to join the scheduled events
+        return []; // Means no attendees are free to join the scheduled events
     }
 
     var allFormattedEmails = [];
 
     for (var email in attendees) {
         const modifiedEmail = email.replace(/\@/g, '.') + '@gmail.com';
-        const formattedEmail = { 'email': modifiedEmail }
+        const formattedEmail = { 'email': modifiedEmail };
         allFormattedEmails.push(formattedEmail);
     }
 
-    return { attendees: allFormattedEmails };
+    return allFormattedEmails;
 }
 
-const formatRequestAndMakeAPICall = (allFormattedEmails, allEvents) => {
-    // const startTime =
-    // const endTime = 
+const formatRequestAndMakeAPICall = (allFormattedEmails, allEvents, timingsArray) => {
+    const testData = [{ startTime: 12, endTime: 13 }, { startTime: 14, endTime: 16 }];
+    const requestBody = {};
+
+    for (var i = 0; i < allEvents.length; i++) {
+        const eventTitle = allEvents[i].eventTitle;
+
+    }
+    requestBody['attendees'] = allFormattedEmails; // Include all attendees in API request body
+
 }
 
 const resetAllAttendeeData = () => {
@@ -55,8 +62,8 @@ export const formatEventsData = (data) => {
     var allEventDetails = [];
     data.forEach(event => {
         const title = event.title;
-        const time = event.time;
-        allEventDetails.push({ eventTitle: title, eventTime: time });
+        // const time = event.time; // Event time now gotten from timingsArray from finalized comp
+        allEventDetails.push({ eventTitle: title });
     })
     return allEventDetails;
 }

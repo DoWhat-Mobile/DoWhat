@@ -121,8 +121,9 @@ const Finalized = (props) => {
          */
         const sendGcalInviteAndResetAttendeeData = () => {
             console.log("Timings Array: ", timingsArray);
-            const formattedData = formatEventsData(data);
-            handleProcess(formattedData); // Function stored in GoogleCalendarInvite.js
+            const formattedData = formatEventsData(data); // Formatted data contains event title
+            // handleProcess function and all other logic is in GoogleCalendarInvite.js
+            handleProcess(formattedData, timingsArray);
         }
 
         return (
