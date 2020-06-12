@@ -123,10 +123,11 @@ const Finalized = (props) => {
          * in the case of repeated use of app. (if never reset data, might use it for wrong
          * date)
          */
-        const sendGcalInviteAndResetAttendeeData = () => {
+        const sendGcalInviteAndResetAttendeeData = async () => {
             const formattedData = formatEventsData(data); // Formatted data contains event title
             // handleProcess function and all other logic is in GoogleCalendarInvite.js
-            handleProcess(formattedData, timingsArray);
+            await handleProcess(formattedData, timingsArray);
+            props.navigation.navigate("DateSelection"); // navigate back once done
         }
 
         return (

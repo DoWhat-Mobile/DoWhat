@@ -8,7 +8,7 @@ import {
     OAuthConfig,
 } from "../reusable-functions/google_authentication_functions";
 
-export const handleProcess = (formattedData, timingsArray) => {
+export const handleProcess = async (formattedData, timingsArray) => {
     try {
         const userId = firebase.auth().currentUser.uid;
         firebase
@@ -25,7 +25,6 @@ export const handleProcess = (formattedData, timingsArray) => {
                 userData.refresh_token];
 
                 const formattedAttendeeEmails = formatAttendeeEmails(attendees);
-
                 formatRequestAndMakeAPICall(formattedAttendeeEmails,
                     formattedData,
                     timingsArray,
@@ -69,11 +68,14 @@ const formatRequestAndMakeAPICall = async (allFormattedEmails, allEvents, timing
         requestBody['description'] = "Specially curated for you by DoWhat?"
         makeAPICall(requestBody, userEmail, accessToken); // AccessToken has been ensure to be valid
     }
+
+    resetAllAttendeeData(); // Reset data after all API Calls made. Prevents interference for future calls
 }
 
 // Google Calendar Events insert API call
 const makeAPICall = async (requestBody, userEmail, accessToken) => {
     try {
+        console.log(JSON.stringify(requestBody));
         fetch(
             "https://www.googleapis.com/calendar/v3/calendars/" + encodeURI(userEmail) + //'hansybastian%40gmail.com' +
             "/events?sendNotifications=true&sendUpdates=all&key=AIzaSyA98MBxh0oZKqPJC6SvGspEz60ImpEaW9Q",
@@ -88,7 +90,9 @@ const makeAPICall = async (requestBody, userEmail, accessToken) => {
             }
         )
             .then((resp) => resp.json())
-            .then((data) => console.log(data))
+            .then((data) => {
+                console.log("Successfully added event to calendar? ", data)
+            })
 
     } catch (err) {
         console.log(err);
@@ -143,8 +147,14 @@ const formatTime = (date, hour) => {
     return date + 'T' + hour + ':00:00+08:00'
 }
 
+// Clean data so it wont intefere with future scheduling
 const resetAllAttendeeData = () => {
-
+    const userId = firebase.auth().currentUser.uid;
+    firebase
+        .database()
+        .ref("users/" + userId)
+        .child('all_attendees')
+        .remove()
 }
 
 export const formatEventsData = (data) => {
