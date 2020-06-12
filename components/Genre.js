@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Modal,
+    ImageBackground,
+} from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import PickerModal from "./PickerModal";
 import { connect } from "react-redux";
@@ -108,21 +115,30 @@ const Genre = (props) => {
             <TouchableOpacity
                 key={items}
                 onPress={() => handlePress(items)}
-                style={[
-                    styles.button,
-                    {
-                        backgroundColor: selected.includes(items)
-                            ? "#8c8c8c"
-                            : "#f2f2f2",
-                    },
-                ]}
+                style={styles.button}
             >
-                <Text style={{ fontSize: 18 }}>{items}</Text>
+                <Text
+                    style={{
+                        fontSize: 18,
+                        color: selected.includes(items) ? "green" : "black",
+                    }}
+                >
+                    {items}
+                </Text>
             </TouchableOpacity>
         ));
 
     return (
-        <View style={styles.container}>
+        <ImageBackground
+            style={{
+                width: "100%",
+                height: "100%",
+                flex: 1,
+                alignSelf: "center",
+            }}
+            source={require("../assets/Genre.jpeg")}
+            resizeMode="cover"
+        >
             <Modal animated transparent visible={visible} animationType="fade">
                 <PickerModal
                     onClose={onClose}
@@ -132,7 +148,7 @@ const Genre = (props) => {
             </Modal>
 
             <View style={styles.textContainer}>
-                <Text style={{ fontFamily: 'serif', fontSize: 20 }}>
+                <Text style={{ fontFamily: "serif", fontSize: 20 }}>
                     Choose your favourite genres!
                 </Text>
             </View>
@@ -141,17 +157,19 @@ const Genre = (props) => {
                 {buttons()}
 
                 <TouchableOpacity
-                    style={[
-                        styles.button,
-                        {
-                            backgroundColor: selected.includes("Food")
-                                ? "#8c8c8c"
-                                : "#f2f2f2",
-                        },
-                    ]}
+                    style={styles.button}
                     onPress={() => handleFoodPress()}
                 >
-                    <Text style={{ fontSize: 18 }}>Food</Text>
+                    <Text
+                        style={{
+                            fontSize: 18,
+                            color: selected.includes("Food")
+                                ? "green"
+                                : "black",
+                        }}
+                    >
+                        Food
+                    </Text>
                 </TouchableOpacity>
             </View>
 
@@ -163,11 +181,20 @@ const Genre = (props) => {
                 }}
             >
                 <TouchableOpacity
-                    style={{ position: "absolute", marginLeft: 120 }}
+                    style={[
+                        styles.button,
+                        {
+                            //position: "absolute",
+                            marginLeft: 287,
+                            marginBottom: 200,
+                            borderWidth: 0,
+                            //padding: 0,
+                        },
+                    ]}
                 >
                     <AntDesign
                         name="arrowright"
-                        size={32}
+                        size={40}
                         onPress={() => {
                             onComplete();
                             //console.log(props.finalGenres);
@@ -175,7 +202,7 @@ const Genre = (props) => {
                     />
                 </TouchableOpacity>
             </View>
-        </View>
+        </ImageBackground>
     );
 };
 
@@ -193,13 +220,13 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 20,
         borderWidth: StyleSheet.hairlineWidth,
-        borderColor: "#24A6D9",
+
         marginHorizontal: 10,
         marginVertical: 10,
     },
     textContainer: {
         alignItems: "center",
-        marginVertical: 100,
+        marginVertical: 60,
     },
 });
 

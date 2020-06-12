@@ -61,7 +61,7 @@ const Finalized = (props) => {
         const data = [];
         const timingsArray = [];
         let startTime = timeline[0];
-
+        const num = testEvents.length;
         // checks if user selected food so dinner will be included if user has time 6pm onwards
         let food =
             (testEvents.includes("hawker") ||
@@ -107,7 +107,10 @@ const Finalized = (props) => {
                     timingsArray.push(intervalObject);
                 }
             }
-            startTime++; // in case the start time is too early and there are no time slots to schedule
+            if (num == -testEvents.length) {
+                startTime++;
+                num--;
+            } // in case the start time is too early and there are no time slots to schedule
             if (food === 1 && startTime >= 18 && startTime < 20)
                 testEvents.push("hawker");
             if (startTime >= timeline[1]) break;

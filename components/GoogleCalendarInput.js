@@ -158,20 +158,20 @@ class GoogleCalendarInput extends React.Component {
         return (
             <ImageBackground
                 style={{ width: "100%", height: "100%", flex: 1 }}
-                source={require("../assets/Time.png")}
+                source={require("../assets/Time.jpeg")}
                 resizeMode="cover"
             >
-                <View style={style.body}>
-                    <View style={style.calendar}>
+                {/* <View style={style.body}> */}
+                {/* <View style={style.calendar}>
                         <FontAwesomeIcon icon={faCalendarAlt} size={80} />
-                    </View>
-                    <View style={style.bodyText}>
-                        <Text style={style.header}>Sync Google Calendar</Text>
-                        <Text style={style.subHeader}>
-                            Upload your Google calendar for automated planning
-                        </Text>
-                    </View>
+                    </View> */}
+                <View style={style.bodyText}>
+                    <Text style={style.header}>Sync Google Calendar</Text>
+                    <Text style={style.subHeader}>
+                        Automated Planning For You
+                    </Text>
                 </View>
+                {/* </View> */}
 
                 <View style={style.footer}>
                     <Button
@@ -242,5 +242,6 @@ const style = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         margin: "5%",
+        marginTop: 500,
     },
 });

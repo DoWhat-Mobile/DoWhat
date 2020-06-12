@@ -7,6 +7,7 @@ import {
     Text,
     StyleSheet,
     Image,
+    ImageBackground,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { connect } from "react-redux";
@@ -78,9 +79,13 @@ const DateSelection = (props) => {
     };
 
     return (
-        <View style={styles.container}>
+        <ImageBackground
+            style={{ width: "100%", height: "100%", flex: 1 }}
+            source={require("../assets/Picnic.jpg")}
+            resizeMode="cover"
+        >
             <View style={styles.dateInput}>
-                <Text style={styles.header}>I want to go out on</Text>
+                <Text style={styles.header}>Plan Event On</Text>
 
                 <TouchableOpacity onPress={showDatepicker}>
                     <Text style={styles.date}>
@@ -92,13 +97,7 @@ const DateSelection = (props) => {
                     </Text>
                 </TouchableOpacity>
             </View>
-            <View style={styles.body}>
-                <Image
-                    style={styles.image}
-                    source={require("../assets/Picnic.jpg")}
-                    resizeMode="cover"
-                />
-            </View>
+
             {show && (
                 <DateTimePicker
                     testID="dateTimePicker"
@@ -118,7 +117,7 @@ const DateSelection = (props) => {
             >
                 <Text style={styles.button}>Continue</Text>
             </TouchableOpacity>
-        </View>
+        </ImageBackground>
     );
 };
 
@@ -139,14 +138,17 @@ const styles = StyleSheet.create({
         alignContent: "stretch",
         marginLeft: "5%",
         marginRight: "5%",
+        marginTop: 400,
     },
     header: {
         fontWeight: "200",
-        fontSize: 15,
+        fontSize: 25,
+        color: "#bfff00",
     },
     date: {
         textDecorationLine: "underline",
         fontSize: 20,
+        color: "#bfff00",
     },
     dateInput: {
         flex: 1,
@@ -157,7 +159,6 @@ const styles = StyleSheet.create({
     },
     button: {
         fontSize: 20,
-
         borderWidth: 0.2,
         textAlign: "center",
         borderRadius: 10,
@@ -169,15 +170,5 @@ const styles = StyleSheet.create({
         alignItems: "center",
         alignContent: "center",
         justifyContent: "center",
-    },
-    image: {
-        width: "90%",
-        borderTopWidth: 30,
-        marginBottom: "15%",
-        borderRadius: 15,
-        borderWidth: 0.2,
-        borderColor: "grey",
-        backgroundColor: "#F4F3EE",
-        height: "90%",
     },
 });
