@@ -64,7 +64,7 @@ const Finalized = (props) => {
          * Formats data prop for timeline library
          */
         const data = [];
-        const timingsArray = [];
+        const timingsArray = []; // Start and end time of events
         let startTime = timeline[0];
         timingsArray.push(startTime);
         // checks if user selected food so dinner will be included if user has time 6pm onwards
@@ -72,7 +72,7 @@ const Finalized = (props) => {
             (testEvents.includes("hawker") ||
                 testEvents.includes("restaurants") ||
                 testEvents.includes("cafes")) &&
-            startTime <= 13
+                startTime <= 13
                 ? 1
                 : 0;
 
@@ -114,20 +114,16 @@ const Finalized = (props) => {
             if (startTime >= timeline[1]) break;
         }
 
-<<<<<<< HEAD
-        // Sends invite to all attendees of the finalized event
-        const sendGcalInvite = () => {};
-=======
         /**
          * Sends invite to all attendees of the finalized event, also reset all_attendee
          * in the case of repeated use of app. (if never reset data, might use it for wrong
          * date)
          */
         const sendGcalInviteAndResetAttendeeData = () => {
+            console.log("Timings Array: ", timingsArray);
             const formattedData = formatEventsData(data);
             handleProcess(formattedData); // Function stored in GoogleCalendarInvite.js
         }
->>>>>>> Changed loading screen while generating finalized timeline to an activity indicator
 
         return (
             <View style={styles.container}>
@@ -145,15 +141,10 @@ const Finalized = (props) => {
                 </View>
 
                 <View style={styles.footer}>
-<<<<<<< HEAD
-                    <TouchableOpacity onPress={sendGcalInvite}>
-                        <Text style={styles.proceed}>Proceed</Text>
-=======
                     <TouchableOpacity onPress={sendGcalInviteAndResetAttendeeData}>
                         <Text style={styles.proceed}>
                             Proceed
                             </Text>
->>>>>>> Changed loading screen while generating finalized timeline to an activity indicator
                     </TouchableOpacity>
                 </View>
             </View>

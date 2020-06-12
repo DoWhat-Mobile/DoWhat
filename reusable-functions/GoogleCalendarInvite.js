@@ -17,7 +17,7 @@ export const handleProcess = (formattedData) => {
                 return formatAttendeeEmails(attendees);
             })
             .then(formattedAttendeeEmails => {
-                createGcalEventAndSendInvite(formattedAttendeeEmails, formattedData);
+                formatRequestAndMakeAPICall(formattedAttendeeEmails, formattedData);
             });
 
     } catch (e) {
@@ -42,7 +42,9 @@ const formatAttendeeEmails = (attendees) => {
     return { attendees: allFormattedEmails };
 }
 
-const createGcalEventAndSendInvite = (allFormattedEmails, allEvents) => {
+const formatRequestAndMakeAPICall = (allFormattedEmails, allEvents) => {
+    // const startTime =
+    // const endTime = 
 }
 
 const resetAllAttendeeData = () => {
