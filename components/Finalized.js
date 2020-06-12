@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 import Timeline from "react-native-timeline-flatlist";
 import firebase from "../database/firebase";
 import ReadMore from "react-native-read-more-text";
+import { handleProcess, formatEventsData } from "../reusable-functions/GoogleCalendarInvite";
 
 const Finalized = (props) => {
     const [events, setEvents] = React.useState([]);
@@ -24,7 +25,10 @@ const Finalized = (props) => {
     }, []);
 
     if (isLoading) {
-        return <Text>Loading..</Text>;
+        return (
+            <View style={{ flex: 1, alignContent: 'center', justifyContent: 'center' }}>
+                <ActivityIndicator style={{ alignSelf: 'center' }} size='large' />
+            </View>);
     } else {
         const testEvents = props.finalGenres[0];
         // const timeFromLink = props.finalGenres[1];
@@ -110,8 +114,20 @@ const Finalized = (props) => {
             if (startTime >= timeline[1]) break;
         }
 
+<<<<<<< HEAD
         // Sends invite to all attendees of the finalized event
         const sendGcalInvite = () => {};
+=======
+        /**
+         * Sends invite to all attendees of the finalized event, also reset all_attendee
+         * in the case of repeated use of app. (if never reset data, might use it for wrong
+         * date)
+         */
+        const sendGcalInviteAndResetAttendeeData = () => {
+            const formattedData = formatEventsData(data);
+            handleProcess(formattedData); // Function stored in GoogleCalendarInvite.js
+        }
+>>>>>>> Changed loading screen while generating finalized timeline to an activity indicator
 
         return (
             <View style={styles.container}>
@@ -129,8 +145,15 @@ const Finalized = (props) => {
                 </View>
 
                 <View style={styles.footer}>
+<<<<<<< HEAD
                     <TouchableOpacity onPress={sendGcalInvite}>
                         <Text style={styles.proceed}>Proceed</Text>
+=======
+                    <TouchableOpacity onPress={sendGcalInviteAndResetAttendeeData}>
+                        <Text style={styles.proceed}>
+                            Proceed
+                            </Text>
+>>>>>>> Changed loading screen while generating finalized timeline to an activity indicator
                     </TouchableOpacity>
                 </View>
             </View>
