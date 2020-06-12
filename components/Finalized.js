@@ -61,12 +61,12 @@ const Finalized = (props) => {
         };
 
         /**
-         * Formats data prop for timeline library
-         */
+          * Formats data prop for timeline library
+          */
         const data = [];
-        const timingsArray = []; // Start and end time of events
+        const timingsArray = [];
         let startTime = timeline[0];
-        timingsArray.push(startTime);
+
         // checks if user selected food so dinner will be included if user has time 6pm onwards
         let food =
             (testEvents.includes("hawker") ||
@@ -84,6 +84,8 @@ const Finalized = (props) => {
                 const randomNumber = Math.floor(Math.random() * numEvents);
                 const event = eventObject[randomNumber];
                 if (events[genre].slots.includes(startTime)) {
+                    let intervalObject = { start: 0, end: 0 };
+                    intervalObject.start = startTime;
                     let activity = {
                         time: startTime + ":00",
                         title: `${event.name}`,
@@ -105,7 +107,9 @@ const Finalized = (props) => {
                     testEvents.splice(i, 1);
                     console.log(testEvents);
                     startTime += events[genre]["duration"];
-                    timingsArray.push(startTime);
+                    intervalObject.end =
+                        startTime > timeline[1] ? timeline[1] : startTime;
+                    timingsArray.push(intervalObject);
                 }
             }
             startTime++; // in case the start time is too early and there are no time slots to schedule

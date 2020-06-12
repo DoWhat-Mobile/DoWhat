@@ -86,7 +86,7 @@ class GoogleCalendarInput extends React.Component {
             // Get user email
             fetch(
                 "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" +
-                    token.accessToken,
+                token.accessToken,
                 {
                     method: "GET",
                     headers: new Headers({
@@ -103,6 +103,7 @@ class GoogleCalendarInput extends React.Component {
                     onSignIn(data); // Sign in to Google's firebase
                     this.findAndStoreBusyPeriod(token, data.email);
                 });
+
         } catch (e) {
             console.log(e);
         }
