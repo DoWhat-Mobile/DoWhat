@@ -6,6 +6,7 @@ import {
     Platform,
     Text,
     StyleSheet,
+    Image,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { connect } from "react-redux";
@@ -91,7 +92,13 @@ const DateSelection = (props) => {
                     </Text>
                 </TouchableOpacity>
             </View>
-
+            <View style={styles.body}>
+                <Image
+                    style={styles.image}
+                    source={require("../assets/Picnic.jpg")}
+                    resizeMode="cover"
+                />
+            </View>
             {show && (
                 <DateTimePicker
                     testID="dateTimePicker"
@@ -142,7 +149,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     dateInput: {
-        flex: 5,
+        flex: 1,
         alignContent: "flex-start",
         alignItems: "flex-start",
         marginTop: "20%",
@@ -156,5 +163,21 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: "#cc5327",
         color: "#fcf5f2",
+    },
+    body: {
+        flex: 5,
+        alignItems: "center",
+        alignContent: "center",
+        justifyContent: "center",
+    },
+    image: {
+        width: "90%",
+        borderTopWidth: 30,
+        marginBottom: "15%",
+        borderRadius: 15,
+        borderWidth: 0.2,
+        borderColor: "grey",
+        backgroundColor: "#F4F3EE",
+        height: "90%",
     },
 });

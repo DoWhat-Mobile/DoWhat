@@ -4,13 +4,14 @@
  * input of free timings instead.
  */
 import React from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import * as actions from "../actions";
 import firebase from "../database/firebase";
 import * as AppAuth from "expo-app-auth";
+import { Button } from "react-native-elements";
 import {
     onSignIn,
     OAuthConfig,
@@ -85,7 +86,7 @@ class GoogleCalendarInput extends React.Component {
             // Get user email
             fetch(
                 "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" +
-                token.accessToken,
+                    token.accessToken,
                 {
                     method: "GET",
                     headers: new Headers({
@@ -155,7 +156,11 @@ class GoogleCalendarInput extends React.Component {
 
     render() {
         return (
-            <View style={style.container}>
+            <ImageBackground
+                style={{ width: "100%", height: "100%", flex: 1 }}
+                source={require("../assets/Time.png")}
+                resizeMode="cover"
+            >
                 <View style={style.body}>
                     <View style={style.calendar}>
                         <FontAwesomeIcon icon={faCalendarAlt} size={80} />
@@ -182,7 +187,7 @@ class GoogleCalendarInput extends React.Component {
                         } /*this.props.navigation.navigate("FriendInput")*/
                     />
                 </View>
-            </View>
+            </ImageBackground>
         );
     }
 }
@@ -236,6 +241,6 @@ const style = StyleSheet.create({
         flex: 1,
         flexDirection: "row",
         justifyContent: "space-between",
-        margin: '5%',
+        margin: "5%",
     },
 });

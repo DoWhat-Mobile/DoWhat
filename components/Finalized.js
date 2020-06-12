@@ -56,13 +56,19 @@ const Finalized = (props) => {
             );
         };
 
+        /**
+         * Formats data prop for timeline library
+         */
         const data = [];
+        const timingsArray = [];
         let startTime = timeline[0];
+        timingsArray.push(startTime);
+        // checks if user selected food so dinner will be included if user has time 6pm onwards
         let food =
             (testEvents.includes("hawker") ||
                 testEvents.includes("restaurants") ||
                 testEvents.includes("cafes")) &&
-                startTime <= 13
+            startTime <= 13
                 ? 1
                 : 0;
 
@@ -95,18 +101,17 @@ const Finalized = (props) => {
                     testEvents.splice(i, 1);
                     console.log(testEvents);
                     startTime += events[genre]["duration"];
+                    timingsArray.push(startTime);
                 }
             }
             startTime++; // in case the start time is too early and there are no time slots to schedule
             if (food === 1 && startTime >= 18 && startTime < 20)
                 testEvents.push("hawker");
-            if (startTime > timeline[1]) break; //props.finalTiming[1]
+            if (startTime >= timeline[1]) break;
         }
 
         // Sends invite to all attendees of the finalized event
-        const sendGcalInvite = () => {
-
-        }
+        const sendGcalInvite = () => {};
 
         return (
             <View style={styles.container}>
@@ -125,9 +130,7 @@ const Finalized = (props) => {
 
                 <View style={styles.footer}>
                     <TouchableOpacity onPress={sendGcalInvite}>
-                        <Text style={styles.proceed}>
-                            Proceed
-                            </Text>
+                        <Text style={styles.proceed}>Proceed</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -147,8 +150,8 @@ const styles = StyleSheet.create({
     },
     footer: {
         flex: 1,
-        alignItems: 'center',
-        backgroundColor: 'white',
+        alignItems: "center",
+        backgroundColor: "white",
     },
     list: {
         flex: 1,
@@ -156,13 +159,13 @@ const styles = StyleSheet.create({
     },
     proceed: {
         borderWidth: 0.5,
-        marginBottom: '5%',
-        paddingTop: '1%',
-        paddingBottom: '1%',
-        paddingLeft: '20%',
-        paddingRight: '20%',
+        marginBottom: "5%",
+        paddingTop: "1%",
+        paddingBottom: "1%",
+        paddingLeft: "20%",
+        paddingRight: "20%",
         borderRadius: 5,
-    }
+    },
 });
 
 const mapStateToProps = (state) => {

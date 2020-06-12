@@ -6,7 +6,14 @@ import {
     goBack,
     finalizeTimeline,
 } from "../actions/timeline_actions";
-import { StyleSheet, View, Text, Button, TouchableOpacity } from "react-native";
+import {
+    StyleSheet,
+    View,
+    Text,
+    Button,
+    TouchableOpacity,
+    Image,
+} from "react-native";
 import { connect } from "react-redux";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -84,7 +91,7 @@ const Timeline = (props) => {
 
     const finalize = (values) => {
         setfinalTime();
-        props.navigation.navigate("Genre", { route: 'manual' });
+        props.navigation.navigate("Genre", { route: "manual" });
     };
 
     const modifyStartTime = () => {
