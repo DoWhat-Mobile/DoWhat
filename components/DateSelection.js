@@ -80,7 +80,7 @@ const DateSelection = (props) => {
 
     return (
         <ImageBackground
-            style={{ width: "100%", height: "100%", flex: 1 }}
+            style={{ width: "100%", height: "100%", flex: 1, opacity: 0.8 }}
             source={require("../assets/Picnic.jpg")}
             resizeMode="cover"
         >
@@ -144,11 +144,19 @@ const styles = StyleSheet.create({
         fontWeight: "200",
         fontSize: 25,
         color: "#bfff00",
+        borderTopEndRadius: 5,
+        paddingRight: 10,
+        paddingLeft: 10,
+        backgroundColor: "grey",
     },
     date: {
         textDecorationLine: "underline",
         fontSize: 20,
         color: "#bfff00",
+        borderTopEndRadius: 5,
+        paddingRight: 10,
+        paddingLeft: 35,
+        backgroundColor: "grey",
     },
     dateInput: {
         flex: 1,
