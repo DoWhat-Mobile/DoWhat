@@ -22,7 +22,7 @@ class AuthScreen extends Component {
     checkIfLoggedIn = () => {
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                this.props.navigation.navigate("DateSelection");
+                this.props.navigation.navigate("Home");
             }
         });
     };
@@ -32,7 +32,7 @@ class AuthScreen extends Component {
             // Get Oauth2 token
             const tokenResponse = await AppAuth.authAsync(OAuthConfig);
             this.getUserInfoAndSignIn(tokenResponse);
-            this.props.navigation.navigate("DateSelection");
+            this.props.navigation.navigate("Home");
         } catch (e) {
             console.log(e);
         }

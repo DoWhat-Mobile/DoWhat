@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 
 import store from "./store";
 import AuthScreen from "./components/AuthScreen";
-import WelcomeScreen from "./components/WelcomeScreen";
+import HomeScreen from "./components/HomeScreen";
 import Timeline from "./components/Timeline";
 import Genre from "./components/Genre";
 import Finalized from "./components/Finalized";
@@ -30,8 +30,8 @@ const MainNavigator = () => {
     YellowBox.ignoreWarnings(["Setting a timer"]);
     return (
         <Stack.Navigator>
-            {/* <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ title: null }} /> */}
             <Stack.Screen name="Auth" component={AuthScreen} options={{ title: null }} />
+            <Stack.Screen name="Home" component={HomeScreen} options={{ title: null }} />
             <Stack.Screen
                 name="Timeline"
                 component={Timeline}
