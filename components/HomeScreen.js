@@ -4,47 +4,63 @@
 import React from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 import { connect } from "react-redux";
-import { YellowBox } from "react-native";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Feed from './Feed';
+import Explore from './Explore';
 
+const Tab = createBottomTabNavigator();
+
+const MyTabs = (props) => {
+    return (
+        <Tab.Navigator
+            initialRouteName="Feed"
+            tabBarOptions={{
+                activeTintColor: '#e91e63',
+            }}
+        >
+            <Tab.Screen
+                name="Feed"
+                component={Feed}
+                options={{
+                    tabBarLabel: 'Home',
+                    tabBarIcon: ({ color, size }) => (
+                        <MaterialCommunityIcons name="home" color={color} size={size} />
+                    ),
+                }}
+            />
+
+            {/*
+            <Tab.Screen
+                name="Notifications"
+                component={Notifications}
+                options={{
+                    tabBarLabel: 'Updates',
+                    tabBarIcon: ({ color, size }) => (
+                        <MaterialCommunityIcons name="bell" color={color} size={size} />
+                    ),
+                }}
+            /> 
+            */}
+
+            <Tab.Screen
+                name="Explore"
+                component={Explore}
+                options={{
+                    tabBarLabel: 'Explore',
+                    tabBarIcon: ({ color, size }) => (
+                        <MaterialCommunityIcons name="feature-search" color={color} size={size} />
+                    ),
+                }}
+            />
+        </Tab.Navigator>
+    );
+}
 
 const HomeScreen = (props) => {
-    YellowBox.ignoreWarnings(["Setting a timer"]);
-
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text>Hi</Text>
-            </View>
-
-            <View style={styles.body}>
-                <Text style={{ textAlign: "center" }}>This will be the feed</Text>
-            </View>
-
-            <View style={styles.footer}>
-                <Text>Hi</Text>
-                <Button title="Let's get started" onPress={() => props.navigation.navigate("DateSelection")} />
-            </View>
-
-        </View >
+        <MyTabs />
     );
 };
 
 export default connect()(HomeScreen);
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    header: {
-        flex: 1,
-        backgroundColor: 'blue',
-    },
-    body: {
-        flex: 7,
-        justifyContent: 'center',
-    },
-    footer: {
-        flex: 1,
-        backgroundColor: 'pink',
-    },
-});

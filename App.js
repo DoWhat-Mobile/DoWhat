@@ -1,6 +1,5 @@
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Provider } from "react-redux";
 
@@ -15,7 +14,6 @@ import DateSelection from "./components/DateSelection";
 import FriendInput from "./components/FriendInput";
 import { YellowBox } from "react-native";
 
-const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 // might use tab navigator and define a static property
