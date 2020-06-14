@@ -7,6 +7,7 @@ import * as AppAuth from "expo-app-auth";
 import {
     OAuthConfig,
 } from "../reusable-functions/google_authentication_functions";
+import { REACT_APP_GOOGLE_API_KEY } from 'react-native-dotenv';
 
 export const handleProcess = async (formattedData, timingsArray) => {
     try {
@@ -77,8 +78,8 @@ const makeAPICall = async (requestBody, userEmail, accessToken) => {
     try {
         console.log(JSON.stringify(requestBody));
         fetch(
-            "https://www.googleapis.com/calendar/v3/calendars/" + encodeURI(userEmail) + //'hansybastian%40gmail.com' +
-            "/events?sendNotifications=true&sendUpdates=all&key=AIzaSyA98MBxh0oZKqPJC6SvGspEz60ImpEaW9Q",
+            "https://www.googleapis.com/calendar/v3/calendars/" + encodeURI(userEmail) +
+            "/events?sendNotifications=true&sendUpdates=all&key=" + REACT_APP_GOOGLE_API_KEY,
             {
                 method: "POST",
                 body: JSON.stringify(requestBody),

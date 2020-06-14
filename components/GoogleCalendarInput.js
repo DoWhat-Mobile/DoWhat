@@ -16,6 +16,7 @@ import {
     onSignIn,
     OAuthConfig,
 } from "../reusable-functions/google_authentication_functions";
+import { REACT_APP_GOOGLE_API_KEY } from 'react-native-dotenv';
 
 class GoogleCalendarInput extends React.Component {
     authenticateAndGetBusyPeriods = async () => {
@@ -55,7 +56,7 @@ class GoogleCalendarInput extends React.Component {
             }
 
             fetch(
-                "https://www.googleapis.com/calendar/v3/freeBusy?key=AIzaSyA98MBxh0oZKqPJC6SvGspEz60ImpEaW9Q",
+                "https://www.googleapis.com/calendar/v3/freeBusy?key=" + REACT_APP_GOOGLE_API_KEY,
                 {
                     method: "POST",
                     body: this.getData(userEmail),
