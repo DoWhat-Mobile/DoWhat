@@ -6,33 +6,7 @@ import { Card, Icon } from 'react-native-elements';
 
 const Feed = (props) => {
     const [isLoading, setIsLoading] = React.useState(true);
-
-    const getDataFromFirebase = () => {
-        firebase
-            .database()
-            .ref("events")
-            .once("value")
-            .then((snapshot) => {
-                const allCategories = snapshot.val(); // obj with events of all categories
-                handleEventsOf(allCategories);
-
-                setIsLoading(false); // Indicate that data is ready to be rendered
-            })
-    }
-
-    useEffect(() => {
-        getDataFromFirebase();
-    });
-
-    const handleTitlePress = (title) => {
-        if (title == 'What is currently popular') {
-            alert("Hello")
-        } else if (title == 'Hungry?') {
-            alert("Hungry")
-        } else {
-            alert("Find something new")
-        }
-    }
+    const [eventData, setEventData] = React.useState([]);
 
     // Data to be rendered in the feed
     const popularArray = [da, da, da, da, da];
@@ -61,6 +35,37 @@ const Feed = (props) => {
             keyExtractor={item => item.title}
         />
 
+    // var eventData = []; // [[da, da], [ta], [da, da]];
+
+    const getDataFromFirebase = () => {
+        firebase
+            .database()
+            .ref("events")
+            .once("value")
+            .then((snapshot) => {
+                const allCategories = snapshot.val(); // obj with events of all categories
+                setEventData(handleEventsOf(allCategories));
+                setIsLoading(false);
+            })
+    }
+
+    useEffect(() => {
+        if (isLoading) { // Prevent constant reloading when image renders
+            getDataFromFirebase();
+        }
+    });
+
+    const handleTitlePress = (title) => {
+        if (title == 'What is currently popular') {
+            alert("Hello")
+        } else if (title == 'Hungry?') {
+            alert("Hungry")
+        } else {
+            alert("Find something new")
+        }
+    }
+
+
 
     if (isLoading) {
         return (
@@ -68,26 +73,26 @@ const Feed = (props) => {
                 <ActivityIndicator size='large' />
             </View>
         )
-    } else {
-        return (
-            <View style={styles.container}>
-                <SectionList
-                    sections={[
-                        { title: "What is currently popular", data: [da, da, da] },
-                        { title: "Hungry?", data: [ta] },
-                        { title: "Find something new", data: [da, da, da] }
-                    ]}
-                    renderItem={({ item }) => item}
-                    renderSectionHeader={({ section }) =>
-                        <TouchableOpacity onPress={() => handleTitlePress(section.title)}>
-                            <Text style={styles.sectionHeader}>{section.title}</Text>
-                        </TouchableOpacity>
-                    }
-                    keyExtractor={(item, index) => index}
-                />
-            </View >
-        );
     }
+
+    return (
+        <View style={styles.container}>
+            <SectionList
+                sections={[
+                    { title: "What is currently popular", data: eventData[0] }, // eventData[0] is an array of <Card>
+                    { title: "Hungry?", data: eventData[1] }, // eventData[1] is an array of one element: [<Flatlist>]
+                    { title: "Find something new", data: eventData[0] } // eventData[2] is an array of <Card>
+                ]}
+                renderItem={({ item }) => item}
+                renderSectionHeader={({ section }) =>
+                    <TouchableOpacity onPress={() => handleTitlePress(section.title)}>
+                        <Text style={styles.sectionHeader}>{section.title}</Text>
+                    </TouchableOpacity>
+                }
+                keyExtractor={(item, index) => index}
+            />
+        </View >
+    );
 }
 
 export default Feed;
