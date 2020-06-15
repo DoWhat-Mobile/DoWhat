@@ -106,6 +106,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         fontFamily: 'serif',
-        color: '#14213d',
+        color: 'red',
     }
 });

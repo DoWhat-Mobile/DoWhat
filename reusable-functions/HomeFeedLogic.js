@@ -5,8 +5,11 @@
 import React from 'react';
 import { TIH_API_KEY } from 'react-native-dotenv';
 import { Card, Icon } from 'react-native-elements';
-import { Button, Text, View, FlatList } from 'react-native';
-import { render } from 'react-dom';
+import { Button, Text, FlatList } from 'react-native';
+
+/*****************/
+/*   ALGORITHMS  */
+/*****************/
 
 /**
  * Sort events by decreasing order of ratings 
@@ -25,8 +28,7 @@ const sortEventsByRatings = (allEventsObject) => {
         sortable.push([{
             title: currEvent.name,
             description: currEvent.description,
-            imageURL: currEvent.image,
-            location: currEvent.location,
+            imageURL: currEvent.image, location: currEvent.location,
             selected: false // To prevent duplicates when selecting 
         }, currEvent.rating])
         count++;
@@ -42,86 +44,6 @@ const sortEventsByRatings = (allEventsObject) => {
 // Min and max included. 
 const randomIntFromInterval = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-/**
- * Run through entire array and returns another array of the data 
- * injected with React elements. 
- * @param {*} event is an ARRAY of [{}, rating] 
- * @param {*} injectReactToEach is a function specifying how each element in the list view
- *  will be styled.
- */
-const injectReactToAll = (event, injectReactToEach) => {
-    var eventsInReactElement = [];
-    for (var i = 0; i < event.length; i++) {
-        eventsInReactElement.push(injectReactToEach(event[i]));
-    }
-    // Returns an ARRAY of styled elements
-    return eventsInReactElement;
-}
-
-// Takes in indivdual event array and inject it to <Card>, for vertical views 
-const renderWhatsPopular = (event) => {
-    var imageURI = event[0].imageURL;
-
-    // If imageURI is a code, convert it to URI using TIH API
-    if (imageURI.substring(0, 5) != 'https') {
-        imageURI = 'https://tih-api.stb.gov.sg/media/v1/download/uuid/' +
-            imageURI + '?apikey=' + TIH_API_KEY;
-    }
-
-    return (
-        <Card
-            title={event[0].title}
-            image={{ uri: imageURI }}>
-            <Text style={{ marginBottom: 10 }}>
-                {event[0].description}
-            </Text>
-            <Button
-                icon={<Icon name='code' color='#ffffff' />}
-                buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0 }}
-                title='VIEW NOW' />
-        </Card>
-    );
-}
-
-// Styling to be rendered for food selection in Home screen feed
-const renderFoodChoices = (events) => {
-    var imageURI = event[0].imageURL;
-
-    // If imageURI is a code, convert it to URI using TIH API
-    if (imageURI.substring(0, 5) != 'https') {
-        imageURI = 'https://tih-api.stb.gov.sg/media/v1/download/uuid/' +
-            imageURI + '?apikey=' + TIH_API_KEY;
-    }
-
-    return (
-        <Card
-            title={event[0].title}
-            image={{ uri: imageURI }}>
-            <Text style={{ marginBottom: 10 }}>
-                {event[0].description}
-            </Text>
-            <Button
-                icon={<Icon name='code' color='#ffffff' />}
-                buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0 }}
-                title='VIEW NOW' />
-        </Card>
-    );
-}
-
-// Horizontal <FlatList> for food choices
-const formatFoodArray = (event) => {
-    return (
-        <FlatList
-            data={injectReactToAll(event, renderFoodChoices)}
-            horizontal={true}
-            renderItem={({ item }) => (
-                item
-            )}
-            keyExtractor={item => item.title}
-        />
-    )
 }
 
 /**
@@ -209,6 +131,94 @@ const getPopularEvents = (allCategories) => {
     const final = injectReactToAll(result, renderWhatsPopular);
     return final; // Contains more popular food options of different categories
 }
+
+/*****************/
+/*    STYLING    */
+/*****************/
+
+/**
+ * Run through entire array and returns another array of the data 
+ * injected with React elements. 
+ * @param {*} event is an ARRAY of [{}, rating] 
+ * @param {*} injectReactToEach is a function specifying how each element in the list view
+ *  will be styled.
+ */
+const injectReactToAll = (event, injectReactToEach) => {
+    var eventsInReactElement = [];
+    for (var i = 0; i < event.length; i++) {
+        eventsInReactElement.push(injectReactToEach(event[i]));
+    }
+    // Returns an ARRAY of styled elements
+    return eventsInReactElement;
+}
+
+// Takes in indivdual event array and inject it to <Card>, for vertical views 
+const renderWhatsPopular = (event) => {
+    var imageURI = event[0].imageURL;
+
+    // If imageURI is a code, convert it to URI using TIH API
+    if (imageURI.substring(0, 5) != 'https') {
+        imageURI = 'https://tih-api.stb.gov.sg/media/v1/download/uuid/' +
+            imageURI + '?apikey=' + TIH_API_KEY;
+    }
+
+    return (
+        <Card
+            title={event[0].title}
+            image={{ uri: imageURI }}>
+            <Text style={{ marginBottom: 10 }}>
+                {event[0].description}
+            </Text>
+            <Button
+                icon={<Icon name='code' color='#ffffff' />}
+                buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0 }}
+                title='VIEW NOW' />
+        </Card>
+    );
+}
+
+// Styling to be rendered for food selection in Home screen feed
+const renderFoodChoices = (event) => {
+    var imageURI = event[0].imageURL;
+
+    // If imageURI is a code, convert it to URI using TIH API
+    if (imageURI.substring(0, 5) != 'https') {
+        imageURI = 'https://tih-api.stb.gov.sg/media/v1/download/uuid/' +
+            imageURI + '?apikey=' + TIH_API_KEY;
+    }
+
+    return (
+        <Card
+            title={event[0].title}
+            image={{ uri: imageURI }}>
+            <Text style={{ marginBottom: 10 }}>
+                {event[0].description.substring(0, event[0].description.indexOf(".") + 1)}
+            </Text>
+            <Button
+                icon={<Icon name='code' color='#ffffff' />}
+                buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0 }}
+                title='VIEW NOW' />
+        </Card>
+    );
+}
+
+// Horizontal <FlatList> for food choices
+const formatFoodArray = (event) => {
+    return (
+        <FlatList
+            data={injectReactToAll(event, renderFoodChoices)}
+            horizontal={true}
+            renderItem={({ item }) => (
+                item
+            )}
+            keyExtractor={item => item.title}
+        />
+    )
+}
+
+/*****************/
+/* EXPORTED CODE */
+/*****************/
 
 /**
  * Takes events from all categories, and extracts relavant data to create 3 components:
