@@ -5,7 +5,8 @@
 import React from 'react';
 import { TIH_API_KEY } from 'react-native-dotenv';
 import { Card, Icon } from 'react-native-elements';
-import { Button, Text, FlatList } from 'react-native';
+import { View, Button, Text, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 /*****************/
 /*   ALGORITHMS  */
@@ -22,14 +23,15 @@ const sortEventsByRatings = (allEventsObject) => {
     var count = 0;
 
     for (var prop in eventsList) {
-        if (count == 5) break; // We only take top 5 events
+        if (count == 11) break; // We only take top 10 events
 
         const currEvent = eventsList[prop];
         sortable.push([{
             title: currEvent.name,
             description: currEvent.description,
             imageURL: currEvent.image, location: currEvent.location,
-            selected: false // To prevent duplicates when selecting 
+            selected: false, // To prevent duplicates when selecting 
+            key: count // Index for key extractor in SectionList 
         }, currEvent.rating])
         count++;
     }
@@ -68,13 +70,15 @@ const getTopEateries = (restaurants, hawkers, cafes) => {
         const category = selections[j]; // Randomly selected category
         var eatery = category[k]; // One of top 5 (since 0 <= k <= 4)
 
-        if (eatery.selected) { // Selected eatery is unique
-            selections[j][k].selected = true; // Mark as selected so we dont have duplicates
+        if (!eatery.selected) { // Selected eatery is unique
+            eatery.selected = true; // Mark as selected so we dont have duplicates
 
-        } else { // If selected, reselect another option
-            const a = randomIntFromInterval(0, 4);
-            eatery = category[a]; // HIGHLY unlikely that even after reselect, still duplicate, though its possible.
-            selections[j][a].selected = true; // Mark as selected so we dont have duplicates
+        } else { // If already selected, reselect another option
+            while (eatery.selected) { // Ensure it is a unique selection
+                const a = randomIntFromInterval(0, 10);
+                eatery = category[a];
+            }
+            eatery.selected = true; // Mark as selected so we dont have duplicates
 
         }
 
@@ -107,6 +111,14 @@ const getPopularEvents = (allCategories) => {
     const topNature = sortEventsByRatings(allCategories.nature)
     const topNightlife = sortEventsByRatings(allCategories.nightlife)
 
+    const ensureValidSelection = (genre, index) => {
+        if (genre == 2) {// leisure has only 5 activities 
+            return index < 5
+        } else {
+            return true;
+        }
+    }
+
     const selections = [topAdventures, topArts, topLeisure, topNature, topNightlife]
     var result = [];
 
@@ -117,13 +129,18 @@ const getPopularEvents = (allCategories) => {
         const category = selections[j]; // Randomly selected category
         var event = category[k]; // One of top 5 (since 0 <= k <= 4)
 
-        if (event.selected) { // Selected eatery is unique
-            selections[j][k].selected = true; // Mark as selected so we dont have duplicates
+        if (!event.selected) { // Selected eatery is unique
+            event.selected = true; // Mark as selected so we dont have duplicates
 
         } else { // If selected, reselect another option
-            const a = randomIntFromInterval(0, 4);
-            event = category[a]; // HIGHLY unlikely that even after reselect, still duplicate, though its possible.
-            selections[j][a].selected = true; // Mark as selected so we dont have duplicates
+            while (event.selected) {
+                const a = randomIntFromInterval(0, 10);
+                while (!ensureValidSelection(j, a)) {
+                    a = randomIntFromInterval(0, 4)
+                };
+                event = category[a];
+            }
+            event.selected = true; // Mark as selected so we dont have duplicates
 
         }
         result.push(event);
@@ -163,17 +180,20 @@ const renderWhatsPopular = (event) => {
     }
 
     return (
-        <Card
-            title={event[0].title}
-            image={{ uri: imageURI }}>
-            <Text style={{ marginBottom: 10 }}>
-                {event[0].description}
-            </Text>
-            <Button
-                icon={<Icon name='code' color='#ffffff' />}
-                buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0 }}
-                title='VIEW NOW' />
-        </Card>
+        <TouchableOpacity onPress={() => alert("hello")}>
+            <View style={{ width: Dimensions.get('window').width }}>
+                <Card
+                    style={{ height: (Dimensions.get('window').height / 2) }}
+                    title={event[0].title}
+                    image={{ uri: imageURI }}
+                    imageStyle={{ height: 100, width: '100%' }}
+                >
+                    <Text style={{ marginBottom: 10, fontFamily: 'serif' }}>
+                        {event[0].description}
+                    </Text>
+                </Card>
+            </View>
+        </TouchableOpacity>
     );
 }
 
@@ -188,17 +208,20 @@ const renderFoodChoices = (event) => {
     }
 
     return (
-        <Card
-            title={event[0].title}
-            image={{ uri: imageURI }}>
-            <Text style={{ marginBottom: 10 }}>
-                {event[0].description.substring(0, event[0].description.indexOf(".") + 1)}
-            </Text>
-            <Button
-                icon={<Icon name='code' color='#ffffff' />}
-                buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0 }}
-                title='VIEW NOW' />
-        </Card>
+        <TouchableOpacity onPress={() => alert("hello")}>
+            <View style={{ width: Dimensions.get('window').width }}>
+                <Card
+                    style={{ height: (Dimensions.get('window').height / 2) }}
+                    title={event[0].title}
+                    image={{ uri: imageURI }}
+                    imageStyle={{ height: 100, width: 300 }}
+                >
+                    <Text style={{ marginBottom: 10, fontFamily: 'serif' }}>
+                        {event[0].description.substring(0, event[0].description.indexOf(".") + 1)}
+                    </Text>
+                </Card>
+            </View>
+        </TouchableOpacity>
     );
 }
 
@@ -238,3 +261,21 @@ export const handleEventsOf = (allCategories) => {
     // Array of data already formatted for SectionList data input
     return [popularEvents, topFoodEvents, popularEvents];
 }
+
+const styles = StyleSheet.create({
+    cardButton: {
+        borderRadius: 5,
+        marginLeft: '1%',
+        marginRight: '1%',
+        borderWidth: 0.2,
+        borderColor: 'black',
+        backgroundColor: '#457b9d',
+    },
+    moreDetailsButtonText: {
+        color: '#f1faee',
+        fontWeight: '300',
+        fontFamily: 'serif',
+        textAlign: "center",
+
+    }
+})

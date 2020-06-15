@@ -7,35 +7,7 @@ import { Card, Icon } from 'react-native-elements';
 const Feed = (props) => {
     const [isLoading, setIsLoading] = React.useState(true);
     const [eventData, setEventData] = React.useState([]);
-
-    // Data to be rendered in the feed
-    const popularArray = [da, da, da, da, da];
-    const foodArray = [da, da, da, da, da];
-
-    const da =
-        <Card
-            title='HELLO WORLD'
-            image={require('../assets/FriendsHangout.png')}>
-            <Text style={{ marginBottom: 10 }}>
-                The idea with React Native Elements is more about component structure than actual design.
-            </Text>
-            <Button
-                icon={<Icon name='code' color='#ffffff' />}
-                buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0 }}
-                title='VIEW NOW' />
-        </Card>
-
-    const ta =
-        <FlatList
-            data={[da, da, da]}
-            horizontal={true}
-            renderItem={({ item }) => (
-                item
-            )}
-            keyExtractor={item => item.title}
-        />
-
-    // var eventData = []; // [[da, da], [ta], [da, da]];
+    const [isRefreshing, setIsRefreshing] = React.useState(false);
 
     const getDataFromFirebase = () => {
         firebase
@@ -47,6 +19,12 @@ const Feed = (props) => {
                 setEventData(handleEventsOf(allCategories));
                 setIsLoading(false);
             })
+    }
+
+    const refreshPage = () => {
+        setIsRefreshing(true);
+        getDataFromFirebase();
+        setIsRefreshing(false);
     }
 
     useEffect(() => {
@@ -78,6 +56,9 @@ const Feed = (props) => {
     return (
         <View style={styles.container}>
             <SectionList
+                onRefresh={() => refreshPage()}
+                progressViewOffset={100}
+                refreshing={isRefreshing}
                 sections={[
                     { title: "What is currently popular", data: eventData[0] }, // eventData[0] is an array of <Card>
                     { title: "Hungry?", data: eventData[1] }, // eventData[1] is an array of one element: [<Flatlist>]
@@ -85,9 +66,12 @@ const Feed = (props) => {
                 ]}
                 renderItem={({ item }) => item}
                 renderSectionHeader={({ section }) =>
-                    <TouchableOpacity onPress={() => handleTitlePress(section.title)}>
-                        <Text style={styles.sectionHeader}>{section.title}</Text>
-                    </TouchableOpacity>
+                    <View style={styles.sectionHeader}>
+                        <TouchableOpacity
+                            onPress={() => handleTitlePress(section.title)}>
+                            <Text style={styles.sectionHeaderText}>{section.title}</Text>
+                        </TouchableOpacity>
+                    </View>
                 }
                 keyExtractor={(item, index) => index}
             />
@@ -102,10 +86,20 @@ const styles = StyleSheet.create({
         marginTop: '2%',
         flex: 1,
     },
-    sectionHeader: {
+    sectionHeaderText: {
         fontSize: 18,
         fontWeight: 'bold',
         fontFamily: 'serif',
-        color: 'red',
+        color: '#f1faee',
+        marginLeft: '2%',
+    },
+    sectionHeader: {
+        marginRight: 15,
+        marginTop: 5,
+        borderRadius: 5,
+        borderWidth: 0.5,
+        borderColor: 'black',
+        backgroundColor: '#e63946',
+
     }
 });
