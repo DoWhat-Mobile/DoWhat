@@ -8,7 +8,7 @@ import AuthScreen from "./components/AuthScreen";
 import HomeScreen from "./components/HomeScreen";
 import Timeline from "./components/Timeline";
 import Genre from "./components/Genre";
-import Finalized from "./components/Finalized";
+import Finalized from "./components/finalized/Finalized";
 import GoogleCalendarInput from "./components/GoogleCalendarInput";
 import DateSelection from "./components/DateSelection";
 import FriendInput from "./components/FriendInput";
@@ -28,22 +28,46 @@ const MainNavigator = () => {
     YellowBox.ignoreWarnings(["Setting a timer"]);
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Auth" component={AuthScreen} options={{ title: null }} />
-            <Stack.Screen name="Home" component={HomeScreen} options={{ title: null }} />
+            <Stack.Screen
+                name="Auth"
+                component={AuthScreen}
+                options={{ title: null }}
+            />
+            <Stack.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{ title: null }}
+            />
             <Stack.Screen
                 name="Timeline"
                 component={Timeline}
                 options={{ title: null }}
             />
-            <Stack.Screen name="Genre" component={Genre} options={{ title: null }} />
-            <Stack.Screen name="Finalized" component={Finalized} options={{ title: null }} />
+            <Stack.Screen
+                name="Genre"
+                component={Genre}
+                options={{ title: null }}
+            />
+            <Stack.Screen
+                name="Finalized"
+                component={Finalized}
+                options={{ title: null }}
+            />
             <Stack.Screen
                 name="GoogleCalendarInput"
                 component={GoogleCalendarInput}
                 options={{ title: null }}
             />
-            <Stack.Screen name="DateSelection" component={DateSelection} options={{ title: null }} />
-            <Stack.Screen name="FriendInput" component={FriendInput} options={{ title: null }} />
+            <Stack.Screen
+                name="DateSelection"
+                component={DateSelection}
+                options={{ title: null }}
+            />
+            <Stack.Screen
+                name="FriendInput"
+                component={FriendInput}
+                options={{ title: null }}
+            />
         </Stack.Navigator>
     );
 };

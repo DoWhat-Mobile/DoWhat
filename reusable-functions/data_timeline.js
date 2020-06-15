@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, Modal } from "react-native";
 import ReadMore from "react-native-read-more-text";
+import ShuffleModal from "../components/finalized/ShuffleModal";
 
 export const data_timeline = (timeline, testEvents, events) => {
     const renderTruncatedFooter = (handlePress) => {
@@ -53,7 +54,8 @@ export const data_timeline = (timeline, testEvents, events) => {
                 let activity = {
                     time: startTime + ":00",
                     title: `${event.name}`,
-
+                    imageUrl:
+                        "https://tih-api.stb.gov.sg/media/v1/download/uuid/10132baf126c20d4a988f0fd30b40a2680d?apikey=nmT0RwW609qcZImBPQY2cLEG6NcowaKW",
                     description: (
                         <ReadMore
                             numberOfLines={4}
@@ -65,6 +67,8 @@ export const data_timeline = (timeline, testEvents, events) => {
                             </Text>
                         </ReadMore>
                     ),
+
+                    id: genre,
                 };
                 data.push(activity);
                 testEvents.splice(i, 1);
