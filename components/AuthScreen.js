@@ -10,7 +10,7 @@ import * as AppAuth from "expo-app-auth";
 import {
     onSignIn,
     OAuthConfig,
-} from "../reusable-functions/google_authentication_functions";
+} from "../reusable-functions/GoogleAuthentication";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 class AuthScreen extends Component {

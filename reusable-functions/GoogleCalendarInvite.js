@@ -6,7 +6,7 @@ const firebase = require('firebase');
 import * as AppAuth from "expo-app-auth";
 import {
     OAuthConfig,
-} from "../reusable-functions/google_authentication_functions";
+} from "../reusable-functions/GoogleAuthentication";
 import { REACT_APP_GOOGLE_API_KEY } from 'react-native-dotenv';
 
 export const handleProcess = async (formattedData, timingsArray) => {
