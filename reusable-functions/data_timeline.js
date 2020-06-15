@@ -1,7 +1,6 @@
 import React from "react";
-import { View, Text, Modal } from "react-native";
+import { Text } from "react-native";
 import ReadMore from "react-native-read-more-text";
-import ShuffleModal from "../components/finalized/ShuffleModal";
 
 export const data_timeline = (timeline, testEvents, events) => {
     const renderTruncatedFooter = (handlePress) => {
@@ -54,8 +53,6 @@ export const data_timeline = (timeline, testEvents, events) => {
                 let activity = {
                     time: startTime + ":00",
                     title: `${event.name}`,
-                    imageUrl:
-                        "https://tih-api.stb.gov.sg/media/v1/download/uuid/10132baf126c20d4a988f0fd30b40a2680d?apikey=nmT0RwW609qcZImBPQY2cLEG6NcowaKW",
                     description: (
                         <ReadMore
                             numberOfLines={4}
@@ -89,6 +86,53 @@ export const data_timeline = (timeline, testEvents, events) => {
         num = testEvents.length; // in case the start time is too early and there are no time slots to schedule
 
         if (startTime >= timeline[1]) break;
+    }
+    return data;
+};
+
+export const data_shuffle = (events, unsatisfied) => {
+    const renderTruncatedFooter = (handlePress) => {
+        return (
+            <Text
+                style={{ color: "#595959", marginTop: 5 }}
+                onPress={handlePress}
+            >
+                Read more
+            </Text>
+        );
+    };
+
+    const renderRevealedFooter = (handlePress) => {
+        return (
+            <Text
+                style={{ color: "#595959", marginTop: 5 }}
+                onPress={handlePress}
+            >
+                Show less
+            </Text>
+        );
+    };
+    data = [];
+    for (i = 0; i < 3; i++) {
+        const eventObject = events[unsatisfied]["list"];
+        const numEvents = eventObject.length;
+        let randomNumber = Math.floor(Math.random() * numEvents);
+        let event = eventObject[randomNumber];
+        let obj = {
+            key: randomNumber,
+            name: event.name,
+            location: event.location,
+            description: (
+                <ReadMore
+                    numberOfLines={3}
+                    renderTruncatedFooter={renderTruncatedFooter}
+                    renderRevealedFooter={renderRevealedFooter}
+                >
+                    <Text>{event.description}</Text>
+                </ReadMore>
+            ),
+        };
+        data.push(obj);
     }
     return data;
 };
