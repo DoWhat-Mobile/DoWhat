@@ -20,7 +20,7 @@ const Explore = (props) => {
             </View>
 
             <View style={styles.footer}>
-                <Button title="Plan activities for me66" onPress={() => props.navigation.navigate("DateSelection")} />
+                <Button title="Plan activities for me" onPress={() => props.navigation.navigate("DateSelection")} />
             </View>
 
         </View >
