@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Button } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 import Timeline from "react-native-timeline-flatlist";
@@ -89,6 +89,7 @@ const Finalized = (props) => {
                     let activity = {
                         time: startTime + ":00",
                         title: `${event.name}`,
+                        genre: genre,
 
                         description: (
                             <ReadMore
@@ -127,7 +128,7 @@ const Finalized = (props) => {
             const formattedData = formatEventsData(data); // Formatted data contains event title
             // handleProcess function and all other logic is in GoogleCalendarInvite.js
             await handleProcess(formattedData, timingsArray);
-            props.navigation.navigate("DateSelection"); // navigate back once done
+            props.navigation.navigate("Home"); // navigate back once done
         }
 
         return (

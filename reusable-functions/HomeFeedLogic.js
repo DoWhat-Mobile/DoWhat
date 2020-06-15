@@ -7,6 +7,7 @@ import { TIH_API_KEY } from 'react-native-dotenv';
 import { Card, Icon } from 'react-native-elements';
 import { View, Button, Text, FlatList, StyleSheet, Dimensions } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import firebase from '../database/firebase';
 
 /*****************/
 /*   ALGORITHMS  */
@@ -214,7 +215,7 @@ const renderFoodChoices = (event) => {
                     style={{ height: (Dimensions.get('window').height / 2) }}
                     title={event[0].title}
                     image={{ uri: imageURI }}
-                    imageStyle={{ height: 100, width: 300 }}
+                    imageStyle={{ height: 100, width: Dimensions.get('window').width * 0.9 }}
                 >
                     <Text style={{ marginBottom: 10, fontFamily: 'serif' }}>
                         {event[0].description.substring(0, event[0].description.indexOf(".") + 1)}
