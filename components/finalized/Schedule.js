@@ -13,13 +13,12 @@ const Schedule = ({ timeline, testEvents, events }) => {
         setData(data_timeline(timeline, testEvents, events, visible));
     }, []);
 
-    const onReselect = () => {
-        // const updatedData = data.map((item) => {
-        //     if (item === event)
-        //         return Object.assign({}, item, { title: "changed" });
-        //     return item;
-        // });
-        // setData(updatedData);
+    const onReselect = (selected) => {
+        const updatedData = data.map((item) => {
+            if (item === unsatisfied) return selected;
+            return item;
+        });
+        setData(updatedData);
     };
 
     const onClose = () => {
@@ -27,7 +26,7 @@ const Schedule = ({ timeline, testEvents, events }) => {
     };
 
     const onEventPress = (event) => {
-        setUnsatisfied(event["id"]);
+        setUnsatisfied(event);
         setVisible(true);
     };
 

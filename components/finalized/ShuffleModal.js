@@ -5,21 +5,6 @@ import Item from "./ModalItem";
 import { data_shuffle } from "../../reusable-functions/data_timeline";
 
 const ShuffleModal = ({ onReselect, onClose, unsatisfied, events }) => {
-    // const data = [
-    //     {
-    //         key: randomNumber,
-    //         name: event.name,
-    //     },
-    //     {
-    //         key: randomNumber,
-    //         name: event.name,
-    //     },
-    //     {
-    //         key: randomNumber,
-    //         name: event.name,
-    //     },
-    // ];
-
     return (
         <View style={styles.container}>
             {/* <Text>{unsatisfied}</Text> */}
@@ -30,9 +15,19 @@ const ShuffleModal = ({ onReselect, onClose, unsatisfied, events }) => {
                 style={styles.close}
             />
             <FlatList
-                data={data_shuffle(events, unsatisfied)}
-                renderItem={({ item }) => <Item item={item} />}
-                keyExtractor={(item) => item.title}
+                data={data_shuffle(
+                    events,
+                    unsatisfied["id"],
+                    unsatisfied["time"]
+                )}
+                renderItem={({ item }) => (
+                    <Item
+                        item={item}
+                        onReselect={onReselect}
+                        onClose={onClose}
+                    />
+                )}
+                keyExtractor={(item) => item.name}
                 style={{ marginTop: 40 }}
             />
         </View>

@@ -2,11 +2,16 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Card } from "react-native-elements";
 
-const Item = ({ item }) => {
+const Item = ({ item, onReselect, onClose }) => {
     return (
-        <TouchableOpacity onPress={() => console.log(item)}>
+        <TouchableOpacity
+            onPress={() => {
+                onReselect(item);
+                onClose();
+            }}
+        >
             <Card
-                title={item.name}
+                title={item.title}
                 containerStyle={{
                     flex: 1,
                     justifyContent: "center",

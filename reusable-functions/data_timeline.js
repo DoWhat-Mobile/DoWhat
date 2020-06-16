@@ -90,7 +90,7 @@ export const data_timeline = (timeline, testEvents, events) => {
     return data;
 };
 
-export const data_shuffle = (events, unsatisfied) => {
+export const data_shuffle = (events, unsatisfied, time) => {
     const renderTruncatedFooter = (handlePress) => {
         return (
             <Text
@@ -119,8 +119,8 @@ export const data_shuffle = (events, unsatisfied) => {
         let randomNumber = Math.floor(Math.random() * numEvents);
         let event = eventObject[randomNumber];
         let obj = {
-            key: randomNumber,
-            name: event.name,
+            title: event.name,
+            time: time,
             location: event.location,
             description: (
                 <ReadMore
@@ -131,6 +131,7 @@ export const data_shuffle = (events, unsatisfied) => {
                     <Text>{event.description}</Text>
                 </ReadMore>
             ),
+            id: unsatisfied,
         };
         data.push(obj);
     }
