@@ -1,9 +1,21 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button } from "react-native";
 import { SearchBar } from 'react-native-elements';
+import * as Linking from "expo-linking";
 
 const Explore = (props) => {
     const [search, updateSearch] = React.useState('');
+    const [URL, setURL] = React.useState('');
+    const [path, setPath] = React.useState('');
+
+    const _handleUrl = () => {
+        Linking.getInitialURL() // Promise resolved to the url used to open this app
+            .then(url => {
+                setURL({ url });
+                let { path, queryParams } = Linking.parse(url);
+                alert(`Linked to app with path: ${path} and data: ${JSON.stringify(queryParams)}` + '\n URL Is: ' + url);
+            })
+    };
 
     return (
         <View style={styles.container}>
@@ -20,6 +32,7 @@ const Explore = (props) => {
             </View>
 
             <View style={styles.footer}>
+                <Button title="Get Details from URL" onPress={() => _handleUrl()} />
                 <Button title="Plan activities for me" onPress={() => props.navigation.navigate("DateSelection")} />
             </View>
 

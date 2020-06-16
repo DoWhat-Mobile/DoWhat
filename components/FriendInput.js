@@ -3,6 +3,7 @@ import { Image, View, Text, StyleSheet } from "react-native";
 import * as Linking from "expo-linking";
 import firebase from "../database/firebase";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { connect } from 'react-redux';
 
 /**
  * This component is a page for user to determine how many friends will be added to find the
@@ -17,7 +18,11 @@ class FriendInput extends React.Component {
             url +
             "&text=" +
             "\n" +
-            "Here is the link to input your calendar availability!"
+            "Here is the link to input your calendar availability!" +
+            "\n\n" +
+            "Otherwise, use this link if you already have DoWhat on your phone!" +
+            "\n" +
+            Linking.makeUrl('', { inviterUID: this.props.userID }) // Include link to DoWhat mobile app
         );
     };
 
@@ -26,7 +31,12 @@ class FriendInput extends React.Component {
             "whatsapp://send?" +
             "text=Here is the link to input your calendar availability! " +
             "\n" +
-            url)
+            url +
+            "\n\n" +
+            "Otherwise, use this link if you already have DoWhat on your phone!" +
+            "\n" +
+            Linking.makeUrl('', { inviterUID: this.props.userID }) // Including link to DoWhat mobile app
+        )
             .catch(err => alert("Please download WhatsApp to use this feature"))
     };
 
@@ -41,7 +51,6 @@ class FriendInput extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-
                 <View style={styles.header}>
                     <Text style={styles.titleText}>Invite your friends</Text>
                 </View>
@@ -83,13 +92,34 @@ class FriendInput extends React.Component {
                             Done
                         </Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
+                        onPress={() => alert(Linking.makeUrl('', { inviterUID: this.props.userID }))}>
+                        <Text style={{ fontSize: 11, color: 'white' }}>
+                            GetURL
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
+                        onPress={() => Linking.openURL(Linking.makeUrl('', { inviterUID: this.props.userID }))}>
+                        <Text style={{ fontSize: 11, color: 'white' }}>
+                            Open UrL
+                        </Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         );
     }
 }
 
-export default FriendInput;
+const mapStateToProps = (state) => {
+    console.log("State is:", state.add_events.userID);
+    return {
+        userID: state.add_events.userID
+    };
+};
+
+export default connect(mapStateToProps, null)(FriendInput);
 
 const styles = StyleSheet.create({
     container: {

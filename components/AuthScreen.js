@@ -4,7 +4,7 @@
 import React, { Component } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
-import { addEvents } from "../actions/auth_screen_actions";
+import { addEvents, addUID } from "../actions/auth_screen_actions";
 const firebase = require('firebase');
 import * as AppAuth from "expo-app-auth";
 import {
@@ -16,8 +16,10 @@ import Icon from "react-native-vector-icons/FontAwesome";
 class AuthScreen extends Component {
     componentDidMount() {
         this.checkIfLoggedIn();
+        this.addEventsToState(); // Add events from Firebase DB to Redux state
     }
 
+    // Add database of all events from firebase to redux state
     addEventsToState = () => {
         firebase.database()
             .ref("events")
@@ -31,7 +33,7 @@ class AuthScreen extends Component {
     checkIfLoggedIn = () => {
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                this.addEventsToState();
+                this.props.addUID(user.uid) // Add user ID to Redux state
                 this.props.navigation.navigate("Home");
             }
         });
@@ -41,10 +43,9 @@ class AuthScreen extends Component {
         try {
             // Get Oauth2 token
             const tokenResponse = await AppAuth.authAsync(OAuthConfig);
-            await this.getUserInfoAndSignIn(tokenResponse);
-            this.checkIfLoggedIn()
-            //this.addEventsToState();
-            //this.props.navigation.navigate("Home");
+            this.getUserInfoAndSignIn(tokenResponse);
+            this.props.navigation.navigate("Home");
+
         } catch (e) {
             console.log(e);
         }
@@ -71,7 +72,10 @@ class AuthScreen extends Component {
                     data["refreshToken"] = token.refreshToken;
                     data["accessTokenExpirationDate"] =
                         token.accessTokenExpirationDate;
-                    onSignIn(data); // Sign in to Google's firebase
+                    return onSignIn(data); // Sign in to Google's firebase
+                })
+                .then(userID => {
+
                 });
         } catch (e) {
             console.log(e);
@@ -120,7 +124,7 @@ class AuthScreen extends Component {
 }
 
 const mapDispatchToProps = {
-    addEvents,
+    addEvents, addUID
 };
 
 export default connect(null, mapDispatchToProps)(AuthScreen);

@@ -8,6 +8,7 @@ import {
     handleProcess,
     formatEventsData,
 } from "../reusable-functions/GoogleCalendarInvite";
+import ReadMore from "react-native-read-more-text";
 
 const Finalized = (props) => {
     const [events, setEvents] = React.useState([]);

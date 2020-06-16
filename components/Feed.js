@@ -18,7 +18,6 @@ const Feed = (props) => {
         try {
             const database = firebase.database();
             const userId = firebase.auth().currentUser.uid;
-
             database.ref("users/" + userId)
                 .once("value")
                 .then((snapshot) => {
@@ -95,8 +94,10 @@ const Feed = (props) => {
 }
 
 const mapStateToProps = (state) => {
+    console.log("State is:", state.add_events.userID);
     return {
-        allEvents: state.add_events.events
+        allEvents: state.add_events.events,
+        userID: state.add_events.userID
     };
 };
 
