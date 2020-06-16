@@ -56,7 +56,7 @@ const Genre = (props) => {
                 setFreeTime(props.finalTiming);
                 setIsLoading(false);
             });
-    });
+    }, []);
 
     if (isLoading) {
         return <Text>Wait for all friends to input their time</Text>;

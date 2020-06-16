@@ -1,11 +1,8 @@
 import React from "react";
 import { Text } from "react-native";
-import Timeline from "react-native-timeline-flatlist";
 import ReadMore from "react-native-read-more-text";
 
-const Schedule = ({ timeline, testEvents, events }) => {
-    // const timeFromLink = props.finalGenres[1];
-
+export const data_timeline = (timeline, testEvents, events) => {
     const renderTruncatedFooter = (handlePress) => {
         return (
             <Text
@@ -38,7 +35,7 @@ const Schedule = ({ timeline, testEvents, events }) => {
         (testEvents.includes("hawker") ||
             testEvents.includes("restaurants") ||
             testEvents.includes("cafes")) &&
-        startTime <= 13
+            startTime <= 13
             ? 1
             : 0;
 
@@ -48,15 +45,14 @@ const Schedule = ({ timeline, testEvents, events }) => {
             const genre = testEvents[i];
             const eventObject = events[genre]["list"];
             const numEvents = eventObject.length;
-            const randomNumber = Math.floor(Math.random() * numEvents);
-            const event = eventObject[randomNumber];
+            let randomNumber = Math.floor(Math.random() * numEvents);
+            let event = eventObject[randomNumber];
             if (events[genre].slots.includes(startTime)) {
                 let intervalObject = { start: 0, end: 0 };
                 intervalObject.start = startTime;
                 let activity = {
                     time: startTime + ":00",
                     title: `${event.name}`,
-
                     description: (
                         <ReadMore
                             numberOfLines={4}
@@ -68,11 +64,12 @@ const Schedule = ({ timeline, testEvents, events }) => {
                             </Text>
                         </ReadMore>
                     ),
+
+                    id: genre,
                 };
                 data.push(activity);
                 testEvents.splice(i, 1);
                 console.log(testEvents);
-                num = testEvents.length;
                 startTime += events[genre]["duration"];
                 intervalObject.end =
                     startTime > timeline[1] ? timeline[1] : startTime;
@@ -85,23 +82,60 @@ const Schedule = ({ timeline, testEvents, events }) => {
         }
         if (num === testEvents.length) {
             startTime++;
-        } // in case the start time is too early and there are no time slots to schedule
+        }
+        num = testEvents.length; // in case the start time is too early and there are no time slots to schedule
 
         if (startTime >= timeline[1]) break;
     }
-
-    return (
-        <Timeline
-            data={data}
-            timeStyle={{
-                textAlign: "center",
-                backgroundColor: "#ff9797",
-                color: "white",
-                padding: 5,
-                borderRadius: 13,
-            }}
-        />
-    );
+    return [data, timingsArray];
 };
 
-export default Schedule;
+export const data_shuffle = (events, unsatisfied, time) => {
+    const renderTruncatedFooter = (handlePress) => {
+        return (
+            <Text
+                style={{ color: "#595959", marginTop: 5 }}
+                onPress={handlePress}
+            >
+                Read more
+            </Text>
+        );
+    };
+
+    const renderRevealedFooter = (handlePress) => {
+        return (
+            <Text
+                style={{ color: "#595959", marginTop: 5 }}
+                onPress={handlePress}
+            >
+                Show less
+            </Text>
+        );
+    };
+    data = [];
+    for (i = 0; i < 3; i++) {
+        const eventObject = events[unsatisfied]["list"];
+        const numEvents = eventObject.length;
+        let randomNumber = Math.floor(Math.random() * numEvents);
+        let event = eventObject[randomNumber];
+        let obj = {
+            title: event.name,
+            time: time,
+
+            description: (
+                <ReadMore
+                    numberOfLines={3}
+                    renderTruncatedFooter={renderTruncatedFooter}
+                    renderRevealedFooter={renderRevealedFooter}
+                >
+                    <Text>
+                        {event.location} {"\n\n"} {event.description}
+                    </Text>
+                </ReadMore>
+            ),
+            id: unsatisfied,
+        };
+        data.push(obj);
+    }
+    return data;
+};
