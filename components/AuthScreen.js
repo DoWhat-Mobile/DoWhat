@@ -28,7 +28,6 @@ class AuthScreen extends Component {
             })
     }
 
-    // If user already logged in, direct user to Gcal input
     checkIfLoggedIn = () => {
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
@@ -43,8 +42,9 @@ class AuthScreen extends Component {
             // Get Oauth2 token
             const tokenResponse = await AppAuth.authAsync(OAuthConfig);
             await this.getUserInfoAndSignIn(tokenResponse);
-            this.addEventsToState();
-            this.props.navigation.navigate("Home");
+            this.checkIfLoggedIn()
+            //this.addEventsToState();
+            //this.props.navigation.navigate("Home");
         } catch (e) {
             console.log(e);
         }

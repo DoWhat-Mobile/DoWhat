@@ -5,7 +5,7 @@
 import React from 'react';
 import { TIH_API_KEY } from 'react-native-dotenv';
 import { Card, Icon } from 'react-native-elements';
-import { View, Button, Text, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { View, Button, Text, FlatList, StyleSheet, Dimensions, Image } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 /*****************/
@@ -145,12 +145,21 @@ const getTopEventsFromGenres = (genre1, genre2, allCategories) => {
         }
     }
 
+    const genreIsEatery = (index) => {
+        return genreChecker[index] == 'cafes' ||
+            genreChecker[index] == 'restaurants' || genreChecker[index] == 'hawker';
+    }
 
     var result = [];
 
     for (var i = 0; i < 5; i++) { // Get top 5 events
         const j = randomIntFromInterval(0, 1); // selections array index
-        const k = randomIntFromInterval(0, 4);
+        var k = randomIntFromInterval(0, 4);
+
+        // For case where show something new genre is eatery, prevent duplicates from the eateries
+        if (genreIsEatery(j)) {
+            k = randomIntFromInterval(5, 9); // Eateries use index 0-4
+        }
 
         const category = selections[j]; // Randomly selected category
         var event = category[k]; // One of top 5 (since 0 <= k <= 4)
@@ -269,9 +278,12 @@ const renderWhatsPopular = (event) => {
                 <Card
                     style={{ height: (Dimensions.get('window').height / 2) }}
                     title={event[0].title}
-                    image={{ uri: imageURI }}
-                    imageStyle={{ height: 100, width: '100%' }}
                 >
+                    <Image
+                        source={{ uri: imageURI }}
+                        style={{ height: 100, width: '100%' }}
+                    />
+
                     <Text style={{ marginBottom: 10, fontFamily: 'serif' }}>
                         {event[0].description}
                     </Text>
@@ -297,9 +309,11 @@ const renderFoodChoices = (event) => {
                 <Card
                     style={{ height: (Dimensions.get('window').height / 2) }}
                     title={event[0].title}
-                    image={{ uri: imageURI }}
-                    imageStyle={{ height: 100, width: Dimensions.get('window').width * 0.9 }}
                 >
+                    <Image
+                        source={{ uri: imageURI }}
+                        style={{ height: 100, width: Dimensions.get('window').width * 0.9 }}
+                    />
                     <Text style={{ marginBottom: 10, fontFamily: 'serif' }}>
                         {event[0].description.substring(0, event[0].description.indexOf(".") + 1)}
                     </Text>
