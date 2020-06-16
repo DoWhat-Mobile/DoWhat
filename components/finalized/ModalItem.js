@@ -23,10 +23,6 @@ const Item = ({ item, onReselect, onClose }) => {
                 }}
             >
                 <View>
-                    <Text>
-                        {item.location}
-                        {"\n"}
-                    </Text>
                     <View>{item.description}</View>
                 </View>
             </Card>

@@ -121,14 +121,16 @@ export const data_shuffle = (events, unsatisfied, time) => {
         let obj = {
             title: event.name,
             time: time,
-            location: event.location,
+
             description: (
                 <ReadMore
                     numberOfLines={3}
                     renderTruncatedFooter={renderTruncatedFooter}
                     renderRevealedFooter={renderRevealedFooter}
                 >
-                    <Text>{event.description}</Text>
+                    <Text>
+                        {event.location} {"\n\n"} {event.description}
+                    </Text>
                 </ReadMore>
             ),
             id: unsatisfied,
