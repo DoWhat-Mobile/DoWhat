@@ -2,10 +2,12 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Button } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../actions";
-import Timeline from "react-native-timeline-flatlist";
 import firebase from "../database/firebase";
-import ReadMore from "react-native-read-more-text";
-import { handleProcess, formatEventsData } from "../reusable-functions/GoogleCalendarInvite";
+import Schedule from "./Schedule";
+import {
+    handleProcess,
+    formatEventsData,
+} from "../reusable-functions/GoogleCalendarInvite";
 
 const Finalized = (props) => {
     const [events, setEvents] = React.useState([]);
@@ -26,12 +28,21 @@ const Finalized = (props) => {
 
     if (isLoading) {
         return (
-            <View style={{ flex: 1, alignContent: 'center', justifyContent: 'center' }}>
-                <ActivityIndicator style={{ alignSelf: 'center' }} size='large' />
-            </View>);
+            <View
+                style={{
+                    flex: 1,
+                    alignContent: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <ActivityIndicator
+                    style={{ alignSelf: "center" }}
+                    size="large"
+                />
+            </View>
+        );
     } else {
         const testEvents = props.finalGenres[0];
-        // const timeFromLink = props.finalGenres[1];
 
         const timeline =
             props.route.params.route === "manual"
@@ -134,23 +145,18 @@ const Finalized = (props) => {
         return (
             <View style={styles.container}>
                 <View style={styles.body}>
-                    <Timeline
-                        data={data}
-                        timeStyle={{
-                            textAlign: "center",
-                            backgroundColor: "#ff9797",
-                            color: "white",
-                            padding: 5,
-                            borderRadius: 13,
-                        }}
+                    <Schedule
+                        timeline={timeline}
+                        testEvents={testEvents}
+                        events={events}
                     />
                 </View>
 
                 <View style={styles.footer}>
-                    <TouchableOpacity onPress={sendGcalInviteAndResetAttendeeData}>
-                        <Text style={styles.proceed}>
-                            Proceed
-                            </Text>
+                    <TouchableOpacity
+                        onPress={sendGcalInviteAndResetAttendeeData}
+                    >
+                        <Text style={styles.proceed}>Proceed</Text>
                     </TouchableOpacity>
                 </View>
             </View>
