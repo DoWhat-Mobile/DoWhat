@@ -21,10 +21,12 @@ export const handleProcess = async (formattedData, timingsArray) => {
                 const attendees = userData.all_attendees; // Object with all attendees
                 const selectedDate = userData.selected_date; // From date selection component
                 const userEmail = userData.gmail;
+                const userPreferences = userData.preferences; // {adventure: 0, arts: 0, cafes: 0, ...}
                 const accessToken = [userData.access_token,
                 userData.access_token_expiration,
                 userData.refresh_token];
 
+                updateUserPreferences(userPreferences, userId, formattedData);
                 const formattedAttendeeEmails = formatAttendeeEmails(attendees);
                 formatRequestAndMakeAPICall(formattedAttendeeEmails,
                     formattedData,
@@ -36,6 +38,43 @@ export const handleProcess = async (formattedData, timingsArray) => {
 
     } catch (e) {
         console.log(e);
+    }
+}
+
+/**
+ * Keeps track of the genres that users tend to accept more. This info can be used to recommend 
+ * activities in the home screen (Show new things that users don't usually expose themselves to). 
+ */
+const updateUserPreferences = async (userPreferences, userId, formattedData) => {
+    var finalPreferneces = { // Count how many times they were chosen by this user account
+        adventure: 0,
+        arts: 0,
+        cafes: 0,
+        hawker: 0,
+        leisure: 0,
+        nature: 0,
+        nightlife: 0,
+        restaurants: 0
+    }
+    formattedData.forEach(event => {
+        const genre = event.eventGenre;
+        finalPreferneces[genre] += 1;
+    })
+
+    if (userPreferences == undefined) { // First time using app, no preference stored yet
+        firebase.database()
+            .ref("users/" + userId)
+            .child("preferences")
+            .update(finalPreferneces);
+
+    } else { // Already have existing data in userPreferences parameter
+        for (var genre in userPreferences) {
+            finalPreferneces[genre] += parseInt(userPreferences[genre]); // Update final preference
+        }
+        firebase.database()
+            .ref("users/" + userId)
+            .child("preferences")
+            .update(finalPreferneces)
     }
 }
 
@@ -162,8 +201,12 @@ export const formatEventsData = (data) => {
     var allEventDetails = [];
     data.forEach(event => {
         const title = event.title;
-        // const time = event.time; // Event time now gotten from timingsArray from finalized comp
-        allEventDetails.push({ eventTitle: title });
+        const eventGenre = event.genre
+
+        allEventDetails.push({
+            eventTitle: title,
+            eventGenre: eventGenre
+        });
     })
     return allEventDetails;
 }
