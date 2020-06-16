@@ -18,3 +18,8 @@ export const FINALIZE_GENRE = "FINALIZE_GENRE";
  * Actions for date selection
  */
 export const DATE_SELECT = "DATE_SELECT";
+
+/**
+ * Actions for auth screen
+ */
+export const ADD_EVENTS = "ADD_EVENTS";

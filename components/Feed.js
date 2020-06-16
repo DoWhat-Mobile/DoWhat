@@ -1,24 +1,39 @@
 import React, { useEffect } from 'react';
-import { View, Text, Button, StyleSheet, SectionList, ActivityIndicator, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, SectionList, ActivityIndicator, TouchableOpacity } from "react-native";
 import firebase from '../database/firebase';
 import { handleEventsOf } from '../reusable-functions/HomeFeedLogic';
-import { Card, Icon } from 'react-native-elements';
+import { connect } from 'react-redux';
 
+/**
+ * User feed in home page. Has 3 divisions: Show whats popular, eateries, and activities
+ * that the user does not normally engage in.
+ * @param {*} props 
+ */
 const Feed = (props) => {
     const [isLoading, setIsLoading] = React.useState(true);
     const [eventData, setEventData] = React.useState([]);
     const [isRefreshing, setIsRefreshing] = React.useState(false);
 
-    const getDataFromFirebase = () => {
-        firebase
-            .database()
-            .ref("events")
-            .once("value")
-            .then((snapshot) => {
-                const allCategories = snapshot.val(); // obj with events of all categories
-                setEventData(handleEventsOf(allCategories));
-                setIsLoading(false);
-            })
+    const getDataFromFirebase = async () => {
+        try {
+            const database = firebase.database();
+            const userId = firebase.auth().currentUser.uid;
+
+            database.ref("users/" + userId)
+                .once("value")
+                .then((snapshot) => {
+                    const userData = snapshot.val();
+                    const allCategories = props.allEvents; // Get all events from redux state 
+
+                    if (Object.keys(allCategories).length !== 0) { // Check that event has already been loaded from redux state
+                        const data = handleEventsOf(allCategories, userData.preferences);
+                        setEventData(data)
+                        setIsLoading(false)
+                    }
+                })
+        } catch (err) {
+            console.log("Error getting data from firebase: ", err);
+        }
     }
 
     const refreshPage = () => {
@@ -62,7 +77,7 @@ const Feed = (props) => {
                 sections={[
                     { title: "What is currently popular", data: eventData[0] }, // eventData[0] is an array of <Card>
                     { title: "Hungry?", data: eventData[1] }, // eventData[1] is an array of one element: [<Flatlist>]
-                    { title: "Find something new", data: eventData[0] } // eventData[2] is an array of <Card>
+                    { title: "Find something new", data: eventData[2] } // eventData[2] is an array of <Card>
                 ]}
                 renderItem={({ item }) => item}
                 renderSectionHeader={({ section }) =>
@@ -79,7 +94,13 @@ const Feed = (props) => {
     );
 }
 
-export default Feed;
+const mapStateToProps = (state) => {
+    return {
+        allEvents: state.add_events.events
+    };
+};
+
+export default connect(mapStateToProps, null)(Feed);
 
 const styles = StyleSheet.create({
     container: {

@@ -4,7 +4,7 @@
 import React, { Component } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
-import * as actions from "../actions";
+import { addEvents } from "../actions/auth_screen_actions";
 const firebase = require('firebase');
 import * as AppAuth from "expo-app-auth";
 import {
@@ -18,10 +18,21 @@ class AuthScreen extends Component {
         this.checkIfLoggedIn();
     }
 
+    addEventsToState = () => {
+        firebase.database()
+            .ref("events")
+            .once("value")
+            .then((snapshot) => {
+                const allCategories = snapshot.val(); // obj with events of all categories
+                this.props.addEvents(allCategories);
+            })
+    }
+
     // If user already logged in, direct user to Gcal input
     checkIfLoggedIn = () => {
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
+                this.addEventsToState();
                 this.props.navigation.navigate("Home");
             }
         });
@@ -31,7 +42,8 @@ class AuthScreen extends Component {
         try {
             // Get Oauth2 token
             const tokenResponse = await AppAuth.authAsync(OAuthConfig);
-            this.getUserInfoAndSignIn(tokenResponse);
+            await this.getUserInfoAndSignIn(tokenResponse);
+            this.addEventsToState();
             this.props.navigation.navigate("Home");
         } catch (e) {
             console.log(e);
@@ -107,7 +119,11 @@ class AuthScreen extends Component {
     }
 }
 
-export default connect(null, actions)(AuthScreen);
+const mapDispatchToProps = {
+    addEvents,
+};
+
+export default connect(null, mapDispatchToProps)(AuthScreen);
 
 const style = StyleSheet.create({
     container: {
