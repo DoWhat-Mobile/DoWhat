@@ -22,14 +22,8 @@ const Finalized = (props) => {
     console.log("Finalized time from Gcal is: ", props.finalGenres[1]);
 
     React.useEffect(() => {
-        firebase
-            .database()
-            .ref("events")
-            .once("value")
-            .then((snapshot) => {
-                setEvents(snapshot.val());
-                setIsLoading(false);
-            });
+        setEvents(props.allEvents);
+        setIsLoading(false);
     }, []);
 
     if (isLoading) {
@@ -123,6 +117,7 @@ const mapStateToProps = (state) => {
     return {
         finalGenres: state.genre.genres,
         finalTiming: state.timeline.finalTiming,
+        allEvents: state.add_events.events,
     };
 };
 
