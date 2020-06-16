@@ -1,13 +1,20 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Button } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    ActivityIndicator,
+    Button,
+} from "react-native";
 import { connect } from "react-redux";
-import * as actions from "../actions";
-import firebase from "../database/firebase";
-import Schedule from "./Schedule";
+import * as actions from "../../actions";
+import firebase from "../../database/firebase";
+import Schedule from "../Schedule";
 import {
     handleProcess,
     formatEventsData,
-} from "../reusable-functions/GoogleCalendarInvite";
+} from "../../reusable-functions/GoogleCalendarInvite";
 
 const Finalized = (props) => {
     const [events, setEvents] = React.useState([]);
@@ -72,8 +79,8 @@ const Finalized = (props) => {
         };
 
         /**
-          * Formats data prop for timeline library
-          */
+         * Formats data prop for timeline library
+         */
         const data = [];
         const timingsArray = [];
         let startTime = timeline[0];
@@ -83,7 +90,7 @@ const Finalized = (props) => {
             (testEvents.includes("hawker") ||
                 testEvents.includes("restaurants") ||
                 testEvents.includes("cafes")) &&
-                startTime <= 13
+            startTime <= 13
                 ? 1
                 : 0;
 
@@ -140,7 +147,7 @@ const Finalized = (props) => {
             // handleProcess function and all other logic is in GoogleCalendarInvite.js
             await handleProcess(formattedData, timingsArray);
             props.navigation.navigate("Home"); // navigate back once done
-        }
+        };
 
         return (
             <View style={styles.container}>
