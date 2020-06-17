@@ -201,7 +201,7 @@ export const formatEventsData = (data) => {
     var allEventDetails = [];
     data.forEach(event => {
         const title = event.title;
-        const eventGenre = event.genre
+        const eventGenre = event.id // Id is the event genre
 
         allEventDetails.push({
             eventTitle: title,

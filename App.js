@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 
 import store from "./store";
 import AuthScreen from "./components/AuthScreen";
-import HomeScreen from "./components/HomeScreen";
+import HomeScreen from "./components/home/HomeScreen";
 import Timeline from "./components/Timeline";
 import Genre from "./components/genre/Genre";
 import Finalized from "./components/finalized/Finalized";

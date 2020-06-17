@@ -35,7 +35,7 @@ export const data_timeline = (timeline, testEvents, events) => {
         (testEvents.includes("hawker") ||
             testEvents.includes("restaurants") ||
             testEvents.includes("cafes")) &&
-        startTime <= 13
+            startTime <= 13
             ? 1
             : 0;
 
