@@ -8,7 +8,7 @@ import {
     ImageBackground,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import PickerModal from "./PickerModal";
+import FoodFilter from "./FoodFilter";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import { findOverlappingIntervals } from "../../reusable-functions/OverlappingIntervals";
@@ -140,7 +140,7 @@ const Genre = (props) => {
             resizeMode="cover"
         >
             <Modal animated visible={visible} animationType="fade">
-                <PickerModal
+                <FoodFilter
                     onClose={onClose}
                     handlePress={handlePress}
                     selectDining={selectDining}
@@ -220,7 +220,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 20,
         borderWidth: StyleSheet.hairlineWidth,
-
         marginHorizontal: 10,
         marginVertical: 10,
     },

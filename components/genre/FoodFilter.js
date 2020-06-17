@@ -1,16 +1,77 @@
 import React from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+    TouchableOpacity,
+} from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import AreaSelection from "./AreaSelection";
+import CuisineSelection from "./CuisineSelection";
+import PriceSelection from "./PriceSelection";
 
-const PickerModal = ({ onClose, handlePress, selectDining }) => {
+const FoodFilter = ({ onClose, handlePress }) => {
+    const [filters, setFilters] = React.useState({});
+
+    React.useEffect(() => {
+        setFilters({ area: "", cuisine: "", price: 0 });
+    }, []);
+
+    const handleAreaPress = (area) => {
+        setFilters({ ...filters, area: area });
+    };
+
+    const handleCuisinePress = (cuisine) => {
+        setFilters({ ...filters, cuisine: cuisine });
+    };
+
+    const handlePricePress = (price) => {
+        let max = Math.max(...price);
+        setFilters({ ...filters, price: max });
+    };
+
+    const handleConfirmPress = () => {
+        console.log(filters);
+    };
     return (
         <View style={styles.container}>
+            {/* <View
+                style={{
+                    height: "60%",
+                    marginTop: "auto",
+                    backgroundColor: "white",
+                    borderTopLeftRadius: 40,
+                    borderTopRightRadius: 40,
+                }}
+            > */}
             <AntDesign
                 name="close"
                 size={24}
                 onPress={() => onClose()}
                 style={styles.close}
             />
+            <View style={styles.header}>
+                <Text style={{ fontSize: 30, fontWeight: "bold" }}>
+                    Filters
+                </Text>
+            </View>
+
+            <View style={styles.body}>
+                <AreaSelection handleAreaPress={handleAreaPress} />
+                <CuisineSelection handleCuisinePress={handleCuisinePress} />
+                <PriceSelection handlePricePress={handlePricePress} />
+            </View>
+
+            <View style={styles.footer}>
+                <TouchableOpacity
+                    onPress={() => {
+                        handleConfirmPress();
+                    }}
+                >
+                    <Text>Confirm</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
@@ -21,6 +82,17 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
+    header: {
+        flex: 1,
+        marginTop: 40,
+        marginRight: 270,
+    },
+    body: {
+        flex: 5,
+    },
+    footer: {
+        flex: 2,
+    },
     close: {
         position: "absolute",
         left: 350,
@@ -30,7 +102,7 @@ const styles = StyleSheet.create({
     },
 });
 
-export default PickerModal;
+export default FoodFilter;
 // import React from "react";
 // import { View, Text, Picker, StyleSheet } from "react-native";
 // import { AntDesign } from "@expo/vector-icons";
