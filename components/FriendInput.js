@@ -3,6 +3,7 @@ import { Image, View, Text, StyleSheet } from "react-native";
 import * as Linking from "expo-linking";
 import firebase from "../database/firebase";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { connect } from 'react-redux';
 
 /**
  * This component is a page for user to determine how many friends will be added to find the
@@ -10,6 +11,12 @@ import { TouchableOpacity } from "react-native-gesture-handler";
  * User will only come to this page if and after snycing their Google Calendar.
  */
 class FriendInput extends React.Component {
+    formatLinkToAppURL = (url) => {
+        const httpAppended = 'https' + url.substring(3)
+        const indexAdded = httpAppended.replace('?', '/index.exp?')
+        return indexAdded;
+    }
+
     shareWithTelegram = (url) => {
         // Deep linking
         Linking.openURL(
@@ -17,7 +24,11 @@ class FriendInput extends React.Component {
             url +
             "&text=" +
             "\n" +
-            "Here is the link to input your calendar availability!"
+            "Here is the link to input your calendar availability!" +
+            "\n\n" +
+            "Otherwise, use this link if you already have DoWhat on your phone!" +
+            "\n" +
+            this.formatLinkToAppURL(Linking.makeUrl('', { inviterUID: this.props.userID })) // Include link to DoWhat mobile app
         );
     };
 
@@ -26,7 +37,12 @@ class FriendInput extends React.Component {
             "whatsapp://send?" +
             "text=Here is the link to input your calendar availability! " +
             "\n" +
-            url)
+            url +
+            "\n\n" +
+            "Otherwise, use this link if you already have DoWhat on your phone!" +
+            "\n" +
+            this.formatLinkToAppURL(Linking.makeUrl('', { inviterUID: this.props.userID })) // Including link to DoWhat mobile app
+        )
             .catch(err => alert("Please download WhatsApp to use this feature"))
     };
 
@@ -41,7 +57,6 @@ class FriendInput extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-
                 <View style={styles.header}>
                     <Text style={styles.titleText}>Invite your friends</Text>
                 </View>
@@ -89,7 +104,14 @@ class FriendInput extends React.Component {
     }
 }
 
-export default FriendInput;
+const mapStateToProps = (state) => {
+    console.log("State is:", state.add_events.userID);
+    return {
+        userID: state.add_events.userID
+    };
+};
+
+export default connect(mapStateToProps, null)(FriendInput);
 
 const styles = StyleSheet.create({
     container: {

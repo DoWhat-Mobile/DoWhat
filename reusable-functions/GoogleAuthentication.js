@@ -1,5 +1,7 @@
 const firebase = require('firebase');
 import { GOOGLE_ANDROID_CLIENT_ID } from 'react-native-dotenv';
+import store from "../store";
+import { addUID } from "../actions/auth_screen_actions";
 
 export const OAuthConfig = {
     issuer: "https://accounts.google.com",
@@ -40,6 +42,9 @@ export const onSignIn = (googleUser) => {
                 .auth()
                 .signInWithCredential(credential)
                 .then(function (result) {
+                    // Add user ID to Redux state
+                    store.dispatch(addUID(result.user.uid))
+
                     // Add user information to DB
                     console.log("User is signed in");
                     if (result.additionalUserInfo.isNewUser) {
