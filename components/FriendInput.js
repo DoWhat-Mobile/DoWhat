@@ -11,6 +11,12 @@ import { connect } from 'react-redux';
  * User will only come to this page if and after snycing their Google Calendar.
  */
 class FriendInput extends React.Component {
+    formatLinkToAppURL = (url) => {
+        const httpAppended = 'https' + url.substring(3)
+        const indexAdded = httpAppended.replace('?', '/index.exp?')
+        return indexAdded;
+    }
+
     shareWithTelegram = (url) => {
         // Deep linking
         Linking.openURL(
@@ -22,7 +28,7 @@ class FriendInput extends React.Component {
             "\n\n" +
             "Otherwise, use this link if you already have DoWhat on your phone!" +
             "\n" +
-            Linking.makeUrl('', { inviterUID: this.props.userID }) // Include link to DoWhat mobile app
+            this.formatLinkToAppURL(Linking.makeUrl('', { inviterUID: this.props.userID })) // Include link to DoWhat mobile app
         );
     };
 
@@ -35,7 +41,7 @@ class FriendInput extends React.Component {
             "\n\n" +
             "Otherwise, use this link if you already have DoWhat on your phone!" +
             "\n" +
-            Linking.makeUrl('', { inviterUID: this.props.userID }) // Including link to DoWhat mobile app
+            this.formatLinkToAppURL(Linking.makeUrl('', { inviterUID: this.props.userID })) // Including link to DoWhat mobile app
         )
             .catch(err => alert("Please download WhatsApp to use this feature"))
     };
@@ -90,20 +96,6 @@ class FriendInput extends React.Component {
                         onPress={() => this.props.navigation.navigate("Genre", { route: "link" })}>
                         <Text style={{ fontSize: 11, color: 'white' }}>
                             Done
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
-                        onPress={() => alert(Linking.makeUrl('', { inviterUID: this.props.userID }))}>
-                        <Text style={{ fontSize: 11, color: 'white' }}>
-                            GetURL
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
-                        onPress={() => Linking.openURL(Linking.makeUrl('', { inviterUID: this.props.userID }))}>
-                        <Text style={{ fontSize: 11, color: 'white' }}>
-                            Open UrL
                         </Text>
                     </TouchableOpacity>
                 </View>

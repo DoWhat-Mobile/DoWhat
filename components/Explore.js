@@ -13,7 +13,9 @@ const Explore = (props) => {
             .then(url => {
                 setURL({ url });
                 let { path, queryParams } = Linking.parse(url);
-                alert(`Linked to app with path: ${path} and data: ${JSON.stringify(queryParams)}` + '\n URL Is: ' + url);
+                let newUrl = Linking.parse(url);
+                alert(`path: ${path} and data: ${JSON.stringify(queryParams)}` + '\n\n URL Is: ' +
+                    url + "\n\n properties: " + JSON.stringify(newUrl.queryParams));
             })
     };
 
@@ -32,7 +34,7 @@ const Explore = (props) => {
             </View>
 
             <View style={styles.footer}>
-                <Button title="Get Details from URL" onPress={() => _handleUrl()} />
+                <Button title="Get Details from URLsss" onPress={() => _handleUrl()} />
                 <Button title="Plan activities for me" onPress={() => props.navigation.navigate("DateSelection")} />
             </View>
 

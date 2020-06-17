@@ -28,12 +28,22 @@
     "android": {
       "package": "com.dowhat.dowhat",
       "versionCode": 1,
-      "config": {
-        "googleSignIn": {
-          "apiKey": "AIzaSyB3DcUhK37rpYdmO2C8_tKoM8-ugnlInaQ",
-          "certificateHash": "8FBAD1730A418CFB4FA1FFD37B3A65EEE8DB1C11"
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "exp.host",
+              "pathPrefix": "/@copperhog/DoWhat/index.exp"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
-      }
+      ]
     },
     "description": ""
   }
