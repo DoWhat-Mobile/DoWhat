@@ -1,7 +1,11 @@
 import React from 'react';
 import { Button, View, StyleSheet, Text, TouchableOpacity, SectionList, Dimensions } from 'react-native';
 
-const Plans = ({ plans }) => {
+/**
+ * The <SectionList> Component within the AllPlans component. This is the component
+ * which shows all the plans that the user is part of.
+ */
+const ListOfPlans = ({ plans }) => {
     const [isRefreshing, setIsRefreshing] = React.useState(false);
 
     // Not functional yet
@@ -34,7 +38,7 @@ const Plans = ({ plans }) => {
     );
 }
 
-export default Plans;
+export default ListOfPlans;
 
 const styles = StyleSheet.create({
     container: {
