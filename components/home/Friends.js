@@ -4,24 +4,6 @@ import { Card } from 'react-native-elements';
 import firebase from '../../database/firebase';
 
 const AllFriends = ({ navigation }) => {
-    // Test data
-    const da =
-        <View style={{ width: Dimensions.get('window').width }}>
-            <Card
-                style={{ height: (Dimensions.get('window').height / 2) }}
-                title={'Chang Rui Feng'}
-            >
-                <Image
-                    source={{ uri: 'https://lh3.googleusercontent.com/a-/AOh14GiHHXI0i5LwgOjXV9Y43sH2x7kPQWUqYaZTp15PIcM=s96-c' }}
-                    style={{ height: 50, width: 50, borderRadius: 100 }}
-                />
-                <Text style={{ marginBottom: 10, fontFamily: 'serif' }}>
-                    {'Loves Twice'}
-                </Text>
-                <Button title="+" onPress={() => alert("heelo")} />
-            </Card>
-        </View>
-
     const [isRefreshing, setIsRefreshing] = React.useState(false);
     const [allFriends, setAllFriends] = React.useState([]);
 
@@ -41,6 +23,26 @@ const AllFriends = ({ navigation }) => {
             })
     }
 
+    const sendPushNotification = async () => {
+        const message = {
+            to: 'ExponentPushToken[BExy8rJa3lJttXdBqiNtoU]', // Automate this
+            sound: 'default',
+            title: 'Original Title',
+            body: 'And here is the body!',
+            data: { data: 'goes here' },
+            _displayInForeground: true,
+        };
+        const response = await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        });
+    }
+
     const renderToView = async (allAppUsers) => {
         // Format for use in <SectionList>
         const injectReact = (user) => {
@@ -54,7 +56,7 @@ const AllFriends = ({ navigation }) => {
                             source={{ uri: user.profile_picture_url }}
                             style={{ height: 50, width: 50, borderRadius: 100 }}
                         />
-                        <Button title="+" onPress={() => alert("heelo")} />
+                        <Button title="+" onPress={() => sendPushNotification()} />
                     </Card>
                 </View>
             );

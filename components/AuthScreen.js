@@ -72,11 +72,8 @@ class AuthScreen extends Component {
                     data["refreshToken"] = token.refreshToken;
                     data["accessTokenExpirationDate"] =
                         token.accessTokenExpirationDate;
-                    return onSignIn(data); // Sign in to Google's firebase
+                    onSignIn(data); // Sign in to Google's firebase
                 })
-                .then(userID => {
-
-                });
         } catch (e) {
             console.log(e);
         }
