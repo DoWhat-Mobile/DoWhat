@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, SectionList, ActivityIndicator, TouchableOpacity } from "react-native";
-import firebase from '../database/firebase';
-import { handleEventsOf } from '../reusable-functions/HomeFeedLogic';
+import firebase from '../../database/firebase';
+import { handleEventsOf } from '../../reusable-functions/HomeFeedLogic';
 import { connect } from 'react-redux';
 
 /**

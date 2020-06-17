@@ -8,12 +8,7 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
-import firebase from "../../database/firebase";
 import Schedule from "./Schedule";
-import {
-    handleProcess,
-    formatEventsData,
-} from "../../reusable-functions/GoogleCalendarInvite";
 
 const Finalized = (props) => {
     const [events, setEvents] = React.useState([]);

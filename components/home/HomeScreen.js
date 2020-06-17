@@ -2,12 +2,11 @@
  * THIS SCREEN IS NOT IN USE CURRENTLY. NAVIGATES STRAIGHT TO AUTHSCREEN 
  */
 import React from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Feed from './Feed';
-import Explore from './Explore';
+import Plan from './Planning';
 
 const Tab = createBottomTabNavigator();
 
@@ -44,10 +43,10 @@ const MyTabs = (props) => {
             */}
 
             <Tab.Screen
-                name="Explore"
-                component={Explore}
+                name="Plan"
+                component={Plan}
                 options={{
-                    tabBarLabel: 'Explore',
+                    tabBarLabel: 'Plan',
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="feature-search" color={color} size={size} />
                     ),
