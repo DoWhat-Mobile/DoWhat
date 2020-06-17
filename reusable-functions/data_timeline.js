@@ -87,7 +87,7 @@ export const data_timeline = (timeline, testEvents, events) => {
 
         if (startTime >= timeline[1]) break;
     }
-    return data;
+    return [data, timingsArray];
 };
 
 export const data_shuffle = (events, unsatisfied, time) => {

@@ -7,7 +7,7 @@ import store from "./store";
 import AuthScreen from "./components/AuthScreen";
 import HomeScreen from "./components/HomeScreen";
 import Timeline from "./components/Timeline";
-import Genre from "./components/Genre";
+import Genre from "./components/genre/Genre";
 import Finalized from "./components/finalized/Finalized";
 import GoogleCalendarInput from "./components/GoogleCalendarInput";
 import DateSelection from "./components/DateSelection";

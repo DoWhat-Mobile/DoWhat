@@ -10,7 +10,7 @@ const Schedule = ({ timeline, testEvents, events }) => {
     const [unsatisfied, setUnsatisfied] = React.useState("");
 
     React.useEffect(() => {
-        setData(data_timeline(timeline, testEvents, events, visible));
+        setData(data_timeline(timeline, testEvents, events)[0]);
     }, []);
 
     const onReselect = (selected) => {
