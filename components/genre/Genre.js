@@ -18,13 +18,13 @@ import firebase from "../../database/firebase";
 const Genre = (props) => {
     const [visible, setVisible] = React.useState(false);
     const [selected, setSelected] = React.useState([]);
-    const [dining, setDining] = React.useState([]);
+    const [preference, setPreference] = React.useState({});
     const [isLoading, setIsLoading] = React.useState(true);
     const genreType = ["adventure", "arts", "leisure", "nature", "nightlife"];
     const finalized = [];
 
     const [freeTime, setFreeTime] = React.useState([]);
-    const manual = props.route.params.route;
+    const route = props.route.params.route;
 
     /**
      * Get data from firebase and initiate algo to find overlapping time intervals.
@@ -52,7 +52,7 @@ const Genre = (props) => {
                 setIsLoading(false);
             })
             .catch((err) => {
-                // Error occurs when no friends synced their Gcal, then we will use the manual input timings
+                // Error occurs when no friends synced their Gcal, then we will use the route input timings
                 setFreeTime(props.finalTiming);
                 setIsLoading(false);
             });
@@ -65,12 +65,11 @@ const Genre = (props) => {
     const onClose = () => setVisible(false);
 
     const onComplete = () => {
-        dining.forEach((element) => finalized.push(element));
         selected.forEach((element) => {
-            if (element !== "Food") finalized.push(element);
+            finalized.push(element);
         });
-        props.onFinalize([finalized, freeTime]);
-        props.navigation.navigate("Finalized", { route: manual });
+        props.onFinalize([finalized, freeTime, preference]);
+        props.navigation.navigate("Finalized", { route: route });
     };
 
     /**
@@ -79,7 +78,6 @@ const Genre = (props) => {
      */
     const handlePress = (genre) => {
         // console.log(selected);
-        // console.log(dining);
         selected.includes(genre)
             ? setSelected(selected.filter((s) => s !== genre))
             : setSelected([...selected, genre]);
@@ -89,9 +87,9 @@ const Genre = (props) => {
      * handles when the modal will be displayed and settles the dining option picked
      */
     const handleFoodPress = () => {
-        if (selected.includes("Food")) {
-            setSelected(selected.filter((s) => s !== "Food"));
-            dining.pop();
+        if (selected.includes("food")) {
+            setSelected(selected.filter((s) => s !== "food"));
+            setPreference({});
         } else {
             setVisible(true);
         }
@@ -101,13 +99,13 @@ const Genre = (props) => {
      * Only allows for one dining option to be picked
      * @param {*} option
      */
-    const selectDining = (option) => {
-        let current = dining;
-        if (current.length === 1) {
-            current.pop();
-        }
-        current.push(option);
-        setDining(current);
+    const selectFilter = (filters) => {
+        // let current = dining;
+        // if (current.length === 1) {
+        //     current.pop();
+        // }
+        // current.push(option);
+        setPreference(filters);
     };
 
     const buttons = () =>
@@ -143,7 +141,7 @@ const Genre = (props) => {
                 <FoodFilter
                     onClose={onClose}
                     handlePress={handlePress}
-                    selectDining={selectDining}
+                    selectFilter={selectFilter}
                 />
             </Modal>
 
@@ -163,7 +161,7 @@ const Genre = (props) => {
                     <Text
                         style={{
                             fontSize: 18,
-                            color: selected.includes("Food")
+                            color: selected.includes("food")
                                 ? "green"
                                 : "black",
                         }}

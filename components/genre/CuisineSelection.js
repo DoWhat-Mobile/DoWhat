@@ -16,9 +16,16 @@ const CuisineSelection = ({ handleCuisinePress }) => {
     ];
 
     const handlePress = (cuisine) => {
-        selected.includes(cuisine)
-            ? setSelected(selected.filter((s) => s !== cuisine))
-            : setSelected([...selected, cuisine]);
+        let newSelected = [];
+
+        if (selected.includes(cuisine)) {
+            newSelected = selected.filter((s) => s !== cuisine);
+        } else {
+            newSelected = selected.concat(cuisine);
+        }
+
+        setSelected(newSelected);
+        handleCuisinePress(newSelected);
     };
 
     const buttons = () =>
@@ -27,7 +34,6 @@ const CuisineSelection = ({ handleCuisinePress }) => {
                 key={items}
                 onPress={() => {
                     handlePress(items);
-                    handleCuisinePress(selected);
                 }}
                 style={[
                     styles.button,

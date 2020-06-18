@@ -8,14 +8,14 @@ import {
     formatEventsData,
 } from "../../reusable-functions/GoogleCalendarInvite";
 
-const Schedule = ({ navigation, timeline, testEvents, events }) => {
+const Schedule = ({ navigation, timeline, testEvents, events, filters }) => {
     const [data, setData] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
     const [timingsArray, setTimingsArray] = React.useState([]);
 
     React.useEffect(() => {
-        const current = data_timeline(timeline, testEvents, events);
+        const current = data_timeline(timeline, testEvents, events, filters);
         setData(current[0]);
         setTimingsArray(current[1]);
     }, []);

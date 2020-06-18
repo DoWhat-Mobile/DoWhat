@@ -5,8 +5,8 @@ const AreaSelection = ({ handleAreaPress }) => {
     const [selected, setSelected] = React.useState([]);
     const areas = ["North", "South", "East", "West", "Central"];
 
-    const handlePress = (genre) => {
-        setSelected(genre);
+    const handlePress = (area) => {
+        setSelected(area);
     };
 
     const buttons = () =>

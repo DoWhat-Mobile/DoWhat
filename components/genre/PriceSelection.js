@@ -11,6 +11,7 @@ const PriceSelection = ({ handlePricePress }) => {
             arr.push(i);
         }
         setSelected(arr);
+        handlePricePress(price);
     };
 
     const buttons = () =>
@@ -19,7 +20,6 @@ const PriceSelection = ({ handlePricePress }) => {
                 key={price}
                 onPress={() => {
                     handlePress(price);
-                    handlePricePress(selected);
                 }}
                 style={styles.button}
             >

@@ -7,7 +7,6 @@ import { data_shuffle } from "../../reusable-functions/data_timeline";
 const ShuffleModal = ({ onReselect, onClose, unsatisfied, events }) => {
     return (
         <View style={styles.container}>
-            {/* <Text>{unsatisfied}</Text> */}
             <AntDesign
                 name="close"
                 size={24}

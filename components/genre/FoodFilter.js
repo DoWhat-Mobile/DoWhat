@@ -11,7 +11,7 @@ import AreaSelection from "./AreaSelection";
 import CuisineSelection from "./CuisineSelection";
 import PriceSelection from "./PriceSelection";
 
-const FoodFilter = ({ onClose, handlePress }) => {
+const FoodFilter = ({ onClose, handlePress, selectFilter }) => {
     const [filters, setFilters] = React.useState({});
 
     React.useEffect(() => {
@@ -19,20 +19,22 @@ const FoodFilter = ({ onClose, handlePress }) => {
     }, []);
 
     const handleAreaPress = (area) => {
-        setFilters({ ...filters, area: area });
+        setFilters((prevState) => ({ ...prevState, area: area }));
     };
 
     const handleCuisinePress = (cuisine) => {
-        setFilters({ ...filters, cuisine: cuisine });
+        setFilters((prevState) => ({ ...prevState, cuisine: cuisine }));
     };
 
     const handlePricePress = (price) => {
-        let max = Math.max(...price);
-        setFilters({ ...filters, price: max });
+        setFilters((prevState) => ({ ...prevState, price: price }));
     };
 
     const handleConfirmPress = () => {
-        console.log(filters);
+        //console.log(filters);
+        handlePress("food");
+        selectFilter(filters);
+        onClose();
     };
     return (
         <View style={styles.container}>

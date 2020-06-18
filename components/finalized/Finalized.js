@@ -37,13 +37,13 @@ const Finalized = (props) => {
             </View>
         );
     } else {
+        console.log(props.finalGenres);
         const testEvents = props.finalGenres[0];
-
+        const filters = props.finalGenres[2];
         const timeline =
             props.route.params.route === "manual"
                 ? props.finalTiming
                 : props.finalGenres[1];
-
 
         return (
             <View style={styles.container}>
@@ -53,6 +53,7 @@ const Finalized = (props) => {
                         testEvents={testEvents}
                         events={events}
                         navigation={props.navigation}
+                        filters={filters}
                     />
                 </View>
             </View>
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
     list: {
         flex: 1,
         marginTop: 20,
-    }
+    },
 });
 
 const mapStateToProps = (state) => {
