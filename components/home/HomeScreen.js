@@ -29,19 +29,6 @@ const MyTabs = (props) => {
                 }}
             />
 
-            {/*
-            <Tab.Screen
-                name="Notifications"
-                component={Notifications}
-                options={{
-                    tabBarLabel: 'Updates',
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="bell" color={color} size={size} />
-                    ),
-                }}
-            /> 
-            */}
-
             <Tab.Screen
                 name="Plan"
                 component={Plan}

@@ -24,3 +24,9 @@ export const DATE_SELECT = "DATE_SELECT";
  */
 export const ADD_EVENTS = "ADD_EVENTS";
 export const ADD_UID = "ADD_UID";
+
+/**
+ * Actions friends screen
+ */
+export const FIND_FRIENDS = "FIND_FRIENDS";
+export const REMOVE_FRIEND = "REMOVE_FRIEND";

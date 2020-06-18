@@ -2,6 +2,9 @@ const firebase = require('firebase');
 import { GOOGLE_ANDROID_CLIENT_ID } from 'react-native-dotenv';
 import store from "../store";
 import { addUID } from "../actions/auth_screen_actions";
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
 
 export const OAuthConfig = {
     issuer: "https://accounts.google.com",
@@ -44,9 +47,11 @@ export const onSignIn = (googleUser) => {
                 .then(function (result) {
                     // Add user ID to Redux state
                     store.dispatch(addUID(result.user.uid))
-
+                    // Add push token to Firebase for notification sending
+                    registerForPushNotificationsAsync(result.user.uid);
                     // Add user information to DB
                     console.log("User is signed in");
+
                     if (result.additionalUserInfo.isNewUser) {
                         firebase
                             .database()
@@ -84,4 +89,41 @@ export const onSignIn = (googleUser) => {
             console.log("User already signed-in Firebase.");
         }
     });
+};
+
+// Get push token and set it in the user's Firebase node
+const registerForPushNotificationsAsync = async (userId) => {
+    if (Constants.isDevice) {
+        const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+            const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+            finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+            alert('Failed to get push token for push notification!');
+            return;
+        }
+        try {
+            let token = await Notifications.getExpoPushTokenAsync();
+            console.log("Expo notif token is: ", token);
+            firebase.database().ref('users/' + userId + "/push_token")
+                .set(token);
+
+        } catch (err) {
+            console.log("Error putting user's expo notif token to Firebase", err);
+        }
+
+    } else {
+        alert('Must use physical device for Push Notifications');
+    }
+
+    if (Platform.OS === 'android') {
+        Notifications.createChannelAndroidAsync('default', {
+            name: 'default',
+            sound: true,
+            priority: 'max',
+            vibrate: [0, 250, 250, 250],
+        });
+    }
 };

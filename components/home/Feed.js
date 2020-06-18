@@ -10,6 +10,13 @@ import { connect } from 'react-redux';
  * @param {*} props 
  */
 const Feed = (props) => {
+
+    useEffect(() => {
+        if (isLoading) { // Prevent constant reloading when image renders
+            getDataFromFirebase();
+        }
+    });
+
     const [isLoading, setIsLoading] = React.useState(true);
     const [eventData, setEventData] = React.useState([]);
     const [isRefreshing, setIsRefreshing] = React.useState(false);
@@ -41,12 +48,6 @@ const Feed = (props) => {
         setIsRefreshing(false);
     }
 
-    useEffect(() => {
-        if (isLoading) { // Prevent constant reloading when image renders
-            getDataFromFirebase();
-        }
-    });
-
     const handleTitlePress = (title) => {
         if (title == 'What is currently popular') {
             alert("Hello")
@@ -56,8 +57,6 @@ const Feed = (props) => {
             alert("Find something new")
         }
     }
-
-
 
     if (isLoading) {
         return (
@@ -94,7 +93,6 @@ const Feed = (props) => {
 }
 
 const mapStateToProps = (state) => {
-    console.log("State is:", state.add_events.userID);
     return {
         allEvents: state.add_events.events,
         userID: state.add_events.userID
