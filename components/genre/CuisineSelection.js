@@ -16,16 +16,8 @@ const CuisineSelection = ({ handleCuisinePress }) => {
     ];
 
     const handlePress = (cuisine) => {
-        let newSelected = [];
-
-        if (selected.includes(cuisine)) {
-            newSelected = selected.filter((s) => s !== cuisine);
-        } else {
-            newSelected = selected.concat(cuisine);
-        }
-
-        setSelected(newSelected);
-        handleCuisinePress(newSelected);
+        setSelected(cuisine);
+        handleCuisinePress(cuisine);
     };
 
     const buttons = () =>

@@ -2,33 +2,39 @@ import React from "react";
 import { Text } from "react-native";
 import ReadMore from "react-native-read-more-text";
 
-const filterHelper = (filters) => {
-    if (testEvents[i] === "food") {
-        const genre = filters.cuisine.includes("Local")
-            ? "hawker"
-            : filters.cuisine.includes("Cafe")
-            ? "cafes"
-            : "restaurants";
-        if (events[genre].slots.includes(startTime)) {
-            const eventList = events[genre]["list"];
-            for (j = 0; j < eventList.length; j++) {
-                if (
-                    eventList[j].tags.includes(filters.area) &&
-                    genre === "hawker"
-                ) {
-                    let intervalObject = { start: 0, end: 0 };
-                    intervalObject.start = startTime;
-                    data.push(objectFormatter(startTime, eventList[j], genre));
-                    testEvents.splice(i, 1);
-                    startTime += events[genre]["duration"];
-                    intervalObject.end =
-                        startTime > timeline[1] ? timeline[1] : startTime;
-                    timingsArray.push(intervalObject);
-                    break;
-                }
-            }
-        }
+/**
+ * handles filter for food to be added in data array
+ */
+const filterHelper = (filters, events) => {
+    const genre = filters.cuisine.includes("Local")
+        ? "hawker"
+        : filters.cuisine.includes("Cafe")
+        ? "cafes"
+        : "restaurants";
+
+    const eventList = events[genre]["list"];
+    // so there will be a variety of places to choose from
+    let temp = [];
+    for (i = 0; i < eventList.length; i++) {
+        if (genre === "hawker" && eventList[i].tags.includes(filters.area))
+            temp.push(eventList[i]);
+
+        if (
+            genre === "cafes" &&
+            eventList[i].tags.includes(filters.area) &&
+            eventList[i].price_level <= filters.price
+        )
+            temp.push(eventList[i]);
+
+        if (
+            genre === "restaurants" &&
+            eventList[i].tags.includes(filters.area) &&
+            eventList[i].cuisine.includes(filters.cuisine)
+        )
+            temp.push(eventList[i]);
     }
+    let rand = Math.floor(Math.random() * temp.length);
+    return { [genre]: temp[rand] };
 };
 
 export const data_timeline = (timeline, testEvents, events, filters) => {
@@ -37,11 +43,10 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
     let startTime = timeline[0];
     let num = testEvents.length;
     let eventArray = [];
-    // filters.cuisine.includes("Local")
-    // ? events["hawker"]["list"]
-    // : filters.cuisine.includes("Cafe")
-    // ? events["cafes"]["list"]
-    // : events["restaurants"]["list"];
+
+    if (testEvents.includes("food")) {
+        eventArray.push(filterHelper(filters, events));
+    }
     for (i = 0; i < testEvents.length; i++) {
         const genre = testEvents[i];
         if (genre !== "food") {
@@ -72,7 +77,7 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
             }
         }
         if (food === 1 && startTime >= 18 && startTime < 20) {
-            eventArray.push("hawker");
+            eventArray.push({ hawker: events["hawker"]["list"][4] });
             food = 0;
         }
         if (num === eventArray.length) {

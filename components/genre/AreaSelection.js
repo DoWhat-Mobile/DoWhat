@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 const AreaSelection = ({ handleAreaPress }) => {
     const [selected, setSelected] = React.useState([]);
-    const areas = ["North", "South", "East", "West", "Central"];
+    const areas = ["North", "East", "West", "Central"];
 
     const handlePress = (area) => {
         setSelected(area);
