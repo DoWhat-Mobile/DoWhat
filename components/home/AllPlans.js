@@ -35,7 +35,6 @@ const AllPlans = (props) => {
 
             <View style={styles.footer}>
                 <Button title="Plan activities for me" onPress={() => props.navigation.navigate("DateSelection")} />
-                <Button title="Find friends" onPress={() => alert("hello")} />
             </View>
 
         </View >
@@ -64,5 +63,6 @@ const styles = StyleSheet.create({
     },
     footer: {
         flex: 1,
+        justifyContent: 'flex-end'
     },
 });

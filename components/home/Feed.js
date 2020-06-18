@@ -93,7 +93,6 @@ const Feed = (props) => {
 }
 
 const mapStateToProps = (state) => {
-    console.log("State is:", state.add_events.userID);
     return {
         allEvents: state.add_events.events,
         userID: state.add_events.userID
