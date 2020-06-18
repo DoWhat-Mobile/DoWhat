@@ -25,6 +25,7 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
             .once('value')
             .then((snapshot) => {
                 const user = snapshot.val();
+                setCurrUserName(user.first_name + '_' + user.last_name); // For identification when adding friend request to Firebase
                 if (user.hasOwnProperty('friends')) {
                     if (user.friends.hasOwnProperty('requests')) {
                         const allFriendRequests = user.friends.requests;
@@ -202,13 +203,17 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
         const status = {};
         status[name] = friendID;
 
-        // Accept friend
-        database.ref("users/" + userID) // Look at current user's Firebase nod 
-            .child('friends')
-            .child('accepted') // Add friend to the list of accepted friends
-            .update(status)
+        const otherStatus = {}; // Set curr user to be the requester's friend too 
+        otherStatus[currUserName] = userID;
 
-        // Update Firebase
+        var updates = {};
+        updates['users/' + userID + '/friends/accepted'] = status;
+        updates['users/' + friendID + '/friends/accepted'] = otherStatus;
+
+        // Accept friend, update both users since friendship goes both ways
+        database.ref().update(updates) // Perform simultanoues update for 2 locations in Firebase
+
+        // Update Firebase 
         database.ref("users/" + userID) // UserID from redux state
             .child('friends')
             .child('requests/' + name) // Remove friend from requested friends
@@ -247,11 +252,8 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
         for (var id in allAppUsers) { // Find all users in database (This doesnt scale well with size...)
             const user = allAppUsers[id];
 
-            if (userID == id) { // Comparing ID in redux state with ID from loop
-                setCurrUserName(user.first_name + '_' + user.last_name); // For identification when adding friend request to Firebase
-                continue; // Dont display yourself as a friend to be added
+            if (userID == id) continue; // Dont display yourself as a friend to be added
 
-            }
             if (friendRequestAlreadySent(user) || friendRequestAlreadyRejected(user)
                 || friendRequestAlreadyAccepted(user)) continue;
 

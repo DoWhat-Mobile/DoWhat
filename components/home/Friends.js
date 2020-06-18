@@ -3,7 +3,6 @@ import {
     View, Text, StyleSheet, Button, TouchableOpacity,
     Dimensions, SectionList, Image, Modal, TouchableHighlight
 } from "react-native";
-import { Card } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { removeFriend, findFriends } from '../../actions/friends_actions';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
