@@ -3,7 +3,8 @@ import { Text } from "react-native";
 import ReadMore from "react-native-read-more-text";
 
 /**
- * handles filter for food to be added in data array
+ * handles filter for food to be added in data array. Returns array of data that is formatted to be passed as props into
+ * timeline library, and timings array of start time and end time of each array, and location of each event
  */
 const filterHelper = (filters, events) => {
     const genre = filters.cuisine.includes("Local")
@@ -37,13 +38,8 @@ const filterHelper = (filters, events) => {
     return { [genre]: temp[rand] };
 };
 
-export const data_timeline = (timeline, testEvents, events, filters) => {
-    const data = [];
-    const timingsArray = [];
-    let startTime = timeline[0];
-    let num = testEvents.length;
+const genreEventObjectArray = (testEvents, events, filters) => {
     let eventArray = [];
-
     if (testEvents.includes("food")) {
         eventArray.push(filterHelper(filters, events));
     }
@@ -55,6 +51,16 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
             eventArray.push({ [genre]: events[genre]["list"][rand] });
         }
     }
+    return eventArray;
+};
+
+export const data_timeline = (timeline, testEvents, events, filters) => {
+    const data = [];
+    const timingsArray = [];
+    let startTime = timeline[0];
+    let num = testEvents.length;
+    let eventArray = genreEventObjectArray(testEvents, events, filters);
+    let locationArray = [];
 
     // checks if user selected food so dinner will be included if user has time 6pm onwards
     let food = testEvents.includes("food") && startTime <= 13 ? 1 : 0;
@@ -68,9 +74,12 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
                 let intervalObject = { start: 0, end: 0 };
                 intervalObject.start = startTime;
 
+                locationArray.push({ coord: event.coord, name: event.name });
+
                 data.push(objectFormatter(startTime, event, genre));
                 eventArray.splice(i, 1);
                 startTime += events[genre]["duration"];
+
                 intervalObject.end =
                     startTime > timeline[1] ? timeline[1] : startTime;
                 timingsArray.push(intervalObject);
@@ -88,7 +97,7 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
         if (startTime >= timeline[1]) break;
     }
 
-    return [data, timingsArray];
+    return [data, timingsArray, locationArray];
 };
 
 /**
@@ -138,8 +147,11 @@ export const data_shuffle = (events, unsatisfied, time) => {
                 </ReadMore>
             ),
             id: unsatisfied,
+            coord: event.coord,
         };
-        data.push(obj);
+        // ensure no duplicate objects
+        const checkName = (obj) => obj.title === event.name;
+        if (!data.some(checkName)) data.push(obj);
     }
     return data;
 };
@@ -182,5 +194,6 @@ const objectFormatter = (startTime, event, genre) => {
         ),
 
         id: genre,
+        coord: event.coord,
     };
 };
