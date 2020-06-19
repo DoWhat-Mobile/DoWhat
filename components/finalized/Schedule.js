@@ -8,24 +8,23 @@ import {
     formatEventsData,
 } from "../../reusable-functions/GoogleCalendarInvite";
 
-const Schedule = ({ navigation, timeline, testEvents, events, filters }) => {
-    const [data, setData] = React.useState([]);
+const Schedule = ({ navigation, data, allEvents }) => {
+    const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
     const [timingsArray, setTimingsArray] = React.useState([]);
 
     React.useEffect(() => {
-        const current = data_timeline(timeline, testEvents, events, filters);
-        setData(current[0]);
-        setTimingsArray(current[1]);
+        setEvents(data[0]);
+        setTimingsArray(data[1]);
     }, []);
 
     const onReselect = (selected) => {
-        const updatedData = data.map((item) => {
+        const updatedData = events.map((item) => {
             if (item === unsatisfied) return selected;
             return item;
         });
-        setData(updatedData);
+        setEvents(updatedData);
     };
 
     const onClose = () => {
@@ -43,7 +42,7 @@ const Schedule = ({ navigation, timeline, testEvents, events, filters }) => {
      * date)
      */
     const sendGcalInviteAndResetAttendeeData = async () => {
-        const formattedData = formatEventsData(data); // Formatted data contains event title
+        const formattedData = formatEventsData(events); // Formatted data contains event title
         // handleProcess function and all other logic is in GoogleCalendarInvite.js
         await handleProcess(formattedData, timingsArray);
         navigation.navigate("Home"); // navigate back once done
@@ -57,12 +56,12 @@ const Schedule = ({ navigation, timeline, testEvents, events, filters }) => {
                         onReselect={onReselect}
                         onClose={onClose}
                         unsatisfied={unsatisfied}
-                        events={events}
+                        events={allEvents}
                     />
                 </Modal>
                 <Timeline
                     onEventPress={(event) => onEventPress(event)}
-                    data={data}
+                    data={events}
                     timeStyle={{
                         textAlign: "center",
                         backgroundColor: "#ff9797",
