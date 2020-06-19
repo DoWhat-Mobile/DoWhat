@@ -8,7 +8,7 @@ import {
     formatEventsData,
 } from "../../reusable-functions/GoogleCalendarInvite";
 
-const Schedule = ({ navigation, data, allEvents }) => {
+const Schedule = ({ navigation, data, allEvents, mapUpdate }) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
@@ -24,7 +24,13 @@ const Schedule = ({ navigation, data, allEvents }) => {
             if (item === unsatisfied) return selected;
             return item;
         });
+        const updatedCoord = updatedData.map((item) => {
+            const obj = { coord: item.coord, name: item.title };
+            console.log(obj);
+            return obj;
+        });
         setEvents(updatedData);
+        mapUpdate(updatedCoord);
     };
 
     const onClose = () => {

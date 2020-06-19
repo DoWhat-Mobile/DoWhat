@@ -14,10 +14,11 @@ import Map from "./Map";
 import { data_timeline } from "../../reusable-functions/data_timeline";
 
 const Finalized = (props) => {
-    const [events, setEvents] = React.useState([]);
+    // const [events, setEvents] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(true);
     const [visible, setVisible] = React.useState(false);
     const [coord, setCoord] = React.useState([]);
+    const [data, setData] = React.useState([]);
 
     // console.log("Finalized time from Gcal is: ", props.finalGenres[1]);
 
@@ -25,9 +26,29 @@ const Finalized = (props) => {
         setVisible(false);
     };
 
+    const mapUpdate = (coord) => {
+        setCoord(coord);
+    };
+
     React.useEffect(() => {
-        setEvents(props.allEvents);
-        setIsLoading(false);
+        // setEvents(props.allEvents);
+        if (props.allEvents != {}) {
+            const testEvents = props.finalGenres[0];
+            const filters = props.finalGenres[2];
+            const timeline =
+                props.route.params.route === "manual"
+                    ? props.finalTiming
+                    : props.finalGenres[1];
+            const data = data_timeline(
+                timeline,
+                testEvents,
+                props.allEvents,
+                filters
+            );
+            setData(data);
+            setCoord(data[2]);
+            setIsLoading(false);
+        }
     }, []);
 
     if (isLoading) {
@@ -46,28 +67,25 @@ const Finalized = (props) => {
             </View>
         );
     } else {
-        console.log(props.finalGenres);
-        const testEvents = props.finalGenres[0];
-        const filters = props.finalGenres[2];
-        const timeline =
-            props.route.params.route === "manual"
-                ? props.finalTiming
-                : props.finalGenres[1];
-        const data = data_timeline(timeline, testEvents, events, filters);
-        // setCoord(data[2]);
         return (
             <View style={styles.container}>
                 <View style={styles.body}>
                     <Schedule
                         data={data}
                         navigation={props.navigation}
-                        allEvents={events}
+                        allEvents={props.allEvents}
+                        mapUpdate={mapUpdate}
                     />
                 </View>
                 <Modal animated visible={visible} animationType="fade">
-                    <Map onClose={onClose} coord={data[2]} />
+                    <Map onClose={onClose} coord={coord} />
                 </Modal>
-                <TouchableOpacity onPress={() => setVisible(true)}>
+                <TouchableOpacity
+                    onPress={() => {
+                        // setCoord(data[2]);
+                        setVisible(true);
+                    }}
+                >
                     <Text style={{ fontSize: 20 }}>Open Map View</Text>
                 </TouchableOpacity>
             </View>

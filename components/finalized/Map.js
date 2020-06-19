@@ -1,5 +1,5 @@
 import React from "react";
-import MapView from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 
@@ -15,7 +15,15 @@ const Map = ({ onClose, coord }) => {
                     latitudeDelta: 0.15,
                     longitudeDelta: 0.15,
                 }}
-            />
+            >
+                {coord.map((marker) => (
+                    <Marker
+                        key={marker.name}
+                        coordinate={marker.coord}
+                        title={marker.name}
+                    />
+                ))}
+            </MapView>
             <AntDesign
                 name="close"
                 size={24}

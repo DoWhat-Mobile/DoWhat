@@ -74,7 +74,7 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
                 let intervalObject = { start: 0, end: 0 };
                 intervalObject.start = startTime;
 
-                locationArray.push(event.coord);
+                locationArray.push({ coord: event.coord, name: event.name });
 
                 data.push(objectFormatter(startTime, event, genre));
                 eventArray.splice(i, 1);
@@ -147,6 +147,7 @@ export const data_shuffle = (events, unsatisfied, time) => {
                 </ReadMore>
             ),
             id: unsatisfied,
+            coord: event.coord,
         };
         // ensure no duplicate objects
         const checkName = (obj) => obj.title === event.name;
@@ -193,5 +194,6 @@ const objectFormatter = (startTime, event, genre) => {
         ),
 
         id: genre,
+        coord: event.coord,
     };
 };
