@@ -1,5 +1,6 @@
-import React from 'react';
-import { Button, View, StyleSheet, Text, TouchableOpacity, SectionList, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { Button, View, StyleSheet, Text, TouchableOpacity, SectionList, Dimensions, Modal } from 'react-native';
+import IndividualPlanModal from './IndividualPlanModal';
 
 /**
  * The <SectionList> Component within the AllPlans component. This is the component
@@ -7,6 +8,7 @@ import { Button, View, StyleSheet, Text, TouchableOpacity, SectionList, Dimensio
  */
 const ListOfPlans = ({ plans }) => {
     const [isRefreshing, setIsRefreshing] = React.useState(false);
+    const [modalVisibility, setModalVisibility] = useState(false);
 
     // Not functional yet
     const refreshPage = () => {
@@ -14,8 +16,34 @@ const ListOfPlans = ({ plans }) => {
         setIsRefreshing(false);
     }
 
+    const renderCollaborationBoard = (board) => {
+        return (
+            <TouchableOpacity onPress={() => setModalVisibility(true)}>
+                <View style={{ borderWidth: 1, borderRadius: 10, marginLeft: 10, marginRight: 10, padding: 10, marginTop: 10 }}>
+                    <Text>
+                        Outing on: {board.selected_date}
+                    </Text>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
+    const closeModal = () => {
+        setModalVisibility(false);
+    }
+
     return (
         <View style={styles.container}>
+            <Modal
+                animationType="fade"
+                transparent={false}
+                visible={modalVisibility}
+                onRequestClose={() => {
+                    Alert.alert("Modal has been closed.");
+                }}>
+                <IndividualPlanModal onClose={closeModal} />
+            </Modal>
+
             <SectionList
                 onRefresh={() => refreshPage()}
                 progressViewOffset={100}
@@ -23,7 +51,7 @@ const ListOfPlans = ({ plans }) => {
                 sections={[
                     { title: "", data: plans },
                 ]}
-                renderItem={({ item }) => item}
+                renderItem={({ item }) => renderCollaborationBoard(item)}
                 renderSectionHeader={({ section }) =>
                     <View style={styles.sectionHeader}>
                         <TouchableOpacity
