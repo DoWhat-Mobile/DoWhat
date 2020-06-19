@@ -1,26 +1,39 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity, Dimensions } from "react-native";
 import { Card } from 'react-native-elements';
+import firebase from '../../database/firebase';
 import ListOfPlans from './ListOfPlans';
+import { connect } from 'react-redux';
 
-const AllPlans = (props) => {
-    // Test data
-    const da =
-        <TouchableOpacity onPress={() => alert("hello")}>
-            <View style={{ width: Dimensions.get('window').width }}>
-                <Card
-                    style={{ height: (Dimensions.get('window').height / 2) }}
-                    title={'Saturday Morning'}
-                >
-                    <Text style={{ marginBottom: 10, fontFamily: 'serif' }}>
-                        {'Fun and games'}
-                    </Text>
-                </Card>
-            </View>
-        </TouchableOpacity>
+const AllPlans = ({ navigation, userID }) => {
+    useEffect(() => {
+        getUpcomingCollaborationsFromFirebase();
+    }, [])
 
-    const [allPlans, setAllPlans] = React.useState([da, da, da]);
+    const [allBoards, setAllBoards] = useState([]);
+
+    const getUpcomingCollaborationsFromFirebase = async () => {
+        firebase.database().ref()
+            .once("value")
+            .then((snapshot) => {
+                const database = snapshot.val();
+                const allUsers = database.users;
+                if (allUsers[userID].hasOwnProperty('collab_boards')) {
+                    const allCollaborations = allUsers[userID].collab_boards;
+                    var newBoardState = [];
+                    for (var board in allCollaborations) {
+                        const boardID = allCollaborations[board];
+                        const collabBoard = database.collab_boards[boardID];
+                        newBoardState.push(collabBoard);
+                        setAllBoards([...allBoards, collabBoard]);
+                    }
+                    setAllBoards([...newBoardState]);
+                }
+            })
+    }
+
+    // console.log(allBoards);
 
     return (
         <View style={styles.container}>
@@ -30,18 +43,24 @@ const AllPlans = (props) => {
             </View>
 
             <View style={styles.body}>
-                <ListOfPlans plans={allPlans} />
+                <ListOfPlans plans={allBoards} />
             </View>
 
             <View style={styles.footer}>
-                <Button title="Plan activities for me" onPress={() => props.navigation.navigate("DateSelection")} />
+                <Button title="Plan activities for me" onPress={() => navigation.navigate("DateSelection")} />
             </View>
 
         </View >
     );
 }
 
-export default AllPlans;
+const mapStateToProps = (state) => {
+    return {
+        userID: state.add_events.userID
+    };
+};
+
+export default connect(mapStateToProps, null)(AllPlans);
 
 const styles = StyleSheet.create({
     container: {

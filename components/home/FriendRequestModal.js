@@ -37,6 +37,7 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
             )
     }
 
+    // Add all friend requests to component state
     const addToState = (allFriendRequests) => {
         var friends = [];
         for (var user in allFriendRequests) {
@@ -66,7 +67,7 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
 
     const handleAddFriend = (push_token, name, firebaseUID) => {
         sendFriendRequest(name, firebaseUID);
-        // sendPushNotification(push_token, name);
+        sendPushNotification(push_token, name);
         removeFriend(firebaseUID, allFriends); // allFriends is current state
 
     }
@@ -86,6 +87,7 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
         }
     }
 
+    // API call format
     const sendPushNotification = async (push_token, name) => {
         const message = {
             to: push_token, // from user's Firebase node 
@@ -106,7 +108,7 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
         });
     }
 
-    // Format for use in <SectionList>
+    // Format for use in <SectionList>, formatting for Friends yet to be reqeusted
     const ListItem = (user, firebaseUID) => {
         return (
             <View style={{ width: Dimensions.get('window').width }}
@@ -269,6 +271,7 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
         findFriends([...moreUsers]); // Add to redux state
     }
 
+    // Show friends that user has already accepted
     const renderFriends = (name, userID) => {
         return (
             <View style={styles.friend}>

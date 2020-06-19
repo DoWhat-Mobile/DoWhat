@@ -50,7 +50,7 @@ const AllFriends = ({ userID }) => {
                 <View style={styles.buttonGroup}>
                     <TouchableOpacity style={{ borderWidth: 1, borderRadius: 10, padding: 5 }}
                         onPress={() => alert("Invite for collab")}>
-                        <Text>Invite</Text>
+                        <Text>More details</Text>
                     </TouchableOpacity>
                 </View>
             </View>
