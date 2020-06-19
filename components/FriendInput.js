@@ -1,9 +1,10 @@
 import React from "react";
-import { Image, View, Text, StyleSheet } from "react-native";
+import { Image, View, Text, StyleSheet, Modal } from "react-native";
 import * as Linking from "expo-linking";
 import firebase from "../database/firebase";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { connect } from 'react-redux';
+import FriendInputModal from './FriendInputModal';
 
 /**
  * This component is a page for user to determine how many friends will be added to find the
@@ -12,6 +13,10 @@ import { connect } from 'react-redux';
  */
 const FriendInput = (props) => {
     const [modalVisible, setModalVisible] = React.useState(false);
+
+    const closeModal = () => {
+        setModalVisible(false);
+    }
 
     const formatLinkToAppURL = (url) => {
         const httpAppended = 'https' + url.substring(3)
@@ -61,6 +66,16 @@ const FriendInput = (props) => {
             <View style={styles.header}>
                 <Text style={styles.titleText}>Invite your friends</Text>
             </View>
+
+            <Modal
+                animationType="fade"
+                transparent={false}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    Alert.alert("Modal has been closed.");
+                }}>
+                <FriendInputModal onClose={closeModal} />
+            </Modal>
 
             <View style={styles.body}>
                 <Image style={styles.image} source={require('../assets/FriendsHangout.png')} />

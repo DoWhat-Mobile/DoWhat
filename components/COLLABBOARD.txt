@@ -1,0 +1,39 @@
+collab_boards: {
+    8QUlSszPKjc4D5SXShcYHYu2MKa2: { // Owner of the board invite
+        selected_date: "Fri Jun 19 2020"
+        invitees: {
+            Hans_Sebastian: Keu6mEbGsCeutqzUOvafNFi7HPi1,
+            ruifeng_chang: rpLFHFemrfbQot5CIK8d475O1Dw2
+        },
+        preferences: {
+            adventure: 0,
+            arts: 0,
+            cafes: 0,
+            hawker: 0,
+            leisure: 0,
+            nature: 0,
+            nightlife: 0,
+            restaurants: 0
+        },
+        budget: 1-4,
+        suggestion: {dk what yet},                               // Can update later
+        attending: {                                             //
+            ruifeng_chang: rpLFHFemrfbQot5CIK8d475O1D            //
+        },                                                       //
+        not_attending: {                                         //
+            Hans_Sebastian: Keu6mEbGsCeutqzUOvafNFi7HPi1         //
+        },                                                       //
+        availabilities: {
+            hansworkstuff (gmail): {
+                busy_periods:
+                    0: {start: , end:}
+                    1: {start: , end:}
+            },
+            hansybastian(gmail): {
+                busy_periods:
+                    0: {start: , end:}
+                    1: {start: , end:}
+            }
+        },
+    }
+}
