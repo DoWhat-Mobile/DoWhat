@@ -10,14 +10,16 @@ import { connect } from 'react-redux';
  * common overlapping intervals of available timings.
  * User will only come to this page if and after snycing their Google Calendar.
  */
-class FriendInput extends React.Component {
-    formatLinkToAppURL = (url) => {
+const FriendInput = (props) => {
+    const [modalVisible, setModalVisible] = React.useState(false);
+
+    const formatLinkToAppURL = (url) => {
         const httpAppended = 'https' + url.substring(3)
         const indexAdded = httpAppended.replace('?', '/index.exp?')
         return indexAdded;
     }
 
-    shareWithTelegram = (url) => {
+    const shareWithTelegram = (url) => {
         // Deep linking
         Linking.openURL(
             "https://t.me/share/url?url=" +
@@ -28,11 +30,11 @@ class FriendInput extends React.Component {
             "\n\n" +
             "Otherwise, use this link if you already have DoWhat on your phone!" +
             "\n" +
-            this.formatLinkToAppURL(Linking.makeUrl('', { inviterUID: this.props.userID })) // Include link to DoWhat mobile app
+            formatLinkToAppURL(Linking.makeUrl('', { inviterUID: props.userID })) // Include link to DoWhat mobile app
         );
     };
 
-    shareWithWhatsapp = (url) => {
+    const shareWithWhatsapp = (url) => {
         Linking.openURL(
             "whatsapp://send?" +
             "text=Here is the link to input your calendar availability! " +
@@ -41,67 +43,71 @@ class FriendInput extends React.Component {
             "\n\n" +
             "Otherwise, use this link if you already have DoWhat on your phone!" +
             "\n" +
-            this.formatLinkToAppURL(Linking.makeUrl('', { inviterUID: this.props.userID })) // Including link to DoWhat mobile app
+            formatLinkToAppURL(Linking.makeUrl('', { inviterUID: props.userID })) // Including link to DoWhat mobile app
         )
             .catch(err => alert("Please download WhatsApp to use this feature"))
     };
 
-    encodeUserInfoToURL = (url) => {
+    const encodeUserInfoToURL = (url) => {
         const userId = "#" + firebase.auth().currentUser.uid; // Add # for marking, so can extract from web-app
         return url + encodeURIComponent(userId);
     };
 
     // Hosted on AWS Amplify
-    DoWhatWebURL = "https://master.da00s432t0f9l.amplifyapp.com/";
+    const DoWhatWebURL = "https://master.da00s432t0f9l.amplifyapp.com/";
 
-    render() {
-        return (
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <Text style={styles.titleText}>Invite your friends</Text>
-                </View>
+    return (
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.titleText}>Invite your friends</Text>
+            </View>
 
-                <View style={styles.body}>
-                    <Image style={styles.image} source={require('../assets/FriendsHangout.png')} />
-                    <Text style={styles.subtitleText}>
-                        You have successfully synced your Google calendar! Now invite some of your friends to join you!
+            <View style={styles.body}>
+                <Image style={styles.image} source={require('../assets/FriendsHangout.png')} />
+                <Text style={styles.subtitleText}>
+                    You have successfully synced your Google calendar! Now invite some of your friends to join you!
                     </Text>
 
-                    <View style={styles.shareButtons}>
-                        <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#0088CC', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
-                            onPress={() => this.shareWithTelegram(
-                                this.encodeUserInfoToURL(this.DoWhatWebURL))}>
-                            <Text style={{ fontSize: 11, color: 'white' }}>Share with Telegram</Text>
-                        </TouchableOpacity>
-
-                        <Text> | </Text>
-
-                        <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#25D366', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
-                            onPress={() => this.shareWithWhatsapp(
-                                this.encodeUserInfoToURL(this.DoWhatWebURL))}>
-                            <Text style={{ fontSize: 11, color: 'white' }}>Share with Whatsapp</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                </View>
-
-                <View style={styles.footer}>
-                    <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
-                        onPress={() => this.props.navigation.navigate("Timeline")}>
-                        <Text style={{ fontSize: 11, color: 'white' }}>
-                            I know my friends' schedules
-                        </Text>
+                <View style={styles.shareButtons}>
+                    <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#0088CC', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
+                        onPress={() => shareWithTelegram(
+                            encodeUserInfoToURL(DoWhatWebURL))}>
+                        <Text style={{ fontSize: 11, color: 'white' }}>Share with Telegram</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
-                        onPress={() => this.props.navigation.navigate("Genre", { route: "link" })}>
-                        <Text style={{ fontSize: 11, color: 'white' }}>
-                            Done
-                        </Text>
+
+                    <Text> | </Text>
+
+                    <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#25D366', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
+                        onPress={() => shareWithWhatsapp(
+                            encodeUserInfoToURL(DoWhatWebURL))}>
+                        <Text style={{ fontSize: 11, color: 'white' }}>Share with Whatsapp</Text>
                     </TouchableOpacity>
                 </View>
+
+                <TouchableOpacity style={[styles.shareWithButton, { marginTop: 10, backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
+                    onPress={() => setModalVisible(true)}>
+                    <Text style={{ fontSize: 11, color: 'white' }}>
+                        Invite friends from DoWhat
+                        </Text>
+                </TouchableOpacity>
             </View>
-        );
-    }
+
+            <View style={styles.footer}>
+                <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
+                    onPress={() => props.navigation.navigate("Timeline")}>
+                    <Text style={{ fontSize: 11, color: 'white' }}>
+                        I know my friends' schedules
+                        </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
+                    onPress={() => props.navigation.navigate("Genre", { route: "link" })}>
+                    <Text style={{ fontSize: 11, color: 'white' }}>
+                        Done
+                        </Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
 }
 
 const mapStateToProps = (state) => {
