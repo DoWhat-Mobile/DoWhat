@@ -146,7 +146,7 @@ export const data_shuffle = (events, unsatisfied, time) => {
                     </Text>
                 </ReadMore>
             ),
-            id: unsatisfied,
+            genre: unsatisfied,
             coord: event.coord,
         };
         // ensure no duplicate objects
@@ -193,7 +193,7 @@ const objectFormatter = (startTime, event, genre) => {
             </ReadMore>
         ),
 
-        id: genre,
+        genre: genre,
         coord: event.coord,
     };
 };

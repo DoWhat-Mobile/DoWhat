@@ -16,7 +16,7 @@ const ShuffleModal = ({ onReselect, onClose, unsatisfied, events }) => {
             <FlatList
                 data={data_shuffle(
                     events,
-                    unsatisfied["id"],
+                    unsatisfied["genre"],
                     unsatisfied["time"]
                 )}
                 renderItem={({ item }) => (
@@ -26,8 +26,8 @@ const ShuffleModal = ({ onReselect, onClose, unsatisfied, events }) => {
                         onClose={onClose}
                     />
                 )}
-                keyExtractor={(item) => item.name}
                 style={{ marginTop: 40 }}
+                keyExtractor={(item) => item.title}
             />
         </View>
     );
