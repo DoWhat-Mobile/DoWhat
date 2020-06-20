@@ -6,19 +6,28 @@ import IndividualPlanModal from './IndividualPlanModal';
  * The <SectionList> Component within the AllPlans component. This is the component
  * which shows all the plans that the user is part of.
  */
-const ListOfPlans = ({ plans }) => {
-    const [isRefreshing, setIsRefreshing] = React.useState(false);
+const ListOfPlans = ({ plans, refreshList }) => {
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [modalVisibility, setModalVisibility] = useState(false);
+    const [boardDetails, setBoardDetails] = useState({})
 
     // Not functional yet
     const refreshPage = () => {
         setIsRefreshing(true);
+        refreshList();
         setIsRefreshing(false);
+    }
+
+    // To open each individual collaboration board modal
+    const viewMoreDetails = (board) => {
+        setBoardDetails(board); // Pass in the details of the clicked board to the modal
+        setModalVisibility(true)
+
     }
 
     const renderCollaborationBoard = (board) => {
         return (
-            <TouchableOpacity onPress={() => setModalVisibility(true)}>
+            <TouchableOpacity onPress={() => viewMoreDetails(board)}>
                 <View style={{ borderWidth: 1, borderRadius: 10, marginLeft: 10, marginRight: 10, padding: 10, marginTop: 10 }}>
                     <Text>
                         Outing on: {board.selected_date}
@@ -36,12 +45,12 @@ const ListOfPlans = ({ plans }) => {
         <View style={styles.container}>
             <Modal
                 animationType="fade"
-                transparent={false}
+                transparent={true}
                 visible={modalVisibility}
                 onRequestClose={() => {
-                    Alert.alert("Modal has been closed.");
+                    closeModal()
                 }}>
-                <IndividualPlanModal onClose={closeModal} />
+                <IndividualPlanModal onClose={closeModal} board={boardDetails} />
             </Modal>
 
             <SectionList
@@ -72,19 +81,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    header: {
-        flex: 1,
-        justifyContent: 'center',
-
-    },
     headerText: {
         textAlign: 'center',
         fontWeight: '800',
         fontSize: 20,
-    },
-    body: {
-        flex: 7,
-        justifyContent: 'center',
     },
     footer: {
         flex: 1,
