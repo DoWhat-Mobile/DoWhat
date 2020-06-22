@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
+import FoodPrice from './FoodPrice';
 
 const formatDate = (day, month, date) => {
     const possibleDays = [
@@ -43,13 +44,26 @@ const IndividualPlanModal = ({ onClose, board }) => {
 
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
     const [invitees, setInvitees] = useState([]);
+    const [topGenres, setTopGenres] = useState([]);
     const [allGenres, setAllGenres] = useState([['ADVENTURE', false], ['ARTS', false],
     ['LEISURE', false], ['NATURE', false], ['NIGHTLIFE', false], ['FOOD', false]]);
 
-    const extractAndSetTopGenres = (object) => {
-        // Sort genre
+    const [location, setLocation] = useState([['NORTH', false], ['EAST', false],
+    ['WEST', false], ['CENTRAL', false]]);
 
-        // Set top genre to state
+    const [cuisine, setCuisine] = useState([['ASIAN', false], ['WESTERN', false],
+    ['CHINESE', false], ['KOREAN', false], ['INDIAN', false], ['JAPANESE', false],
+    ['CAFE', false], ['LOCAL', false],]);
+
+    const [budget, setBudget] = useState([]);
+
+    const extractAndSetTopGenres = (object) => {
+        var sortable = []; // Sort genre 
+        for (var genre in object) {
+            sortable.push([genre, object[genre]]); // ['adventure', 2], 
+        }
+        sortable.sort((x, y) => y[1] - x[1]); // Sort in decreasing order of votes
+        setTopGenres([...sortable]);
     }
 
     const extractAndSetInvitees = (object) => {
@@ -99,17 +113,87 @@ const IndividualPlanModal = ({ onClose, board }) => {
         );
     }
 
+    const renderLocation = () => {
+
+    }
+
+    const renderCuisine = () => {
+
+    }
+
+    const handlePricePress = () => {
+
+    }
+
     const renderFoodFilter = (foodIsSelected) => {
         if (foodIsSelected) {
             return (
                 <View style={styles.foodFilters}>
-                    <Text>Location:</Text>
-                    <Text>Cuisine:</Text>
-                    <Text>Budget:</Text>
+                    <Text style={styles.genreSelectionText}>Location:</Text>
+                    <FlatList
+                        data={location}
+                        horizontal={true}
+                        renderItem={({ item, index }) => renderLocation(item[0], item[1], index)}
+                        keyExtractor={(item, index) => item + index}
+                    />
+                    <Text style={styles.genreSelectionText}>Cuisine:</Text>
+                    <FlatList
+                        data={cuisine}
+                        horizontal={true}
+                        renderItem={({ item, index }) => renderCuisine(item[0], item[1], index)}
+                        keyExtractor={(item, index) => item + index}
+                    />
+                    <FoodPrice handlePricePress={(price) => handlePricePress(price)} />
                 </View>
             );
         }
     }
+
+    // Top three genre choices from all the votes of invitees
+    const renderTopGenres = (top) => {
+        if (top.length == 0) { // If useEffect haven't setState of top Genre yet
+            return (
+                <Text style={{ marginTop: 5, marginLeft: 5 }}>
+                    Top genres:
+                </Text>
+            )
+
+        } else {
+            const topThree = [top[0][0], top[1][0], top[2][0]]
+            return (
+                <Text style={{ marginTop: 5, marginLeft: 5 }}>
+                    Top genres: {topThree.toString()}
+                </Text>
+            )
+        }
+    }
+
+    const formatInvitee = (item, index) => {
+        return (
+            <View>
+                <TouchableOpacity style={styles.genreButton} disabled={true}>
+                    <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{item}</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    const renderInvitees = (invitees) => {
+        for (var i = 0; i < invitees.length; i++) {
+            invitees[i] = invitees[i].replace('_', ' ');
+        }
+        return (
+            <View style={{ flex: 1, flexDirection: "row" }}>
+                <Text style={{ marginTop: 5, marginLeft: 5 }}>Invitees: </Text>
+                <FlatList
+                    data={invitees}
+                    horizontal={true}
+                    renderItem={({ item, index }) => formatInvitee(item, index)}
+                    keyExtractor={(item, index) => item + index} />
+            </View>
+        )
+    }
+
 
     const finalizeBoard = () => {
 
@@ -136,16 +220,11 @@ const IndividualPlanModal = ({ onClose, board }) => {
                     <GenrePicker />
                 </View>
                 {renderFoodFilter(allGenres[5][1])}
-                <View>
-                    <Text>
-                        More information here
-                    </Text>
-                </View>
             </View>
 
             <View style={styles.footer}>
-                <Text>Current top genres</Text>
-                <Text>Invitees: {invitees.toString()}</Text>
+                {renderTopGenres(topGenres)}
+                {renderInvitees(invitees)}
             </View>
 
             <View style={styles.buttonGroup}>
@@ -191,23 +270,20 @@ const styles = StyleSheet.create({
         marginTop: '15%',
         marginLeft: '8%',
         fontFamily: 'serif'
-
     },
     body: {
-        flex: 8,
+        flex: 4,
         borderWidth: 1,
         margin: 10,
     },
     genreSelection: {
-        borderWidth: 1
-
+        borderBottomWidth: 1
     },
     genreButton: {
         borderWidth: 0.5,
         padding: 3,
         borderRadius: 5,
         margin: 5,
-
     },
     genreSelectionText: {
         fontFamily: 'serif',
@@ -216,7 +292,7 @@ const styles = StyleSheet.create({
         fontWeight: '800'
     },
     foodFilters: {
-        borderWidth: 1
+        borderBottomWidth: 1
     },
     footer: {
         flex: 1,
