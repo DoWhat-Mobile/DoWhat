@@ -6,22 +6,9 @@ import { AntDesign } from "@expo/vector-icons";
 import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 
 const Map = ({ onClose, coord }) => {
-    console.log(coord);
-
-    {
-        /* <MapViewDirections
-                    origin={coord[0].coord}
-                    destination={coord[1].coord}
-                    apikey={GOOGLE_MAPS_API_KEY}
-                    strokeWidth={3}
-                />
-                <MapViewDirections
-                    origin={coord[1].coord}
-                    destination={coord[2].coord}
-                    apikey={GOOGLE_MAPS_API_KEY}
-                    strokeWidth={3}
-                /> */
-    }
+    /**
+     * Renders all the path lines from the first event to the last
+     */
     const directions = (coord) => {
         const start = coord[0].coord;
         const end = coord[coord.length - 1].coord;
@@ -41,7 +28,6 @@ const Map = ({ onClose, coord }) => {
             waypoints.splice(0, 1);
             waypoints.splice(coord.length - 2, 1);
             let res = waypoints.map((item) => {
-                console.log(item.coord);
                 return item.coord;
             });
 
@@ -57,6 +43,7 @@ const Map = ({ onClose, coord }) => {
             );
         }
     };
+
     return (
         <View style={styles.container}>
             <MapView
@@ -73,19 +60,6 @@ const Map = ({ onClose, coord }) => {
                     }
                 }}
             >
-                {/* <MapViewDirections
-                    origin={coord[0].coord}
-                    destination={coord[1].coord}
-                    apikey={GOOGLE_MAPS_API_KEY}
-                    strokeWidth={3}
-                />
-                <MapViewDirections
-                    origin={coord[1].coord}
-                    destination={coord[2].coord}
-                    apikey={GOOGLE_MAPS_API_KEY}
-                    strokeWidth={3}
-                /> */}
-
                 {coord.map((marker, index) => {
                     if (index === 0) {
                         return (
@@ -129,14 +103,7 @@ const Map = ({ onClose, coord }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // backgroundColor: "#fff",
-        // alignItems: "center",
-        // justifyContent: "center",
     },
-    // mapStyle: {
-    //     width: Dimensions.get("window").width,
-    //     height: Dimensions.get("window").height,
-    // },
     close: {
         position: "absolute",
         left: 350,

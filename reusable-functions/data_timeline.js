@@ -7,7 +7,7 @@ import ReadMore from "react-native-read-more-text";
  * timeline library, and timings array of start time and end time of each array, and location of each event
  */
 const filterHelper = (filters, events) => {
-    const genre = filters.cuisine.includes("Local")
+    const genre = filters.cuisine.includes("Hawker")
         ? "hawker"
         : filters.cuisine.includes("Cafe")
         ? "cafes"
@@ -17,22 +17,27 @@ const filterHelper = (filters, events) => {
     // so there will be a variety of places to choose from
     let temp = [];
     for (i = 0; i < eventList.length; i++) {
-        if (genre === "hawker" && eventList[i].tags.includes(filters.area))
-            temp.push(eventList[i]);
+        const event = eventList[i];
+        const condition = (element) =>
+            event.cuisine.toString().includes(element);
+
+        if (genre === "hawker" && event.tags.includes(filters.area))
+            temp.push(event);
 
         if (
             genre === "cafes" &&
-            eventList[i].tags.includes(filters.area) &&
-            eventList[i].price_level <= filters.price
+            event.tags.includes(filters.area) &&
+            event.price_level <= filters.price
         )
-            temp.push(eventList[i]);
+            temp.push(event);
 
         if (
             genre === "restaurants" &&
-            eventList[i].tags.includes(filters.area) &&
-            eventList[i].cuisine.includes(filters.cuisine)
+            event.tags.includes(filters.area) &&
+            event.price_level <= filters.price &&
+            filters.cuisine.some(condition)
         )
-            temp.push(eventList[i]);
+            temp.push(event);
     }
     let rand = Math.floor(Math.random() * temp.length);
     return { [genre]: temp[rand] };
@@ -156,6 +161,9 @@ export const data_shuffle = (events, unsatisfied, time) => {
     return data;
 };
 
+/**
+ * Creates the object with keys that the timeline library accepts
+ */
 const objectFormatter = (startTime, event, genre) => {
     const renderTruncatedFooter = (handlePress) => {
         return (
