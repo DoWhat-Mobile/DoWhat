@@ -22,9 +22,7 @@ const Item = ({ item, onReselect, onClose }) => {
                     paddingHorizontal: 100,
                 }}
             >
-                <View>
-                    <View>{item.description}</View>
-                </View>
+                <View>{item.description}</View>
             </Card>
         </TouchableOpacity>
     );

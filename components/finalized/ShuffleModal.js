@@ -1,10 +1,17 @@
 import React from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+    TouchableOpacity,
+} from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import Item from "./ModalItem";
 import { data_shuffle } from "../../reusable-functions/data_timeline";
 
-const ShuffleModal = ({ onReselect, onClose, unsatisfied, events }) => {
+const ShuffleModal = ({ onReselect, onClose, unsatisfied, events, genres }) => {
+    const [refresh, setRefresh] = React.useState(false);
     return (
         <View style={styles.container}>
             <AntDesign
@@ -16,8 +23,9 @@ const ShuffleModal = ({ onReselect, onClose, unsatisfied, events }) => {
             <FlatList
                 data={data_shuffle(
                     events,
-                    unsatisfied["genre"],
-                    unsatisfied["time"]
+                    genres,
+                    unsatisfied["time"],
+                    unsatisfied["genre"]
                 )}
                 renderItem={({ item }) => (
                     <Item
@@ -29,6 +37,12 @@ const ShuffleModal = ({ onReselect, onClose, unsatisfied, events }) => {
                 style={{ marginTop: 40 }}
                 keyExtractor={(item) => item.title}
             />
+            <TouchableOpacity
+                style={{ marginBottom: 25 }}
+                onPress={() => setRefresh(!refresh)}
+            >
+                <Text style={{ fontSize: 20 }}>Load More</Text>
+            </TouchableOpacity>
         </View>
     );
 };

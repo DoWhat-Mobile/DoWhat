@@ -8,6 +8,7 @@ import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 const Map = ({ onClose, coord }) => {
     /**
      * Renders all the path lines from the first event to the last
+     * @param {*} coord is an array of objects with long lat of the events scheduled for the user
      */
     const directions = (coord) => {
         const start = coord[0].coord;

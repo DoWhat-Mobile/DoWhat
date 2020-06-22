@@ -8,7 +8,7 @@ import {
     formatEventsData,
 } from "../../reusable-functions/GoogleCalendarInvite";
 
-const Schedule = ({ navigation, data, allEvents, mapUpdate }) => {
+const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
@@ -63,6 +63,7 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate }) => {
                         onClose={onClose}
                         unsatisfied={unsatisfied}
                         events={allEvents}
+                        genres={genres}
                     />
                 </Modal>
                 <Timeline

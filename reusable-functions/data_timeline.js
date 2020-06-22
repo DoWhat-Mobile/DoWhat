@@ -1,10 +1,13 @@
 import React from "react";
-import { Text } from "react-native";
+import { Text, View, TouchableOpacity, Button } from "react-native";
 import ReadMore from "react-native-read-more-text";
+import { AntDesign } from "@expo/vector-icons";
 
 /**
  * handles filter for food to be added in data array. Returns array of data that is formatted to be passed as props into
  * timeline library, and timings array of start time and end time of each array, and location of each event
+ * @param {*} filters in array of area price and cuisine the user selected
+ * @param {*} events are all the events
  */
 const filterHelper = (filters, events) => {
     const genre = filters.cuisine.includes("Hawker")
@@ -38,6 +41,8 @@ const filterHelper = (filters, events) => {
             filters.cuisine.some(condition)
         )
             temp.push(event);
+
+        if (event.price_level > filters.price) temp.push(event);
     }
     let rand = Math.floor(Math.random() * temp.length);
     return { [genre]: temp[rand] };
@@ -59,6 +64,14 @@ const genreEventObjectArray = (testEvents, events, filters) => {
     return eventArray;
 };
 
+/**
+ * Returns data needed for the timeline library, a timings array to be used to schedule the calendar and a location array with
+ * long lat objects of the events scheduled for the user
+ * @param {*} timeline is the array that stores the user's available time range
+ * @param {*} testEvents is the genres the user picked
+ * @param {*} events is the database of all events
+ * @param {*} filters is the food filters the user selected
+ */
 export const data_timeline = (timeline, testEvents, events, filters) => {
     const data = [];
     const timingsArray = [];
@@ -106,9 +119,13 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
 };
 
 /**
- * formats data array for three random events to be shown on reshuffle
+ * Formats the object to be shown in the reshuffle modal
+ * @param {*} events are all the events stored in the database
+ * @param {*} genres is the array of genres that the user selected
+ * @param {*} time is the time interval free period of the user
+ * @param {*} unsatisfied is the genre of the event that the user is reselecting
  */
-export const data_shuffle = (events, unsatisfied, time) => {
+export const data_shuffle = (events, genres, time, unsatisfied) => {
     const renderTruncatedFooter = (handlePress) => {
         return (
             <Text
@@ -130,12 +147,24 @@ export const data_shuffle = (events, unsatisfied, time) => {
             </Text>
         );
     };
-    data = [];
+    let data = [];
+    let selectable = [];
+    for (i = 0; i < genres.length; i++) {
+        let type = genres[i].toString();
+        if (type === "food") {
+            Array.prototype.push.apply(selectable, events["hawker"]["list"]);
+            Array.prototype.push.apply(selectable, events["cafes"]["list"]);
+            Array.prototype.push.apply(
+                selectable,
+                events["restaurants"]["list"]
+            );
+        } else {
+            Array.prototype.push.apply(selectable, events[type]["list"]);
+        }
+    }
     for (i = 0; i < 3; i++) {
-        const eventObject = events[unsatisfied]["list"];
-
-        let randomNumber = Math.floor(Math.random() * eventObject.length);
-        let event = eventObject[randomNumber];
+        let randomNumber = Math.floor(Math.random() * selectable.length);
+        let event = selectable[randomNumber];
         let obj = {
             title: event.name,
             time: time,
@@ -147,7 +176,8 @@ export const data_shuffle = (events, unsatisfied, time) => {
                     renderRevealedFooter={renderRevealedFooter}
                 >
                     <Text>
-                        {event.location} {"\n\n"} {event.description}
+                        {event.location} {"\n\n"}
+                        {event.description}
                     </Text>
                 </ReadMore>
             ),
@@ -186,9 +216,11 @@ const objectFormatter = (startTime, event, genre) => {
             </Text>
         );
     };
+
     return {
         time: startTime + ":00",
-        title: `${event.name}`,
+        title: <Text>{event.name}</Text>,
+
         description: (
             <ReadMore
                 numberOfLines={4}
@@ -196,7 +228,9 @@ const objectFormatter = (startTime, event, genre) => {
                 renderRevealedFooter={renderRevealedFooter}
             >
                 <Text>
-                    {event.location} {"\n\n"} {event.description}
+                    🔁
+                    {"\n\n"}
+                    {event.description}
                 </Text>
             </ReadMore>
         ),

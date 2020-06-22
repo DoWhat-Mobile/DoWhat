@@ -74,6 +74,7 @@ const Finalized = (props) => {
                     navigation={props.navigation}
                     allEvents={props.allEvents}
                     mapUpdate={mapUpdate}
+                    genres={props.finalGenres[0]}
                 />
 
                 <Modal animated visible={visible} animationType="fade">
