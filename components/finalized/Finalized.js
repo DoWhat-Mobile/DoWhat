@@ -69,14 +69,13 @@ const Finalized = (props) => {
     } else {
         return (
             <View style={styles.container}>
-                <View style={styles.body}>
-                    <Schedule
-                        data={data}
-                        navigation={props.navigation}
-                        allEvents={props.allEvents}
-                        mapUpdate={mapUpdate}
-                    />
-                </View>
+                <Schedule
+                    data={data}
+                    navigation={props.navigation}
+                    allEvents={props.allEvents}
+                    mapUpdate={mapUpdate}
+                />
+
                 <Modal animated visible={visible} animationType="fade">
                     <Map onClose={onClose} coord={coord} />
                 </Modal>
@@ -96,16 +95,7 @@ const Finalized = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    body: {
-        flex: 10,
-        padding: 20,
-        paddingTop: 65,
-        backgroundColor: "white",
-    },
-    list: {
-        flex: 1,
-        marginTop: 20,
+        justifyContent: "center",
     },
 });
 
