@@ -4,7 +4,6 @@ import {
     Dimensions, SectionList, Image
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { Card } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { removeFriend, findFriends } from '../../actions/friends_actions';
 import firebase from '../../database/firebase';
@@ -93,7 +92,7 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
             to: push_token, // from user's Firebase node 
             sound: 'default',
             title: 'Friend Request',
-            body: name + ' wants to add you as a friend!',
+            body: currUserName + ' wants to add you as a friend!',
             data: { data: 'goes here' },
             _displayInForeground: true,
         };
@@ -109,22 +108,42 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
     }
 
     // Format for use in <SectionList>, formatting for Friends yet to be reqeusted
-    const ListItem = (user, firebaseUID) => {
+    const ListItem = (user, firebaseUID, requested) => {
+        const renderButton = () => {
+            if (!requested) {
+                return (
+                    <TouchableOpacity
+                        disabled={requested}
+                        onPress={() => handleAddFriend(user.push_token, user.first_name, firebaseUID)}
+                        style={styles.addFriendButton}
+                    >
+                        <Text style={styles.addFriendButtonText}>Add Friend</Text>
+                    </TouchableOpacity>
+                );
+            } else {
+                return (
+                    <TouchableOpacity
+                        disabled={requested}
+                        onPress={() => handleAddFriend(user.push_token, user.first_name, firebaseUID)}
+                        style={[styles.addFriendButton, { backgroundColor: 'green' }]}
+                    >
+                        <Text style={[styles.addFriendButtonText, { color: 'white' }]}>Friend Request Sent</Text>
+                    </TouchableOpacity>
+                );
+            }
+        }
+
         return (
-            <View style={{ width: Dimensions.get('window').width }}
+            <View style={styles.card}
             >
-                <Card
-                    style={{ height: (Dimensions.get('window').height / 2) }}
-                    title={user.first_name}
-                    id={firebaseUID} // Props here used for filtering after Add friend is clicked
-                >
-                    <Image
-                        source={{ uri: user.profile_picture_url }}
-                        style={{ height: 50, width: 50, borderRadius: 100 }}
-                    />
-                    <Button title="Add Friend"
-                        onPress={() => handleAddFriend(user.push_token, user.first_name, firebaseUID)} />
-                </Card>
+                <Image
+                    source={{ uri: user.profile_picture_url }}
+                    style={{ height: 50, width: 50, borderRadius: 100 }}
+                />
+                <View style={styles.cardComponent}>
+                    <Text style={styles.userName}>{user.first_name}</Text>
+                    {renderButton()}
+                </View>
             </View>
         );
     }
@@ -259,7 +278,7 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
             if (friendRequestAlreadySent(user) || friendRequestAlreadyRejected(user)
                 || friendRequestAlreadyAccepted(user)) continue;
 
-            const formattedUser = [user, id];
+            const formattedUser = [user, id, false]; // Last boolean flag is to see if friend request is already sent
             moreUsers.push(formattedUser);
 
         }
@@ -336,7 +355,7 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
                         sections={[
                             { title: "", data: allFriends },
                         ]}
-                        renderItem={({ item }) => ListItem(item[0], item[1])} // Each item is [userDetails, UserID]
+                        renderItem={({ item }) => ListItem(item[0], item[1], item[2])} // Each item is [userDetails, UserID, true/false]
                         renderSectionHeader={({ section }) =>
                             <View style={styles.sectionHeader}>
                                 <TouchableOpacity
@@ -354,7 +373,6 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
 };
 
 const mapStateToProps = (state) => {
-    console.log("All friends length is: ", state.add_friends.allFriends.length)
     return {
         userID: state.add_events.userID,
         allFriends: state.add_friends.allFriends
@@ -424,4 +442,38 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 32,
     },
+    card: {
+        flexDirection: 'row',
+        borderWidth: 1,
+        justifyContent: 'flex-start',
+        margin: 10,
+        marginLeft: 20,
+        borderRadius: 10,
+        padding: 5,
+        width: Dimensions.get('window').width * 0.9
+
+    },
+    addFriendButton: {
+        borderWidth: 0.5,
+        borderRadius: 5,
+        borderColor: 'black',
+        alignContent: 'stretch'
+
+    },
+    userName: {
+        fontSize: 18,
+        fontWeight: '800',
+        fontFamily: 'serif',
+        textAlign: 'center'
+
+    },
+    cardComponent: {
+        marginLeft: 10,
+        padding: 5,
+        width: Dimensions.get('window').width * 0.7,
+
+    },
+    addFriendButtonText: {
+        textAlign: 'center',
+    }
 });

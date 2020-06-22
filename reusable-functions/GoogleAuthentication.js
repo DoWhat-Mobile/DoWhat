@@ -1,5 +1,5 @@
 const firebase = require('firebase');
-import { GOOGLE_ANDROID_CLIENT_ID } from 'react-native-dotenv';
+import { GOOGLE_ANDROID_CLIENT_ID, STANDALONE_GOOGLE_ANDROID_CLIENT_ID } from 'react-native-dotenv';
 import store from "../store";
 import { addUID } from "../actions/auth_screen_actions";
 import { Notifications } from 'expo';
@@ -8,7 +8,7 @@ import Constants from 'expo-constants';
 
 export const OAuthConfig = {
     issuer: "https://accounts.google.com",
-    clientId: GOOGLE_ANDROID_CLIENT_ID,
+    clientId: GOOGLE_ANDROID_CLIENT_ID, // use STANDALONE Client ID if using built expo app
     scopes: ["https://www.googleapis.com/auth/calendar", "profile", "email"],
 };
 
@@ -74,6 +74,7 @@ export const onSignIn = (googleUser) => {
                             });
                     } else {
                         // User is not a new user, just update the last logged in time
+                        registerForPushNotificationsAsync(result.user.id);
                         firebase
                             .database()
                             .ref("/users/" + result.user.uid)

@@ -7,10 +7,12 @@ const initState = {
 const handleRemoveFriend = (userID, allFriends) => {
     // Remove user from list view once request has been sent 
     const currState = [...allFriends] // Clone array
-    const newState = currState.filter(elt => {
-        return elt[1] !== userID;
-    })
-    return newState;
+    for (var i = 0; i < currState.length; i++) {
+        if (currState[i][1] == userID) {
+            currState[i][2] = true; // Indicate that friend request has been sent
+        }
+    }
+    return currState;
 }
 
 export default function (state = initState, action) {

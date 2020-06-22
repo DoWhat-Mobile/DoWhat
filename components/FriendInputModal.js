@@ -36,6 +36,7 @@ const FriendInputModal = ({ onClose, userID, selected_date }) => {
 
     // HOW TO CHECK?
     const userAlreadyInvited = (inviteeID) => {
+        console.log("Check")
         firebase.database()
             .ref()
             .once("value")
@@ -55,6 +56,7 @@ const FriendInputModal = ({ onClose, userID, selected_date }) => {
                     }
                     return false;
                 }
+                return false;
             })
     }
 
@@ -62,9 +64,10 @@ const FriendInputModal = ({ onClose, userID, selected_date }) => {
     const addToState = (allFriends) => {
         var friends = [];
         for (var user in allFriends) {
-            if (Promise.resolve(userAlreadyInvited(allFriends[user]))) {
-                continue;
-            }
+            console.log(Promise.resolve(userAlreadyInvited(allFriends[user])))
+            //  if (Promise.resolve(userAlreadyInvited(allFriends[user]))) {
+            //      continue;
+            //  }
             const formattedUser = [user, allFriends[user]]; // [name, userID]
             friends.push(formattedUser);
 
