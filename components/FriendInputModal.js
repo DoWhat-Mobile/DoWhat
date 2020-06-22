@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View, Text, StyleSheet, TouchableOpacity,
     SectionList
@@ -10,20 +10,21 @@ import firebase from '../database/firebase';
 /**
  * Modal that shows when user clicks "Invite friends from DoWhat" in FriendInput.js
  */
-const FriendInputModal = ({ onClose, userID, selected_date }) => {
+const FriendInputModal = ({ onClose, userID, selected_date, database }) => {
     useEffect(() => {
         showAllMyFriends(); // All accepted friends
     }, []);
 
-    const [allAcceptedFriends, setAllAcceptedFriends] = React.useState([]);
-    const [currUserName, setCurrUserName] = React.useState('')
+    const [allAcceptedFriends, setAllAcceptedFriends] = useState([]);
+    const [currUserName, setCurrUserName] = useState('')
 
     const showAllMyFriends = () => {
         firebase.database()
-            .ref("users/" + userID)
+            .ref()
             .once("value")
             .then((snapshot) => {
-                const user = snapshot.val();
+                const database = snapshot.val();
+                const user = database.users[userID];
                 setCurrUserName(user.first_name + '_' + user.last_name); // For identification when adding friend request to Firebase
                 if (user.hasOwnProperty('friends')) {
                     if (user.friends.hasOwnProperty('accepted')) {
@@ -34,40 +35,32 @@ const FriendInputModal = ({ onClose, userID, selected_date }) => {
             })
     }
 
-    // HOW TO CHECK?
+    // Check Firebase whether invitation was already sent
     const userAlreadyInvited = (inviteeID) => {
-        firebase.database()
-            .ref()
-            .once("value")
-            .then((snapshot) => {
-                const database = snapshot.val();
-                if (database.hasOwnProperty('collab_boards')) {
-                    const collab_boards = database.collab_boards;
-                    if (collab_boards.hasOwnProperty(userID)) {
-                        const board = collab_boards[userID];
-                        const invitees = board.invitees;
-                        for (var person in invitees) {
-                            if (invitees[person] == inviteeID) {
-                                return true;
-                            }
-                        }
-                        return false;
+        if (database.hasOwnProperty('collab_boards')) {
+            const collab_boards = database.collab_boards;
+            if (collab_boards.hasOwnProperty(userID)) { // Board ID of current user
+                const board = collab_boards[userID];
+                const invitees = board.invitees;
+                for (var person in invitees) {
+                    if (invitees[person] == inviteeID) {
+                        return true;
                     }
-                    return false;
                 }
-            })
+                return false;
+            }
+            return false;
+        }
+        return false;
     }
 
     // Add all accepted friends to component state
     const addToState = (allFriends) => {
         var friends = [];
         for (var user in allFriends) {
-            if (Promise.resolve(userAlreadyInvited(allFriends[user]))) {
-                continue;
-            }
-            const formattedUser = [user, allFriends[user]]; // [name, userID]
+            var formattedUser = [user, allFriends[user],
+                userAlreadyInvited(allFriends[user])]; // [name, userID, true/false]
             friends.push(formattedUser);
-
         }
         setAllAcceptedFriends([...friends]);
     }
@@ -145,10 +138,14 @@ const FriendInputModal = ({ onClose, userID, selected_date }) => {
     }
 
     // Update component state
-    const removeInvitedFriendFromList = (inviteeID) => {
+    const removeInvitedFriendFromList = (inviteeID) => { // Remove by setting an 'invited' marker
         const currFriends = [...allAcceptedFriends];
-        const newState = currFriends.filter(invitee => invitee[1] !== inviteeID); // friend -> [name, userID]
-        setAllAcceptedFriends([...newState]);
+        for (var i = 0; i < currFriends.length; i++) {
+            if (currFriends[i][1] == inviteeID) {
+                currFriends[i][2] = true; // Indicate that friend request has been sent
+            }
+        }
+        setAllAcceptedFriends([...currFriends]);
     }
 
     // API call format
@@ -173,18 +170,32 @@ const FriendInputModal = ({ onClose, userID, selected_date }) => {
     }
 
     // Format the data into the list
-    const renderFriends = (name, userID) => {
-        return (
-            <View style={styles.friend}>
-                <Text style={{ marginLeft: '2%' }}>{name.replace('_', ' ')}</Text>
-                <View style={styles.buttonGroup}>
-                    <TouchableOpacity style={{ borderWidth: 1, borderRadius: 10, padding: 5 }}
-                        onPress={() => inviteForCollab(name, userID)}>
-                        <Text>Invite</Text>
-                    </TouchableOpacity>
+    const renderFriends = (name, userID, requested) => {
+        if (!requested) {
+            return (
+                <View style={styles.friend}>
+                    <Text style={{ marginLeft: '2%' }}>{name.replace('_', ' ')}</Text>
+                    <View style={styles.buttonGroup}>
+                        <TouchableOpacity style={{ borderWidth: 1, borderRadius: 10, padding: 5 }}
+                            onPress={() => inviteForCollab(name, userID)}>
+                            <Text>Invite</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
-        )
+            )
+        } else {
+            return (
+                <View style={styles.friend}>
+                    <Text style={{ marginLeft: '2%' }}>{name.replace('_', ' ')}</Text>
+                    <View style={styles.buttonGroup}>
+                        <TouchableOpacity style={{ borderWidth: 1, borderRadius: 10, padding: 5, backgroundColor: 'green' }}
+                            onPress={() => inviteForCollab(name, userID)}>
+                            <Text style={{ color: 'white' }}>Invited</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )
+        }
     }
 
     return (
@@ -207,7 +218,7 @@ const FriendInputModal = ({ onClose, userID, selected_date }) => {
                     sections={[
                         { title: "", data: allAcceptedFriends },
                     ]}
-                    renderItem={({ item }) => renderFriends(item[0], item[1])} // Each item is [userDetails, UserID]
+                    renderItem={({ item }) => renderFriends(item[0], item[1], item[2])} // Each item is [userDetails, UserID]
                     renderSectionHeader={({ section }) =>
                         <View style={styles.sectionHeader}>
                             <TouchableOpacity

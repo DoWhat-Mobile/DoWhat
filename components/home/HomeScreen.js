@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Feed from './Feed';
-import Plan from './Planning';
+import Plan from '../collaboration/Planning';
 
 const Tab = createBottomTabNavigator();
 

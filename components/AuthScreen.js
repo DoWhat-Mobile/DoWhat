@@ -44,7 +44,6 @@ class AuthScreen extends Component {
             // Get Oauth2 token
             const tokenResponse = await AppAuth.authAsync(OAuthConfig);
             this.getUserInfoAndSignIn(tokenResponse);
-            this.props.navigation.navigate("Home");
 
         } catch (e) {
             console.log(e);
@@ -73,6 +72,7 @@ class AuthScreen extends Component {
                     data["accessTokenExpirationDate"] =
                         token.accessTokenExpirationDate;
                     onSignIn(data); // Sign in to Google's firebase
+                    this.props.navigation.navigate("Home");
                 })
         } catch (e) {
             console.log(e);

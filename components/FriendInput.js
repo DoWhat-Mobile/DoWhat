@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, View, Text, StyleSheet, Modal } from "react-native";
 import * as Linking from "expo-linking";
 import firebase from "../database/firebase";
@@ -12,7 +12,22 @@ import FriendInputModal from './FriendInputModal';
  * User will only come to this page if and after snycing their Google Calendar.
  */
 const FriendInput = (props) => {
-    const [modalVisible, setModalVisible] = React.useState(false);
+    useEffect(() => {
+        addDatabaseToState();
+    }, []);
+
+    const [modalVisible, setModalVisible] = useState(false);
+    const [database, setDatabase] = useState({})
+
+    const addDatabaseToState = () => {
+        firebase.database()
+            .ref()
+            .once("value")
+            .then((snapshot) => {
+                const database = snapshot.val();
+                setDatabase(database); // Add to component state for future checks if invitation alr sent
+            })
+    }
 
     const closeModal = () => {
         setModalVisible(false);
@@ -74,7 +89,7 @@ const FriendInput = (props) => {
                 onRequestClose={() => {
                     Alert.alert("Modal has been closed.");
                 }}>
-                <FriendInputModal onClose={closeModal} />
+                <FriendInputModal onClose={closeModal} database={database} />
             </Modal>
 
             <View style={styles.body}>

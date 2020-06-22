@@ -1,7 +1,7 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import AllPlans from './AllPlans';
-import Friends from './Friends';
+import Friends from '../home/Friends';
 
 const Drawer = createDrawerNavigator();
 
