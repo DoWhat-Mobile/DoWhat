@@ -1,42 +1,115 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
+
+const formatDate = (day, month, date) => {
+    const possibleDays = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wenesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+    ];
+    const possibleMonths = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+    const curDay = possibleDays[day];
+    const curMonth = possibleMonths[month];
+    return curDay + ", " + curMonth + " " + date;
+};
 
 /**
  * The modal that shows when user selects each of the individual upcoming plans
  */
 const IndividualPlanModal = ({ onClose, board }) => {
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
+    useEffect(() => {
+        extractAndSetTopGenres(board.preferences);
+        extractAndSetInvitees(board.invitees);
+    }, []);
 
-    const formatDate = (day, month, date) => {
-        const possibleDays = [
-            "Sunday",
-            "Monday",
-            "Tuesday",
-            "Wenesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-        ];
-        const possibleMonths = [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-        ];
-        const curDay = possibleDays[day];
-        const curMonth = possibleMonths[month];
-        return curDay + ", " + curMonth + " " + date;
-    };
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
+    const [invitees, setInvitees] = useState([]);
+    const [allGenres, setAllGenres] = useState([['ADVENTURE', false], ['ARTS', false],
+    ['LEISURE', false], ['NATURE', false], ['NIGHTLIFE', false], ['FOOD', false]]);
+
+    const extractAndSetTopGenres = (object) => {
+        // Sort genre
+
+        // Set top genre to state
+    }
+
+    const extractAndSetInvitees = (object) => {
+        var newState = [];
+        for (var name in object) {
+            newState.push(name);
+        }
+        setInvitees([...newState]);
+    }
+
+    const renderGenres = (genre, selected, index) => {
+        if (!selected) {
+            return (
+                <View>
+                    <TouchableOpacity style={styles.genreButton}
+                        onPress={() => handleGenreSelect(index)}>
+                        <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{genre}</Text>
+                    </TouchableOpacity>
+                </View>
+            );
+        } else {
+            return (
+                <View>
+                    <TouchableOpacity style={[styles.genreButton, { backgroundColor: '#e5e5e5' }]}
+                        onPress={() => handleGenreSelect(index)}>
+                        <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{genre}</Text>
+                    </TouchableOpacity>
+                </View>
+            );
+        }
+    }
+
+    const handleGenreSelect = (index) => {
+        var newState = [...allGenres];
+        newState[index][1] = !newState[index][1]; // Toggle between true/false
+        setAllGenres([...newState]);
+    }
+
+    const GenrePicker = () => {
+        return (
+            <FlatList
+                data={allGenres}
+                horizontal={true}
+                renderItem={({ item, index }) => renderGenres(item[0], item[1], index)}
+                keyExtractor={(item, index) => item + index}
+            />
+        );
+    }
+
+    const renderFoodFilter = (foodIsSelected) => {
+        if (foodIsSelected) {
+            return (
+                <View style={styles.foodFilters}>
+                    <Text>Location:</Text>
+                    <Text>Cuisine:</Text>
+                    <Text>Budget:</Text>
+                </View>
+            );
+        }
+    }
 
     const finalizeBoard = () => {
 
@@ -58,11 +131,23 @@ const IndividualPlanModal = ({ onClose, board }) => {
             />
 
             <View style={styles.body}>
+                <View style={styles.genreSelection}>
+                    <Text style={styles.genreSelectionText}>Select your moods:</Text>
+                    <GenrePicker />
+                </View>
+                {renderFoodFilter(allGenres[5][1])}
+                <View>
+                    <Text>
+                        More information here
+                    </Text>
+                </View>
             </View>
 
             <View style={styles.footer}>
-
+                <Text>Current top genres</Text>
+                <Text>Invitees: {invitees.toString()}</Text>
             </View>
+
             <View style={styles.buttonGroup}>
                 <TouchableOpacity style={[styles.finalizeButton, isButtonDisabled ? { backgroundColor: 'green' } : {}]} onPress={() => inputAvailabilities()}
                     disabled={isButtonDisabled}>
@@ -110,9 +195,34 @@ const styles = StyleSheet.create({
     },
     body: {
         flex: 8,
+        borderWidth: 1,
+        margin: 10,
+    },
+    genreSelection: {
+        borderWidth: 1
+
+    },
+    genreButton: {
+        borderWidth: 0.5,
+        padding: 3,
+        borderRadius: 5,
+        margin: 5,
+
+    },
+    genreSelectionText: {
+        fontFamily: 'serif',
+        marginLeft: 5,
+        fontSize: 15,
+        fontWeight: '800'
+    },
+    foodFilters: {
+        borderWidth: 1
     },
     footer: {
         flex: 1,
+        borderWidth: 1,
+        margin: 10,
+        marginTop: 0,
     },
     buttonGroup: {
         flexDirection: 'row',

@@ -10,14 +10,13 @@ import firebase from '../database/firebase';
 /**
  * Modal that shows when user clicks "Invite friends from DoWhat" in FriendInput.js
  */
-const FriendInputModal = ({ onClose, userID, selected_date }) => {
+const FriendInputModal = ({ onClose, userID, selected_date, database }) => {
     useEffect(() => {
         showAllMyFriends(); // All accepted friends
     }, []);
 
     const [allAcceptedFriends, setAllAcceptedFriends] = useState([]);
     const [currUserName, setCurrUserName] = useState('')
-    const [database, setDatabase] = useState({})
 
     const showAllMyFriends = () => {
         firebase.database()
@@ -25,7 +24,6 @@ const FriendInputModal = ({ onClose, userID, selected_date }) => {
             .once("value")
             .then((snapshot) => {
                 const database = snapshot.val();
-                setDatabase(database); // Add to component state for future checks if invitation alr sent
                 const user = database.users[userID];
                 setCurrUserName(user.first_name + '_' + user.last_name); // For identification when adding friend request to Firebase
                 if (user.hasOwnProperty('friends')) {
@@ -41,7 +39,7 @@ const FriendInputModal = ({ onClose, userID, selected_date }) => {
     const userAlreadyInvited = (inviteeID) => {
         if (database.hasOwnProperty('collab_boards')) {
             const collab_boards = database.collab_boards;
-            if (collab_boards.hasOwnProperty(userID)) {
+            if (collab_boards.hasOwnProperty(userID)) { // Board ID of current user
                 const board = collab_boards[userID];
                 const invitees = board.invitees;
                 for (var person in invitees) {
@@ -53,18 +51,15 @@ const FriendInputModal = ({ onClose, userID, selected_date }) => {
             }
             return false;
         }
+        return false;
     }
 
     // Add all accepted friends to component state
     const addToState = (allFriends) => {
         var friends = [];
         for (var user in allFriends) {
-            var formattedUser = [user, allFriends[user], false]; // [name, userID, true/false]
-            if (userAlreadyInvited(allFriends[user])) {
-                formattedUser[2] = true;
-            } else {
-                formattedUser[2] = false;
-            }
+            var formattedUser = [user, allFriends[user],
+                userAlreadyInvited(allFriends[user])]; // [name, userID, true/false]
             friends.push(formattedUser);
         }
         setAllAcceptedFriends([...friends]);
