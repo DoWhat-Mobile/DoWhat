@@ -49,7 +49,7 @@ const AllFriends = ({ userID }) => {
                 <Text style={{ marginLeft: '2%' }}>{name.replace('_', ' ')}</Text>
                 <View style={styles.buttonGroup}>
                     <TouchableOpacity style={{ borderWidth: 1, borderRadius: 10, padding: 5 }}
-                        onPress={() => alert("Invite for collab")}>
+                        onPress={() => alert("More details about user (future enhancement)")}>
                         <Text>More details</Text>
                     </TouchableOpacity>
                 </View>
@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
         marginRight: '10%',
         paddingBottom: '2%',
         paddingTop: '2%',
+        marginTop: 10,
         borderRadius: 8,
 
     },

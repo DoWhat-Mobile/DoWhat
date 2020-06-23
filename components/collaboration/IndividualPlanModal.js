@@ -11,7 +11,7 @@ import GenrePicker from './GenrePicker';
 /**
  * The modal that shows when user selects each of the individual upcoming plans
  */
-const IndividualPlanModal = ({ onClose, board }) => {
+const IndividualPlanModal = ({ onClose, board, userID }) => {
     useEffect(() => {
         extractAndSetTopGenres(board.preferences);
         extractAndSetInvitees(board.invitees);
@@ -136,6 +136,7 @@ const IndividualPlanModal = ({ onClose, board }) => {
     }
 
     const inputAvailabilities = () => {
+        getBusyPeriodFromGoogleCal(userID);
         setIsButtonDisabled(true); // Prevent syncing google calendar twice
 
     }
@@ -180,7 +181,13 @@ const IndividualPlanModal = ({ onClose, board }) => {
     );
 }
 
-export default connect()(IndividualPlanModal);
+const mapStateToProps = (state) => {
+    return {
+        userID: state.add_events.userID,
+    };
+};
+
+export default connect(mapStateToProps, null)(IndividualPlanModal);
 
 const styles = StyleSheet.create({
     modal: {
