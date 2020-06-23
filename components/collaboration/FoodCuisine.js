@@ -25,7 +25,7 @@ const FoodCuisine = ({ cuisine, handleCuisineSelect }) => {
     }
 
     return (
-        <View>
+        <View style={{ marginTop: 10 }}>
             <Text style={styles.genreSelectionText}>Cuisine:</Text>
             <FlatList
                 data={cuisine}

@@ -94,7 +94,13 @@ const FriendInputModal = ({ onClose, userID, selected_date, database }) => {
             nightlife: 0,
             restaurants: 0
         }
-        updates['/budget'] = 0;
+        updates['/budget'] = {
+            0: 0,
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0
+        };
         updates['/availabilities/' + formattedUserEmail] = inviteeBusyPeriods;
 
         firebase.database()

@@ -25,7 +25,7 @@ const FoodLocation = ({ location, handleLocationSelect }) => {
     }
 
     return (
-        <View style={styles.foodFilters}>
+        <View style={{ marginTop: 10 }}>
             <Text style={styles.genreSelectionText}>Location:</Text>
             <FlatList
                 data={location}
