@@ -21,24 +21,24 @@ const filterHelper = (filters, events) => {
     let temp = [];
     for (i = 0; i < eventList.length; i++) {
         const event = eventList[i];
-        const condition = (element) =>
+        const cuisineFilter = (element) =>
             event.cuisine.toString().includes(element);
-
-        if (genre === "hawker" && event.tags.includes(filters.area))
+        const areaFilter = (element) => event.tags.includes(element);
+        if (genre === "hawker" && filters.area.some(areaFilter))
             temp.push(event);
 
         if (
             genre === "cafes" &&
-            event.tags.includes(filters.area) &&
+            filters.area.some(areaFilter) &&
             event.price_level <= filters.price
         )
             temp.push(event);
 
         if (
             genre === "restaurants" &&
-            event.tags.includes(filters.area) &&
+            filters.area.some(areaFilter) &&
             event.price_level <= filters.price &&
-            filters.cuisine.some(condition)
+            filters.cuisine.some(cuisineFilter)
         )
             temp.push(event);
 
@@ -218,7 +218,7 @@ const objectFormatter = (startTime, event, genre) => {
     };
 
     return {
-        time: startTime + ":00",
+        time: <Text>{startTime}:00</Text>,
         title: <Text>{event.name}</Text>,
 
         description: (

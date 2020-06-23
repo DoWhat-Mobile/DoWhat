@@ -31,7 +31,6 @@ const Finalized = (props) => {
     };
 
     React.useEffect(() => {
-        // setEvents(props.allEvents);
         if (props.allEvents != {}) {
             const testEvents = props.finalGenres[0];
             const filters = props.finalGenres[2];
@@ -72,7 +71,6 @@ const Finalized = (props) => {
                 <Schedule
                     data={data}
                     navigation={props.navigation}
-                    allEvents={props.allEvents}
                     mapUpdate={mapUpdate}
                     genres={props.finalGenres[0]}
                 />
@@ -82,7 +80,6 @@ const Finalized = (props) => {
                 </Modal>
                 <TouchableOpacity
                     onPress={() => {
-                        // setCoord(data[2]);
                         setVisible(true);
                     }}
                 >

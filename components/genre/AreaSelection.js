@@ -6,7 +6,16 @@ const AreaSelection = ({ handleAreaPress }) => {
     const areas = ["North", "East", "West", "Central"];
 
     const handlePress = (area) => {
-        setSelected(area);
+        let newSelected = [];
+
+        if (selected.includes(area)) {
+            newSelected = selected.filter((s) => s !== area);
+        } else {
+            newSelected = selected.concat(area);
+        }
+
+        setSelected(newSelected);
+        handleAreaPress(newSelected);
     };
 
     const buttons = () =>
@@ -15,7 +24,6 @@ const AreaSelection = ({ handleAreaPress }) => {
                 key={items}
                 onPress={() => {
                     handlePress(items);
-                    handleAreaPress(items);
                 }}
                 style={[
                     styles.button,
