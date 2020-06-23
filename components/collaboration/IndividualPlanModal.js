@@ -7,6 +7,7 @@ import FoodPrice from './FoodPrice';
 import FoodLocation from './FoodLocation';
 import FoodCuisine from './FoodCuisine';
 import GenrePicker from './GenrePicker';
+import { inputBusyPeriodFromGcal } from '../../reusable-functions/GoogleCalendarGetBusyPeriods';
 
 /**
  * The modal that shows when user selects each of the individual upcoming plans
@@ -132,11 +133,10 @@ const IndividualPlanModal = ({ onClose, board, userID }) => {
 
 
     const finalizeBoard = () => {
-
     }
 
     const inputAvailabilities = () => {
-        getBusyPeriodFromGoogleCal(userID);
+        inputBusyPeriodFromGcal(userID, selectedDate, board.boardID);
         setIsButtonDisabled(true); // Prevent syncing google calendar twice
 
     }

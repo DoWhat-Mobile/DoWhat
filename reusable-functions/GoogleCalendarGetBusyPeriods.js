@@ -36,8 +36,6 @@ const findAndStoreBusyPeriod = async (token, userEmail, userId, selectedDate) =>
             await AppAuth.refreshAsync(OAuthConfig, token.refreshToken)
         ).accessToken;
         if (checkIfTokenExpired(token.accessTokenExpirationDate)) {
-            console.log("Refresh token: ", token.refreshToken)
-            console.log("Oauth config: ", OAuthConfig)
             // Use refresh token to generate new access token if access token has expired
             accessToken = (
                 await AppAuth.refreshAsync(OAuthConfig, token.refreshToken)
@@ -135,4 +133,72 @@ export const formatDateToString = (date) => {
     const day = date.getDate().toString();
     const dateString = year + "-" + month.toString() + "-" + day;
     return dateString;
+};
+
+/******************************************************/
+/******THESE ARE USED IN THE COLLABORATIVE BOARD*******/
+/******************************************************/
+export const inputBusyPeriodFromGcal = async (userId, selectedDate, boardID) => {
+    try {
+        firebase
+            .database()
+            .ref("users/" + userId)
+            .once("value")
+            .then((snapshot) => {
+                const userData = snapshot.val();
+                // token is object for compatibility with findAndStoreBusyPeriod input
+                const token = {
+                    accessToken: userData.access_token,
+                    refreshToken: userData.refresh_token,
+                    accessTokenExpirationDate:
+                        userData.access_token_expiration,
+                };
+                const userEmail = userData.gmail;
+                addToCollaborativeBoard(token, userEmail, selectedDate, boardID);
+            });
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+// Add busy periods to the collborative board node
+const addToCollaborativeBoard = async (token, userEmail, selectedDate, boardID) => {
+    try {
+        var accessToken = token.accessToken;
+        accessToken = (
+            await AppAuth.refreshAsync(OAuthConfig, token.refreshToken)
+        ).accessToken;
+        if (checkIfTokenExpired(token.accessTokenExpirationDate)) {
+            // Use refresh token to generate new access token if access token has expired
+            accessToken = (
+                await AppAuth.refreshAsync(OAuthConfig, token.refreshToken)
+            ).accessToken;
+        }
+
+        fetch(
+            "https://www.googleapis.com/calendar/v3/freeBusy?key=" + REACT_APP_GOOGLE_API_KEY,
+            {
+                method: "POST",
+                body: getData(userEmail, selectedDate),
+                headers: new Headers({
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + accessToken,
+                }),
+            }
+        )
+            .then((response) => response.json())
+            .then((data) => {
+                const formattedUserEmail = userEmail.replace(/\./g, '@').slice(0, -10); // Firebase cant have '@' 
+                const formattedData = {};
+                formattedData[formattedUserEmail] = data.calendars[userEmail].busy;
+                // Store busy data into firebase
+                firebase
+                    .database()
+                    .ref("collab_boards/" + boardID + '/availabilities')
+                    .update(formattedData);
+            });
+    } catch (e) {
+        console.log(e);
+    }
 };
