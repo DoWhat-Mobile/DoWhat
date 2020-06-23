@@ -14,6 +14,35 @@ import { connect } from "react-redux";
 import { selectDate } from "../actions/date_select_action";
 import firebase from "../database/firebase";
 
+export const formatDate = (day, month, date) => {
+    const possibleDays = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wenesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+    ];
+    const possibleMonths = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+    const curDay = possibleDays[day];
+    const curMonth = possibleMonths[month];
+    return curDay + ", " + curMonth + " " + date;
+};
+
 const DateSelection = (props) => {
     const [date, setDate] = useState(new Date()); // new Date() gives today's date
     const [mode, setMode] = useState("date");
@@ -33,35 +62,6 @@ const DateSelection = (props) => {
 
     const showDatepicker = () => {
         showMode("date");
-    };
-
-    const formatDate = (day, month, date) => {
-        const possibleDays = [
-            "Sunday",
-            "Monday",
-            "Tuesday",
-            "Wenesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-        ];
-        const possibleMonths = [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-        ];
-        const curDay = possibleDays[day];
-        const curMonth = possibleMonths[month];
-        return curDay + ", " + curMonth + " " + date;
     };
 
     const addSelectedDateToFirebase = () => {

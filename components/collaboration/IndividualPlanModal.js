@@ -2,36 +2,11 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
+import { formatDate } from '../DateSelection';
 import FoodPrice from './FoodPrice';
-
-const formatDate = (day, month, date) => {
-    const possibleDays = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wenesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-    ];
-    const possibleMonths = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    ];
-    const curDay = possibleDays[day];
-    const curMonth = possibleMonths[month];
-    return curDay + ", " + curMonth + " " + date;
-};
+import FoodLocation from './FoodLocation';
+import FoodCuisine from './FoodCuisine';
+import GenrePicker from './GenrePicker';
 
 /**
  * The modal that shows when user selects each of the individual upcoming plans
@@ -55,7 +30,7 @@ const IndividualPlanModal = ({ onClose, board }) => {
     ['CHINESE', false], ['KOREAN', false], ['INDIAN', false], ['JAPANESE', false],
     ['CAFE', false], ['LOCAL', false],]);
 
-    const [budget, setBudget] = useState([]);
+    const [budget, setBudget] = useState(0);
 
     const extractAndSetTopGenres = (object) => {
         var sortable = []; // Sort genre 
@@ -74,27 +49,6 @@ const IndividualPlanModal = ({ onClose, board }) => {
         setInvitees([...newState]);
     }
 
-    const renderGenres = (genre, selected, index) => {
-        if (!selected) {
-            return (
-                <View>
-                    <TouchableOpacity style={styles.genreButton}
-                        onPress={() => handleGenreSelect(index)}>
-                        <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{genre}</Text>
-                    </TouchableOpacity>
-                </View>
-            );
-        } else {
-            return (
-                <View>
-                    <TouchableOpacity style={[styles.genreButton, { backgroundColor: '#e5e5e5' }]}
-                        onPress={() => handleGenreSelect(index)}>
-                        <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{genre}</Text>
-                    </TouchableOpacity>
-                </View>
-            );
-        }
-    }
 
     const handleGenreSelect = (index) => {
         var newState = [...allGenres];
@@ -102,47 +56,29 @@ const IndividualPlanModal = ({ onClose, board }) => {
         setAllGenres([...newState]);
     }
 
-    const GenrePicker = () => {
-        return (
-            <FlatList
-                data={allGenres}
-                horizontal={true}
-                renderItem={({ item, index }) => renderGenres(item[0], item[1], index)}
-                keyExtractor={(item, index) => item + index}
-            />
-        );
+
+    const handlePricePress = (price) => {
+        setBudget(price);
     }
 
-    const renderLocation = () => {
-
+    const handleLocationSelect = (index) => {
+        var newState = [...location];
+        newState[index][1] = !newState[index][1]; // Toggle between true/false
+        setLocation([...newState]);
     }
 
-    const renderCuisine = () => {
-
-    }
-
-    const handlePricePress = () => {
-
+    const handleCuisineSelect = (index) => {
+        var newState = [...cuisine];
+        newState[index][1] = !newState[index][1]; // Toggle between true/false
+        setCuisine([...newState]);
     }
 
     const renderFoodFilter = (foodIsSelected) => {
         if (foodIsSelected) {
             return (
                 <View style={styles.foodFilters}>
-                    <Text style={styles.genreSelectionText}>Location:</Text>
-                    <FlatList
-                        data={location}
-                        horizontal={true}
-                        renderItem={({ item, index }) => renderLocation(item[0], item[1], index)}
-                        keyExtractor={(item, index) => item + index}
-                    />
-                    <Text style={styles.genreSelectionText}>Cuisine:</Text>
-                    <FlatList
-                        data={cuisine}
-                        horizontal={true}
-                        renderItem={({ item, index }) => renderCuisine(item[0], item[1], index)}
-                        keyExtractor={(item, index) => item + index}
-                    />
+                    <FoodLocation location={location} handleLocationSelect={handleLocationSelect} />
+                    <FoodCuisine cuisine={cuisine} handleCuisineSelect={handleCuisineSelect} />
                     <FoodPrice handlePricePress={(price) => handlePricePress(price)} />
                 </View>
             );
@@ -208,7 +144,10 @@ const IndividualPlanModal = ({ onClose, board }) => {
 
     return (
         <View style={styles.modal}>
-            <Text style={styles.headerText}>Your Outing on {formatDate(selectedDate.getDay(), selectedDate.getMonth(), selectedDate.getDate())}</Text>
+            <Text style={styles.headerText}>
+                Your Outing on {formatDate(selectedDate.getDay(),
+                selectedDate.getMonth(), selectedDate.getDate())}
+            </Text>
             <AntDesign name="close" size={24}
                 onPress={() => onClose()}
                 style={styles.close}
@@ -217,7 +156,7 @@ const IndividualPlanModal = ({ onClose, board }) => {
             <View style={styles.body}>
                 <View style={styles.genreSelection}>
                     <Text style={styles.genreSelectionText}>Select your moods:</Text>
-                    <GenrePicker />
+                    <GenrePicker allGenres={allGenres} handleGenreSelect={handleGenreSelect} />
                 </View>
                 {renderFoodFilter(allGenres[5][1])}
             </View>
@@ -273,11 +212,9 @@ const styles = StyleSheet.create({
     },
     body: {
         flex: 4,
-        borderWidth: 1,
         margin: 10,
     },
     genreSelection: {
-        borderBottomWidth: 1
     },
     genreButton: {
         borderWidth: 0.5,
@@ -292,11 +229,9 @@ const styles = StyleSheet.create({
         fontWeight: '800'
     },
     foodFilters: {
-        borderBottomWidth: 1
     },
     footer: {
         flex: 1,
-        borderWidth: 1,
         margin: 10,
         marginTop: 0,
     },
