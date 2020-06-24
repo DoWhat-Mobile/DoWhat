@@ -25,6 +25,7 @@ export const DATE_SELECT = "DATE_SELECT";
 export const ADD_EVENTS = "ADD_EVENTS";
 export const ADD_UID = "ADD_UID";
 export const ADD_CURR_USER_NAME = "ADD_CURR_USER_NAME";
+export const ADD_CURR_USER_GMAIL = "ADD_CURR_USER_GMAIL";
 
 /**
  * Actions friends screen

@@ -12,8 +12,8 @@ const filterHelper = (filters, events) => {
     const genre = filters.cuisine.includes("Hawker")
         ? "hawker"
         : filters.cuisine.includes("Cafe")
-        ? "cafes"
-        : "restaurants";
+            ? "cafes"
+            : "restaurants";
 
     const eventList = events[genre]["list"];
     // so there will be a variety of places to choose from
