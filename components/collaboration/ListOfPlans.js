@@ -4,6 +4,7 @@ import { Button, View, StyleSheet, Text, TouchableOpacity, SectionList, Dimensio
 import IndividualPlanModal from './IndividualPlanModal';
 import { AntDesign } from "@expo/vector-icons";
 import * as Progress from 'react-native-progress';
+import { findOverlappingIntervals } from '../../reusable-functions/OverlappingIntervals';
 
 /**
  * The <SectionList> Component within the AllPlans component. This is the component
@@ -28,18 +29,47 @@ const ListOfPlans = ({ plans, refreshList, navigation }) => {
 
     }
 
+    /**
+     * @param {*} topNumber is the limit of how many categories we want 
+     */
+    const getTopVoted = (category, topNumber) => {
+        var sortable = []; //2D Array to be used for sorting by ratings
+        var count = 0;
+
+        for (var prop in category) {
+            sortable.push([prop, category[prop]])
+            count++;
+        }
+        // Votes stored in index '1' of each inner array 
+        sortable.sort((x, y) => {
+            return y[1] - x[1];
+        })
+
+        var final = []
+        for (var i = 0; i < topNumber; i++) {
+            final.push(sortable[i][0]); // Get the names only
+        }
+        return final;
+    }
+
     const goToFinalized = (board) => {
-        console.log(board)
-        // navigation.navigate("Finalized", {
-        //     route: "board",
-        //     genres: ["adventure", "food"],
-        //     timeInterval: [12, 18],
-        //     filters: {
-        //         area: ["North", "East"],
-        //         cuisine: ["Western", "Asian"],
-        //         price: 2
-        //     }
-        // });
+        const topGenres = getTopVoted(board.preferences, 3);
+        const topCuisines = getTopVoted(board.food_filters.cuisine, 3);
+        const topArea = getTopVoted(board.food_filters.area, 2);
+        const topPrice = getTopVoted(board.food_filters.price, 1)[0];
+        const timeInterval = findOverlappingIntervals(board.availabilities, undefined);
+        var navigationProps = {
+            route: "board",
+            genres: topGenres,
+            timeInterval: timeInterval,
+            filters: {
+                area: topArea,
+                cuisine: topCuisines,
+                price: topPrice
+            },
+            attendees: ['hansybastian@gmail.com, hansworkstuff@gmail.com']
+        }
+        navigation.navigate("Finalized", navigationProps);
     }
 
     // Fraction of invitees that have finalized their collaboration inputs
