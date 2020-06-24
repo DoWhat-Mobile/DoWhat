@@ -141,7 +141,6 @@ const FriendInput = (props) => {
 }
 
 const mapStateToProps = (state) => {
-    console.log("State is:", state.add_events.userID);
     return {
         userID: state.add_events.userID
     };

@@ -221,15 +221,10 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
     const acceptFriendRequest = (name, friendID) => {
         // Update from Firebase
         let database = firebase.database();
-        const status = {};
-        status[name] = friendID;
-
-        const otherStatus = {}; // Set curr user to be the requester's friend too 
-        otherStatus[currUserName] = userID;
 
         var updates = {};
-        updates['users/' + userID + '/friends/accepted'] = status;
-        updates['users/' + friendID + '/friends/accepted'] = otherStatus;
+        updates['users/' + userID + '/friends/accepted/' + name] = friendID;
+        updates['users/' + friendID + '/friends/accepted/' + currUserName] = userID;
 
         // Accept friend, update both users since friendship goes both ways
         database.ref().update(updates) // Perform simultanoues update for 2 locations in Firebase

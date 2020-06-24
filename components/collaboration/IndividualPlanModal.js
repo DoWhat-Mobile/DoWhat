@@ -2,47 +2,25 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
+import { formatDate } from '../DateSelection';
 import FoodPrice from './FoodPrice';
-
-const formatDate = (day, month, date) => {
-    const possibleDays = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wenesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-    ];
-    const possibleMonths = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    ];
-    const curDay = possibleDays[day];
-    const curMonth = possibleMonths[month];
-    return curDay + ", " + curMonth + " " + date;
-};
+import FoodLocation from './FoodLocation';
+import FoodCuisine from './FoodCuisine';
+import GenrePicker from './GenrePicker';
+import firebase from '../../database/firebase'
+import { inputBusyPeriodFromGcal } from '../../reusable-functions/GoogleCalendarGetBusyPeriods';
 
 /**
  * The modal that shows when user selects each of the individual upcoming plans
  */
-const IndividualPlanModal = ({ onClose, board }) => {
+const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     useEffect(() => {
         extractAndSetTopGenres(board.preferences);
         extractAndSetInvitees(board.invitees);
     }, []);
 
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
+    const [boardIsFinalized, setBoardIsFinalized] = useState(false);
     const [invitees, setInvitees] = useState([]);
     const [topGenres, setTopGenres] = useState([]);
     const [allGenres, setAllGenres] = useState([['ADVENTURE', false], ['ARTS', false],
@@ -55,7 +33,7 @@ const IndividualPlanModal = ({ onClose, board }) => {
     ['CHINESE', false], ['KOREAN', false], ['INDIAN', false], ['JAPANESE', false],
     ['CAFE', false], ['LOCAL', false],]);
 
-    const [budget, setBudget] = useState([]);
+    const [budget, setBudget] = useState(0);
 
     const extractAndSetTopGenres = (object) => {
         var sortable = []; // Sort genre 
@@ -74,27 +52,6 @@ const IndividualPlanModal = ({ onClose, board }) => {
         setInvitees([...newState]);
     }
 
-    const renderGenres = (genre, selected, index) => {
-        if (!selected) {
-            return (
-                <View>
-                    <TouchableOpacity style={styles.genreButton}
-                        onPress={() => handleGenreSelect(index)}>
-                        <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{genre}</Text>
-                    </TouchableOpacity>
-                </View>
-            );
-        } else {
-            return (
-                <View>
-                    <TouchableOpacity style={[styles.genreButton, { backgroundColor: '#e5e5e5' }]}
-                        onPress={() => handleGenreSelect(index)}>
-                        <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{genre}</Text>
-                    </TouchableOpacity>
-                </View>
-            );
-        }
-    }
 
     const handleGenreSelect = (index) => {
         var newState = [...allGenres];
@@ -102,47 +59,29 @@ const IndividualPlanModal = ({ onClose, board }) => {
         setAllGenres([...newState]);
     }
 
-    const GenrePicker = () => {
-        return (
-            <FlatList
-                data={allGenres}
-                horizontal={true}
-                renderItem={({ item, index }) => renderGenres(item[0], item[1], index)}
-                keyExtractor={(item, index) => item + index}
-            />
-        );
+
+    const handlePricePress = (price) => {
+        setBudget(price);
     }
 
-    const renderLocation = () => {
-
+    const handleLocationSelect = (index) => {
+        var newState = [...location];
+        newState[index][1] = !newState[index][1]; // Toggle between true/false
+        setLocation([...newState]);
     }
 
-    const renderCuisine = () => {
-
-    }
-
-    const handlePricePress = () => {
-
+    const handleCuisineSelect = (index) => {
+        var newState = [...cuisine];
+        newState[index][1] = !newState[index][1]; // Toggle between true/false
+        setCuisine([...newState]);
     }
 
     const renderFoodFilter = (foodIsSelected) => {
         if (foodIsSelected) {
             return (
                 <View style={styles.foodFilters}>
-                    <Text style={styles.genreSelectionText}>Location:</Text>
-                    <FlatList
-                        data={location}
-                        horizontal={true}
-                        renderItem={({ item, index }) => renderLocation(item[0], item[1], index)}
-                        keyExtractor={(item, index) => item + index}
-                    />
-                    <Text style={styles.genreSelectionText}>Cuisine:</Text>
-                    <FlatList
-                        data={cuisine}
-                        horizontal={true}
-                        renderItem={({ item, index }) => renderCuisine(item[0], item[1], index)}
-                        keyExtractor={(item, index) => item + index}
-                    />
+                    <FoodLocation location={location} handleLocationSelect={handleLocationSelect} />
+                    <FoodCuisine cuisine={cuisine} handleCuisineSelect={handleCuisineSelect} />
                     <FoodPrice handlePricePress={(price) => handlePricePress(price)} />
                 </View>
             );
@@ -194,21 +133,123 @@ const IndividualPlanModal = ({ onClose, board }) => {
         )
     }
 
+    // Take current board state, and perform updates using user's votes
+    const updateGenres = (prevState, currState) => {
+        var newState = JSON.parse(JSON.stringify(prevState)); // Deep copy to not mutate component's board state
+        currState.forEach(x => { // [NATURE, true/false]
+            const genre = x[0].toLowerCase();
+            const selected = x[1];
+            if (selected) {
+                newState[genre] += 1;
+            }
+        })
+        return newState;
+    }
 
+    // Take current board state, and perform updates using user's votes
+    const updateFoodFilters = (prevState, currLocationState, currCuisineState, currBudgetState) => {
+        var newState = JSON.parse(JSON.stringify(prevState)); // Deep copy to not mutate component's board state
+        currLocationState.forEach(x => { // [location, true/false]
+            const location = x[0].toLowerCase();
+            const selected = x[1];
+            if (selected) {
+                newState.area[location] += 1;
+            }
+        })
+        currCuisineState.forEach(x => { // [cuisine, true/false]
+            const cuisine = x[0].toLowerCase();
+            const selected = x[1];
+            if (selected) {
+                newState.cuisine[cuisine] += 1;
+            }
+        })
+        newState.price[currBudgetState] += 1;
+        return newState;
+    }
+
+    // Finalize updates firebase with the user's inputted preference votes
     const finalizeBoard = () => {
+        var updates = {}
+        const updatedPreference = updateGenres(board.preferences, allGenres)
+        const updatedFoodFilters = updateFoodFilters(board.food_filters, location, cuisine, budget)
+        updates['preferences'] = updatedPreference;
+        updates['food_filters'] = updatedFoodFilters;
 
+        var addFinalizedUser = {};
+        addFinalizedUser[currUserName] = userID;
+        updates['finalized'] = addFinalizedUser;
+
+        firebase.database()
+            .ref('collab_boards/' + board.boardID)
+            .update(updates)
+
+        setBoardIsFinalized(true); // Changes style of finalize button
+        onClose() // Close modal
     }
 
     const inputAvailabilities = () => {
+        inputBusyPeriodFromGcal(userID, selectedDate, board.boardID);
         setIsButtonDisabled(true); // Prevent syncing google calendar twice
 
+    }
+
+    const renderInputAvailabilitiesButton = () => {
+        if (isButtonDisabled) {
+            return (
+                <View>
+                    <TouchableOpacity style={[styles.finalizeButton, { borderRadius: 20, backgroundColor: '#2a9d8f', borderWidth: 0.2 }]}
+                        disabled={true}
+                        onPress={() => finalizeBoard()}>
+                        <AntDesign
+                            name="check"
+                            size={20}
+                            style={{ color: 'white' }}
+                        />
+                        <Text style={{ color: 'white', marginLeft: 5 }}>
+                            Availabilities Inputted
+                            </Text>
+                    </TouchableOpacity>
+                </View>
+            );
+        } else {
+            return (
+                <TouchableOpacity style={styles.finalizeButton} onPress={() => inputAvailabilities()}
+                    disabled={isButtonDisabled}>
+                    <Text>Input Availabilities</Text>
+                </TouchableOpacity>
+            );
+        }
+    }
+
+    const renderFinalizeButton = () => {
+        if (boardIsFinalized) {
+            return (
+                <TouchableOpacity style={[styles.finalizeButton, { borderRadius: 20, backgroundColor: '#e63946', borderWidth: 0.2 }]}
+                    disabled={true}
+                    onPress={() => finalizeBoard()}>
+                    <AntDesign
+                        name="check"
+                        size={20}
+                        style={{ color: 'white' }}
+                    />
+                </TouchableOpacity>
+            )
+        }
+        return (
+            <TouchableOpacity style={styles.finalizeButton} onPress={() => finalizeBoard()}>
+                <Text>Finalize</Text>
+            </TouchableOpacity>
+        );
     }
 
     const selectedDate = new Date(board.selected_date);
 
     return (
         <View style={styles.modal}>
-            <Text style={styles.headerText}>Your Outing on {formatDate(selectedDate.getDay(), selectedDate.getMonth(), selectedDate.getDate())}</Text>
+            <Text style={styles.headerText}>
+                Your Outing on {formatDate(selectedDate.getDay(),
+                selectedDate.getMonth(), selectedDate.getDate())}
+            </Text>
             <AntDesign name="close" size={24}
                 onPress={() => onClose()}
                 style={styles.close}
@@ -217,7 +258,7 @@ const IndividualPlanModal = ({ onClose, board }) => {
             <View style={styles.body}>
                 <View style={styles.genreSelection}>
                     <Text style={styles.genreSelectionText}>Select your moods:</Text>
-                    <GenrePicker />
+                    <GenrePicker allGenres={allGenres} handleGenreSelect={handleGenreSelect} />
                 </View>
                 {renderFoodFilter(allGenres[5][1])}
             </View>
@@ -228,20 +269,21 @@ const IndividualPlanModal = ({ onClose, board }) => {
             </View>
 
             <View style={styles.buttonGroup}>
-                <TouchableOpacity style={[styles.finalizeButton, isButtonDisabled ? { backgroundColor: 'green' } : {}]} onPress={() => inputAvailabilities()}
-                    disabled={isButtonDisabled}>
-                    <Text>Input Availabilities</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.finalizeButton} onPress={() => finalizeBoard()}>
-                    <Text>Finalize</Text>
-                </TouchableOpacity>
+                {renderInputAvailabilitiesButton()}
+                {renderFinalizeButton()}
             </View>
         </View >
     );
 }
 
-export default connect()(IndividualPlanModal);
+const mapStateToProps = (state) => {
+    return {
+        userID: state.add_events.userID,
+        currUserName: state.add_events.currUserName
+    };
+};
+
+export default connect(mapStateToProps, null)(IndividualPlanModal);
 
 const styles = StyleSheet.create({
     modal: {
@@ -273,11 +315,9 @@ const styles = StyleSheet.create({
     },
     body: {
         flex: 4,
-        borderWidth: 1,
         margin: 10,
     },
     genreSelection: {
-        borderBottomWidth: 1
     },
     genreButton: {
         borderWidth: 0.5,
@@ -292,11 +332,9 @@ const styles = StyleSheet.create({
         fontWeight: '800'
     },
     foodFilters: {
-        borderBottomWidth: 1
     },
     footer: {
         flex: 1,
-        borderWidth: 1,
         margin: 10,
         marginTop: 0,
     },
@@ -309,6 +347,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         justifyContent: 'center',
+        flexDirection: 'row',
         alignSelf: 'flex-end',
         padding: 5,
         marginRight: 10,

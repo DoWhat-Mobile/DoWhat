@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity, Dimensions } from "react-native";
 import { Card } from 'react-native-elements';
@@ -24,7 +23,8 @@ const AllPlans = ({ navigation, userID }) => {
                     var newBoardState = [];
                     for (var board in allCollaborations) {
                         const boardID = allCollaborations[board];
-                        const collabBoard = database.collab_boards[boardID];
+                        var collabBoard = database.collab_boards[boardID];
+                        collabBoard.boardID = boardID; // Attach board ID to props of board 
                         newBoardState.push(collabBoard);
                         setAllBoards([...allBoards, collabBoard]);
                     }

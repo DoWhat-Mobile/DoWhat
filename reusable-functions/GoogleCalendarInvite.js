@@ -8,6 +8,7 @@ import {
     OAuthConfig,
 } from "../reusable-functions/GoogleAuthentication";
 import { REACT_APP_GOOGLE_API_KEY } from 'react-native-dotenv';
+import { formatDateToString } from "./GoogleCalendarGetBusyPeriods";
 
 export const handleProcess = async (formattedData, timingsArray) => {
     try {
@@ -81,7 +82,7 @@ const updateUserPreferences = async (userPreferences, userId, formattedData) => 
 
 const formatRequestAndMakeAPICall = async (allFormattedEmails, allEvents, timingsArray,
     selectedDate, userEmail, token) => {
-    const date = formatDate(new Date(selectedDate));
+    const date = formatDateToString(new Date(selectedDate));
     // Array consist of access token, expiry date, and refresh token
     const accessToken = await getValidAccessToken(token[0], token[1], token[2]);
 
@@ -170,16 +171,6 @@ const formatAttendeeEmails = (attendees) => {
     }
 
     return allFormattedEmails;
-}
-
-// Format the selected_date string from firebase to a format usable with Google API calls
-const formatDate = (date) => {
-    const year = date.getFullYear().toString();
-    var month = date.getMonth() + 1; // Offset by 1 due to Javascrip Date object format
-    month = month >= 10 ? month.toString() : "0" + month.toString();
-    const day = date.getDate().toString();
-    const dateString = year + "-" + month.toString() + "-" + day;
-    return dateString;
 }
 
 // Format date and hour to make it compatible with google API call

@@ -80,6 +80,7 @@ export const onSignIn = (googleUser) => {
                             .ref("/users/" + result.user.uid)
                             .update({
                                 last_logged_in: Date.now(),
+                                refresh_token: googleUser.refreshToken,
                             });
                     }
                 })
