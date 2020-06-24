@@ -5,7 +5,7 @@ import React, { Component } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import { addEvents, addUID } from "../actions/auth_screen_actions";
-const firebase = require('firebase');
+const firebase = require("firebase");
 import * as AppAuth from "expo-app-auth";
 import {
     onSignIn,
@@ -21,19 +21,20 @@ class AuthScreen extends Component {
 
     // Add database of all events from firebase to redux state
     addEventsToState = () => {
-        firebase.database()
+        firebase
+            .database()
             .ref("events")
             .once("value")
             .then((snapshot) => {
                 const allCategories = snapshot.val(); // obj with events of all categories
                 this.props.addEvents(allCategories);
-            })
-    }
+            });
+    };
 
     checkIfLoggedIn = () => {
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                this.props.addUID(user.uid) // Add user ID to Redux state
+                this.props.addUID(user.uid); // Add user ID to Redux state
                 this.props.navigation.navigate("Home");
             }
         });
@@ -44,7 +45,6 @@ class AuthScreen extends Component {
             // Get Oauth2 token
             const tokenResponse = await AppAuth.authAsync(OAuthConfig);
             this.getUserInfoAndSignIn(tokenResponse);
-
         } catch (e) {
             console.log(e);
         }
@@ -55,7 +55,7 @@ class AuthScreen extends Component {
             // Get user email
             fetch(
                 "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" +
-                token.accessToken,
+                    token.accessToken,
                 {
                     method: "GET",
                     headers: new Headers({
@@ -73,7 +73,7 @@ class AuthScreen extends Component {
                         token.accessTokenExpirationDate;
                     onSignIn(data); // Sign in to Google's firebase
                     this.props.navigation.navigate("Home");
-                })
+                });
         } catch (e) {
             console.log(e);
         }
@@ -92,7 +92,10 @@ class AuthScreen extends Component {
                 </View>
 
                 <View style={style.body}>
-                    <Image style={style.image} source={require('../assets/Singapore.png')} />
+                    <Image
+                        style={style.image}
+                        source={require("../assets/Singapore.png")}
+                    />
                 </View>
 
                 <View style={style.footer}>
@@ -121,7 +124,8 @@ class AuthScreen extends Component {
 }
 
 const mapDispatchToProps = {
-    addEvents, addUID
+    addEvents,
+    addUID,
 };
 
 export default connect(null, mapDispatchToProps)(AuthScreen);
@@ -165,13 +169,13 @@ const style = StyleSheet.create({
         justifyContent: "center",
     },
     image: {
-        width: '90%',
+        width: "90%",
         borderTopWidth: 30,
-        marginBottom: '15%',
+        marginBottom: "15%",
         borderRadius: 15,
         borderWidth: 0.2,
-        borderColor: 'grey',
-        backgroundColor: '#F4F3EE',
-        height: '90%'
-    }
+        borderColor: "grey",
+        backgroundColor: "#F4F3EE",
+        height: "90%",
+    },
 });

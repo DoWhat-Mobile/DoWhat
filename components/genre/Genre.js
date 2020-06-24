@@ -62,8 +62,9 @@ const Genre = (props) => {
         return <Text>Wait for all friends to input their time</Text>;
     }
 
-    const onClose = () => setVisible(false);
-
+    const onClose = () => {
+        setVisible(false);
+    };
     const onComplete = () => {
         selected.forEach((element) => {
             finalized.push(element);
@@ -77,7 +78,6 @@ const Genre = (props) => {
      * @param {*} genre
      */
     const handlePress = (genre) => {
-        // console.log(selected);
         selected.includes(genre)
             ? setSelected(selected.filter((s) => s !== genre))
             : setSelected([...selected, genre]);
@@ -100,11 +100,6 @@ const Genre = (props) => {
      * @param {*} option
      */
     const selectFilter = (filters) => {
-        // let current = dining;
-        // if (current.length === 1) {
-        //     current.pop();
-        // }
-        // current.push(option);
         setPreference(filters);
     };
 
@@ -170,7 +165,11 @@ const Genre = (props) => {
                     </Text>
                 </TouchableOpacity>
             </View>
-
+            <View>
+                <Text style={{ marginLeft: 250 }}>
+                    {preference === {} ? "" : Object.values(preference)}
+                </Text>
+            </View>
             <View
                 style={{
                     flex: 1,
@@ -182,11 +181,9 @@ const Genre = (props) => {
                     style={[
                         styles.button,
                         {
-                            //position: "absolute",
                             marginLeft: 287,
                             marginBottom: 200,
                             borderWidth: 0,
-                            //padding: 0,
                         },
                     ]}
                 >
@@ -195,7 +192,6 @@ const Genre = (props) => {
                         size={40}
                         onPress={() => {
                             onComplete();
-                            //console.log(props.finalGenres);
                         }}
                     />
                 </TouchableOpacity>

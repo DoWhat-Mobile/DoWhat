@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Card } from "react-native-elements";
 
 const CuisineSelection = ({ handleCuisinePress }) => {
     const [selected, setSelected] = React.useState([]);
@@ -12,12 +11,20 @@ const CuisineSelection = ({ handleCuisinePress }) => {
         "Indian",
         "Japanese",
         "Cafe",
-        "Local",
+        "Hawker",
     ];
 
     const handlePress = (cuisine) => {
-        setSelected(cuisine);
-        handleCuisinePress(cuisine);
+        let newSelected = [];
+
+        if (selected.includes(cuisine)) {
+            newSelected = selected.filter((s) => s !== cuisine);
+        } else {
+            newSelected = selected.concat(cuisine);
+        }
+
+        setSelected(newSelected);
+        handleCuisinePress(newSelected);
     };
 
     const buttons = () =>
