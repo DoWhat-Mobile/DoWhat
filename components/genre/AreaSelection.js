@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-
+import { buttons } from "../../reusable-functions/buttons";
 const AreaSelection = ({ handleAreaPress }) => {
     const [selected, setSelected] = React.useState([]);
     const areas = ["North", "East", "West", "Central"];
@@ -18,36 +18,12 @@ const AreaSelection = ({ handleAreaPress }) => {
         handleAreaPress(newSelected);
     };
 
-    const buttons = () =>
-        areas.map((items) => (
-            <TouchableOpacity
-                key={items}
-                onPress={() => {
-                    handlePress(items);
-                }}
-                style={[
-                    styles.button,
-                    {
-                        backgroundColor: selected.includes(items)
-                            ? "silver"
-                            : "white",
-                    },
-                ]}
-            >
-                <Text
-                    style={{
-                        fontSize: 16,
-                    }}
-                >
-                    {items}
-                </Text>
-            </TouchableOpacity>
-        ));
-
     return (
         <View style={{ marginTop: 20 }}>
             <Text style={styles.header}>Areas</Text>
-            <View style={styles.buttonContainer}>{buttons()}</View>
+            <View style={styles.buttonContainer}>
+                {buttons(areas, selected, handlePress)}
+            </View>
         </View>
     );
 };
