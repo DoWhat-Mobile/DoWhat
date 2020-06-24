@@ -1,11 +1,5 @@
 import React from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    FlatList,
-    TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import AreaSelection from "./AreaSelection";
 import CuisineSelection from "./CuisineSelection";
