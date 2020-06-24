@@ -46,8 +46,8 @@ const Map = ({ onClose, coord }) => {
     };
 
     const show = () => {
-        this.mark.showCallout()
-    }
+        this.mark.showCallout();
+    };
 
     return (
         <View style={styles.container}>
@@ -60,30 +60,25 @@ const Map = ({ onClose, coord }) => {
                     longitudeDelta: 0.15,
                 }}
                 onLayout={() => {
-                    if (coord.length > 1) {
-                        show()
-                    }
+                    show();
                 }}
             >
+                <Marker
+                    ref={(ref) => {
+                        this.mark = ref;
+                    }}
+                    key={coord[0].name}
+                    coordinate={coord[0].coord}
+                    title={coord[0].name}
+                >
+                    <Callout>
+                        <View>
+                            <Text>Start</Text>
+                        </View>
+                    </Callout>
+                </Marker>
                 {coord.map((marker, index) => {
-                    if (index === 0) {
-                        return (
-                            <Marker
-                                ref={ref => {
-                                    this.mark = ref;
-                                }}
-                                key={marker.name}
-                                coordinate={marker.coord}
-                                title={marker.name}
-                            >
-                                <Callout>
-                                    <View>
-                                        <Text>Start</Text>
-                                    </View>
-                                </Callout>
-                            </Marker>
-                        );
-                    } else {
+                    if (index !== 0) {
                         return (
                             <Marker
                                 key={marker.name}
