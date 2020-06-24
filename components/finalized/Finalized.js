@@ -32,6 +32,7 @@ const Finalized = (props) => {
 
     const testEvents = route === 'board' ? props.route.params.genres : props.finalGenres[0];
     const filters = route === 'board' ? props.route.params.filters : props.finalGenres[2];
+    const board = route === 'board' ? props.route.params.board : null;
     const timeline =
         route === "board"
             ? props.route.params.timeInterval
@@ -73,6 +74,7 @@ const Finalized = (props) => {
                     navigation={props.navigation}
                     mapUpdate={mapUpdate}
                     genres={testEvents}
+                    board={board}
                 />
 
                 <Modal animated visible={visible} animationType="fade">

@@ -67,7 +67,7 @@ const ListOfPlans = ({ plans, refreshList, navigation }) => {
                 cuisine: topCuisines,
                 price: topPrice
             },
-            attendees: ['hansybastian@gmail.com, hansworkstuff@gmail.com']
+            board: board// for Gcal Invite 
         }
         navigation.navigate("Finalized", navigationProps);
     }
@@ -87,7 +87,7 @@ const ListOfPlans = ({ plans, refreshList, navigation }) => {
         const finalizedFraction = getFinalizedFraction(board);
         if (finalizedFraction == 1) { // All invitees are ready
             return (
-                <View style={styles.individualPlan}>
+                <View style={[styles.individualPlan, { backgroundColor: '#eddcd2' }]}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View>
                             <Text>

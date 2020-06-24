@@ -5,10 +5,11 @@ import ActionOptions from "./ActionOptions";
 import {
     handleProcess,
     formatEventsData,
+    handleBoardRouteProcess
 } from "../../reusable-functions/GoogleCalendarInvite";
 import moment from "moment-timezone";
 
-const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
+const Schedule = ({ navigation, data, allEvents, mapUpdate, genres, board }) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
@@ -68,9 +69,14 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
      */
     const sendGcalInviteAndResetAttendeeData = async () => {
         const formattedData = formatEventsData(events); // Formatted data contains event title
-        // handleProcess function and all other logic is in GoogleCalendarInvite.js
-        await handleProcess(formattedData, timingsArray);
-        navigation.navigate("Home"); // navigate back once done
+        if (board == null) { // Means route didnt come from collaborative board
+            await handleProcess(formattedData, timingsArray);
+            navigation.navigate("Home");
+
+        } else { // Come from collaborative board
+            await handleBoardRouteProcess(formattedData, timingsArray, board)
+            navigation.navigate("Home");
+        }
     };
 
     return (
