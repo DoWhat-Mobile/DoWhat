@@ -21,14 +21,15 @@ class AuthScreen extends Component {
 
     // Add database of all events from firebase to redux state
     addEventsToState = () => {
-        firebase.database()
+        firebase
+            .database()
             .ref("events")
             .once("value")
             .then((snapshot) => {
                 const allCategories = snapshot.val(); // obj with events of all categories
                 this.props.addEvents(allCategories);
-            })
-    }
+            });
+    };
 
     checkIfLoggedIn = () => {
         firebase.auth().onAuthStateChanged((user) => {
@@ -45,7 +46,6 @@ class AuthScreen extends Component {
             // Get Oauth2 token
             const tokenResponse = await AppAuth.authAsync(OAuthConfig);
             this.getUserInfoAndSignIn(tokenResponse);
-
         } catch (e) {
             console.log(e);
         }
@@ -56,7 +56,7 @@ class AuthScreen extends Component {
             // Get user email
             fetch(
                 "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" +
-                token.accessToken,
+                    token.accessToken,
                 {
                     method: "GET",
                     headers: new Headers({
@@ -74,7 +74,7 @@ class AuthScreen extends Component {
                         token.accessTokenExpirationDate;
                     onSignIn(data); // Sign in to Google's firebase
                     this.props.navigation.navigate("Home");
-                })
+                });
         } catch (e) {
             console.log(e);
         }
@@ -93,7 +93,10 @@ class AuthScreen extends Component {
                 </View>
 
                 <View style={style.body}>
-                    <Image style={style.image} source={require('../assets/Singapore.png')} />
+                    <Image
+                        style={style.image}
+                        source={require("../assets/Singapore.png")}
+                    />
                 </View>
 
                 <View style={style.footer}>
@@ -166,13 +169,13 @@ const style = StyleSheet.create({
         justifyContent: "center",
     },
     image: {
-        width: '90%',
+        width: "90%",
         borderTopWidth: 30,
-        marginBottom: '15%',
+        marginBottom: "15%",
         borderRadius: 15,
         borderWidth: 0.2,
-        borderColor: 'grey',
-        backgroundColor: '#F4F3EE',
-        height: '90%'
-    }
+        borderColor: "grey",
+        backgroundColor: "#F4F3EE",
+        height: "90%",
+    },
 });

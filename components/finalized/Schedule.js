@@ -1,18 +1,21 @@
 import React from "react";
 import Timeline from "react-native-timeline-flatlist";
-import { data_timeline } from "../../reusable-functions/data_timeline";
 import { Text, Modal, View, StyleSheet, TouchableOpacity } from "react-native";
-import ShuffleModal from "./ShuffleModal";
+import ActionOptions from "./ActionOptions";
 import {
     handleProcess,
     formatEventsData,
 } from "../../reusable-functions/GoogleCalendarInvite";
+import moment from "moment-timezone";
 
-const Schedule = ({ navigation, data, allEvents, mapUpdate }) => {
+const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
     const [timingsArray, setTimingsArray] = React.useState([]);
+    const [newTime, setTime] = React.useState(
+        new Date(Date.parse("2020-01-01T" + "13" + ":00:00.000+08:00"))
+    );
 
     React.useEffect(() => {
         setEvents(data[0]);
@@ -26,7 +29,6 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate }) => {
         });
         const updatedCoord = updatedData.map((item) => {
             const obj = { coord: item.coord, name: item.title };
-            console.log(obj);
             return obj;
         });
         setEvents(updatedData);
@@ -40,6 +42,23 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate }) => {
     const onEventPress = (event) => {
         setUnsatisfied(event);
         setVisible(true);
+    };
+
+    const newTimeChange = (selectedDate) => {
+        const updatedData = events.map((item) => {
+            if (item === unsatisfied) {
+                const currentDate = selectedDate || newTime;
+                let val = moment(currentDate)
+                    .tz("Asia/Singapore")
+                    .format("HH:mm");
+
+                return { ...item, time: val };
+            } else {
+                return item;
+            }
+        });
+        setEvents(updatedData);
+        setVisible(false);
     };
 
     /**
@@ -58,11 +77,14 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate }) => {
         <View style={styles.container}>
             <View style={styles.body}>
                 <Modal animated visible={visible} animationType="fade">
-                    <ShuffleModal
+                    <ActionOptions
                         onReselect={onReselect}
                         onClose={onClose}
                         unsatisfied={unsatisfied}
                         events={allEvents}
+                        genres={genres}
+                        newTime={newTime}
+                        newTimeChange={newTimeChange}
                     />
                 </Modal>
                 <Timeline

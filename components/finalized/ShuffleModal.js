@@ -1,36 +1,78 @@
 import React from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+    TouchableOpacity,
+    TextInput,
+    ActivityIndicator,
+} from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import Item from "./ModalItem";
 import { data_shuffle } from "../../reusable-functions/data_timeline";
+import { connect } from "react-redux";
+const ShuffleModal = (props) => {
+    const [isLoading, setLoading] = React.useState(true);
+    const [refresh, setRefresh] = React.useState(false);
 
-const ShuffleModal = ({ onReselect, onClose, unsatisfied, events }) => {
-    return (
-        <View style={styles.container}>
-            <AntDesign
-                name="close"
-                size={24}
-                onPress={() => onClose()}
-                style={styles.close}
-            />
-            <FlatList
-                data={data_shuffle(
-                    events,
-                    unsatisfied["genre"],
-                    unsatisfied["time"]
-                )}
-                renderItem={({ item }) => (
-                    <Item
-                        item={item}
-                        onReselect={onReselect}
-                        onClose={onClose}
-                    />
-                )}
-                style={{ marginTop: 40 }}
-                keyExtractor={(item) => item.title}
-            />
-        </View>
-    );
+    React.useEffect(() => {
+        if (props.allEvents !== {}) {
+            setLoading(false);
+        }
+    }, []);
+
+    if (isLoading) {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    alignContent: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <ActivityIndicator
+                    style={{ alignSelf: "center" }}
+                    size="large"
+                />
+            </View>
+        );
+    } else {
+        return (
+            <View style={styles.container}>
+                <AntDesign
+                    name="close"
+                    size={24}
+                    onPress={() => props.onClose()}
+                    style={styles.close}
+                />
+
+                <FlatList
+                    data={data_shuffle(
+                        props.allEvents,
+                        props.genres,
+                        props.unsatisfied["time"],
+                        props.unsatisfied["genre"]
+                    )}
+                    renderItem={({ item }) => (
+                        <Item
+                            item={item}
+                            onReselect={props.onReselect}
+                            onClose={props.onClose}
+                        />
+                    )}
+                    style={{ marginTop: 35 }}
+                    keyExtractor={(item) => item.title}
+                />
+                <TouchableOpacity
+                    style={{ marginBottom: 25 }}
+                    onPress={() => setRefresh(!refresh)}
+                >
+                    <Text style={{ fontSize: 20 }}>Load More</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 };
 
 const styles = StyleSheet.create({
@@ -57,4 +99,10 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ShuffleModal;
+const mapStateToProps = (state) => {
+    return {
+        allEvents: state.add_events.events,
+    };
+};
+
+export default connect(mapStateToProps, null)(ShuffleModal);

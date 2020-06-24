@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Card } from "react-native-elements";
-
+import { buttons } from "../../reusable-functions/buttons";
 const CuisineSelection = ({ handleCuisinePress }) => {
     const [selected, setSelected] = React.useState([]);
     const cuisine = [
@@ -12,44 +11,28 @@ const CuisineSelection = ({ handleCuisinePress }) => {
         "Indian",
         "Japanese",
         "Cafe",
-        "Local",
+        "Hawker",
     ];
 
     const handlePress = (cuisine) => {
-        setSelected(cuisine);
-        handleCuisinePress(cuisine);
-    };
+        let newSelected = [];
 
-    const buttons = () =>
-        cuisine.map((items) => (
-            <TouchableOpacity
-                key={items}
-                onPress={() => {
-                    handlePress(items);
-                }}
-                style={[
-                    styles.button,
-                    {
-                        backgroundColor: selected.includes(items)
-                            ? "silver"
-                            : "white",
-                    },
-                ]}
-            >
-                <Text
-                    style={{
-                        fontSize: 16,
-                    }}
-                >
-                    {items}
-                </Text>
-            </TouchableOpacity>
-        ));
+        if (selected.includes(cuisine)) {
+            newSelected = selected.filter((s) => s !== cuisine);
+        } else {
+            newSelected = selected.concat(cuisine);
+        }
+
+        setSelected(newSelected);
+        handleCuisinePress(newSelected);
+    };
 
     return (
         <View style={{ marginTop: 20 }}>
             <Text style={styles.header}>Cuisine</Text>
-            <View style={styles.buttonContainer}>{buttons()}</View>
+            <View style={styles.buttonContainer}>
+                {buttons(cuisine, selected, handlePress)}
+            </View>
         </View>
     );
 };

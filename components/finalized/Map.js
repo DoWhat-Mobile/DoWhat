@@ -1,10 +1,50 @@
 import React from "react";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, Callout } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 
 const Map = ({ onClose, coord }) => {
-    console.log(coord);
+    /**
+     * Renders all the path lines from the first event to the last
+     * @param {*} coord is an array of objects with long lat of the events scheduled for the user
+     */
+    const directions = (coord) => {
+        const start = coord[0].coord;
+        const end = coord[coord.length - 1].coord;
+        if (coord.length <= 1) return;
+        if (coord.length === 2)
+            return (
+                <MapViewDirections
+                    origin={start}
+                    destination={end}
+                    apikey={GOOGLE_MAPS_API_KEY}
+                    strokeWidth={3}
+                    mode={"WALKING"}
+                />
+            );
+        if (coord.length > 2) {
+            let waypoints = [...coord];
+            waypoints.splice(0, 1);
+            waypoints.splice(coord.length - 2, 1);
+            let res = waypoints.map((item) => {
+                return item.coord;
+            });
+
+            return (
+                <MapViewDirections
+                    origin={start}
+                    destination={end}
+                    apikey={GOOGLE_MAPS_API_KEY}
+                    strokeWidth={3}
+                    waypoints={res}
+                    mode={"WALKING"}
+                />
+            );
+        }
+    };
+
     return (
         <View style={styles.container}>
             <MapView
@@ -15,14 +55,41 @@ const Map = ({ onClose, coord }) => {
                     latitudeDelta: 0.15,
                     longitudeDelta: 0.15,
                 }}
+                onLayout={() => {
+                    if (coord.length > 1) {
+                        this.marker.showCallout();
+                    }
+                }}
             >
-                {coord.map((marker) => (
-                    <Marker
-                        key={marker.name}
-                        coordinate={marker.coord}
-                        title={marker.name}
-                    />
-                ))}
+                {coord.map((marker, index) => {
+                    if (index === 0) {
+                        return (
+                            <Marker
+                                ref={(ref) => {
+                                    this.marker = ref;
+                                }}
+                                key={marker.name}
+                                coordinate={marker.coord}
+                                title={marker.name}
+                            >
+                                <Callout>
+                                    <View>
+                                        <Text>Start</Text>
+                                    </View>
+                                </Callout>
+                            </Marker>
+                        );
+                    } else {
+                        return (
+                            <Marker
+                                key={marker.name}
+                                coordinate={marker.coord}
+                                title={marker.name}
+                            />
+                        );
+                    }
+                })}
+                {directions(coord)}
             </MapView>
             <AntDesign
                 name="close"
@@ -37,14 +104,7 @@ const Map = ({ onClose, coord }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // backgroundColor: "#fff",
-        // alignItems: "center",
-        // justifyContent: "center",
     },
-    // mapStyle: {
-    //     width: Dimensions.get("window").width,
-    //     height: Dimensions.get("window").height,
-    // },
     close: {
         position: "absolute",
         left: 350,

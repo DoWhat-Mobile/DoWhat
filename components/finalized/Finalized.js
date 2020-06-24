@@ -20,8 +20,6 @@ const Finalized = (props) => {
     const [coord, setCoord] = React.useState([]);
     const [data, setData] = React.useState([]);
 
-    // console.log("Finalized time from Gcal is: ", props.finalGenres[1]);
-
     const onClose = () => {
         setVisible(false);
     };
@@ -31,7 +29,6 @@ const Finalized = (props) => {
     };
 
     React.useEffect(() => {
-        // setEvents(props.allEvents);
         if (props.allEvents != {}) {
             const testEvents = props.finalGenres[0];
             const filters = props.finalGenres[2];
@@ -69,20 +66,18 @@ const Finalized = (props) => {
     } else {
         return (
             <View style={styles.container}>
-                <View style={styles.body}>
-                    <Schedule
-                        data={data}
-                        navigation={props.navigation}
-                        allEvents={props.allEvents}
-                        mapUpdate={mapUpdate}
-                    />
-                </View>
+                <Schedule
+                    data={data}
+                    navigation={props.navigation}
+                    mapUpdate={mapUpdate}
+                    genres={props.finalGenres[0]}
+                />
+
                 <Modal animated visible={visible} animationType="fade">
                     <Map onClose={onClose} coord={coord} />
                 </Modal>
                 <TouchableOpacity
                     onPress={() => {
-                        // setCoord(data[2]);
                         setVisible(true);
                     }}
                 >
@@ -96,16 +91,7 @@ const Finalized = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    body: {
-        flex: 10,
-        padding: 20,
-        paddingTop: 65,
-        backgroundColor: "white",
-    },
-    list: {
-        flex: 1,
-        marginTop: 20,
+        justifyContent: "center",
     },
 });
 
