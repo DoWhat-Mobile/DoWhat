@@ -115,7 +115,7 @@ const formatRequestAndMakeAPICall = async (allFormattedEmails, allEvents, timing
 // Google Calendar Events insert API call
 const makeAPICall = async (requestBody, userEmail, accessToken) => {
     try {
-        console.log(JSON.stringify(requestBody));
+        console.log("API Call request body is: ", JSON.stringify(requestBody));
         fetch(
             "https://www.googleapis.com/calendar/v3/calendars/" + encodeURI(userEmail) +
             "/events?sendNotifications=true&sendUpdates=all&key=" + REACT_APP_GOOGLE_API_KEY,
@@ -174,7 +174,7 @@ const formatAttendeeEmails = (attendees) => {
 
 // Format date and hour to make it compatible with google API call
 const formatTime = (date, hour) => {
-    return date + 'T' + hour + ':00:00+08:00'
+    return date + 'T' + hour + ':00+08:00'
 }
 
 // Clean data so it wont intefere with future scheduling

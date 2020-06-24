@@ -219,8 +219,8 @@ const objectFormatter = (startTime, event, genre) => {
     };
 
     return {
-        time: <Text>{startTime}:00</Text>,
-        title: <Text>{event.name}</Text>,
+        time: startTime + ':00',
+        title: event.name,
 
         description: (
             <ReadMore
