@@ -88,8 +88,8 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
             const genre = eventArray.map((x) => Object.keys(x)[0])[i];
             const event = eventArray[i][genre];
             if (events[genre].slots.includes(startTime)) {
-                let intervalObject = { start: 0, end: 0 };
-                intervalObject.start = startTime;
+                let intervalObject = { start: "", end: "" };
+                intervalObject.start = startTime.toString() + ":00";
 
                 locationArray.push({ coord: event.coord, name: event.name });
 
@@ -98,7 +98,9 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
                 startTime += events[genre]["duration"];
 
                 intervalObject.end =
-                    startTime > timeline[1] ? timeline[1] : startTime;
+                    startTime > timeline[1]
+                        ? timeline[1].toString() + ":00"
+                        : startTime + ":00";
                 timingsArray.push(intervalObject);
             }
         }

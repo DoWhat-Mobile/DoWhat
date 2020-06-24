@@ -45,18 +45,22 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
     };
 
     const newTimeChange = (selectedDate) => {
-        const updatedData = events.map((item) => {
-            if (item === unsatisfied) {
-                const currentDate = selectedDate || newTime;
-                let val = moment(currentDate)
-                    .tz("Asia/Singapore")
-                    .format("HH:mm");
+        const currentDate = selectedDate || newTime;
+        let val = moment(currentDate).tz("Asia/Singapore").format("HH:mm");
+        let i = 0;
+        let newTimingsArray = timingsArray;
 
+        const updatedData = events.map((item, index) => {
+            if (item === unsatisfied) {
+                i = index;
                 return { ...item, time: val };
             } else {
                 return item;
             }
         });
+
+        newTimingsArray[i].start = val;
+        setTimingsArray(newTimingsArray);
         setEvents(updatedData);
         setVisible(false);
     };
