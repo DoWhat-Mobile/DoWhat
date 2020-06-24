@@ -91,7 +91,7 @@ const ListOfPlans = ({ plans, refreshList, navigation }) => {
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View>
                             <Text>
-                                Outing on: {board.selected_date}
+                                Outing plan on {board.selected_date} is ready!
                             </Text>
                             <Text>
                                 Invited by: {board.host.replace("_", " ")}
