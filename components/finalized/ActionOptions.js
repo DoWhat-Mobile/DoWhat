@@ -1,28 +1,15 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
+import { View, Text, TouchableOpacity, Modal, Dimensions } from "react-native";
 import ShuffleModal from "./ShuffleModal";
 import TimeEdit from "./TimeEdit";
 
-const ActionOptions = (
-    props
-    // navigation,
-    // data,
-    // allEvents,
-    // mapUpdate,
-    // genres,
-    // onHourChange,
-    // onMinuteChange,
-    // onSave,
-    // onReselect,
-    // onClose,
-    // unsatisfied,
-    // events,
-    //genres,
-) => {
+const ActionOptions = (props) => {
     const [shuffleVisible, setShuffleVisible] = React.useState(false);
 
+    const windowHeight = Dimensions.get("window").height;
+
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, flexDirection: "row" }}>
             <Modal animated visible={shuffleVisible} animationType="fade">
                 <ShuffleModal
                     onReselect={props.onReselect}
@@ -36,8 +23,17 @@ const ActionOptions = (
                 newTime={props.newTime}
                 newTimeChange={props.newTimeChange}
             />
-            <TouchableOpacity onPress={() => setShuffleVisible(true)}>
-                <Text>Edit Event</Text>
+            <TouchableOpacity
+                style={{
+                    width: "50%",
+                    alignItems: "center",
+                    backgroundColor: "white",
+                }}
+                onPress={() => setShuffleVisible(true)}
+            >
+                <Text style={{ marginTop: windowHeight / 2, fontSize: 25 }}>
+                    Edit Event
+                </Text>
             </TouchableOpacity>
         </View>
     );

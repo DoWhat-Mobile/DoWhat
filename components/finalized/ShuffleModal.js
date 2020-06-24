@@ -12,10 +12,7 @@ import { AntDesign } from "@expo/vector-icons";
 import Item from "./ModalItem";
 import { data_shuffle } from "../../reusable-functions/data_timeline";
 import { connect } from "react-redux";
-const ShuffleModal = (
-    props
-    // { onReselect, onClose, unsatisfied, events, genres }
-) => {
+const ShuffleModal = (props) => {
     const [isLoading, setLoading] = React.useState(true);
     const [refresh, setRefresh] = React.useState(false);
 

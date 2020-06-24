@@ -1,8 +1,6 @@
 import React from "react";
 import Timeline from "react-native-timeline-flatlist";
-import { data_timeline } from "../../reusable-functions/data_timeline";
 import { Text, Modal, View, StyleSheet, TouchableOpacity } from "react-native";
-import ShuffleModal from "./ShuffleModal";
 import ActionOptions from "./ActionOptions";
 import {
     handleProcess,
@@ -10,16 +8,7 @@ import {
 } from "../../reusable-functions/GoogleCalendarInvite";
 import moment from "moment-timezone";
 
-const Schedule = ({
-    navigation,
-    data,
-    allEvents,
-    mapUpdate,
-    genres,
-    onHourChange,
-    onMinuteChange,
-    onSave,
-}) => {
+const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
@@ -97,16 +86,6 @@ const Schedule = ({
                         newTime={newTime}
                         newTimeChange={newTimeChange}
                     />
-                    {/* <ShuffleModal
-                        onReselect={onReselect}
-                        onClose={onClose}
-                        unsatisfied={unsatisfied}
-                        events={allEvents}
-                        genres={genres}
-                        onHourChange={onHourChange}
-                        onMinuteChange={onMinuteChange}
-                        onSave={onSave}
-                    /> */}
                 </Modal>
                 <Timeline
                     onEventPress={(event) => onEventPress(event)}

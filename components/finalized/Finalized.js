@@ -20,8 +20,6 @@ const Finalized = (props) => {
     const [coord, setCoord] = React.useState([]);
     const [data, setData] = React.useState([]);
 
-    // console.log("Finalized time from Gcal is: ", props.finalGenres[1]);
-
     const onClose = () => {
         setVisible(false);
     };

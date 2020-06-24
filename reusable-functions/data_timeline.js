@@ -1,7 +1,6 @@
 import React from "react";
-import { Text, View, TouchableOpacity, Button } from "react-native";
+import { Text } from "react-native";
 import ReadMore from "react-native-read-more-text";
-import { AntDesign } from "@expo/vector-icons";
 
 /**
  * handles filter for food to be added in data array. Returns array of data that is formatted to be passed as props into
@@ -192,7 +191,7 @@ export const data_shuffle = (events, genres, time, unsatisfied) => {
 };
 
 /**
- * Creates the object with keys that the timeline library accepts
+ * Creates the object with keys (time, title description) that the timeline library accepts
  */
 const objectFormatter = (startTime, event, genre) => {
     const renderTruncatedFooter = (handlePress) => {

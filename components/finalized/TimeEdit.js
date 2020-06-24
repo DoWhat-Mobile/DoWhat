@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Button, Platform } from "react-native";
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Platform,
+    Dimensions,
+} from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 const TimeEdit = (props) => {
@@ -21,11 +27,23 @@ const TimeEdit = (props) => {
         showMode("time");
     };
 
+    const windowHeight = Dimensions.get("window").height;
+
     return (
-        <View>
-            <View>
-                <Button onPress={showTimepicker} title="Show time picker!" />
-            </View>
+        <View style={{ flex: 1 }}>
+            <TouchableOpacity
+                style={{
+                    alignItems: "center",
+                    backgroundColor: "#708090",
+                    height: "100%",
+                }}
+                onPress={showTimepicker}
+            >
+                <Text style={{ marginTop: windowHeight / 2, fontSize: 25 }}>
+                    Edit Timings
+                </Text>
+            </TouchableOpacity>
+
             {show && (
                 <DateTimePicker
                     testID="dateTimePicker"
