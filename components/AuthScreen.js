@@ -4,7 +4,7 @@
 import React, { Component } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
-import { addEvents, addUID } from "../actions/auth_screen_actions";
+import { addEvents, addUID, addCurrUserName } from "../actions/auth_screen_actions";
 const firebase = require('firebase');
 import * as AppAuth from "expo-app-auth";
 import {
@@ -33,6 +33,7 @@ class AuthScreen extends Component {
     checkIfLoggedIn = () => {
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
+                this.props.addCurrUserName(user.displayName.replace(/ /g, "_"))
                 this.props.addUID(user.uid) // Add user ID to Redux state
                 this.props.navigation.navigate("Home");
             }
@@ -121,7 +122,7 @@ class AuthScreen extends Component {
 }
 
 const mapDispatchToProps = {
-    addEvents, addUID
+    addEvents, addUID, addCurrUserName
 };
 
 export default connect(null, mapDispatchToProps)(AuthScreen);
