@@ -4,7 +4,7 @@
 import React, { Component } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
-import { addEvents, addUID, addCurrUserName } from "../actions/auth_screen_actions";
+import { addEvents, addUID, addCurrUserName, addCurrUserGmail } from "../actions/auth_screen_actions";
 const firebase = require('firebase');
 import * as AppAuth from "expo-app-auth";
 import {
@@ -35,6 +35,7 @@ class AuthScreen extends Component {
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 this.props.addCurrUserName(user.displayName.replace(/ /g, "_"))
+                this.props.addCurrUserGmail(user.email.replace(/\./g, '@').slice(0, -10));
                 this.props.addUID(user.uid) // Add user ID to Redux state
                 this.props.navigation.navigate("Home");
             }
@@ -56,7 +57,7 @@ class AuthScreen extends Component {
             // Get user email
             fetch(
                 "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" +
-                    token.accessToken,
+                token.accessToken,
                 {
                     method: "GET",
                     headers: new Headers({
@@ -125,7 +126,7 @@ class AuthScreen extends Component {
 }
 
 const mapDispatchToProps = {
-    addEvents, addUID, addCurrUserName
+    addEvents, addUID, addCurrUserName, addCurrUserGmail
 };
 
 export default connect(null, mapDispatchToProps)(AuthScreen);

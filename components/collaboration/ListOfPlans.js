@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { Button, View, StyleSheet, Text, TouchableOpacity, SectionList, Dimensions, Modal } from 'react-native';
 import IndividualPlanModal from './IndividualPlanModal';
+import { AntDesign } from "@expo/vector-icons";
+import * as Progress from 'react-native-progress';
 
 /**
  * The <SectionList> Component within the AllPlans component. This is the component
@@ -26,45 +28,75 @@ const ListOfPlans = ({ plans, refreshList, navigation }) => {
 
     }
 
-    const goToFinalized = () => {
-        navigation.navigate("Finalized", {
-            route: "board",
-            genres: ["adventure", "food"],
-            timeInterval: [12, 18],
-            filters: {
-                area: ["North", "East"],
-                cuisine: ["Western", "Asian"],
-                price: 2
-            }
-        });
+    const goToFinalized = (board) => {
+        console.log(board)
+        // navigation.navigate("Finalized", {
+        //     route: "board",
+        //     genres: ["adventure", "food"],
+        //     timeInterval: [12, 18],
+        //     filters: {
+        //         area: ["North", "East"],
+        //         cuisine: ["Western", "Asian"],
+        //         price: 2
+        //     }
+        // });
+    }
+
+    // Fraction of invitees that have finalized their collaboration inputs
+    const getFinalizedFraction = (board) => {
+        if (board.hasOwnProperty('finalized')) {
+            const total = Object.keys(board.invitees).length;
+            const confirmed = Object.keys(board.finalized).length;
+            return confirmed / total;
+        } else {
+            return 0;
+        }
     }
 
     const renderCollaborationBoard = (board) => {
+        const finalizedFraction = getFinalizedFraction(board);
+        if (finalizedFraction == 1) { // All invitees are ready
+            return (
+                <View style={styles.individualPlan}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View>
+                            <Text>
+                                Outing on: {board.selected_date}
+                            </Text>
+                            <Text>
+                                Invited by: {board.host.replace("_", " ")}
+                            </Text>
+                        </View>
+                        <TouchableOpacity onPress={() => goToFinalized(board)}>
+                            <AntDesign
+                                name="arrowright"
+                                size={30}
+                                style={{ color: 'black' }}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <Progress.Bar progress={finalizedFraction}
+                        width={Dimensions.get('window').width - 40}
+                        borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
+                </View>
+            )
+        }
         return (
-            <Button title="test" onPress={goToFinalized} />
+            <TouchableOpacity onPress={() => viewMoreDetails(board)}>
+                <View style={styles.individualPlan}>
+                    <Text>
+                        Outing on: {board.selected_date}
+                    </Text>
+                    <Text>
+                        Invited by: {board.host.replace("_", " ")}
+                    </Text>
+                    <Progress.Bar progress={finalizedFraction}
+                        width={Dimensions.get('window').width - 40}
+                        borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
+                </View>
+            </TouchableOpacity>
         )
-        // return (
-        //     <TouchableOpacity onPress={() => viewMoreDetails(board)}>
-        //         <View style={{ borderWidth: 1, borderRadius: 10, marginLeft: 10, marginRight: 10, padding: 10, marginTop: 10 }}>
-        //             <Text>
-        //                 Outing on: {board.selected_date}
-        //             </Text>
-        //             <Text>
-        //                 Invited by: {board.host.replace("_", " ")}
-        //             </Text>
-        //         </View>
-        //     </TouchableOpacity>
-        // )
     }
-
-    /* navigation.navigate("Finalized", { 
-        route: "board"
-        genres: [adventure, food],
-        timeInterval:[12,23],
-        filters: {area: [North, East],
-                  cuisine: [Western, Asian],
-                  price: 2} });
-     */
 
     const closeModal = () => {
         setModalVisibility(false);
@@ -90,14 +122,6 @@ const ListOfPlans = ({ plans, refreshList, navigation }) => {
                     { title: "", data: plans },
                 ]}
                 renderItem={({ item }) => renderCollaborationBoard(item)}
-                renderSectionHeader={({ section }) =>
-                    <View style={styles.sectionHeader}>
-                        <TouchableOpacity
-                            onPress={() => handleTitlePress(section.title)}>
-                            <Text style={styles.sectionHeaderText}>{section.title}</Text>
-                        </TouchableOpacity>
-                    </View>
-                }
                 keyExtractor={(item, index) => index}
             />
         </View >
@@ -109,6 +133,15 @@ export default ListOfPlans;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    individualPlan: {
+        borderWidth: 1,
+        borderRadius: 10,
+        marginLeft: 10,
+        marginRight: 10,
+        padding: 10,
+        marginTop: 10,
+        paddingBottom: 5,
     },
     headerText: {
         textAlign: 'center',

@@ -13,7 +13,7 @@ import { inputBusyPeriodFromGcal } from '../../reusable-functions/GoogleCalendar
 /**
  * The modal that shows when user selects each of the individual upcoming plans
  */
-const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
+const IndividualPlanModal = ({ onClose, board, userID, currUserName, currUserGmail }) => {
     useEffect(() => {
         extractAndSetTopGenres(board.preferences);
         extractAndSetInvitees(board.invitees);
@@ -175,9 +175,8 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         updates['preferences'] = updatedPreference;
         updates['food_filters'] = updatedFoodFilters;
 
-        var addFinalizedUser = {};
-        addFinalizedUser[currUserName] = userID;
-        updates['finalized'] = addFinalizedUser;
+        var addFinalizedUser = { firebaseID: userID, gmail: currUserGmail };
+        updates['/finalized/' + currUserName] = addFinalizedUser;
 
         firebase.database()
             .ref('collab_boards/' + board.boardID)
@@ -279,7 +278,8 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 const mapStateToProps = (state) => {
     return {
         userID: state.add_events.userID,
-        currUserName: state.add_events.currUserName
+        currUserName: state.add_events.currUserName,
+        currUserGmail: state.add_events.currUserGmail
     };
 };
 
