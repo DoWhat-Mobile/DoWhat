@@ -20,6 +20,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     }, []);
 
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
+    const [boardIsFinalized, setBoardIsFinalized] = useState(false);
     const [invitees, setInvitees] = useState([]);
     const [topGenres, setTopGenres] = useState([]);
     const [allGenres, setAllGenres] = useState([['ADVENTURE', false], ['ARTS', false],
@@ -181,6 +182,9 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         firebase.database()
             .ref('collab_boards/' + board.boardID)
             .update(updates)
+
+        setBoardIsFinalized(true); // Changes style of finalize button
+        onClose() // Close modal
     }
 
     const inputAvailabilities = () => {
@@ -192,10 +196,20 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     const renderInputAvailabilitiesButton = () => {
         if (isButtonDisabled) {
             return (
-                <TouchableOpacity style={[styles.finalizeButton, { backgroundColor: 'green' }]} onPress={() => inputAvailabilities()}
-                    disabled={isButtonDisabled}>
-                    <Text style={{ color: 'white' }}>Availabilities Inputted</Text>
-                </TouchableOpacity>
+                <View>
+                    <TouchableOpacity style={[styles.finalizeButton, { borderRadius: 20, backgroundColor: '#2a9d8f', borderWidth: 0.2 }]}
+                        disabled={true}
+                        onPress={() => finalizeBoard()}>
+                        <AntDesign
+                            name="check"
+                            size={20}
+                            style={{ color: 'white' }}
+                        />
+                        <Text style={{ color: 'white', marginLeft: 5 }}>
+                            Availabilities Inputted
+                            </Text>
+                    </TouchableOpacity>
+                </View>
             );
         } else {
             return (
@@ -208,6 +222,19 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     }
 
     const renderFinalizeButton = () => {
+        if (boardIsFinalized) {
+            return (
+                <TouchableOpacity style={[styles.finalizeButton, { borderRadius: 20, backgroundColor: '#e63946', borderWidth: 0.2 }]}
+                    disabled={true}
+                    onPress={() => finalizeBoard()}>
+                    <AntDesign
+                        name="check"
+                        size={20}
+                        style={{ color: 'white' }}
+                    />
+                </TouchableOpacity>
+            )
+        }
         return (
             <TouchableOpacity style={styles.finalizeButton} onPress={() => finalizeBoard()}>
                 <Text>Finalize</Text>
@@ -320,6 +347,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         justifyContent: 'center',
+        flexDirection: 'row',
         alignSelf: 'flex-end',
         padding: 5,
         marginRight: 10,
