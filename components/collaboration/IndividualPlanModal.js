@@ -7,6 +7,7 @@ import FoodPrice from './FoodPrice';
 import FoodLocation from './FoodLocation';
 import FoodCuisine from './FoodCuisine';
 import GenrePicker from './GenrePicker';
+import firebase from '../../database/firebase'
 import { inputBusyPeriodFromGcal } from '../../reusable-functions/GoogleCalendarGetBusyPeriods';
 
 /**
@@ -131,8 +132,50 @@ const IndividualPlanModal = ({ onClose, board, userID }) => {
         )
     }
 
+    // Take current board state, and perform updates using user's votes
+    const updateGenres = (prevState, currState) => {
+        var newState = JSON.parse(JSON.stringify(prevState)); // Deep copy to not mutate component's board state
+        currState.forEach(x => { // [NATURE, true/false]
+            const genre = x[0].toLowerCase();
+            const selected = x[1];
+            if (selected) {
+                newState[genre] += 1;
+            }
+        })
+        return newState;
+    }
 
+    // Take current board state, and perform updates using user's votes
+    const updateFoodFilters = (prevState, currLocationState, currCuisineState, currBudgetState) => {
+        var newState = JSON.parse(JSON.stringify(prevState)); // Deep copy to not mutate component's board state
+        currLocationState.forEach(x => { // [location, true/false]
+            const location = x[0].toLowerCase();
+            const selected = x[1];
+            if (selected) {
+                newState.area[location] += 1;
+            }
+        })
+        currCuisineState.forEach(x => { // [cuisine, true/false]
+            const cuisine = x[0].toLowerCase();
+            const selected = x[1];
+            if (selected) {
+                newState.cuisine[cuisine] += 1;
+            }
+        })
+        newState.price[currBudgetState] += 1;
+        return newState;
+    }
+
+    // Finalize updates firebase with the user's inputted preference votes
     const finalizeBoard = () => {
+        var updates = {}
+        const updatedPreference = updateGenres(board.preferences, allGenres)
+        const updatedFoodFilters = updateFoodFilters(board.food_filters, location, cuisine, budget)
+        updates['preferences'] = updatedPreference;
+        updates['food_filters'] = updatedFoodFilters;
+        firebase.database()
+            .ref('collab_boards/' + board.boardID)
+            .update(updates)
     }
 
     const inputAvailabilities = () => {

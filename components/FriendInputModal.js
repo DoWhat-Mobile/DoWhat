@@ -87,19 +87,18 @@ const FriendInputModal = ({ onClose, userID, selected_date, database }) => {
         updates['/preferences'] = {
             adventure: 0,
             arts: 0,
-            cafes: 0,
-            hawker: 0,
             leisure: 0,
             nature: 0,
             nightlife: 0,
-            restaurants: 0
+            food: 0
         }
-        updates['/budget'] = {
-            0: 0,
-            1: 0,
-            2: 0,
-            3: 0,
-            4: 0
+        updates['/food_filters'] = {
+            area: { north: 0, east: 0, west: 0, central: 0 },
+            cuisine: {
+                asian: 0, western: 0, chinese: 0, korean: 0, indian: 0,
+                japanese: 0, cafe: 0, local: 0
+            },
+            price: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 }
         };
         updates['/availabilities/' + formattedUserEmail] = inviteeBusyPeriods;
 
@@ -308,6 +307,7 @@ const styles = StyleSheet.create({
         paddingBottom: '2%',
         paddingTop: '2%',
         borderRadius: 8,
+        marginTop: 8,
 
     },
     buttonGroup: {
