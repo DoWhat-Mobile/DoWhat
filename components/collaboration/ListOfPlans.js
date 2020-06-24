@@ -7,7 +7,7 @@ import IndividualPlanModal from './IndividualPlanModal';
  * The <SectionList> Component within the AllPlans component. This is the component
  * which shows all the plans that the user is part of.
  */
-const ListOfPlans = ({ plans, refreshList }) => {
+const ListOfPlans = ({ plans, refreshList, navigation }) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [modalVisibility, setModalVisibility] = useState(false);
     const [boardDetails, setBoardDetails] = useState({})
@@ -26,17 +26,45 @@ const ListOfPlans = ({ plans, refreshList }) => {
 
     }
 
+    const goToFinalized = () => {
+        navigation.navigate("Finalized", {
+            route: "board",
+            genres: ["adventure", "food"],
+            timeInterval: [12, 18],
+            filters: {
+                area: ["North", "East"],
+                cuisine: ["Western", "Asian"],
+                price: 2
+            }
+        });
+    }
+
     const renderCollaborationBoard = (board) => {
         return (
-            <TouchableOpacity onPress={() => viewMoreDetails(board)}>
-                <View style={{ borderWidth: 1, borderRadius: 10, marginLeft: 10, marginRight: 10, padding: 10, marginTop: 10 }}>
-                    <Text>
-                        Outing on: {board.selected_date}
-                    </Text>
-                </View>
-            </TouchableOpacity>
+            <Button title="test" onPress={goToFinalized} />
         )
+        // return (
+        //     <TouchableOpacity onPress={() => viewMoreDetails(board)}>
+        //         <View style={{ borderWidth: 1, borderRadius: 10, marginLeft: 10, marginRight: 10, padding: 10, marginTop: 10 }}>
+        //             <Text>
+        //                 Outing on: {board.selected_date}
+        //             </Text>
+        //             <Text>
+        //                 Invited by: {board.host.replace("_", " ")}
+        //             </Text>
+        //         </View>
+        //     </TouchableOpacity>
+        // )
     }
+
+    /* navigation.navigate("Finalized", { 
+        route: "board"
+        genres: [adventure, food],
+        timeInterval:[12,23],
+        filters: {area: [North, East],
+                  cuisine: [Western, Asian],
+                  price: 2} });
+     */
 
     const closeModal = () => {
         setModalVisibility(false);

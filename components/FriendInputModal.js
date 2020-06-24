@@ -6,17 +6,17 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
 import firebase from '../database/firebase';
+import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyPeriods';
 
 /**
  * Modal that shows when user clicks "Invite friends from DoWhat" in FriendInput.js
  */
-const FriendInputModal = ({ onClose, userID, selected_date, database }) => {
+const FriendInputModal = ({ onClose, userID, currUserName, selected_date, database }) => {
     useEffect(() => {
         showAllMyFriends(); // All accepted friends
     }, []);
 
     const [allAcceptedFriends, setAllAcceptedFriends] = useState([]);
-    const [currUserName, setCurrUserName] = useState('')
 
     const showAllMyFriends = () => {
         firebase.database()
@@ -25,7 +25,6 @@ const FriendInputModal = ({ onClose, userID, selected_date, database }) => {
             .then((snapshot) => {
                 const database = snapshot.val();
                 const user = database.users[userID];
-                setCurrUserName(user.first_name + '_' + user.last_name); // For identification when adding friend request to Firebase
                 if (user.hasOwnProperty('friends')) {
                     if (user.friends.hasOwnProperty('accepted')) {
                         const allAcceptedFriends = user.friends.accepted;
@@ -101,6 +100,7 @@ const FriendInputModal = ({ onClose, userID, selected_date, database }) => {
             price: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 }
         };
         updates['/availabilities/' + formattedUserEmail] = inviteeBusyPeriods;
+        updates['host'] = currUserName;
 
         firebase.database()
             .ref('collab_boards') // Create a collab board in Firebase
@@ -132,7 +132,6 @@ const FriendInputModal = ({ onClose, userID, selected_date, database }) => {
 
                 const currUser = database.users[userID]; // UserID from Redux State
                 const currUserGmail = currUser.gmail;
-                const currUserName = currUser.first_name + '_' + currUser.last_name;
                 var currUserBusyPeriods = {};
                 if (currUser.hasOwnProperty('busy_periods')) {
                     currUserBusyPeriods = currUser.busy_periods;
@@ -239,21 +238,13 @@ const FriendInputModal = ({ onClose, userID, selected_date, database }) => {
     );
 };
 
-const formatDateToString = (date) => {
-    const year = date.getFullYear().toString();
-    var month = date.getMonth() + 1; // Offset by 1 due to Javascrip Date object format
-    month = month >= 10 ? month.toString() : "0" + month.toString();
-    const day = date.getDate().toString();
-    const dateString = year + "-" + month.toString() + "-" + day;
-    return dateString;
-};
-
 // Get previously inputted date from DateSelection for API call
 const mapStateToProps = (state) => {
     const dateInString = formatDateToString(state.date_select.date);
     return {
         selected_date: dateInString,
         userID: state.add_events.userID,
+        currUserName: state.add_events.currUserName
     };
 };
 

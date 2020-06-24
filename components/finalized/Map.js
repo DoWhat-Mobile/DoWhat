@@ -45,6 +45,10 @@ const Map = ({ onClose, coord }) => {
         }
     };
 
+    const show = () => {
+        this.mark.showCallout()
+    }
+
     return (
         <View style={styles.container}>
             <MapView
@@ -57,7 +61,7 @@ const Map = ({ onClose, coord }) => {
                 }}
                 onLayout={() => {
                     if (coord.length > 1) {
-                        this.marker.showCallout();
+                        show()
                     }
                 }}
             >
@@ -65,8 +69,8 @@ const Map = ({ onClose, coord }) => {
                     if (index === 0) {
                         return (
                             <Marker
-                                ref={(ref) => {
-                                    this.marker = ref;
+                                ref={ref => {
+                                    this.mark = ref;
                                 }}
                                 key={marker.name}
                                 coordinate={marker.coord}

@@ -43,7 +43,7 @@ const AllPlans = ({ navigation, userID }) => {
             </View>
 
             <View style={styles.body}>
-                <ListOfPlans plans={allBoards} refreshList={getUpcomingCollaborationsFromFirebase} />
+                <ListOfPlans plans={allBoards} refreshList={getUpcomingCollaborationsFromFirebase} navigation={navigation} />
             </View>
 
             <View style={styles.footer}>

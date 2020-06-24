@@ -20,6 +20,8 @@ const Finalized = (props) => {
     const [coord, setCoord] = React.useState([]);
     const [data, setData] = React.useState([]);
 
+    const route = props.route.params.route;
+
     const onClose = () => {
         setVisible(false);
     };
@@ -28,14 +30,14 @@ const Finalized = (props) => {
         setCoord(coord);
     };
 
+    const testEvents = route === 'board' ? props.route.params.genres : props.finalGenres[0];
+    const filters = route === 'board' ? props.route.params.filters : props.finalGenres[2];
+    const timeline =
+        route === "board"
+            ? props.route.params.timeInterval
+            : props.finalGenres[1];
     React.useEffect(() => {
         if (props.allEvents != {}) {
-            const testEvents = props.finalGenres[0];
-            const filters = props.finalGenres[2];
-            const timeline =
-                props.route.params.route === "manual"
-                    ? props.finalTiming
-                    : props.finalGenres[1];
             const data = data_timeline(
                 timeline,
                 testEvents,
@@ -70,7 +72,7 @@ const Finalized = (props) => {
                     data={data}
                     navigation={props.navigation}
                     mapUpdate={mapUpdate}
-                    genres={props.finalGenres[0]}
+                    genres={testEvents}
                 />
 
                 <Modal animated visible={visible} animationType="fade">
