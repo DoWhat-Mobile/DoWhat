@@ -23,10 +23,19 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dowhat.dowhat",
+      "config": {
+        "googleMapsApiKey": "AIzaSyDTN3VmKTvI6Vule4GldiBJ6UK4ZhC1Os8"
+      }
     },
     "android": {
       "package": "com.dowhat.dowhat",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAMSnoYdPlIY66gaQfOH22xx6jEKLgICNs"
+        }
+      },
       "versionCode": 1,
       "intentFilters": [
         {
