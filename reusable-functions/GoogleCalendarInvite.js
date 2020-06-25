@@ -88,6 +88,7 @@ const formatRequestAndMakeAPICall = async (allFormattedEmails, allEvents, timing
 
     for (var i = 0; i < allEvents.length; i++) {
         const requestBody = {};
+
         // Get information required for request body
         const eventTitle = allEvents[i].eventTitle;
         const eventStartTime = formatTime(date, timingsArray[i].start);
@@ -115,7 +116,7 @@ const formatRequestAndMakeAPICall = async (allFormattedEmails, allEvents, timing
 // Google Calendar Events insert API call
 const makeAPICall = async (requestBody, userEmail, accessToken) => {
     try {
-        console.log("API Call request body is: ", JSON.stringify(requestBody));
+        console.log(JSON.stringify(requestBody));
         fetch(
             "https://www.googleapis.com/calendar/v3/calendars/" + encodeURI(userEmail) +
             "/events?sendNotifications=true&sendUpdates=all&key=" + REACT_APP_GOOGLE_API_KEY,
@@ -174,7 +175,7 @@ const formatAttendeeEmails = (attendees) => {
 
 // Format date and hour to make it compatible with google API call
 const formatTime = (date, hour) => {
-    return date + 'T' + hour + ':00+08:00'
+    return date + 'T' + hour + ':00:00+08:00'
 }
 
 // Clean data so it wont intefere with future scheduling
@@ -200,39 +201,3 @@ export const formatEventsData = (data) => {
     })
     return allEventDetails;
 }
-
-
-/******************************************************/
-/******THESE ARE USED FROM THE COLLABORATIVE BOARD*****/
-/******************************************************/
-export const handleBoardRouteProcess = (formattedData, timingsArray, board) => {
-    const selectedDate = board.selected_date;
-    const attendees = board.availabilities; // Object with all attendees
-    try {
-        const userId = firebase.auth().currentUser.uid;
-        firebase
-            .database()
-            .ref("users/" + userId)
-            .once("value")
-            .then((snapshot) => {
-                const userData = snapshot.val();
-                const userEmail = userData.gmail;
-                const userPreferences = userData.preferences; // {adventure: 0, arts: 0, cafes: 0, ...}
-                const accessToken = [userData.access_token,
-                userData.access_token_expiration,
-                userData.refresh_token];
-
-                updateUserPreferences(userPreferences, userId, formattedData);
-                const formattedAttendeeEmails = formatAttendeeEmails(attendees);
-                formatRequestAndMakeAPICall(formattedAttendeeEmails,
-                    formattedData,
-                    timingsArray,
-                    selectedDate,
-                    userEmail,
-                    accessToken);
-            })
-
-    } catch (e) {
-        console.log(e);
-    }
-} 
