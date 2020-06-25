@@ -95,6 +95,8 @@ export const onSignIn = (googleUser) => {
 
 // Get push token and set it in the user's Firebase node
 const registerForPushNotificationsAsync = async (userId) => {
+    if (userId == undefined) return; // Dont do anything if userId is undefined
+
     if (Constants.isDevice) {
         const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
         let finalStatus = existingStatus;

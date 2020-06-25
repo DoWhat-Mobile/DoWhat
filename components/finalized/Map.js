@@ -45,9 +45,9 @@ const Map = ({ onClose, coord }) => {
         }
     };
 
-    const show = () => {
-        this.mark.showCallout();
-    };
+    // const show = () => {
+    //     this.mark.showCallout();
+    // };
 
     return (
         <View style={styles.container}>
@@ -59,14 +59,14 @@ const Map = ({ onClose, coord }) => {
                     latitudeDelta: 0.15,
                     longitudeDelta: 0.15,
                 }}
-                onLayout={() => {
-                    show();
-                }}
+            // onLayout={() => {
+            //     show();
+            // }}
             >
                 <Marker
-                    ref={(ref) => {
-                        this.mark = ref;
-                    }}
+                    // ref={(ref) => {
+                    //     this.mark = ref;
+                    // }}
                     key={coord[0].name}
                     coordinate={coord[0].coord}
                     title={coord[0].name}
