@@ -1,11 +1,19 @@
 import React from "react";
 import MapView, { Marker, Callout } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 
 const Map = ({ onClose, coord }) => {
+    const [coords, setCoords] = React.useState([]);
+    const [isLoading, setLoading] = React.useState(true);
+    React.useEffect(() => {
+        setCoords(coord);
+        setLoading(false);
+    }, []);
+
+    const startRef = React.useRef(null);
     /**
      * Renders all the path lines from the first event to the last
      * @param {*} coord is an array of objects with long lat of the events scheduled for the user
@@ -45,59 +53,73 @@ const Map = ({ onClose, coord }) => {
         }
     };
 
-    const show = () => {
-        this.mark.showCallout();
+    const onRegionChangeComplete = () => {
+        if (startRef && startRef.current && startRef.current.showCallout) {
+            startRef.current.showCallout();
+        }
     };
-
-    return (
-        <View style={styles.container}>
-            <MapView
-                style={{ flex: 1 }}
-                initialRegion={{
-                    latitude: 1.3521,
-                    longitude: 103.851959,
-                    latitudeDelta: 0.15,
-                    longitudeDelta: 0.15,
-                }}
-                onLayout={() => {
-                    show();
+    if (isLoading) {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    alignContent: "center",
+                    justifyContent: "center",
                 }}
             >
-                <Marker
-                    ref={(ref) => {
-                        this.mark = ref;
+                <ActivityIndicator
+                    style={{ alignSelf: "center" }}
+                    size="large"
+                />
+            </View>
+        );
+    } else {
+        return (
+            <View style={styles.container}>
+                <MapView
+                    style={{ flex: 1 }}
+                    initialRegion={{
+                        latitude: 1.3521,
+                        longitude: 103.851959,
+                        latitudeDelta: 0.15,
+                        longitudeDelta: 0.15,
                     }}
-                    key={coord[0].name}
-                    coordinate={coord[0].coord}
-                    title={coord[0].name}
+                    onRegionChangeComplete={onRegionChangeComplete}
                 >
-                    <Callout>
-                        <View>
-                            <Text>Start</Text>
-                        </View>
-                    </Callout>
-                </Marker>
-                {coord.map((marker, index) => {
-                    if (index !== 0) {
-                        return (
-                            <Marker
-                                key={marker.name}
-                                coordinate={marker.coord}
-                                title={marker.name}
-                            />
-                        );
-                    }
-                })}
-                {directions(coord)}
-            </MapView>
-            <AntDesign
-                name="close"
-                size={24}
-                onPress={() => onClose()}
-                style={styles.close}
-            />
-        </View>
-    );
+                    <Marker
+                        ref={startRef}
+                        key={coords[0].name}
+                        coordinate={coords[0].coord}
+                        title={coords[0].name}
+                    >
+                        <Callout>
+                            <View>
+                                <Text>Start</Text>
+                            </View>
+                        </Callout>
+                    </Marker>
+                    {coords.map((marker, index) => {
+                        if (index !== 0) {
+                            return (
+                                <Marker
+                                    key={marker.name}
+                                    coordinate={marker.coord}
+                                    title={marker.name}
+                                />
+                            );
+                        }
+                    })}
+                    {directions(coords)}
+                </MapView>
+                <AntDesign
+                    name="close"
+                    size={24}
+                    onPress={() => onClose()}
+                    style={styles.close}
+                />
+            </View>
+        );
+    }
 };
 
 const styles = StyleSheet.create({
