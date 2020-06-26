@@ -1,7 +1,12 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, SectionList, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+    View, Text, StyleSheet, SectionList, ActivityIndicator,
+    Image, FlatList, TouchableOpacity, Dimensions
+} from "react-native";
+import { Card, Icon } from 'react-native-elements';
 import firebase from '../../database/firebase';
 import { handleEventsOf } from '../../reusable-functions/HomeFeedLogic';
+import { TIH_API_KEY } from 'react-native-dotenv';
 import { connect } from 'react-redux';
 
 /**
@@ -58,6 +63,107 @@ const Feed = (props) => {
         }
     }
 
+    /**
+     * Run through entire array and returns another array of the data 
+     * injected with React elements. 
+     * @param {*} event is an ARRAY of [{}, rating] 
+     * @param {*} injectReactToEach is a function specifying how each element in the list view
+     *  will be styled.
+     */
+    const injectReactToAll = (event, injectReactToEach) => {
+        var eventsInReactElement = [];
+        for (var i = 0; i < event.length; i++) {
+            eventsInReactElement.push(injectReactToEach(event[i]));
+        }
+        // Returns an ARRAY of styled elements
+        return eventsInReactElement;
+    }
+
+    // Takes in indivdual event array and inject it to <Card>, for vertical views 
+    const renderWhatsPopular = (event) => {
+        var imageURI = event[0].imageURL;
+
+        // If imageURI is a code, convert it to URI using TIH API
+        if (imageURI.substring(0, 5) != 'https') {
+            imageURI = 'https://tih-api.stb.gov.sg/media/v1/download/uuid/' +
+                imageURI + '?apikey=' + TIH_API_KEY;
+        }
+
+        return (
+            <TouchableOpacity onPress={() => alert("hello")}>
+                <View style={{ width: Dimensions.get('window').width }}>
+                    <Card
+                        style={{ height: (Dimensions.get('window').height / 2) }}
+                        title={event[0].title}
+                    >
+                        <Image
+                            source={{ uri: imageURI }}
+                            style={{ height: 100, width: '100%' }}
+                        />
+
+                        <Text style={{ marginBottom: 10, fontFamily: 'serif' }}>
+                            {event[0].description.split('\n')[0]}
+                        </Text>
+                    </Card>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+
+    // Styling to be rendered for food selection in Home screen feed
+    const renderFoodChoices = (event) => {
+        var imageURI = event[0].imageURL;
+
+        // If imageURI is a code, convert it to URI using TIH API
+        if (imageURI.substring(0, 5) != 'https') {
+            imageURI = 'https://tih-api.stb.gov.sg/media/v1/download/uuid/' +
+                imageURI + '?apikey=' + TIH_API_KEY;
+        }
+
+        return (
+            <TouchableOpacity onPress={() => alert("hello")}>
+                <View style={{ width: Dimensions.get('window').width }}>
+                    <Card
+                        style={{ height: (Dimensions.get('window').height / 2) }}
+                        title={event[0].title}
+                    >
+                        <Image
+                            source={{ uri: imageURI }}
+                            style={{ height: 100, width: Dimensions.get('window').width * 0.9 }}
+                        />
+                        <Text style={{ marginBottom: 10, fontFamily: 'serif' }}>
+                            {event[0].description.split('\n')[0]}
+                        </Text>
+                    </Card>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+
+    /**
+     * Horizontal <FlatList> for food choices
+     * @param {*} event is a 2D array of [[{eventDetails}, ratings], ...] 
+     */
+    const formatFoodArray = (event) => {
+        return (
+            <FlatList
+                data={injectReactToAll(event, renderFoodChoices)}
+                horizontal={true}
+                renderItem={({ item }) => (
+                    item
+                )}
+                keyExtractor={(item, index) => item + index}
+            />
+        )
+    }
+
+    const renderFeed = (item, section) => {
+        if (section.title == 'Hungry?') { // Render eateries
+            return formatFoodArray(item);
+        }
+        return renderWhatsPopular(item);
+    }
+
     if (isLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center' }}>
@@ -73,11 +179,11 @@ const Feed = (props) => {
                 progressViewOffset={100}
                 refreshing={isRefreshing}
                 sections={[
-                    { title: "What is currently popular", data: eventData[0] }, // eventData[0] is an array of <Card>
-                    { title: "Hungry?", data: eventData[1] }, // eventData[1] is an array of one element: [<Flatlist>]
-                    { title: "Find something new", data: eventData[2] } // eventData[2] is an array of <Card>
+                    { title: "What is currently popular", data: eventData[0] }, // eventData[0] is an array of data items
+                    { title: "Hungry?", data: eventData[1] }, // eventData[1] is an array of one element: [data]
+                    { title: "Find something new", data: eventData[2] } // eventData[2] is an array data items 
                 ]}
-                renderItem={({ item }) => item}
+                renderItem={({ item, section }) => renderFeed(item, section)}
                 renderSectionHeader={({ section }) =>
                     <View style={styles.sectionHeader}>
                         <TouchableOpacity
@@ -120,6 +226,21 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: 'black',
         backgroundColor: '#e63946',
+
+    },
+    cardButton: {
+        borderRadius: 5,
+        marginLeft: '1%',
+        marginRight: '1%',
+        borderWidth: 0.2,
+        borderColor: 'black',
+        backgroundColor: '#457b9d',
+    },
+    moreDetailsButtonText: {
+        color: '#f1faee',
+        fontWeight: '300',
+        fontFamily: 'serif',
+        textAlign: "center",
 
     }
 });

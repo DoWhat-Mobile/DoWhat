@@ -33,8 +33,6 @@ const AllPlans = ({ navigation, userID }) => {
             })
     }
 
-    // console.log(allBoards);
-
     return (
         <View style={styles.container}>
             <View style={styles.header}>
