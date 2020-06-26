@@ -207,7 +207,7 @@ export const formatEventsData = (data) => {
 /******************************************************/
 export const handleBoardRouteProcess = (formattedData, timingsArray, board) => {
     const selectedDate = board.selected_date;
-    const attendees = board.availabilities; // Object with all attendees
+    const attendees = board.invitees; // Object with all invitees 
     try {
         const userId = firebase.auth().currentUser.uid;
         firebase
@@ -223,7 +223,7 @@ export const handleBoardRouteProcess = (formattedData, timingsArray, board) => {
                 userData.refresh_token];
 
                 updateUserPreferences(userPreferences, userId, formattedData);
-                const formattedAttendeeEmails = formatAttendeeEmails(attendees);
+                const formattedAttendeeEmails = formatAttendeeFromCollabBoard(attendees, userId);
                 formatRequestAndMakeAPICall(formattedAttendeeEmails,
                     formattedData,
                     timingsArray,
@@ -235,4 +235,23 @@ export const handleBoardRouteProcess = (formattedData, timingsArray, board) => {
     } catch (e) {
         console.log(e);
     }
-} 
+}
+
+// Change to format usable with Gcal Event insert API.
+const formatAttendeeFromCollabBoard = (attendees, userId) => {
+    if (attendees == undefined) { // No attendees joining
+        return []; // Means no attendees are free to join the scheduled events
+    }
+
+    var allFormattedEmails = [];
+
+    for (var email in attendees) {
+        const inviteeFirebaseID = attendees[email];
+        if (inviteeFirebaseID == userId) continue; // Don't invite yourself, since you are the host
+        const modifiedEmail = email.replace(/\@/g, '.') + '@gmail.com';
+        const formattedEmail = { 'email': modifiedEmail };
+        allFormattedEmails.push(formattedEmail);
+    }
+
+    return allFormattedEmails;
+}
