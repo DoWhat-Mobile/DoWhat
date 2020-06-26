@@ -53,7 +53,7 @@ const getTopEateries = (restaurants, hawkers, cafes) => {
     const selections = [topRestaurants, topHawkers, topCafes];
     var result = [];
 
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 3; i++) {
         const j = randomIntFromInterval(0, 2);
         const k = randomIntFromInterval(0, 4);
 
@@ -74,7 +74,7 @@ const getTopEateries = (restaurants, hawkers, cafes) => {
 
         result.push(eatery);
     }
-    return [result]; // Array for formatting in FlatList
+    return [result]; // Array for formatting in flatList
 }
 
 /**
@@ -142,7 +142,7 @@ const getTopEventsFromGenres = (genre1, genre2, allCategories) => {
 
     var result = [];
 
-    for (var i = 0; i < 5; i++) { // Get top 5 events
+    for (var i = 0; i < 3; i++) { // Get top 3 events
         const j = randomIntFromInterval(0, 1); // selections array index
         var k = randomIntFromInterval(0, 4);
 
@@ -197,7 +197,7 @@ const getPopularEvents = (allCategories, low, high) => {
     const selections = [topAdventures, topArts, topLeisure, topNature, topNightlife]
     var result = [];
 
-    for (var i = 0; i < 5; i++) { // Get top 5 events
+    for (var i = 0; i < 3; i++) { // Get top 3 events
         var j = randomIntFromInterval(0, 4); // selections array index
         var k = randomIntFromInterval(low, high);
 
@@ -245,6 +245,5 @@ export const handleEventsOf = (allCategories, userPreference) => {
     const topFoodEvents = getTopEateries(allCategories.restaurants,
         allCategories.hawker, allCategories.cafes);
 
-    // Array of data already formatted for SectionList data input
-    return [popularEvents, topFoodEvents, newEvents]; // [[<View>, <View>], [<FlatList>], [<View>, <View>]]
+    return [popularEvents, topFoodEvents, newEvents];
 }

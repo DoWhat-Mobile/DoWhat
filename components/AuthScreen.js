@@ -56,7 +56,7 @@ class AuthScreen extends Component {
             // Get user email
             fetch(
                 "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" +
-                    token.accessToken,
+                token.accessToken,
                 {
                     method: "GET",
                     headers: new Headers({

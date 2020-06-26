@@ -129,7 +129,7 @@ const Feed = (props) => {
                     >
                         <Image
                             source={{ uri: imageURI }}
-                            style={{ height: 100, width: Dimensions.get('window').width * 0.9 }}
+                            style={{ height: 100, width: Dimensions.get('window').width * 0.85 }}
                         />
                         <Text style={{ marginBottom: 10, fontFamily: 'serif' }}>
                             {event[0].description.split('\n')[0]}
