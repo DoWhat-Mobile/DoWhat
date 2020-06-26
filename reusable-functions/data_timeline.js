@@ -8,7 +8,7 @@ import ReadMore from "react-native-read-more-text";
  * @param {*} filters in array of area price and cuisine the user selected
  * @param {*} events are all the events
  */
-const filterHelper = (filters, events) => {
+export const filterHelper = (filters, events) => {
     const genre = filters.cuisine.includes("Hawker")
         ? "hawker"
         : filters.cuisine.includes("Cafe")
@@ -23,31 +23,56 @@ const filterHelper = (filters, events) => {
         const cuisineFilter = (element) =>
             event.cuisine.toString().includes(element);
         const areaFilter = (element) => event.tags.includes(element);
-        if (genre === "hawker" && filters.area.some(areaFilter))
+        if (genre === "hawker" && filters.area.some(areaFilter)) {
             temp.push(event);
-
-        if (
+        } else if (
             genre === "cafes" &&
             filters.area.some(areaFilter) &&
-            event.price_level <= filters.price
-        )
+            event.price_level == filters.price
+        ) {
             temp.push(event);
-
-        if (
+        } else if (
             genre === "restaurants" &&
             filters.area.some(areaFilter) &&
-            event.price_level <= filters.price &&
+            event.price_level == filters.price &&
             filters.cuisine.some(cuisineFilter)
-        )
+        ) {
             temp.push(event);
-
-        if (event.price_level > filters.price) temp.push(event);
+        }
     }
+    if (temp.length == 0) {
+        for (i = 0; i < eventList.length; i++) {
+            const event = eventList[i];
+            const cuisineFilter = (element) =>
+                event.cuisine.toString().includes(element);
+            const areaFilter = (element) => event.tags.includes(element);
+            if (genre === "hawker" && filters.area.some(areaFilter)) {
+                temp.push(event);
+            } else if (
+                genre === "cafes" &&
+                filters.area.some(areaFilter) &&
+                event.price_level < filters.price
+            ) {
+                temp.push(event);
+            } else if (
+                genre === "restaurants" &&
+                filters.area.some(areaFilter) &&
+                event.price_level < filters.price &&
+                filters.cuisine.some(cuisineFilter)
+            ) {
+                temp.push(event);
+            }
+        }
+    }
+    if (temp.length == 0) {
+        temp.push(eventList[0]);
+    }
+
     let rand = Math.floor(Math.random() * temp.length);
     return { [genre]: temp[rand] };
 };
 
-const genreEventObjectArray = (testEvents, events, filters) => {
+export const genreEventObjectArray = (testEvents, events, filters) => {
     let eventArray = [];
     if (testEvents.includes("food")) {
         eventArray.push(filterHelper(filters, events));
@@ -195,7 +220,7 @@ export const data_shuffle = (events, genres, time, unsatisfied) => {
 /**
  * Creates the object with keys (time, title description) that the timeline library accepts
  */
-const objectFormatter = (startTime, event, genre) => {
+export const objectFormatter = (startTime, event, genre) => {
     const renderTruncatedFooter = (handlePress) => {
         return (
             <Text
