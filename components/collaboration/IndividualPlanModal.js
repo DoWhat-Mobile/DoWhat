@@ -31,7 +31,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 
     const [cuisine, setCuisine] = useState([['ASIAN', false], ['WESTERN', false],
     ['CHINESE', false], ['KOREAN', false], ['INDIAN', false], ['JAPANESE', false],
-    ['CAFE', false], ['LOCAL', false],]);
+    ['CAFE', false], ['HAWKER', false],]);
 
     const [budget, setBudget] = useState(0);
 

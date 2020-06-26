@@ -52,7 +52,6 @@ const Map = ({ onClose, coord }) => {
             );
         }
     };
-
     const onRegionChangeComplete = () => {
         if (startRef && startRef.current && startRef.current.showCallout) {
             startRef.current.showCallout();

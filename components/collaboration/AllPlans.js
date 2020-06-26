@@ -33,8 +33,6 @@ const AllPlans = ({ navigation, userID }) => {
             })
     }
 
-    // console.log(allBoards);
-
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -43,7 +41,8 @@ const AllPlans = ({ navigation, userID }) => {
             </View>
 
             <View style={styles.body}>
-                <ListOfPlans plans={allBoards} refreshList={getUpcomingCollaborationsFromFirebase} navigation={navigation} />
+                <ListOfPlans plans={allBoards} refreshList={getUpcomingCollaborationsFromFirebase}
+                    navigation={navigation} userID={userID} />
             </View>
 
             <View style={styles.footer}>
