@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button, View, StyleSheet, Text, TouchableOpacity, SectionList, Dimensions, Modal } from 'react-native';
 import IndividualPlanModal from './IndividualPlanModal';

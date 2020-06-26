@@ -191,7 +191,7 @@ const addToCollaborativeBoard = async (token, userEmail, selectedDate, boardID) 
             .then((data) => {
                 const formattedUserEmail = userEmail.replace(/\./g, '@').slice(0, -10); // Firebase cant have '@' 
                 const formattedData = {};
-                formattedData[formattedUserEmail] = { busy_periods: data.calendars[userEmail].busy };
+                formattedData[formattedUserEmail] = data.calendars[userEmail].busy;
                 // Store busy data into firebase
                 firebase
                     .database()

@@ -1,16 +1,14 @@
 import React from "react";
-import { connect } from "react-redux";
 import Timeline from "react-native-timeline-flatlist";
 import { Text, Modal, View, StyleSheet, TouchableOpacity } from "react-native";
 import ActionOptions from "./ActionOptions";
 import {
     handleProcess,
     formatEventsData,
-    handleBoardRouteProcess
 } from "../../reusable-functions/GoogleCalendarInvite";
 import moment from "moment-timezone";
 
-const Schedule = ({ navigation, data, allEvents, mapUpdate, genres, board, userID }) => {
+const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
@@ -74,29 +72,10 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate, genres, board, userI
      */
     const sendGcalInviteAndResetAttendeeData = async () => {
         const formattedData = formatEventsData(events); // Formatted data contains event title
-        if (board == null) { // Means route didnt come from collaborative board
-            await handleProcess(formattedData, timingsArray);
-            navigation.navigate("Feed");
-
-        } else { // Come from collaborative board
-            await handleBoardRouteProcess(formattedData, timingsArray, board)
-            navigation.navigate("Feed");
-
-        }
-        alert("A calendar event has been created for you, and a calendar invite has been sent to all invitees");
+        // handleProcess function and all other logic is in GoogleCalendarInvite.js
+        await handleProcess(formattedData, timingsArray);
+        navigation.navigate("Home"); // navigate back once done
     };
-
-    // Only show proceed button for the host of the board, or if this page did not come from the collab board route
-    const renderProceedButton = () => {
-        if (board == null || board.boardID == userID) { // Did not come from collab board route
-            return (
-                <TouchableOpacity onPress={sendGcalInviteAndResetAttendeeData}>
-                    <Text style={styles.proceed}>Proceed</Text>
-                </TouchableOpacity>
-            )
-        }
-        return; // If not, dont render a button
-    }
 
     return (
         <View style={styles.container}>
@@ -125,7 +104,9 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate, genres, board, userI
                 />
             </View>
             <View style={styles.footer}>
-                {renderProceedButton()}
+                <TouchableOpacity onPress={sendGcalInviteAndResetAttendeeData}>
+                    <Text style={styles.proceed}>Proceed</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -157,10 +138,4 @@ const styles = StyleSheet.create({
     },
 });
 
-const mapStateToProps = (state) => {
-    return {
-        userID: state.add_events.userID
-    };
-};
-
-export default connect(mapStateToProps, null)(Schedule);
+export default Schedule;
