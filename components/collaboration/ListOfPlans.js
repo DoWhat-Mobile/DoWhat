@@ -83,33 +83,37 @@ const ListOfPlans = ({ plans, refreshList, navigation }) => {
         }
     }
 
+    const completedCollaborationBoard = (board, finalizedFraction) => {
+        return (
+            <View style={[styles.individualPlan, { backgroundColor: '#eddcd2' }]}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <View>
+                        <Text>
+                            Outing plan on {board.selected_date} is ready!
+                            </Text>
+                        <Text>
+                            Invited by: {board.host.replace("_", " ")}
+                        </Text>
+                    </View>
+                    <TouchableOpacity onPress={() => goToFinalized(board)}>
+                        <AntDesign
+                            name="arrowright"
+                            size={30}
+                            style={{ color: 'black' }}
+                        />
+                    </TouchableOpacity>
+                </View>
+                <Progress.Bar progress={finalizedFraction}
+                    width={Dimensions.get('window').width - 40}
+                    borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
+            </View>
+        )
+    }
+
     const renderCollaborationBoard = (board) => {
         const finalizedFraction = getFinalizedFraction(board);
         if (finalizedFraction == 1) { // All invitees are ready
-            return (
-                <View style={[styles.individualPlan, { backgroundColor: '#eddcd2' }]}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <View>
-                            <Text>
-                                Outing plan on {board.selected_date} is ready!
-                            </Text>
-                            <Text>
-                                Invited by: {board.host.replace("_", " ")}
-                            </Text>
-                        </View>
-                        <TouchableOpacity onPress={() => goToFinalized(board)}>
-                            <AntDesign
-                                name="arrowright"
-                                size={30}
-                                style={{ color: 'black' }}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                    <Progress.Bar progress={finalizedFraction}
-                        width={Dimensions.get('window').width - 40}
-                        borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
-                </View>
-            )
+            { completedCollaborationBoard(board, finalizedFraction) }
         }
         return (
             <TouchableOpacity onPress={() => viewMoreDetails(board)}>
