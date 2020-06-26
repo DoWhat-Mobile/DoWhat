@@ -33,12 +33,6 @@ const FriendInput = (props) => {
         setModalVisible(false);
     }
 
-    const formatLinkToAppURL = (url) => {
-        const httpAppended = 'https' + url.substring(3)
-        const indexAdded = httpAppended.replace('?', '/index.exp?')
-        return indexAdded;
-    }
-
     const shareWithTelegram = (url) => {
         // Deep linking
         Linking.openURL(
@@ -46,11 +40,7 @@ const FriendInput = (props) => {
             url +
             "&text=" +
             "\n" +
-            "Here is the link to input your calendar availability!" +
-            "\n\n" +
-            "Otherwise, use this link if you already have DoWhat on your phone!" +
-            "\n" +
-            formatLinkToAppURL(Linking.makeUrl('', { inviterUID: props.userID })) // Include link to DoWhat mobile app
+            "Here is the link to input your calendar availability!"
         );
     };
 
@@ -59,11 +49,7 @@ const FriendInput = (props) => {
             "whatsapp://send?" +
             "text=Here is the link to input your calendar availability! " +
             "\n" +
-            url +
-            "\n\n" +
-            "Otherwise, use this link if you already have DoWhat on your phone!" +
-            "\n" +
-            formatLinkToAppURL(Linking.makeUrl('', { inviterUID: props.userID })) // Including link to DoWhat mobile app
+            url
         )
             .catch(err => alert("Please download WhatsApp to use this feature"))
     };
