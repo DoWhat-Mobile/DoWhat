@@ -10,7 +10,7 @@ import { findOverlappingIntervals } from '../../reusable-functions/OverlappingIn
  * The <SectionList> Component within the AllPlans component. This is the component
  * which shows all the plans that the user is part of.
  */
-const ListOfPlans = ({ plans, refreshList, navigation }) => {
+const ListOfPlans = ({ plans, refreshList, navigation, userID }) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [modalVisibility, setModalVisibility] = useState(false);
     const [boardDetails, setBoardDetails] = useState({})
@@ -83,37 +83,47 @@ const ListOfPlans = ({ plans, refreshList, navigation }) => {
         }
     }
 
-    const completedCollaborationBoard = (board, finalizedFraction) => {
+    const collborationBoardText = (board, isUserHost) => {
+        if (isUserHost) {
+            return (
+                <Text>
+                    Initiated by me
+                </Text>
+            )
+        }
         return (
-            <View style={[styles.individualPlan, { backgroundColor: '#eddcd2' }]}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <View>
-                        <Text>
-                            Outing plan on {board.selected_date} is ready!
-                            </Text>
-                        <Text>
-                            Invited by: {board.host.replace("_", " ")}
-                        </Text>
-                    </View>
-                    <TouchableOpacity onPress={() => goToFinalized(board)}>
-                        <AntDesign
-                            name="arrowright"
-                            size={30}
-                            style={{ color: 'black' }}
-                        />
-                    </TouchableOpacity>
-                </View>
-                <Progress.Bar progress={finalizedFraction}
-                    width={Dimensions.get('window').width - 40}
-                    borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
-            </View>
+            <Text>
+                Invited by: {board.host.replace("_", " ")}
+            </Text>
         )
     }
 
     const renderCollaborationBoard = (board) => {
         const finalizedFraction = getFinalizedFraction(board);
+        const isUserHost = board.boardID == userID;
         if (finalizedFraction == 1) { // All invitees are ready
-            { completedCollaborationBoard(board, finalizedFraction) }
+            return (
+                <View style={[styles.individualPlan, { backgroundColor: '#eddcd2' }]}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View>
+                            <Text>
+                                Outing plan on {board.selected_date} is ready!
+                            </Text>
+                            {collborationBoardText(board, isUserHost)}
+                        </View>
+                        <TouchableOpacity onPress={() => goToFinalized(board)}>
+                            <AntDesign
+                                name="arrowright"
+                                size={30}
+                                style={{ color: 'black' }}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <Progress.Bar progress={finalizedFraction}
+                        width={Dimensions.get('window').width - 40}
+                        borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
+                </View>
+            )
         }
         return (
             <TouchableOpacity onPress={() => viewMoreDetails(board)}>
@@ -121,9 +131,7 @@ const ListOfPlans = ({ plans, refreshList, navigation }) => {
                     <Text>
                         Outing on: {board.selected_date}
                     </Text>
-                    <Text>
-                        Invited by: {board.host.replace("_", " ")}
-                    </Text>
+                    {collborationBoardText(board, isUserHost)}
                     <Progress.Bar progress={finalizedFraction}
                         width={Dimensions.get('window').width - 40}
                         borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
