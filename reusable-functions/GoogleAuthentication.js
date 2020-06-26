@@ -95,7 +95,7 @@ export const onSignIn = (googleUser) => {
 
 // Get push token and set it in the user's Firebase node
 const registerForPushNotificationsAsync = async (userId) => {
-    if (userId == undefined) return; // Dont do anything if userId is undefined
+    console.log("Registering for push token with userID : ", userId)
 
     if (Constants.isDevice) {
         const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
@@ -111,14 +111,14 @@ const registerForPushNotificationsAsync = async (userId) => {
         try {
             let token = await Notifications.getExpoPushTokenAsync();
             console.log("Expo notif token is: ", token);
-            firebase.database().ref('users/' + userId + "/push_token")
-                .set(token);
+            if (userId != undefined) {
+                firebase.database().ref('users/' + userId + "/push_token")
+                    .set(token);
+            }
 
         } catch (err) {
             console.log("Error putting user's expo notif token to Firebase", err);
         }
-
-    } else {
         alert('Must use physical device for Push Notifications');
     }
 
