@@ -30,12 +30,15 @@ const Finalized = (props) => {
         setCoord(coord);
     };
 
-    const testEvents = route === 'board' ? props.route.params.genres : props.finalGenres[0];
-    const filters = route === 'board' ? props.route.params.filters : props.finalGenres[2];
+    const testEvents =
+        route === "board" ? props.route.params.genres : props.finalGenres[0];
+    const filters =
+        route === "board" ? props.route.params.filters : props.finalGenres[2];
     const timeline =
         route === "board"
             ? props.route.params.timeInterval
             : props.finalGenres[1];
+    console.log(props.finalGenres[1]);
     React.useEffect(() => {
         if (props.allEvents != {}) {
             const data = data_timeline(

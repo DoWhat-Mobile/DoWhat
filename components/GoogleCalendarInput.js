@@ -4,13 +4,21 @@
  * input of free timings instead.
  */
 import React from "react";
-import { View, Text, StyleSheet, ImageBackground } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    ImageBackground,
+    TouchableOpacity,
+} from "react-native";
 import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import firebase from "../database/firebase";
-import { Button } from "react-native-elements";
-import { getBusyPeriodFromGoogleCal, authenticateAndGetBusyPeriods } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
+import {
+    getBusyPeriodFromGoogleCal,
+    authenticateAndGetBusyPeriods,
+} from "../reusable-functions/GoogleCalendarGetBusyPeriods";
 
 const GoogleCalendarInput = (props) => {
     const userAlreadyLoggedIn = () => {
@@ -43,30 +51,25 @@ const GoogleCalendarInput = (props) => {
                     </View> */}
             <View style={style.bodyText}>
                 <Text style={style.header}>Sync Google Calendar</Text>
-                <Text style={style.subHeader}>
-                    Automated Planning For You
-                    </Text>
+                <Text style={style.subHeader}>Automated Planning For You</Text>
             </View>
             {/* </View> */}
 
             <View style={style.footer}>
-                <Button
-                    title="Skip"
-                    onPress={() =>
-                        props.navigation.navigate("Timeline")
-                    }
-                />
-                <Button
-                    title="Continue"
-                    onPress={() =>
-                        getBusyPeriods()
-                    }
-                />
+                <TouchableOpacity
+                    onPress={() => props.navigation.navigate("Timeline")}
+                >
+                    <Text style={{ fontSize: 20, color: "white" }}>Skip</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => getBusyPeriods()}>
+                    <Text style={{ fontSize: 20, color: "white" }}>
+                        Continue
+                    </Text>
+                </TouchableOpacity>
             </View>
         </ImageBackground>
     );
-}
-
+};
 
 // Get previously inputted date from DateSelection for API call
 const mapStateToProps = (state) => {
@@ -83,7 +86,7 @@ const style = StyleSheet.create({
         flex: 1,
     },
     body: {
-        flex: 8,
+        flex: 5,
         marginTop: "20%",
         marginBottom: "10%",
     },
@@ -109,6 +112,6 @@ const style = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         margin: "5%",
-        marginTop: 500,
+        marginTop: 450,
     },
 });

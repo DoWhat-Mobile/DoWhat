@@ -100,6 +100,7 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
     const data = [];
     const timingsArray = [];
     let startTime = timeline[0];
+    console.log(startTime);
     let num = testEvents.length;
     let eventArray = genreEventObjectArray(testEvents, events, filters);
     let locationArray = [];
