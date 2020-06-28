@@ -50,7 +50,7 @@ const AvailabilityInputModal = ({ onClose, userID, date, styledDate, onFinalize 
         }
     }
 
-    const renderFinalizeButton = () => {
+    const renderDoneButton = () => {
         if (boardIsFinalized) {
             return (
                 <TouchableOpacity style={[styles.finalizeButton, { borderRadius: 20, backgroundColor: '#e63946', borderWidth: 0.2 }]}
@@ -66,7 +66,7 @@ const AvailabilityInputModal = ({ onClose, userID, date, styledDate, onFinalize 
         }
         return (
             <TouchableOpacity style={styles.finalizeButton} onPress={() => finalizeBoard()}>
-                <Text>Finalize</Text>
+                <Text>Done</Text>
             </TouchableOpacity>
         );
     }
@@ -87,7 +87,7 @@ const AvailabilityInputModal = ({ onClose, userID, date, styledDate, onFinalize 
 
             <View style={styles.buttonGroup}>
                 {renderInputAvailabilitiesButton()}
-                {renderFinalizeButton()}
+                {renderDoneButton()}
             </View>
         </View >
     );
