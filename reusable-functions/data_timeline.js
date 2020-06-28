@@ -100,7 +100,6 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
     const data = [];
     const timingsArray = [];
     let startTime = timeline[0];
-    console.log(startTime);
     let num = testEvents.length;
     let eventArray = genreEventObjectArray(testEvents, events, filters);
     let locationArray = [];
@@ -130,16 +129,18 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
                 timingsArray.push(intervalObject);
             }
         }
-        if (food === 1 && startTime >= 18 && startTime < 20) {
-            eventArray.push({ hawker: events["hawker"]["list"][4] });
-            food = 0;
-        }
+
         if (num === eventArray.length) {
             startTime++;
         }
         num = eventArray.length; // in case the start time is too early and there are no time slots to schedule
 
-        if (startTime >= timeline[1]) break;
+        if (food === 1 && startTime >= 18 && startTime < 20) {
+            eventArray.push({ hawker: events["hawker"]["list"][4] });
+            food = 0;
+        }
+        
+        if (startTime >= timeline[1] -1) break;
     }
 
     return [data, timingsArray, locationArray];

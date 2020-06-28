@@ -4,8 +4,10 @@ import { shallow, configure } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 
 import { filterHelper } from "../reusable-functions/data_timeline";
+import { data_timeline } from "../reusable-functions/data_timeline";
 import { genreEventObjectArray } from "../reusable-functions/data_timeline";
 import { events } from "../MockEvents";
+import Finalized from "../components/finalized/Finalized"
 
 configure({ adapter: new Adapter() });
 
@@ -96,100 +98,141 @@ configure({ adapter: new Adapter() });
  * first integration with genreEventObjectArray function *
  ********************************************************/
 
-const mockMath = Object.create(global.Math);
-mockMath.random = () => 0;
-global.Math = mockMath;
+// const mockMath = Object.create(global.Math);
+// mockMath.random = () => 0;
+// global.Math = mockMath;
 
-test("should show filterHelper works as expected in integration test", () => {
+// test("should show filterHelper works as expected in integration test", () => {
+//     const filters = {
+//         area: ["North"],
+//         cuisine: ["Hawker"],
+//         price: 3,
+//     };
+//     const userGenres = ["food"]; //include nature
+//     const result = genreEventObjectArray(userGenres, events, filters);
+//     expect(result).toStrictEqual([
+//         {
+//             hawker: {
+//                 name: "Marsiling",
+//                 description: "MeeKia",
+//                 price_level: 1,
+//                 tags: ["North"],
+//                 coord: {
+//                     latitude: 1.3082332,
+//                     longitude: 103.8858146,
+//                 },
+//             }
+//         },
+//     ]);
+// });
+
+// test("should show push other objects with non-food genres into array", () => {
+//     const userGenres = ["adventure", "nature"];
+//     const result = genreEventObjectArray(userGenres, events, {});
+//     expect(result).toStrictEqual([
+//         {
+//             adventure:{
+//                 name: "Sentosa",
+//                 description: "Far",
+//                 coord: {
+//                     latitude: 1.289825,
+//                     longitude: 103.855014,
+//                 },
+//             },
+//         },
+//         {
+//             nature : {
+//                 name: "Tree",
+//                 description: "Green",
+//                 coord: {
+//                     latitude: 1.3082773,
+//                     longitude: 103.885812,
+//                 },
+//             }
+//         },
+//     ]);
+// });
+
+// test("should show push objects from any genres into array", () => {
+//     const filters = {
+//         area: ["North"],
+//         cuisine: ["Hawker"],
+//         price: 3,
+//     };
+//     const userGenres = ["food", "adventure", "nature"];
+//     const result = genreEventObjectArray(userGenres, events, filters);
+//     expect(result).toStrictEqual([
+//         {
+//             hawker:{
+//                 name: "Marsiling",
+//                 description: "MeeKia",
+//                 price_level: 1,
+//                 tags: ["North"],
+//                 coord: {
+//                     latitude: 1.3082332,
+//                     longitude: 103.8858146,
+//                 },
+//             },
+//         },
+//         {
+//             adventure:  {
+//                 name: "Sentosa",
+//                 description: "Far",
+//                 coord: {
+//                     latitude: 1.289825,
+//                     longitude: 103.855014,
+//                 },
+//             }
+//         },
+//         {
+//             nature: {
+//                 name: "Tree",
+//                 description: "Green",
+//                 coord: {
+//                     latitude: 1.3082773,
+//                     longitude: 103.885812,
+//                 },
+//             }
+//         },
+//     ]);
+// });
+
+/***************************************************************
+ * Integration for final scheduling algo. Test using number of *
+ * items in location array and timeline end     
+ * 
+ * location array length should be expected
+ * Maybe can test timeslots whether correctly                *
+ ***************************************************************/
+test("timing, data and location array should all have length equal to number of events scheduled", () => {
     const filters = {
-        area: ["North"],
-        cuisine: ["Hawker"],
-        price: 3,
-    };
-    const userGenres = ["food"]; //include nature
-    const result = genreEventObjectArray(userGenres, events, filters);
-    expect(result).toStrictEqual([
-        {
-            hawker: {
-                price_level: 1,
-                tags: ["North"],
-            },
-        },
-    ]);
-});
-
-test("should show push other objects with non-food genres into array", () => {
-    const userGenres = ["adventure", "nature"];
-    const result = genreEventObjectArray(userGenres, events, {});
-    expect(result).toStrictEqual([
-        {
-            adventure: {
-                name: "Sentosa",
-            },
-        },
-        {
-            nature: {
-                name: "Tree",
-            },
-        },
-    ]);
-});
-
-test("should show push objects from any genres into array", () => {
-    const filters = {
-        area: ["North"],
-        cuisine: ["Hawker"],
-        price: 3,
-    };
+                area: ["North"],
+                cuisine: ["Hawker"],
+                price: 3,
+            };
     const userGenres = ["food", "adventure", "nature"];
-    const result = genreEventObjectArray(userGenres, events, filters);
-    expect(result).toStrictEqual([
-        {
-            hawker: {
-                price_level: 1,
-                tags: ["North"],
-            },
-        },
-        {
-            adventure: {
-                name: "Sentosa",
-            },
-        },
-        {
-            nature: {
-                name: "Tree",
-            },
-        },
-    ]);
+    const timeline = [12,20];
+    const result = data_timeline(timeline, userGenres, events, filters);
+    const timingsArray = result[1]
+    const locationsArray = result[2]
+    const dataLength = result[0].length
+    expect(timingsArray.length).toBe(dataLength);
+    expect(locationsArray.length).toBe(dataLength);
 });
 
-/*********************************************************
- * first integration with genreEventObjectArray function *
- ********************************************************/
-test("should show push objects from any genres into array", () => {
+test("last event never exceeds time interval", () => {
     const filters = {
-        area: ["North"],
-        cuisine: ["Hawker"],
-        price: 3,
-    };
-    const userGenres = ["food", "adventure", "nature"];
-    const result = genreEventObjectArray(userGenres, events, filters);
-    expect(result).toStrictEqual([
-        {
-            hawker: {
-                price_level: 1,
-                tags: ["North"],
-            },
-        },
-        {
-            adventure: {
-                name: "Sentosa",
-            },
-        },
-        {
-            nature: {
-                name: "Tree",
-            },
-        },
-    ]);
+                area: ["North"],
+                cuisine: ["Hawker"],
+                price: 3,
+            };
+    const userGenres = [ "adventure", "nature"];
+    const timeline = [10,20];
+    const result = data_timeline(timeline, userGenres, events, filters);
+    const timingsArray = result[1]
+    const lastTiming = timingsArray.pop();
+    const lastEnd = parseInt(lastTiming.end.substring(0,2))
+    console.log(lastEnd)
+    console.log(timingsArray.length)
+    expect(lastEnd).toBeLessThan(timeline[1])
 });
