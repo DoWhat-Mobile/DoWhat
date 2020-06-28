@@ -12,13 +12,13 @@ import {
     Text,
     Button,
     TouchableOpacity,
-    ImageBackground,
 } from "react-native";
 import { connect } from "react-redux";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment-timezone";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 /**
  * This component allows users to input their available timings as well as their friends. The global state will keep track of
@@ -121,107 +121,57 @@ const Timeline = (props) => {
     };
 
     return (
-        <ImageBackground
-            style={{
-                width: "100%",
-                height: "100%",
-                flex: 1,
-                alignSelf: "center",
-            }}
-            source={require("../assets/Manual.jpeg")}
-            resizeMode="cover"
-        >
+        <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Available timings</Text>
-            </View>
-
-            <View style={styles.body}>
-                <View
-                    style={{
-                        flexDirection: "row",
-                        alignSelf: "flex-start",
-                        flex: 1,
-                        marginTop: "30%",
-                    }}
-                >
-                    <TouchableOpacity onPress={addFriend}>
-                        <Text style={{ fontSize: 20 }}>Add Friend</Text>
+                <View style={styles.startTime}>
+                    <Text style={styles.time}>From:</Text>
+                    <TouchableOpacity onPress={modifyStartTime}>
+                        <Text
+                            style={{
+                                textDecorationLine: "underline",
+                                fontSize: 18,
+                            }}
+                        >
+                            {moment(props.currTimeFocus.startTime)
+                                .tz("Asia/Singapore")
+                                .format("HH:mm")}
+                        </Text>
                     </TouchableOpacity>
                 </View>
+                <TouchableOpacity style={styles.addFriendButton}
+                    onPress={addFriend}>
+                    <MaterialCommunityIcons name="account-plus" color={'black'} size={20} />
+                </TouchableOpacity>
+            </View>
 
-                <View
-                    style={{
-                        flexDirection: "column",
-                        flex: 4,
-                        justifyContent: "space-evenly",
-                    }}
-                >
-                    <View style={styles.timeSelection}>
-                        <Text style={styles.time}>From:</Text>
-                        <TouchableOpacity onPress={modifyStartTime}>
-                            <Text
-                                style={{
-                                    textDecorationLine: "underline",
-                                    fontSize: 35,
-                                    marginBottom: 60,
-                                }}
-                            >
-                                {moment(props.currTimeFocus.startTime)
-                                    .tz("Asia/Singapore")
-                                    .format("HH:mm")}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.timeSelection}>
-                        <Text style={styles.time}>To:</Text>
-                        <TouchableOpacity onPress={modifyEndTime}>
-                            <Text
-                                style={{
-                                    textDecorationLine: "underline",
-                                    fontSize: 35,
-                                }}
-                            >
-                                {moment(props.currTimeFocus.endTime)
-                                    .tz("Asia/Singapore")
-                                    .format("HH:mm")}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+            <View style={styles.timeSelection}>
+                <Text style={styles.time}>To:</Text>
+                <TouchableOpacity onPress={modifyEndTime}>
+                    <Text
+                        style={{
+                            textDecorationLine: "underline",
+                            fontSize: 18,
+                        }}
+                    >
+                        {moment(props.currTimeFocus.endTime)
+                            .tz("Asia/Singapore")
+                            .format("HH:mm")}
+                    </Text>
+                </TouchableOpacity>
             </View>
 
             <View style={styles.footer}>
-                <View style={styles.arrows}>
-                    <TouchableOpacity onPress={previousFriend}>
-                        <FontAwesomeIcon icon={faArrowLeft} size={30} />
-                    </TouchableOpacity>
-                    <View>
-                        <Text>
-                            You are adding for friend number{" "}
-                            {props.currFocus + 1}
-                        </Text>
-                    </View>
-                    <TouchableOpacity onPress={nextFriend}>
-                        <FontAwesomeIcon icon={faArrowRight} size={30} />
-                    </TouchableOpacity>
+                <TouchableOpacity onPress={previousFriend}>
+                    <FontAwesomeIcon icon={faArrowLeft} size={25} />
+                </TouchableOpacity>
+                <View>
+                    <Text>
+                        You are adding for friend number{" "}
+                        {props.currFocus + 1}
+                    </Text>
                 </View>
-            </View>
-
-            <View
-                style={{
-                    alignSelf: "flex-end",
-                    bottom: 0,
-                    position: "absolute",
-                }}
-            >
-                <TouchableOpacity
-                    style={{ marginBottom: 20, marginRight: 20 }}
-                    onPress={() =>
-                        finalize([props.values_start, props.values_end])
-                    }
-                >
-                    <Text style={{ fontSize: 20 }}>Finalize</Text>
+                <TouchableOpacity onPress={nextFriend}>
+                    <FontAwesomeIcon icon={faArrowRight} size={25} />
                 </TouchableOpacity>
             </View>
 
@@ -243,45 +193,36 @@ const Timeline = (props) => {
                     }}
                 />
             )}
-        </ImageBackground>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        marginLeft: '2%'
     },
     header: {
-        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10
+
     },
-    body: {
-        flex: 6,
-        marginRight: 15,
-        flexDirection: "row-reverse",
+    timeSelection: {
+        marginTop: 10,
     },
     footer: {
-        flex: 2,
+        flexDirection: 'row',
+        marginTop: 10,
     },
-    time: {
-        fontSize: 25,
-    },
-    text: {
-        alignSelf: "center",
-        paddingVertical: 20,
-        fontSize: 40,
-    },
-    title: {
-        fontSize: 30,
+    addFriendButton: {
+        borderWidth: 1,
+        borderRadius: 50,
+        padding: 8,
+        marginRight: '2%',
 
-        marginTop: "10%",
-        marginLeft: 15,
-    },
-    arrows: {
-        marginTop: 20,
-        flexDirection: "row",
-        padding: 20,
-        justifyContent: "space-between",
-    },
+
+    }
 });
 
 const mapDispatchToProps = {

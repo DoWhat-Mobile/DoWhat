@@ -92,7 +92,7 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
             to: push_token, // from user's Firebase node 
             sound: 'default',
             title: 'Friend Request',
-            body: currUserName + ' wants to add you as a friend!',
+            body: currUserName.replace("_", " ") + ' wants to add you as a friend on DoWhat!',
             data: { data: 'goes here' },
             _displayInForeground: true,
         };

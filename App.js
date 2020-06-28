@@ -9,7 +9,6 @@ import HomeScreen from "./components/home/HomeScreen";
 import Timeline from "./components/Timeline";
 import Genre from "./components/genre/Genre";
 import Finalized from "./components/finalized/Finalized";
-import GoogleCalendarInput from "./components/GoogleCalendarInput";
 import DateSelection from "./components/DateSelection";
 import FriendInput from "./components/FriendInput";
 import { YellowBox } from "react-native";
@@ -51,11 +50,6 @@ const MainNavigator = () => {
             <Stack.Screen
                 name="Finalized"
                 component={Finalized}
-                options={{ title: null }}
-            />
-            <Stack.Screen
-                name="GoogleCalendarInput"
-                component={GoogleCalendarInput}
                 options={{ title: null }}
             />
             <Stack.Screen

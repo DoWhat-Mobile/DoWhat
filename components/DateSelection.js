@@ -8,10 +8,12 @@ import {
     StyleSheet,
     Image,
     ImageBackground,
+    Modal
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { connect } from "react-redux";
 import { selectDate } from "../actions/date_select_action";
+import AvailabilityInputModal from './AvailabilityInputModal';
 import firebase from "../database/firebase";
 
 export const formatDate = (day, month, date) => {
@@ -47,6 +49,8 @@ const DateSelection = (props) => {
     const [date, setDate] = useState(new Date()); // new Date() gives today's date
     const [mode, setMode] = useState("date");
     const [show, setShow] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [isFinalized, setIsFinalized] = useState(false);
 
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;
@@ -75,15 +79,19 @@ const DateSelection = (props) => {
 
     const syncWithFirebaseThenNavigate = () => {
         addSelectedDateToFirebase();
-        props.navigation.navigate("GoogleCalendarInput");
+        props.navigation.navigate("FriendInput");
     };
 
+    const closeModal = () => {
+        setModalVisible(false);
+    }
+
+    const onFinalize = () => {
+        setIsFinalized(true);
+    }
+
     return (
-        <ImageBackground
-            style={{ width: "100%", height: "100%", flex: 1, opacity: 0.8 }}
-            source={require("../assets/Picnic.jpg")}
-            resizeMode="cover"
-        >
+        <View style={styles.container}>
             <View style={styles.dateInput}>
                 <Text style={styles.header}>Plan Event On</Text>
 
@@ -98,18 +106,40 @@ const DateSelection = (props) => {
                 </TouchableOpacity>
             </View>
 
-            {show && (
-                <DateTimePicker
-                    testID="dateTimePicker"
-                    timeZoneOffsetInMinutes={0}
-                    value={date}
-                    mode={mode}
-                    is24Hour={true}
-                    display="calendar"
-                    minimumDate={new Date()}
-                    onChange={onChange}
-                />
-            )}
+            {
+                show && (
+                    <DateTimePicker
+                        testID="dateTimePicker"
+                        timeZoneOffsetInMinutes={0}
+                        value={date}
+                        mode={mode}
+                        is24Hour={true}
+                        display="calendar"
+                        minimumDate={new Date()}
+                        onChange={onChange}
+                    />
+                )
+            }
+
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    closeModal()
+                }}>
+                <AvailabilityInputModal onClose={closeModal} date={date} onFinalize={onFinalize}
+                    styledDate={formatDate(date.getDay(), date.getMonth(), date.getDate())} />
+            </Modal>
+
+            <View style={styles.availsInput}>
+                <Text style={styles.header}>Availabilities</Text>
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <Text style={styles.date}>
+                        {isFinalized ? 'Successfully inputted' : 'Input range'}
+                    </Text>
+                </TouchableOpacity>
+            </View>
 
             <TouchableOpacity
                 style={styles.continue}
@@ -117,7 +147,7 @@ const DateSelection = (props) => {
             >
                 <Text style={styles.button}>Continue</Text>
             </TouchableOpacity>
-        </ImageBackground>
+        </View >
     );
 };
 
@@ -142,28 +172,29 @@ const styles = StyleSheet.create({
     },
     header: {
         fontWeight: "200",
-        fontSize: 25,
-        color: "#bfff00",
+        fontSize: 20,
+        color: "black",
         borderTopEndRadius: 5,
         paddingRight: 10,
         paddingLeft: 10,
-        backgroundColor: "grey",
     },
     date: {
         textDecorationLine: "underline",
-        fontSize: 20,
-        color: "#bfff00",
+        fontSize: 18,
+        color: "black",
         borderTopEndRadius: 5,
         paddingRight: 10,
         paddingLeft: 35,
-        backgroundColor: "grey",
     },
     dateInput: {
         flex: 1,
         alignContent: "flex-start",
         alignItems: "flex-start",
         marginTop: "20%",
-        marginLeft: "10%",
+        marginLeft: "5%",
+    },
+    availsInput: {
+        marginLeft: '5%',
     },
     button: {
         fontSize: 20,
