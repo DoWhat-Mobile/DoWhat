@@ -72,46 +72,45 @@ export const filterHelper = (filters, events) => {
     return { [genre]: temp[rand] };
 };
 
-export const genreEventObjectArray = (testEvents, events, filters) => {
-    let eventArray = [];
-    if (testEvents.includes("food")) {
-        eventArray.push(filterHelper(filters, events));
+export const genreEventObjectArray = (userGenres, events, filters) => {
+    let currentEvents = [];
+    if (userGenres.includes("food")) {
+        currentEvents.push(filterHelper(filters, events));
     }
-    for (i = 0; i < testEvents.length; i++) {
-        const genre = testEvents[i];
+    for (i = 0; i < userGenres.length; i++) {
+        const genre = userGenres[i];
         if (genre !== "food") {
             const eventObject = events[genre]["list"];
             const rand = Math.floor(Math.random() * eventObject.length);
-            eventArray.push({ [genre]: events[genre]["list"][rand] });
+            currentEvents.push({ [genre]: events[genre]["list"][rand] });
         }
     }
-    return eventArray;
+    return currentEvents;
 };
 
 /**
  * Returns data needed for the timeline library, a timings array to be used to schedule the calendar and a location array with
  * long lat objects of the events scheduled for the user
  * @param {*} timeline is the array that stores the user's available time range
- * @param {*} testEvents is the genres the user picked
+ * @param {*} userGenres is the genres the user picked
  * @param {*} events is the database of all events
  * @param {*} filters is the food filters the user selected
  */
-export const data_timeline = (timeline, testEvents, events, filters) => {
+export const data_timeline = (timeline, userGenres, events, currentEvents) => {
     const data = [];
     const timingsArray = [];
     let startTime = timeline[0];
-    let num = testEvents.length;
-    let eventArray = genreEventObjectArray(testEvents, events, filters);
+    let num = userGenres.length;
     let locationArray = [];
 
     // checks if user selected food so dinner will be included if user has time 6pm onwards
-    let food = testEvents.includes("food") && startTime <= 13 ? 1 : 0;
+    let food = userGenres.includes("food") && startTime <= 13 ? 1 : 0;
 
     // formats data array to be passed into Timeline library
-    while (eventArray.length !== 0) {
-        for (i = 0; i < eventArray.length; i++) {
-            const genre = eventArray.map((x) => Object.keys(x)[0])[i];
-            const event = eventArray[i][genre];
+    while (currentEvents.length !== 0) {
+        for (i = 0; i < currentEvents.length; i++) {
+            const genre = currentEvents.map((x) => Object.keys(x)[0])[i];
+            const event = currentEvents[i][genre];
             if (events[genre].slots.includes(startTime)) {
                 let intervalObject = { start: "", end: "" };
                 intervalObject.start = startTime.toString() + ":00";
@@ -119,7 +118,7 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
                 locationArray.push({ coord: event.coord, name: event.name });
 
                 data.push(objectFormatter(startTime, event, genre));
-                eventArray.splice(i, 1);
+                currentEvents.splice(i, 1);
                 startTime += events[genre]["duration"];
 
                 intervalObject.end =
@@ -130,17 +129,17 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
             }
         }
 
-        if (num === eventArray.length) {
+        if (num === currentEvents.length) {
             startTime++;
         }
-        num = eventArray.length; // in case the start time is too early and there are no time slots to schedule
+        num = currentEvents.length; // in case the start time is too early and there are no time slots to schedule
 
         if (food === 1 && startTime >= 18 && startTime < 20) {
-            eventArray.push({ hawker: events["hawker"]["list"][4] });
+            currentEvents.push({ hawker: events["hawker"]["list"][4] });
             food = 0;
         }
-        
-        if (startTime >= timeline[1] -1) break;
+
+        if (startTime >= timeline[1] - 1) break;
     }
 
     return [data, timingsArray, locationArray];
