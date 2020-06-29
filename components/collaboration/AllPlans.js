@@ -22,7 +22,7 @@ const AllPlans = ({ navigation, userID }) => {
                     const allCollaborations = allUsers[userID].collab_boards;
                     var newBoardState = [];
                     for (var board in allCollaborations) {
-                        const boardID = allCollaborations[board];
+                        const boardID = board;
                         var collabBoard = database.collab_boards[boardID];
                         collabBoard.boardID = boardID; // Attach board ID to props of board 
                         newBoardState.push(collabBoard);

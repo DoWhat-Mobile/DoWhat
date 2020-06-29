@@ -99,7 +99,9 @@ const ListOfPlans = ({ plans, refreshList, navigation, userID }) => {
 
     const renderCollaborationBoard = (board) => {
         const finalizedFraction = getFinalizedFraction(board);
-        const isUserHost = board.boardID == userID;
+        const isUserHost = board.boardID.
+            substring(0, board.boardID.indexOf("_")) == userID;
+
         if (finalizedFraction == 1) { // All invitees are ready
             return (
                 <View style={[styles.individualPlan, { backgroundColor: '#eddcd2' }]}>
