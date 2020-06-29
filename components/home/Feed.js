@@ -56,11 +56,11 @@ const Feed = (props) => {
 
     const handleTitlePress = (title) => {
         if (title == 'What is currently popular') {
-            alert("Hello")
+            alert("Future enhancements")
         } else if (title == 'Hungry?') {
-            alert("Hungry")
+            alert("Future enhancements for Hungry")
         } else {
-            alert("Find something new")
+            alert("Future enhancements for Find something new")
         }
     }
 
@@ -105,6 +105,7 @@ const Feed = (props) => {
         };
 
         var imageURI = event[0].imageURL;
+        const eventRatings = event[1] + '/5'
 
         // If imageURI is a code, convert it to URI using TIH API
         if (imageURI.substring(0, 5) != 'https') {
@@ -123,6 +124,7 @@ const Feed = (props) => {
                             source={{ uri: imageURI }}
                             style={{ height: 100, width: '100%' }}
                         />
+                        <Text style={{ fontSize: 12, color: '#1d3557' }}>Rating: {eventRatings}</Text>
                         <ReadMore
                             numberOfLines={4}
                             renderTruncatedFooter={renderTruncatedFooter}
