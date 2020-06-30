@@ -20,7 +20,7 @@ const ActionOptions = (props) => {
             </Modal>
             <TimeEdit
                 onClose={props.onClose}
-                newTime={props.newTime}
+                newTime={props.unsatisfied["time"]}
                 newTimeChange={props.newTimeChange}
             />
             <TouchableOpacity

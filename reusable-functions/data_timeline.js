@@ -309,7 +309,10 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
     }
 
     // case when user changes start time from {start: 12, end: 15} to {start: 13 or 14, end: 15};
-    else if (hourDifference > 0) {
+    else if (hourDifference > 0 && index != 0) {
+        newTimingsArray[index].start = newStartTime;
+        newTimingsArray[index - 1].end = newStartTime;
+    } else if (hourDifference > 0 && index == 0) {
         newTimingsArray[index].start = newStartTime;
     }
     // case when user changes start time from {start: 15, end: 19} to {start: 13 or 14, end: 19}
@@ -340,6 +343,8 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
             );
         }
     } else if (hourDifference < 0 && index == 0) {
+        newTimingsArray[index].start = newStartTime;
+    } else {
         newTimingsArray[index].start = newStartTime;
     }
     return newTimingsArray;

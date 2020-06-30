@@ -50,7 +50,7 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
         let i = 0;
         let newTimingsArray = timingsArray;
 
-        const updatedData = events.map((item, index) => {
+        let indexFinder = events.map((item, index) => {
             if (item === unsatisfied) {
                 i = index;
                 return { ...item, time: newStartTime };
@@ -59,6 +59,11 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
             }
         });
         newTimingsArray = handleRipple(newTimingsArray, newStartTime, i);
+
+        let updatedData = indexFinder.map((item, index) => {
+            return { ...item, time: newTimingsArray[index].start };
+        });
+
         console.log(newTimingsArray);
         setTimingsArray(newTimingsArray);
         setEvents(updatedData);
