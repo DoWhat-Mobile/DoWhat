@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { Button, View, StyleSheet, Text, TouchableOpacity, SectionList, Dimensions, Modal } from 'react-native';
+import { connect } from 'react-redux';
+import { View, StyleSheet, Text, TouchableOpacity, SectionList, Dimensions, Modal } from 'react-native';
 import IndividualPlanModal from './IndividualPlanModal';
+import firebase from '../../database/firebase';
 import { AntDesign } from "@expo/vector-icons";
 import * as Progress from 'react-native-progress';
 import { findOverlappingIntervals } from '../../reusable-functions/OverlappingIntervals';
+import { genreEventObjectArray } from '../../reusable-functions/data_timeline';
 
 /**
  * The <SectionList> Component within the AllPlans component. This is the component
  * which shows all the plans that the user is part of.
  */
-const ListOfPlans = ({ plans, refreshList, navigation, userID }) => {
+const ListOfPlans = ({ plans, refreshList, navigation, userID, allEvents }) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [modalVisibility, setModalVisibility] = useState(false);
     const [boardDetails, setBoardDetails] = useState({})
@@ -51,23 +54,39 @@ const ListOfPlans = ({ plans, refreshList, navigation, userID }) => {
         return final;
     }
 
-    const goToFinalized = (board) => {
+    const handleRouteToFinalized = (board) => {
+        firebase.database()
+            .ref('collab_boards/' + board.boardID)
+            .once('value')
+            .then((snapshot) => {
+                const board = snapshot.val();
+                const finalizedTimeline = board.finalized_timeline;
+                goToFinalized(board, finalizedTimeline)
+
+            })
+    }
+
+    const goToFinalized = (board, finalizedTimeline) => {
         const topGenres = getTopVoted(board.preferences, 3);
         const topCuisines = getTopVoted(board.food_filters.cuisine, 3);
         const topArea = getTopVoted(board.food_filters.area, 2);
         const topPrice = getTopVoted(board.food_filters.price, 1)[0];
         const timeInterval = findOverlappingIntervals(board.availabilities, undefined);
+        const myFilters = {
+            area: topArea,
+            cuisine: topCuisines,
+            price: topPrice
+        };
+
         var navigationProps = {
             route: "board",
             genres: topGenres,
             timeInterval: timeInterval,
-            filters: {
-                area: topArea,
-                cuisine: topCuisines,
-                price: topPrice
-            },
-            board: board// for Gcal Invite 
+            filters: myFilters,
+            board: board, // for Gcal Invite 
+            currentEvents: finalizedTimeline
         }
+        console.log("Current Events: ", finalizedTimeline);
         navigation.navigate("Finalized", navigationProps);
     }
 
@@ -97,10 +116,43 @@ const ListOfPlans = ({ plans, refreshList, navigation, userID }) => {
         )
     }
 
+    // So that all users of collaboration board gets the same finalized timeline
+    const storeFinalizedTimelineInFirebase = (finalized, board) => {
+        var updates = {}
+        updates['finalized_timeline'] = finalized;
+
+        // Only get finalized timeline ONCE, if timeline alr exists, dont update
+        if (board.hasOwnProperty('finalized_timeline')) {
+            return;
+        }
+
+        firebase.database().
+            ref('collab_boards/' + board.boardID)
+            .update(updates);
+    }
+
+    const generateFinalizedTimeline = (board) => {
+        const topGenres = getTopVoted(board.preferences, 3);
+        const topCuisines = getTopVoted(board.food_filters.cuisine, 3);
+        const topArea = getTopVoted(board.food_filters.area, 2);
+        const topPrice = getTopVoted(board.food_filters.price, 1)[0];
+        const myFilters = {
+            area: topArea,
+            cuisine: topCuisines,
+            price: topPrice
+        };
+
+        const finalized = genreEventObjectArray(topGenres, allEvents, myFilters) // Finalized timeline
+        storeFinalizedTimelineInFirebase(finalized, board);
+    }
+
     const renderCollaborationBoard = (board) => {
         const finalizedFraction = getFinalizedFraction(board);
-        const isUserHost = board.boardID == userID;
+        const isUserHost = board.boardID.
+            substring(0, board.boardID.indexOf("_")) == userID;
+
         if (finalizedFraction == 1) { // All invitees are ready
+            generateFinalizedTimeline(board)
             return (
                 <View style={[styles.individualPlan, { backgroundColor: '#eddcd2' }]}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -110,7 +162,7 @@ const ListOfPlans = ({ plans, refreshList, navigation, userID }) => {
                             </Text>
                             {collborationBoardText(board, isUserHost)}
                         </View>
-                        <TouchableOpacity onPress={() => goToFinalized(board)}>
+                        <TouchableOpacity onPress={() => handleRouteToFinalized(board)}>
                             <AntDesign
                                 name="arrowright"
                                 size={30}
@@ -169,7 +221,13 @@ const ListOfPlans = ({ plans, refreshList, navigation, userID }) => {
     );
 }
 
-export default ListOfPlans;
+const mapStateToProps = (state) => {
+    return {
+        allEvents: state.add_events.events,
+    };
+};
+
+export default connect(mapStateToProps, null)(ListOfPlans);
 
 const styles = StyleSheet.create({
     container: {

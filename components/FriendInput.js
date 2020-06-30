@@ -81,7 +81,7 @@ const FriendInput = (props) => {
             <View style={styles.body}>
                 <Image style={styles.image} source={require('../assets/FriendsHangout.png')} />
                 <Text style={styles.subtitleText}>
-                    You have successfully synced your Google calendar! Now invite some of your friends to join you!
+                    You have chosen your date and inputted your availabilities, now it's time to invite some of your friends to join you!
                     </Text>
 
                 <View style={styles.shareButtons}>
@@ -99,22 +99,16 @@ const FriendInput = (props) => {
                         <Text style={{ fontSize: 11, color: 'white' }}>Share with Whatsapp</Text>
                     </TouchableOpacity>
                 </View>
+            </View>
 
+            <View style={styles.footer}>
                 <TouchableOpacity style={[styles.shareWithButton, { marginTop: 10, backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
                     onPress={() => setModalVisible(true)}>
                     <Text style={{ fontSize: 11, color: 'white' }}>
                         Invite friends from DoWhat
                         </Text>
                 </TouchableOpacity>
-            </View>
 
-            <View style={styles.footer}>
-                <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
-                    onPress={() => props.navigation.navigate("Timeline")}>
-                    <Text style={{ fontSize: 11, color: 'white' }}>
-                        I know my friends' schedules
-                        </Text>
-                </TouchableOpacity>
                 <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
                     onPress={() => props.navigation.navigate("Genre", { route: "link" })}>
                     <Text style={{ fontSize: 11, color: 'white' }}>

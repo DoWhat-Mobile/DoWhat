@@ -3,11 +3,12 @@ import {
     View, Text, StyleSheet, SectionList, ActivityIndicator,
     Image, FlatList, TouchableOpacity, Dimensions
 } from "react-native";
-import { Card, Icon } from 'react-native-elements';
+import { Card } from 'react-native-elements';
 import firebase from '../../database/firebase';
 import { handleEventsOf } from '../../reusable-functions/HomeFeedLogic';
 import { TIH_API_KEY } from 'react-native-dotenv';
 import { connect } from 'react-redux';
+import ReadMore from 'react-native-read-more-text';
 
 /**
  * User feed in home page. Has 3 divisions: Show whats popular, eateries, and activities
@@ -20,7 +21,7 @@ const Feed = (props) => {
         if (isLoading) { // Prevent constant reloading when image renders
             getDataFromFirebase();
         }
-    });
+    }, []);
 
     const [isLoading, setIsLoading] = React.useState(true);
     const [eventData, setEventData] = React.useState([]);
@@ -55,11 +56,11 @@ const Feed = (props) => {
 
     const handleTitlePress = (title) => {
         if (title == 'What is currently popular') {
-            alert("Hello")
+            alert("Future enhancements")
         } else if (title == 'Hungry?') {
-            alert("Hungry")
+            alert("Future enhancements for Hungry")
         } else {
-            alert("Find something new")
+            alert("Future enhancements for Find something new")
         }
     }
 
@@ -81,7 +82,30 @@ const Feed = (props) => {
 
     // Takes in indivdual event array and inject it to <Card>, for vertical views 
     const renderWhatsPopular = (event) => {
+        const renderTruncatedFooter = (handlePress) => {
+            return (
+                <Text
+                    style={{ color: "#595959", marginTop: 5 }}
+                    onPress={handlePress}
+                >
+                    Read more
+                </Text>
+            );
+        };
+
+        const renderRevealedFooter = (handlePress) => {
+            return (
+                <Text
+                    style={{ color: "#595959", marginTop: 5 }}
+                    onPress={handlePress}
+                >
+                    Show less
+                </Text>
+            );
+        };
+
         var imageURI = event[0].imageURL;
+        const eventRatings = event[1] + '/5'
 
         // If imageURI is a code, convert it to URI using TIH API
         if (imageURI.substring(0, 5) != 'https') {
@@ -90,7 +114,7 @@ const Feed = (props) => {
         }
 
         return (
-            <TouchableOpacity onPress={() => alert("hello")}>
+            <TouchableOpacity onPress={() => alert("More details as future enhancement")}>
                 <View style={{ width: Dimensions.get('window').width }}>
                     <Card
                         style={{ height: (Dimensions.get('window').height / 2) }}
@@ -100,10 +124,17 @@ const Feed = (props) => {
                             source={{ uri: imageURI }}
                             style={{ height: 100, width: '100%' }}
                         />
-
-                        <Text style={{ marginBottom: 10, fontFamily: 'serif' }}>
-                            {event[0].description.split('\n')[0]}
-                        </Text>
+                        <Text style={{ fontSize: 12, color: '#1d3557' }}>Rating: {eventRatings}</Text>
+                        <ReadMore
+                            numberOfLines={4}
+                            renderTruncatedFooter={renderTruncatedFooter}
+                            renderRevealedFooter={renderRevealedFooter}
+                        >
+                            <Text>
+                                {"\n"}
+                                {event[0].description}
+                            </Text>
+                        </ReadMore>
                     </Card>
                 </View>
             </TouchableOpacity>
@@ -112,6 +143,28 @@ const Feed = (props) => {
 
     // Styling to be rendered for food selection in Home screen feed
     const renderFoodChoices = (event) => {
+        const renderTruncatedFooter = (handlePress) => {
+            return (
+                <Text
+                    style={{ color: "#595959", marginTop: 5 }}
+                    onPress={handlePress}
+                >
+                    Read more
+                </Text>
+            );
+        };
+
+        const renderRevealedFooter = (handlePress) => {
+            return (
+                <Text
+                    style={{ color: "#595959", marginTop: 5 }}
+                    onPress={handlePress}
+                >
+                    Show less
+                </Text>
+            );
+        };
+
         var imageURI = event[0].imageURL;
 
         // If imageURI is a code, convert it to URI using TIH API
@@ -121,7 +174,7 @@ const Feed = (props) => {
         }
 
         return (
-            <TouchableOpacity onPress={() => alert("hello")}>
+            <TouchableOpacity onPress={() => alert("More details as future enhancement")}>
                 <View style={{ width: Dimensions.get('window').width }}>
                     <Card
                         style={{ height: (Dimensions.get('window').height / 2) }}
@@ -131,9 +184,16 @@ const Feed = (props) => {
                             source={{ uri: imageURI }}
                             style={{ height: 100, width: Dimensions.get('window').width * 0.85 }}
                         />
-                        <Text style={{ marginBottom: 10, fontFamily: 'serif' }}>
-                            {event[0].description.split('\n')[0]}
-                        </Text>
+                        <ReadMore
+                            numberOfLines={4}
+                            renderTruncatedFooter={renderTruncatedFooter}
+                            renderRevealedFooter={renderRevealedFooter}
+                        >
+                            <Text>
+                                {"\n"}
+                                {event[0].description}
+                            </Text>
+                        </ReadMore>
                     </Card>
                 </View>
             </TouchableOpacity>

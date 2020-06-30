@@ -38,8 +38,9 @@ const FriendInputModal = ({ onClose, userID, currUserName, selected_date, databa
     const userAlreadyInvited = (inviteeID) => {
         if (database.hasOwnProperty('collab_boards')) {
             const collab_boards = database.collab_boards;
-            if (collab_boards.hasOwnProperty(userID)) { // Board ID of current user
-                const board = collab_boards[userID];
+            const boardID = userID + '_' + selected_date;
+            if (collab_boards.hasOwnProperty(boardID)) { // Board ID of current user
+                const board = collab_boards[boardID];
                 const invitees = board.invitees;
                 for (var person in invitees) {
                     if (invitees[person] == inviteeID) {
@@ -64,20 +65,26 @@ const FriendInputModal = ({ onClose, userID, currUserName, selected_date, databa
         setAllAcceptedFriends([...friends]);
     }
 
+    const createUniqueBoardID = (currUser, currUserID) => {
+        const id = currUserID + '_' + selected_date;
+        return id;
+    }
+
     /**
      * Update process:
      * 1) Get information from Firebase, and create a board with a unique board ID
      * 2) The board ID is the curr inviter's Firebase UID.
      * 3) Add a pointer with the board ID to all the invited people so they can reference it. 
      */
-    const updateCollabBoard = (userGmail, inviteeBusyPeriods, currUserName, currUserID, inviteeName, inviteeID) => {
-        const uniqueBoardID = currUserID;
+    const updateCollabBoard = (currUser, inviteeBusyPeriods, currUserName, currUserID, inviteeName, inviteeID) => {
+        const userGmail = currUser.gmail;
+        const uniqueBoardID = createUniqueBoardID(currUser, currUserID);
         const formattedUserEmail = userGmail.replace(/\./g, '@').slice(0, -10); // Firebase cant have '@' 
 
         // Store a pointer to the main board from each invitee's DB
         var pointerToBoard = {}
-        pointerToBoard['/users/' + inviteeID + '/collab_boards/' + currUserName] = uniqueBoardID
-        pointerToBoard['/users/' + currUserID + '/collab_boards/' + 'my_board'] = uniqueBoardID
+        pointerToBoard['/users/' + inviteeID + '/collab_boards/' + uniqueBoardID] = currUserName;
+        pointerToBoard['/users/' + currUserID + '/collab_boards/' + uniqueBoardID] = 'my_board';
 
         var updates = {};
         updates['/selected_date'] = selected_date; // selected_date from Redux state
@@ -131,12 +138,11 @@ const FriendInputModal = ({ onClose, userID, currUserName, selected_date, databa
                 sendPushNotification(pushToken, name)
 
                 const currUser = database.users[userID]; // UserID from Redux State
-                const currUserGmail = currUser.gmail;
                 var currUserBusyPeriods = {};
                 if (currUser.hasOwnProperty('busy_periods')) {
                     currUserBusyPeriods = currUser.busy_periods;
                 }
-                updateCollabBoard(currUserGmail, currUserBusyPeriods, currUserName, userID, name, inviteeID);
+                updateCollabBoard(currUser, currUserBusyPeriods, currUserName, userID, name, inviteeID);
             })
         removeInvitedFriendFromList(inviteeID)
     }

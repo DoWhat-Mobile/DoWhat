@@ -45,7 +45,7 @@ const Finalized = (props) => {
         route === "board"
             ? props.route.params.currentEvents
             : genreEventObjectArray(userGenres, props.allEvents, filters);
-    console.log(props.finalGenres[1]);
+
     React.useEffect(() => {
         if (props.allEvents != {}) {
             const data = data_timeline(
