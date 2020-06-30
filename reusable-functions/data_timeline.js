@@ -8,7 +8,7 @@ import ReadMore from "react-native-read-more-text";
  * @param {*} filters in array of area price and cuisine the user selected
  * @param {*} events are all the events
  */
-const filterHelper = (filters, events) => {
+export const filterHelper = (filters, events) => {
     const genre = filters.cuisine.includes("Hawker")
         ? "hawker"
         : filters.cuisine.includes("Cafe")
@@ -23,70 +23,94 @@ const filterHelper = (filters, events) => {
         const cuisineFilter = (element) =>
             event.cuisine.toString().includes(element);
         const areaFilter = (element) => event.tags.includes(element);
-        if (genre === "hawker" && filters.area.some(areaFilter))
+        if (genre === "hawker" && filters.area.some(areaFilter)) {
             temp.push(event);
-
-        if (
+        } else if (
             genre === "cafes" &&
             filters.area.some(areaFilter) &&
-            event.price_level <= filters.price
-        )
+            event.price_level == filters.price
+        ) {
             temp.push(event);
-
-        if (
+        } else if (
             genre === "restaurants" &&
             filters.area.some(areaFilter) &&
-            event.price_level <= filters.price &&
+            event.price_level == filters.price &&
             filters.cuisine.some(cuisineFilter)
-        )
+        ) {
             temp.push(event);
-
-        if (event.price_level > filters.price) temp.push(event);
+        }
     }
+    if (temp.length == 0) {
+        for (i = 0; i < eventList.length; i++) {
+            const event = eventList[i];
+            const cuisineFilter = (element) =>
+                event.cuisine.toString().includes(element);
+            const areaFilter = (element) => event.tags.includes(element);
+            if (genre === "hawker" && filters.area.some(areaFilter)) {
+                temp.push(event);
+            } else if (
+                genre === "cafes" &&
+                filters.area.some(areaFilter) &&
+                event.price_level < filters.price
+            ) {
+                temp.push(event);
+            } else if (
+                genre === "restaurants" &&
+                filters.area.some(areaFilter) &&
+                event.price_level < filters.price &&
+                filters.cuisine.some(cuisineFilter)
+            ) {
+                temp.push(event);
+            }
+        }
+    }
+    if (temp.length == 0) {
+        temp.push(eventList[0]);
+    }
+
     let rand = Math.floor(Math.random() * temp.length);
     return { [genre]: temp[rand] };
 };
 
-const genreEventObjectArray = (testEvents, events, filters) => {
-    let eventArray = [];
-    if (testEvents.includes("food")) {
-        eventArray.push(filterHelper(filters, events));
+export const genreEventObjectArray = (userGenres, events, filters) => {
+    let currentEvents = [];
+    if (userGenres.includes("food")) {
+        currentEvents.push(filterHelper(filters, events));
     }
-    for (i = 0; i < testEvents.length; i++) {
-        const genre = testEvents[i];
+    for (i = 0; i < userGenres.length; i++) {
+        const genre = userGenres[i];
         if (genre !== "food") {
             const eventObject = events[genre]["list"];
             const rand = Math.floor(Math.random() * eventObject.length);
-            eventArray.push({ [genre]: events[genre]["list"][rand] });
+            currentEvents.push({ [genre]: events[genre]["list"][rand] });
         }
     }
-    return eventArray;
+    return currentEvents;
 };
 
 /**
  * Returns data needed for the timeline library, a timings array to be used to schedule the calendar and a location array with
  * long lat objects of the events scheduled for the user
  * @param {*} timeline is the array that stores the user's available time range
- * @param {*} testEvents is the genres the user picked
+ * @param {*} userGenres is the genres the user picked
  * @param {*} events is the database of all events
  * @param {*} filters is the food filters the user selected
  */
-export const data_timeline = (timeline, testEvents, events, filters) => {
+export const data_timeline = (timeline, userGenres, events, currentEvents) => {
     const data = [];
     const timingsArray = [];
     let startTime = timeline[0];
-    let num = testEvents.length;
-    let eventArray = genreEventObjectArray(testEvents, events, filters);
+    let num = userGenres.length;
     let locationArray = [];
 
     // checks if user selected food so dinner will be included if user has time 6pm onwards
-    let food = testEvents.includes("food") && startTime <= 13 ? 1 : 0;
+    let food = userGenres.includes("food") && startTime <= 13 ? 1 : 0;
 
     // formats data array to be passed into Timeline library
-    while (eventArray.length !== 0) {
-        for (i = 0; i < eventArray.length; i++) {
-            const genre = eventArray.map((x) => Object.keys(x)[0])[i];
-            const event = eventArray[i][genre];
+    while (currentEvents.length !== 0) {
+        for (i = 0; i < currentEvents.length; i++) {
+            const genre = currentEvents.map((x) => Object.keys(x)[0])[i];
+            const event = currentEvents[i][genre];
             if (events[genre].slots.includes(startTime)) {
                 let intervalObject = { start: "", end: "" };
                 intervalObject.start = startTime.toString() + ":00";
@@ -94,7 +118,7 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
                 locationArray.push({ coord: event.coord, name: event.name });
 
                 data.push(objectFormatter(startTime, event, genre));
-                eventArray.splice(i, 1);
+                currentEvents.splice(i, 1);
                 startTime += events[genre]["duration"];
 
                 intervalObject.end =
@@ -104,16 +128,18 @@ export const data_timeline = (timeline, testEvents, events, filters) => {
                 timingsArray.push(intervalObject);
             }
         }
-        if (food === 1 && startTime >= 18 && startTime < 20) {
-            eventArray.push({ hawker: events["hawker"]["list"][4] });
-            food = 0;
-        }
-        if (num === eventArray.length) {
+
+        if (num === currentEvents.length) {
             startTime++;
         }
-        num = eventArray.length; // in case the start time is too early and there are no time slots to schedule
+        num = currentEvents.length; // in case the start time is too early and there are no time slots to schedule
 
-        if (startTime >= timeline[1]) break;
+        if (food === 1 && startTime >= 18 && startTime < 20) {
+            currentEvents.push({ hawker: events["hawker"]["list"][4] });
+            food = 0;
+        }
+
+        if (startTime >= timeline[1] - 1) break;
     }
 
     return [data, timingsArray, locationArray];
@@ -195,7 +221,7 @@ export const data_shuffle = (events, genres, time, unsatisfied) => {
 /**
  * Creates the object with keys (time, title description) that the timeline library accepts
  */
-const objectFormatter = (startTime, event, genre) => {
+export const objectFormatter = (startTime, event, genre) => {
     const renderTruncatedFooter = (handlePress) => {
         return (
             <Text

@@ -21,7 +21,7 @@ const Feed = (props) => {
         if (isLoading) { // Prevent constant reloading when image renders
             getDataFromFirebase();
         }
-    });
+    }, []);
 
     const [isLoading, setIsLoading] = React.useState(true);
     const [eventData, setEventData] = React.useState([]);

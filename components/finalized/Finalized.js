@@ -11,7 +11,10 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import Schedule from "./Schedule";
 import Map from "./Map";
-import { data_timeline } from "../../reusable-functions/data_timeline";
+import {
+    data_timeline,
+    genreEventObjectArray,
+} from "../../reusable-functions/data_timeline";
 
 const Finalized = (props) => {
     // const [events, setEvents] = React.useState([]);
@@ -30,19 +33,26 @@ const Finalized = (props) => {
         setCoord(coord);
     };
 
-    const testEvents = route === 'board' ? props.route.params.genres : props.finalGenres[0];
-    const filters = route === 'board' ? props.route.params.filters : props.finalGenres[2];
+    const userGenres =
+        route === "board" ? props.route.params.genres : props.finalGenres[0];
+    const filters =
+        route === "board" ? props.route.params.filters : props.finalGenres[2];
     const timeline =
         route === "board"
             ? props.route.params.timeInterval
             : props.finalGenres[1];
+    const currentEvents =
+        route === "board"
+            ? props.route.params.currentEvents
+            : genreEventObjectArray(userGenres, props.allEvents, filters);
+
     React.useEffect(() => {
         if (props.allEvents != {}) {
             const data = data_timeline(
                 timeline,
-                testEvents,
+                userGenres,
                 props.allEvents,
-                filters
+                currentEvents
             );
             setData(data);
             setCoord(data[2]);
@@ -72,7 +82,7 @@ const Finalized = (props) => {
                     data={data}
                     navigation={props.navigation}
                     mapUpdate={mapUpdate}
-                    genres={testEvents}
+                    genres={userGenres}
                 />
 
                 <Modal animated visible={visible} animationType="fade">

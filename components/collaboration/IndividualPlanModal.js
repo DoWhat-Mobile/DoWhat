@@ -175,9 +175,9 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         updates['preferences'] = updatedPreference;
         updates['food_filters'] = updatedFoodFilters;
 
-        var addFinalizedUser = {};
-        addFinalizedUser[currUserName] = userID;
-        updates['finalized'] = addFinalizedUser;
+        //  var addFinalizedUser = {};
+        //  addFinalizedUser[currUserName] = userID;
+        updates['finalized/' + currUserName] = userID;
 
         firebase.database()
             .ref('collab_boards/' + board.boardID)

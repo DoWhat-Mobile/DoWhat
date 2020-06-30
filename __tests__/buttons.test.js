@@ -9,7 +9,7 @@ import CuisineSelection from "../components/genre/CuisineSelection";
 configure({ adapter: new Adapter() });
 
 describe("Testing render buttons function", () => {
-    it("number of buttons rendered correspond to length of array passed in", () => {
+    it("renders the number of buttons based on the length of array passed in", () => {
         const HandleAreaPressSpy = sinon.spy();
         const HandleCuisinePressSpy = sinon.spy();
         const renderAreaButtons = shallow(
@@ -27,7 +27,7 @@ describe("Testing render buttons function", () => {
 });
 
 describe("Testing onPress function of buttons", () => {
-    it("handlePress function works when user toggles button to add/remove selected button to array", () => {
+    it("causes background color of the buttons to change when toggled", () => {
         const HandleAreaPressSpy = sinon.spy();
         const AreaButtons = shallow(
             <AreaSelection handleAreaPress={HandleAreaPressSpy} />
@@ -38,6 +38,7 @@ describe("Testing onPress function of buttons", () => {
                 "backgroundColor"
             ]
         ).toEqual("silver");
+        AreaButtons.find("TouchableOpacity").last().simulate("press");
     });
 });
 
