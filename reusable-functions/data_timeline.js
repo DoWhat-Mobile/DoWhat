@@ -1,6 +1,7 @@
 import React from "react";
 import { Text } from "react-native";
 import ReadMore from "react-native-read-more-text";
+import { parse } from "expo-linking";
 
 /**
  * handles filter for food to be added in data array. Returns array of data that is formatted to be passed as props into
@@ -269,11 +270,17 @@ export const objectFormatter = (startTime, event, genre) => {
 
 const startEndChange = (newTimeObject, hourDifference, minuteDifference) => {
     const newStartHour =
-        parseInt(newTimeObject.start.substring(0, 2)) + hourDifference;
+        parseInt(newTimeObject.start.substring(0, 2)) + hourDifference >= 24
+            ? "00"
+            : parseInt(newTimeObject.start.substring(0, 2)) + hourDifference;
+
     const newStartTime = newStartHour + ":" + minuteDifference;
 
     const newEndHour =
-        parseInt(newTimeObject.end.substring(0, 2)) + hourDifference;
+        parseInt(newTimeObject.end.substring(0, 2)) + hourDifference >= 24
+            ? "00"
+            : parseInt(newTimeObject.end.substring(0, 2)) + hourDifference;
+
     const newEndTime = newEndHour + ":" + minuteDifference;
     return { start: newStartTime, end: newEndTime };
 };
@@ -285,15 +292,13 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
     // in case user inputs wrong extreme time
     if (Math.abs(hourDifference) >= 5) return newTimingsArray;
     const minuteDifference = newStartTime.substring(3, 5);
-    if (hourDifference < 0) {
-        for (i = index; i >= 0; i--) {
-            newTimingsArray[i] = startEndChange(
-                newTimingsArray[i],
-                hourDifference,
-                minuteDifference
-            );
-        }
-    } else {
+
+    // case when user changes start time from {start: 12, end: 15} to {start: >= 15, end: 15};
+    if (
+        hourDifference > 0 &&
+        parseInt(newStartTime.substring(0, 2)) >=
+            parseInt(newTimingsArray[index].end.substring(0, 2))
+    ) {
         for (i = index; i < newTimingsArray.length; i++) {
             newTimingsArray[i] = startEndChange(
                 newTimingsArray[i],
@@ -301,6 +306,41 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
                 minuteDifference
             );
         }
+    }
+
+    // case when user changes start time from {start: 12, end: 15} to {start: 13 or 14, end: 15};
+    else if (hourDifference > 0) {
+        newTimingsArray[index].start = newStartTime;
+    }
+    // case when user changes start time from {start: 15, end: 19} to {start: 13 or 14, end: 19}
+    // and the previous timing is {start: 12, end: 15} (eats into previous end time)
+    else if (
+        hourDifference < 0 &&
+        index != 0 &&
+        parseInt(newStartTime.substring(0, 2)) >
+            parseInt(newTimingsArray[index - 1].start.substring(0, 2))
+    ) {
+        newTimingsArray[index].start = newStartTime;
+        newTimingsArray[index - 1].end = newStartTime;
+    }
+
+    // case when user changes start time from {start: 15, end: 19} to {start: 12, end: 19}
+    // and previous timings is {start: 12, end: 15} (eats into previous start time)
+    else if (
+        hourDifference < 0 &&
+        index != 0 &&
+        parseInt(newStartTime.substring(0, 2)) <=
+            parseInt(newTimingsArray[index - 1].start.substring(0, 2))
+    ) {
+        for (i = index; i >= 0; i--) {
+            newTimingsArray[i] = startEndChange(
+                newTimingsArray[i],
+                hourDifference,
+                minuteDifference
+            );
+        }
+    } else if (hourDifference < 0 && index == 0) {
+        newTimingsArray[index].start = newStartTime;
     }
     return newTimingsArray;
 };
