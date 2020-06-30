@@ -45,7 +45,7 @@ export const onSignIn = (googleUser) => {
                 .auth()
                 .signInWithCredential(credential)
                 .then(function (result) {
-                    // Add user ID to Redux state
+                    // Add user ID  to Redux state
                     store.dispatch(addUID(result.user.uid))
                     // Add push token to Firebase for notification sending
                     registerForPushNotificationsAsync(result.user.uid);

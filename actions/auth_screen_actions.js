@@ -1,6 +1,7 @@
 
 import { ADD_EVENTS } from './types';
 import { ADD_UID } from './types';
+import { ADD_PROFILE_PICTURE } from './types';
 import { ADD_CURR_USER_NAME } from './types';
 
 export const addEvents = (values) => dispatch => {
@@ -14,6 +15,14 @@ export const addEvents = (values) => dispatch => {
 export const addUID = (values) => dispatch => {
     const newState = {
         type: ADD_UID,
+        payload: values,
+    }
+    dispatch(newState);
+};
+
+export const addProfilePicture = (values) => dispatch => {
+    const newState = {
+        type: ADD_PROFILE_PICTURE,
         payload: values,
     }
     dispatch(newState);

@@ -130,7 +130,8 @@ export const formatDateToString = (date) => {
     const year = date.getFullYear().toString();
     var month = date.getMonth() + 1; // Offset by 1 due to Javascrip Date object format
     month = month >= 10 ? month.toString() : "0" + month.toString();
-    const day = date.getDate().toString();
+    var day = date.getDate().toString();
+    day = day >= 10 ? day : "0" + day;
     const dateString = year + "-" + month.toString() + "-" + day;
     return dateString;
 };
