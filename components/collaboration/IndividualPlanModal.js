@@ -247,7 +247,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     return (
         <View style={styles.modal}>
             <Text style={styles.headerText}>
-                Your Outing on {formatDate(selectedDate.getDay(),
+                Your outing on {formatDate(selectedDate.getDay(),
                 selectedDate.getMonth(), selectedDate.getDate())}
             </Text>
             <AntDesign name="close" size={24}

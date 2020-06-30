@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { View, StyleSheet, Text, TouchableOpacity, SectionList, Dimensions, Modal } from 'react-native';
 import IndividualPlanModal from './IndividualPlanModal';
+import ChatRoomModal from './ChatRoomModal';
 import firebase from '../../database/firebase';
 import { AntDesign } from "@expo/vector-icons";
 import * as Progress from 'react-native-progress';
@@ -14,8 +15,17 @@ import { genreEventObjectArray } from '../../reusable-functions/data_timeline';
  */
 const ListOfPlans = ({ plans, refreshList, navigation, userID, allEvents }) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [modalVisibility, setModalVisibility] = useState(false);
+    const [boardModalVisibility, setBoardModalVisibility] = useState(false);
     const [boardDetails, setBoardDetails] = useState({})
+    const [boardChatRoomVisibility, setBoardChatRoomVisibility] = useState(false);
+
+    const closeModal = () => {
+        setBoardModalVisibility(false);
+    }
+
+    const closeChatModal = () => {
+        setBoardChatRoomVisibility(false);
+    }
 
     // Not functional yet
     const refreshPage = () => {
@@ -27,8 +37,13 @@ const ListOfPlans = ({ plans, refreshList, navigation, userID, allEvents }) => {
     // To open each individual collaboration board modal
     const viewMoreDetails = (board) => {
         setBoardDetails(board); // Pass in the details of the clicked board to the modal
-        setModalVisibility(true)
+        setBoardModalVisibility(true)
+    }
 
+    // To open each individual collaboration board ChatRoom 
+    const viewBoardChatRoom = (board) => {
+        setBoardDetails(board); // Pass in the details of the clicked board to the modal
+        setBoardChatRoomVisibility(true)
     }
 
     /**
@@ -179,10 +194,22 @@ const ListOfPlans = ({ plans, refreshList, navigation, userID, allEvents }) => {
         return (
             <TouchableOpacity onPress={() => viewMoreDetails(board)}>
                 <View style={styles.individualPlan}>
-                    <Text>
-                        Outing on: {board.selected_date}
-                    </Text>
-                    {collborationBoardText(board, isUserHost)}
+                    <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
+                        <View>
+                            <Text>
+                                Outing on: {board.selected_date}
+                            </Text>
+                            {collborationBoardText(board, isUserHost)}
+                        </View>
+                        <TouchableOpacity onPress={() => viewBoardChatRoom(board)}>
+                            <AntDesign
+                                name="team"
+                                size={25}
+                                style={{ color: 'black' }}
+                            />
+
+                        </TouchableOpacity>
+                    </View>
                     <Progress.Bar progress={finalizedFraction}
                         width={Dimensions.get('window').width - 40}
                         borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
@@ -191,20 +218,26 @@ const ListOfPlans = ({ plans, refreshList, navigation, userID, allEvents }) => {
         )
     }
 
-    const closeModal = () => {
-        setModalVisibility(false);
-    }
-
     return (
         <View style={styles.container}>
             <Modal
                 animationType="fade"
                 transparent={true}
-                visible={modalVisibility}
+                visible={boardModalVisibility}
                 onRequestClose={() => {
                     closeModal()
                 }}>
                 <IndividualPlanModal onClose={closeModal} board={boardDetails} />
+            </Modal>
+
+            <Modal
+                animationType="fade"
+                transparent={false}
+                visible={boardChatRoomVisibility}
+                onRequestClose={() => {
+                    closeChatModal()
+                }}>
+                <ChatRoomModal onClose={closeChatModal} board={boardDetails} />
             </Modal>
 
             <SectionList
