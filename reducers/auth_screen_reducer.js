@@ -1,10 +1,11 @@
 
-import { ADD_EVENTS, ADD_UID, ADD_CURR_USER_NAME } from '../actions/types';
+import { ADD_EVENTS, ADD_UID, ADD_CURR_USER_NAME, ADD_PROFILE_PICTURE } from '../actions/types';
 
 const initState = {
     events: {},
     userID: '',
-    currUserName: ''
+    currUserName: '',
+    profilePicture: '',
 }
 
 export default function (state = initState, action) {
@@ -16,6 +17,10 @@ export default function (state = initState, action) {
         case ADD_UID:
             return Object.assign({}, state, {
                 userID: action.payload,
+            });
+        case ADD_PROFILE_PICTURE:
+            return Object.assign({}, state, {
+                profilePicture: action.payload,
             });
         case ADD_CURR_USER_NAME:
             return Object.assign({}, state, {
