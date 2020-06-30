@@ -19,6 +19,7 @@ const ChatRoomModal = ({ onClose, userID, board, currUserName, profilePicture })
         }
     }, [])
 
+    // Subscribe to changes in Firebase
     const listenToChanges = () => {
         // Add history of messages to the collab board
         firebase.database().ref('collab_boards/' + board.boardID + '/messages')
@@ -43,10 +44,12 @@ const ChatRoomModal = ({ onClose, userID, board, currUserName, profilePicture })
         return message;
     };
 
+    // Time stamp to store in Firebase
     const getTimeStamp = () => {
         return Firebase.database.ServerValue.TIMESTAMP;
     }
 
+    // Add message to Firebase so that all other users can see it too
     const append = (message) => {
         firebase.database().ref('collab_boards/' + board.boardID + '/messages').push(message);
     }
@@ -66,7 +69,7 @@ const ChatRoomModal = ({ onClose, userID, board, currUserName, profilePicture })
 
     return (
         <View style={styles.container}>
-            <Text style={{ alignSelf: "center" }}>Chat Room </Text>
+            <Text style={{ alignSelf: "center", fontSize: 20, fontWeight: '700' }}>Chat Room </Text>
             <TouchableOpacity onPress={() => onClose()}>
                 <Text> </Text>
             </TouchableOpacity>
