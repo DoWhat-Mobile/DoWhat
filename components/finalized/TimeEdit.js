@@ -8,16 +8,20 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
+const date = new Date(Date.parse("2020-01-01T" + "12" + ":00:00.000+08:00"));
 const TimeEdit = (props) => {
     const [mode, setMode] = React.useState("date");
     const [show, setShow] = React.useState(false);
 
     const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate || props.newTime;
+        const currentDate = selectedDate;
         setShow(Platform.OS === "ios");
-        props.newTimeChange(currentDate);
+        if (currentDate !== undefined) {
+            props.newTimeChange(currentDate);
+        } else if (currentDate === undefined) {
+            props.onClose();
+        }
     };
-
     const showMode = (currentMode) => {
         setShow(true);
         setMode(currentMode);
@@ -47,7 +51,7 @@ const TimeEdit = (props) => {
             {show && (
                 <DateTimePicker
                     testID="dateTimePicker"
-                    value={props.newTime}
+                    value={date}
                     mode={mode}
                     is24Hour={true}
                     display="default"

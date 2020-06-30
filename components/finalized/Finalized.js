@@ -17,7 +17,6 @@ import {
 } from "../../reusable-functions/data_timeline";
 
 const Finalized = (props) => {
-    // const [events, setEvents] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(true);
     const [visible, setVisible] = React.useState(false);
     const [coord, setCoord] = React.useState([]);

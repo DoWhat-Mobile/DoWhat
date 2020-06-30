@@ -266,3 +266,41 @@ export const objectFormatter = (startTime, event, genre) => {
         coord: event.coord,
     };
 };
+
+const startEndChange = (newTimeObject, hourDifference, minuteDifference) => {
+    const newStartHour =
+        parseInt(newTimeObject.start.substring(0, 2)) + hourDifference;
+    const newStartTime = newStartHour + ":" + minuteDifference;
+
+    const newEndHour =
+        parseInt(newTimeObject.end.substring(0, 2)) + hourDifference;
+    const newEndTime = newEndHour + ":" + minuteDifference;
+    return { start: newStartTime, end: newEndTime };
+};
+
+export const handleRipple = (newTimingsArray, newStartTime, index) => {
+    const hourDifference =
+        parseInt(newStartTime.substring(0, 2)) -
+        parseInt(newTimingsArray[index].start.substring(0, 2));
+    // in case user inputs wrong extreme time
+    if (Math.abs(hourDifference) >= 5) return newTimingsArray;
+    const minuteDifference = newStartTime.substring(3, 5);
+    if (hourDifference < 0) {
+        for (i = index; i >= 0; i--) {
+            newTimingsArray[i] = startEndChange(
+                newTimingsArray[i],
+                hourDifference,
+                minuteDifference
+            );
+        }
+    } else {
+        for (i = index; i < newTimingsArray.length; i++) {
+            newTimingsArray[i] = startEndChange(
+                newTimingsArray[i],
+                hourDifference,
+                minuteDifference
+            );
+        }
+    }
+    return newTimingsArray;
+};

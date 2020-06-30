@@ -6,6 +6,7 @@ import {
     handleProcess,
     formatEventsData,
 } from "../../reusable-functions/GoogleCalendarInvite";
+import { handleRipple } from "../../reusable-functions/data_timeline";
 import moment from "moment-timezone";
 
 const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
@@ -13,9 +14,6 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
     const [timingsArray, setTimingsArray] = React.useState([]);
-    const [newTime, setTime] = React.useState(
-        new Date(Date.parse("2020-01-01T" + "13" + ":00:00.000+08:00"))
-    );
 
     React.useEffect(() => {
         setEvents(data[0]);
@@ -46,20 +44,22 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
 
     const newTimeChange = (selectedDate) => {
         const currentDate = selectedDate || newTime;
-        let val = moment(currentDate).tz("Asia/Singapore").format("HH:mm");
+        let newStartTime = moment(currentDate)
+            .tz("Asia/Singapore")
+            .format("HH:mm");
         let i = 0;
         let newTimingsArray = timingsArray;
 
         const updatedData = events.map((item, index) => {
             if (item === unsatisfied) {
                 i = index;
-                return { ...item, time: val };
+                return { ...item, time: newStartTime };
             } else {
                 return item;
             }
         });
-
-        newTimingsArray[i].start = val;
+        newTimingsArray = handleRipple(newTimingsArray, newStartTime, i);
+        console.log(newTimingsArray);
         setTimingsArray(newTimingsArray);
         setEvents(updatedData);
         setVisible(false);
@@ -87,7 +87,6 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
                         unsatisfied={unsatisfied}
                         events={allEvents}
                         genres={genres}
-                        newTime={newTime}
                         newTimeChange={newTimeChange}
                     />
                 </Modal>
