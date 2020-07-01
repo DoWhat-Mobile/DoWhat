@@ -23,6 +23,7 @@ const Finalized = (props) => {
     const [data, setData] = React.useState([]);
 
     const route = props.route.params.route;
+    const accessRights = props.route.params.access;
 
     const onClose = () => {
         setVisible(false);
@@ -82,7 +83,7 @@ const Finalized = (props) => {
                     navigation={props.navigation}
                     mapUpdate={mapUpdate}
                     genres={userGenres}
-                    route={route}
+                    accessRights={accessRights}
                 />
 
                 <Modal animated visible={visible} animationType="fade">

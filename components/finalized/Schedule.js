@@ -15,7 +15,7 @@ const Schedule = ({
     allEvents,
     mapUpdate,
     genres,
-    route,
+    accessRights,
 }) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
@@ -45,14 +45,13 @@ const Schedule = ({
     };
 
     const onEventPress = (event) => {
-        if (route === "board") {
-            alert("Only the host can edit events");
-        } else {
+        if (accessRights === "host") {
             setUnsatisfied(event);
             setVisible(true);
+        } else {
+            alert("Only the host can edit events");
         }
     };
-
     const newTimeChange = (selectedDate) => {
         const currentDate = selectedDate || newTime;
         let newStartTime = moment(currentDate)
