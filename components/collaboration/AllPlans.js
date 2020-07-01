@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity, Dimensions } from "react-native";
-import { Card } from 'react-native-elements';
+import { View, Text, StyleSheet, Button } from "react-native";
 import firebase from '../../database/firebase';
 import ListOfPlans from './ListOfPlans';
 import { connect } from 'react-redux';
+import { formatDateToString } from '../../reusable-functions/GoogleCalendarGetBusyPeriods';
 
 const AllPlans = ({ navigation, userID }) => {
     useEffect(() => {
@@ -24,6 +24,10 @@ const AllPlans = ({ navigation, userID }) => {
                     for (var board in allCollaborations) {
                         const boardID = board;
                         var collabBoard = database.collab_boards[boardID];
+                        if (isBoardOutdated(boardID)) {
+                            removeFromFirebase(collabBoard, boardID)
+                            continue;
+                        }
                         collabBoard.boardID = boardID; // Attach board ID to props of board 
                         newBoardState.push(collabBoard);
                         setAllBoards([...allBoards, collabBoard]);
@@ -31,6 +35,29 @@ const AllPlans = ({ navigation, userID }) => {
                     setAllBoards([...newBoardState]);
                 }
             })
+    }
+
+    // Clean data from Firebase if the board is outdated
+    const removeFromFirebase = async (board, boardID) => {
+        var updates = {}
+        updates['/collab_boards/' + boardID] = null;
+
+        // Add all the invitees to the updates(deletes) to be made
+        for (var name in board.invitees) {
+            const inviteeID = board.invitees[name];
+            updates['/users/' + inviteeID + '/collab_boards/' + boardID] = null;
+        }
+
+        // Delete collab board, as well as the invitations on each user's Firebase node
+        firebase.database().ref()
+            .update(updates);
+    }
+
+    const isBoardOutdated = (boardID) => {
+        var currDate = new Date();
+        const yesterday = currDate.setDate(currDate.getDate() - 1)
+        const boardDate = new Date(boardID.substring(boardID.indexOf('_') + 1));
+        return boardDate.getTime() <= yesterday;
     }
 
     return (
