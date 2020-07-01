@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native";
 import firebase from '../../database/firebase';
 import ListOfPlans from './ListOfPlans';
 import { connect } from 'react-redux';
-import { formatDateToString } from '../../reusable-functions/GoogleCalendarGetBusyPeriods';
 
 const AllPlans = ({ navigation, userID }) => {
     useEffect(() => {
@@ -73,9 +72,10 @@ const AllPlans = ({ navigation, userID }) => {
             </View>
 
             <View style={styles.footer}>
-                <Button title="Plan activities for me" onPress={() => navigation.navigate("DateSelection")} />
+                <TouchableOpacity style={styles.planForMe} onPress={() => navigation.navigate("DateSelection")}>
+                    <Text style={styles.buttonText}>Plan activities for me</Text>
+                </TouchableOpacity>
             </View>
-
         </View >
     );
 }
@@ -106,8 +106,24 @@ const styles = StyleSheet.create({
         flex: 7,
         justifyContent: 'center',
     },
+    planForMe: {
+        flex: 1,
+        flexDirection: "column",
+        alignSelf: "stretch",
+        alignContent: "stretch",
+        marginLeft: "5%",
+        marginRight: "5%",
+        marginTop: "8%"
+    },
+    buttonText: {
+        fontSize: 20,
+        borderWidth: 0.2,
+        textAlign: "center",
+        borderRadius: 10,
+        backgroundColor: "#cc5327",
+        color: "#fcf5f2",
+    },
     footer: {
         flex: 1,
-        justifyContent: 'flex-end'
     },
 });
