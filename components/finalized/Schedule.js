@@ -80,6 +80,19 @@ const Schedule = ({
         setVisible(false);
     };
 
+    const renderProceedButton = () => {
+        if (accessRights != 'host') {
+            return;
+        }
+        else {
+            return (
+                <TouchableOpacity onPress={sendGcalInviteAndResetAttendeeData}>
+                    <Text style={styles.proceed}>Proceed</Text>
+                </TouchableOpacity>
+            );
+        }
+    }
+
     /**
      * Sends invite to all attendees of the finalized event, also reset all_attendee
      * in the case of repeated use of app. (if never reset data, might use it for wrong
@@ -118,9 +131,7 @@ const Schedule = ({
                 />
             </View>
             <View style={styles.footer}>
-                <TouchableOpacity onPress={sendGcalInviteAndResetAttendeeData}>
-                    <Text style={styles.proceed}>Proceed</Text>
-                </TouchableOpacity>
+                {renderProceedButton()}
             </View>
         </View>
     );

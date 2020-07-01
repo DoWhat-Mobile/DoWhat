@@ -8,6 +8,7 @@ import { AntDesign } from "@expo/vector-icons";
 import * as Progress from 'react-native-progress';
 import { findOverlappingIntervals } from '../../reusable-functions/OverlappingIntervals';
 import { genreEventObjectArray } from '../../reusable-functions/data_timeline';
+import { authenticateAndGetBusyPeriods } from '../../reusable-functions/GoogleCalendarGetBusyPeriods';
 
 /**
  * The <SectionList> Component within the AllPlans component. This is the component
@@ -74,14 +75,17 @@ const ListOfPlans = ({ plans, refreshList, navigation, userID, allEvents }) => {
             .ref('collab_boards/' + board.boardID)
             .once('value')
             .then((snapshot) => {
-                const board = snapshot.val();
+                const currBoard = snapshot.val();
                 const finalizedTimeline = board.finalized_timeline;
-                goToFinalized(board, finalizedTimeline)
+                goToFinalized(currBoard, finalizedTimeline, board.boardID)
 
             })
     }
 
-    const goToFinalized = (board, finalizedTimeline) => {
+    const goToFinalized = (board, finalizedTimeline, boardID) => {
+        const isUserHost = boardID.substring(0, boardID.indexOf("_")) == userID;
+        const accessRights = isUserHost ? 'host' : 'attendee';
+
         const topGenres = getTopVoted(board.preferences, 3);
         const topCuisines = getTopVoted(board.food_filters.cuisine, 3);
         const topArea = getTopVoted(board.food_filters.area, 2);
@@ -99,9 +103,11 @@ const ListOfPlans = ({ plans, refreshList, navigation, userID, allEvents }) => {
             timeInterval: timeInterval,
             filters: myFilters,
             board: board, // for Gcal Invite 
-            currentEvents: finalizedTimeline
+            currentEvents: finalizedTimeline,
+            access: accessRights// 'host' | 'invitee' 
+
         }
-        console.log("Current Events: ", finalizedTimeline);
+        console.log("navigation props: ", navigationProps.access);
         navigation.navigate("Finalized", navigationProps);
     }
 
