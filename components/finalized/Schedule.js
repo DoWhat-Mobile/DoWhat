@@ -9,7 +9,14 @@ import {
 import { handleRipple } from "../../reusable-functions/data_timeline";
 import moment from "moment-timezone";
 
-const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
+const Schedule = ({
+    navigation,
+    data,
+    allEvents,
+    mapUpdate,
+    genres,
+    route,
+}) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
@@ -38,8 +45,12 @@ const Schedule = ({ navigation, data, allEvents, mapUpdate, genres }) => {
     };
 
     const onEventPress = (event) => {
-        setUnsatisfied(event);
-        setVisible(true);
+        if (route === "board") {
+            alert("Only the host can edit events");
+        } else {
+            setUnsatisfied(event);
+            setVisible(true);
+        }
     };
 
     const newTimeChange = (selectedDate) => {
