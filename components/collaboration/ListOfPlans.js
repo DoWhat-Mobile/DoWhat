@@ -8,6 +8,7 @@ import { AntDesign } from "@expo/vector-icons";
 import * as Progress from 'react-native-progress';
 import { findOverlappingIntervals } from '../../reusable-functions/OverlappingIntervals';
 import { genreEventObjectArray } from '../../reusable-functions/data_timeline';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 /**
  * The <SectionList> Component within the AllPlans component. This is the component
@@ -207,12 +208,7 @@ const ListOfPlans = ({ plans, refreshList, navigation, userID, allEvents }) => {
                             {collborationBoardText(board, isUserHost)}
                         </View>
                         <TouchableOpacity onPress={() => viewBoardChatRoom(board)}>
-                            <AntDesign
-                                name="team"
-                                size={25}
-                                style={{ color: 'black' }}
-                            />
-
+                            <MaterialCommunityIcons name="chat" color={'black'} size={25} />
                         </TouchableOpacity>
                     </View>
                     <Progress.Bar progress={finalizedFraction}
