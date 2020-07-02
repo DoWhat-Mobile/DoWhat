@@ -8,6 +8,7 @@ const Loading = (props) => {
     const route = props.route.params.route;
     React.useEffect(() => {
         const diff = props.difference;
+        console.log(diff);
         fetch(
             "https://api.openweathermap.org/data/2.5/onecall?lat=1.290270&lon=103.851959&%20exclude=hourly,daily&appid=" +
                 WEATHER_API_KEY

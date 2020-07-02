@@ -1,6 +1,7 @@
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { HeaderBackButton } from "@react-navigation/stack";
 import { Provider } from "react-redux";
 
 import store from "./store";
@@ -51,8 +52,18 @@ const MainNavigator = () => {
             <Stack.Screen
                 name="Finalized"
                 component={Finalized}
-                options={{ title: null }}
+                options={({ navigation }) => ({
+                    title: null,
+                    headerLeft: () => (
+                        <HeaderBackButton
+                            onPress={() => {
+                                navigation.navigate("Genre");
+                            }}
+                        />
+                    ),
+                })}
             />
+
             <Stack.Screen
                 name="DateSelection"
                 component={DateSelection}
