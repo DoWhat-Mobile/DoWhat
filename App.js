@@ -11,6 +11,7 @@ import Genre from "./components/genre/Genre";
 import Finalized from "./components/finalized/Finalized";
 import DateSelection from "./components/DateSelection";
 import FriendInput from "./components/FriendInput";
+import Loading from "./components/Loading";
 import { YellowBox } from "react-native";
 
 const Stack = createStackNavigator();
@@ -60,6 +61,11 @@ const MainNavigator = () => {
             <Stack.Screen
                 name="FriendInput"
                 component={FriendInput}
+                options={{ title: null }}
+            />
+            <Stack.Screen
+                name="Loading"
+                component={Loading}
                 options={{ title: null }}
             />
         </Stack.Navigator>

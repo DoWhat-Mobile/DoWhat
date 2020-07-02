@@ -6,19 +6,13 @@ import {
     goBack,
     finalizeTimeline,
 } from "../actions/timeline_actions";
-import {
-    StyleSheet,
-    View,
-    Text,
-    Button,
-    TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View, Text, Button, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment-timezone";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 /**
  * This component allows users to input their available timings as well as their friends. The global state will keep track of
@@ -91,7 +85,10 @@ const Timeline = (props) => {
 
     const finalize = (values) => {
         setfinalTime();
-        props.navigation.navigate("Genre", { route: "manual" });
+        props.navigation.navigate("Genre", {
+            route: "manual",
+            weather: weather,
+        });
     };
 
     const modifyStartTime = () => {
@@ -138,9 +135,15 @@ const Timeline = (props) => {
                         </Text>
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.addFriendButton}
-                    onPress={addFriend}>
-                    <MaterialCommunityIcons name="account-plus" color={'black'} size={20} />
+                <TouchableOpacity
+                    style={styles.addFriendButton}
+                    onPress={addFriend}
+                >
+                    <MaterialCommunityIcons
+                        name="account-plus"
+                        color={"black"}
+                        size={20}
+                    />
                 </TouchableOpacity>
             </View>
 
@@ -166,8 +169,7 @@ const Timeline = (props) => {
                 </TouchableOpacity>
                 <View>
                     <Text>
-                        You are adding for friend number{" "}
-                        {props.currFocus + 1}
+                        You are adding for friend number {props.currFocus + 1}
                     </Text>
                 </View>
                 <TouchableOpacity onPress={nextFriend}>
@@ -200,29 +202,26 @@ const Timeline = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginLeft: '2%'
+        marginLeft: "2%",
     },
     header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 10
-
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 10,
     },
     timeSelection: {
         marginTop: 10,
     },
     footer: {
-        flexDirection: 'row',
+        flexDirection: "row",
         marginTop: 10,
     },
     addFriendButton: {
         borderWidth: 1,
         borderRadius: 50,
         padding: 8,
-        marginRight: '2%',
-
-
-    }
+        marginRight: "2%",
+    },
 });
 
 const mapDispatchToProps = {

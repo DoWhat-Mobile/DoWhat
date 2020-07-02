@@ -3,8 +3,8 @@ import { Image, View, Text, StyleSheet, Modal } from "react-native";
 import * as Linking from "expo-linking";
 import firebase from "../database/firebase";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { connect } from 'react-redux';
-import FriendInputModal from './FriendInputModal';
+import { connect } from "react-redux";
+import FriendInputModal from "./FriendInputModal";
 
 /**
  * This component is a page for user to determine how many friends will be added to find the
@@ -17,41 +17,41 @@ const FriendInput = (props) => {
     }, []);
 
     const [modalVisible, setModalVisible] = useState(false);
-    const [database, setDatabase] = useState({})
+    const [database, setDatabase] = useState({});
 
     const addDatabaseToState = () => {
-        firebase.database()
+        firebase
+            .database()
             .ref()
             .once("value")
             .then((snapshot) => {
                 const database = snapshot.val();
                 setDatabase(database); // Add to component state for future checks if invitation alr sent
-            })
-    }
+            });
+    };
 
     const closeModal = () => {
         setModalVisible(false);
-    }
+    };
 
     const shareWithTelegram = (url) => {
         // Deep linking
         Linking.openURL(
             "https://t.me/share/url?url=" +
-            url +
-            "&text=" +
-            "\n" +
-            "Here is the link to input your calendar availability!"
+                url +
+                "&text=" +
+                "\n" +
+                "Here is the link to input your calendar availability!"
         );
     };
 
     const shareWithWhatsapp = (url) => {
         Linking.openURL(
             "whatsapp://send?" +
-            "text=Here is the link to input your calendar availability! " +
-            "\n" +
-            url
-        )
-            .catch(err => alert("Please download WhatsApp to use this feature"))
+                "text=Here is the link to input your calendar availability! " +
+                "\n" +
+                url
+        ).catch((err) => alert("Please download WhatsApp to use this feature"));
     };
 
     const encodeUserInfoToURL = (url) => {
@@ -74,55 +74,107 @@ const FriendInput = (props) => {
                 visible={modalVisible}
                 onRequestClose={() => {
                     Alert.alert("Modal has been closed.");
-                }}>
+                }}
+            >
                 <FriendInputModal onClose={closeModal} database={database} />
             </Modal>
 
             <View style={styles.body}>
-                <Image style={styles.image} source={require('../assets/FriendsHangout.png')} />
+                <Image
+                    style={styles.image}
+                    source={require("../assets/FriendsHangout.png")}
+                />
                 <Text style={styles.subtitleText}>
-                    You have chosen your date and inputted your availabilities, now it's time to invite some of your friends to join you!
-                    </Text>
+                    You have chosen your date and inputted your availabilities,
+                    now it's time to invite some of your friends to join you!
+                </Text>
 
                 <View style={styles.shareButtons}>
-                    <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#0088CC', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
-                        onPress={() => shareWithTelegram(
-                            encodeUserInfoToURL(DoWhatWebURL))}>
-                        <Text style={{ fontSize: 11, color: 'white' }}>Share with Telegram</Text>
+                    <TouchableOpacity
+                        style={[
+                            styles.shareWithButton,
+                            {
+                                backgroundColor: "#0088CC",
+                                padding: 3,
+                                paddingLeft: 10,
+                                paddingRight: 10,
+                            },
+                        ]}
+                        onPress={() =>
+                            shareWithTelegram(encodeUserInfoToURL(DoWhatWebURL))
+                        }
+                    >
+                        <Text style={{ fontSize: 11, color: "white" }}>
+                            Share with Telegram
+                        </Text>
                     </TouchableOpacity>
 
                     <Text> | </Text>
 
-                    <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#25D366', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
-                        onPress={() => shareWithWhatsapp(
-                            encodeUserInfoToURL(DoWhatWebURL))}>
-                        <Text style={{ fontSize: 11, color: 'white' }}>Share with Whatsapp</Text>
+                    <TouchableOpacity
+                        style={[
+                            styles.shareWithButton,
+                            {
+                                backgroundColor: "#25D366",
+                                padding: 3,
+                                paddingLeft: 10,
+                                paddingRight: 10,
+                            },
+                        ]}
+                        onPress={() =>
+                            shareWithWhatsapp(encodeUserInfoToURL(DoWhatWebURL))
+                        }
+                    >
+                        <Text style={{ fontSize: 11, color: "white" }}>
+                            Share with Whatsapp
+                        </Text>
                     </TouchableOpacity>
                 </View>
             </View>
 
             <View style={styles.footer}>
-                <TouchableOpacity style={[styles.shareWithButton, { marginTop: 10, backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
-                    onPress={() => setModalVisible(true)}>
-                    <Text style={{ fontSize: 11, color: 'white' }}>
+                <TouchableOpacity
+                    style={[
+                        styles.shareWithButton,
+                        {
+                            marginTop: 10,
+                            backgroundColor: "grey",
+                            padding: 3,
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                        },
+                    ]}
+                    onPress={() => setModalVisible(true)}
+                >
+                    <Text style={{ fontSize: 11, color: "white" }}>
                         Invite friends from DoWhat
-                        </Text>
+                    </Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: 'grey', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
-                    onPress={() => props.navigation.navigate("Genre", { route: "link" })}>
-                    <Text style={{ fontSize: 11, color: 'white' }}>
-                        Done
-                        </Text>
+                <TouchableOpacity
+                    style={[
+                        styles.shareWithButton,
+                        {
+                            backgroundColor: "grey",
+                            padding: 3,
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                        },
+                    ]}
+                    onPress={() =>
+                        props.navigation.navigate("Genre", { route: "link" })
+                    }
+                >
+                    <Text style={{ fontSize: 11, color: "white" }}>Done</Text>
                 </TouchableOpacity>
             </View>
         </View>
     );
-}
+};
 
 const mapStateToProps = (state) => {
     return {
-        userID: state.add_events.userID
+        userID: state.add_events.userID,
     };
 };
 
@@ -134,54 +186,53 @@ const styles = StyleSheet.create({
     },
     header: {
         flex: 1,
-        alignContent: 'center',
-        alignItems: 'center',
-        marginTop: '10%',
+        alignContent: "center",
+        alignItems: "center",
+        marginTop: "10%",
     },
     body: {
         flex: 3,
-        alignContent: 'center',
-        alignItems: 'center',
-        margin: '5%',
+        alignContent: "center",
+        alignItems: "center",
+        margin: "5%",
     },
     footer: {
         flex: 1,
-        flexDirection: 'column',
-        margin: '5%',
-        alignContent: 'center',
-        alignItems: 'center',
-        justifyContent: 'space-around',
+        flexDirection: "column",
+        margin: "5%",
+        alignContent: "center",
+        alignItems: "center",
+        justifyContent: "space-around",
     },
     titleText: {
-        fontFamily: 'serif',
+        fontFamily: "serif",
         fontSize: 25,
-        fontWeight: '600',
+        fontWeight: "600",
     },
     image: {
         width: 200,
         height: 200,
         borderRadius: 100,
         borderWidth: 0.5,
-        borderColor: 'black'
+        borderColor: "black",
     },
     subtitleText: {
         fontSize: 12,
-        fontFamily: 'serif',
-        color: 'grey',
-        textAlign: 'center',
-        marginTop: 20
-
+        fontFamily: "serif",
+        color: "grey",
+        textAlign: "center",
+        marginTop: 20,
     },
     shareButtons: {
         flexDirection: "row",
         marginTop: 20,
-        justifyContent: 'space-around',
-        width: '100%',
+        justifyContent: "space-around",
+        width: "100%",
     },
     shareWithButton: {
         borderRadius: 15,
         borderWidth: 0.5,
-        borderColor: 'black',
+        borderColor: "black",
         paddingLeft: 3,
         paddingRight: 3,
     },

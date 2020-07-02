@@ -25,6 +25,7 @@ const Finalized = (props) => {
     const route = props.route.params.route;
     const accessRights = props.route.params.access;
 
+    console.log(props.route.params.weather);
     const onClose = () => {
         setVisible(false);
     };
