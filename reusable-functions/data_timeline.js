@@ -128,7 +128,6 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
             if (events[genre].slots.includes(startTime)) {
                 let intervalObject = { start: "", end: "" };
                 intervalObject.start = startTime.toString() + ":00";
-                console.log(event);
                 locationArray.push({ coord: event.coord, name: event.name });
 
                 data.push(objectFormatter(startTime, event, genre));

@@ -38,7 +38,7 @@ const Finalized = (props) => {
     const weatherIcon = (weather) => {
         return weather === "Rain" || weather === "Thunderstorm" ? (
             <MaterialCommunityIcons
-                name="weather-sunny"
+                name="weather-pouring"
                 size={24}
                 color="black"
                 style={{ marginLeft: 350 }}
