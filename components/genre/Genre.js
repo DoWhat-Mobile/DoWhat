@@ -70,7 +70,10 @@ const Genre = (props) => {
             finalized.push(element);
         });
         props.onFinalize([finalized, freeTime, preference]);
-        props.navigation.navigate("Finalized", { route: route });
+        props.navigation.navigate("Loading", {
+            route: route,
+            access: "host",
+        });
     };
 
     /**

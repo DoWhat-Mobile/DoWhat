@@ -73,17 +73,30 @@ export const filterHelper = (filters, events) => {
     return { [genre]: temp[rand] };
 };
 
-export const genreEventObjectArray = (userGenres, events, filters) => {
+export const genreEventObjectArray = (userGenres, events, filters, weather) => {
     let currentEvents = [];
+    console.log(weather);
+
     if (userGenres.includes("food")) {
         currentEvents.push(filterHelper(filters, events));
     }
-    for (i = 0; i < userGenres.length; i++) {
-        const genre = userGenres[i];
-        if (genre !== "food") {
-            const eventObject = events[genre]["list"];
-            const rand = Math.floor(Math.random() * eventObject.length);
-            currentEvents.push({ [genre]: events[genre]["list"][rand] });
+    if (weather === "Rain" || weather === "Thunderstorm") {
+        for (i = 0; i < userGenres.length; i++) {
+            const genre = userGenres[i] === "food" ? "food" : "indoors";
+            if (genre !== "food") {
+                const eventObject = events[genre]["list"];
+                const rand = Math.floor(Math.random() * eventObject.length);
+                currentEvents.push({ [genre]: events[genre]["list"][rand] });
+            }
+        }
+    } else {
+        for (i = 0; i < userGenres.length; i++) {
+            const genre = userGenres[i];
+            if (genre !== "food") {
+                const eventObject = events[genre]["list"];
+                const rand = Math.floor(Math.random() * eventObject.length);
+                currentEvents.push({ [genre]: events[genre]["list"][rand] });
+            }
         }
     }
     return currentEvents;
@@ -115,7 +128,7 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
             if (events[genre].slots.includes(startTime)) {
                 let intervalObject = { start: "", end: "" };
                 intervalObject.start = startTime.toString() + ":00";
-
+                console.log(event);
                 locationArray.push({ coord: event.coord, name: event.name });
 
                 data.push(objectFormatter(startTime, event, genre));
@@ -193,10 +206,12 @@ export const data_shuffle = (events, genres, time, unsatisfied) => {
     for (i = 0; i < 3; i++) {
         let randomNumber = Math.floor(Math.random() * selectable.length);
         let event = selectable[randomNumber];
+        let text = event.tags.includes("Indoors")
+            ? event.location + " " + "(Indoors)"
+            : event.location;
         let obj = {
             title: event.name,
             time: time,
-
             description: (
                 <ReadMore
                     numberOfLines={3}
@@ -204,7 +219,7 @@ export const data_shuffle = (events, genres, time, unsatisfied) => {
                     renderRevealedFooter={renderRevealedFooter}
                 >
                     <Text>
-                        {event.location} {"\n\n"}
+                        {text} {"\n\n"}
                         {event.description}
                     </Text>
                 </ReadMore>
@@ -244,7 +259,9 @@ export const objectFormatter = (startTime, event, genre) => {
             </Text>
         );
     };
-
+    let text = event.tags.includes("Indoors")
+        ? event.location + " " + "(Indoors)"
+        : event.location;
     return {
         time: startTime + ":00",
         title: event.name,
@@ -256,7 +273,7 @@ export const objectFormatter = (startTime, event, genre) => {
                 renderRevealedFooter={renderRevealedFooter}
             >
                 <Text>
-                    🔁
+                    {text}
                     {"\n\n"}
                     {event.description}
                 </Text>

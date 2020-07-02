@@ -15,6 +15,7 @@ import {
     data_timeline,
     genreEventObjectArray,
 } from "../../reusable-functions/data_timeline";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const Finalized = (props) => {
     const [isLoading, setIsLoading] = React.useState(true);
@@ -24,13 +25,39 @@ const Finalized = (props) => {
 
     const route = props.route.params.route;
     const accessRights = props.route.params.access;
-
+    const weather = props.route.params.weather;
+    console.log(weather);
     const onClose = () => {
         setVisible(false);
     };
 
     const mapUpdate = (coord) => {
         setCoord(coord);
+    };
+
+    const weatherIcon = (weather) => {
+        return weather === "Rain" || weather === "Thunderstorm" ? (
+            <MaterialCommunityIcons
+                name="weather-sunny"
+                size={24}
+                color="black"
+                style={{ marginLeft: 350 }}
+            />
+        ) : weather === "Clouds" ? (
+            <MaterialCommunityIcons
+                name="weather-cloudy"
+                size={24}
+                color="black"
+                style={{ marginLeft: 350 }}
+            />
+        ) : (
+            <MaterialCommunityIcons
+                name="weather-sunny"
+                size={24}
+                color="black"
+                style={{ marginLeft: 350 }}
+            />
+        );
     };
 
     const userGenres =
@@ -44,7 +71,12 @@ const Finalized = (props) => {
     const currentEvents =
         route === "board"
             ? props.route.params.currentEvents
-            : genreEventObjectArray(userGenres, props.allEvents, filters);
+            : genreEventObjectArray(
+                  userGenres,
+                  props.allEvents,
+                  filters,
+                  weather
+              );
 
     React.useEffect(() => {
         if (props.allEvents != {}) {
@@ -78,6 +110,7 @@ const Finalized = (props) => {
     } else {
         return (
             <View style={styles.container}>
+                {weatherIcon(weather)}
                 <Schedule
                     data={data}
                     navigation={props.navigation}

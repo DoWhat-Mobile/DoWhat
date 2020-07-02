@@ -81,17 +81,16 @@ const Schedule = ({
     };
 
     const renderProceedButton = () => {
-        if (accessRights != 'host') {
+        if (accessRights != "host") {
             return;
-        }
-        else {
+        } else {
             return (
                 <TouchableOpacity onPress={sendGcalInviteAndResetAttendeeData}>
                     <Text style={styles.proceed}>Proceed</Text>
                 </TouchableOpacity>
             );
         }
-    }
+    };
 
     /**
      * Sends invite to all attendees of the finalized event, also reset all_attendee
@@ -130,9 +129,7 @@ const Schedule = ({
                     }}
                 />
             </View>
-            <View style={styles.footer}>
-                {renderProceedButton()}
-            </View>
+            <View style={styles.footer}>{renderProceedButton()}</View>
         </View>
     );
 };
@@ -145,12 +142,10 @@ const styles = StyleSheet.create({
         flex: 10,
         padding: 20,
         paddingTop: 65,
-        backgroundColor: "white",
     },
     footer: {
         flex: 1,
         alignItems: "center",
-        backgroundColor: "white",
     },
     proceed: {
         borderWidth: 0.5,
