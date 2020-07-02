@@ -1,21 +1,43 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    View, Text, StyleSheet, Button, TouchableOpacity,
-    Dimensions, SectionList, Image, Modal, TouchableHighlight
+    View, Text, StyleSheet,
+    TouchableOpacity, SectionList, Modal
 } from "react-native";
 import { connect } from 'react-redux';
 import { removeFriend, findFriends } from '../../actions/friends_actions';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import firebase from '../../database/firebase';
 import FriendRequestModal from './FriendRequestModal';
+import SuggestedFriends from './SuggestedFriends';
 
 const AllFriends = ({ userID }) => {
     useEffect(() => {
         showAllMyFriends(); // All accepted friends
-    })
+        findFriendsFromFirebase();
+    }, [])
 
-    const [allAcceptedFriends, setAllAcceptedFriends] = React.useState([]);
-    const [modalVisible, setModalVisible] = React.useState(false);
+    const [allAcceptedFriends, setAllAcceptedFriends] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [allUsers, setAllUsers] = useState([]);
+
+    const findFriendsFromFirebase = () => {
+        firebase.database()
+            .ref("users")
+            .once("value")
+            .then((snapshot) => {
+                const allAppUsers = snapshot.val();
+                var additions = [];
+                for (var userID in allAppUsers) {
+                    const userDetails = allAppUsers[userID];
+                    var obj = {
+                        name: userDetails.first_name + ' ' + userDetails.last_name,
+                        profilePicture: userDetails.profile_picture_url
+                    };
+                    additions.push(obj);
+                }
+                setAllUsers([...additions]);
+            })
+    }
 
     const showAllMyFriends = () => {
         firebase.database()
@@ -65,13 +87,17 @@ const AllFriends = ({ userID }) => {
         <View style={styles.container}>
             <View style={styles.header}>
                 <View style>
-                    <Text style={styles.headerText}>Your Friends</Text>
+                    <Text style={styles.headerText}>My Friends</Text>
                 </View>
 
                 <TouchableOpacity style={styles.headerButton}
                     onPress={() => setModalVisible(true)}>
                     <MaterialCommunityIcons name="account-plus" color={'black'} size={20} />
                 </TouchableOpacity>
+            </View>
+
+            <View style={styles.sectionHeader}>
+                <SuggestedFriends friends={allUsers} />
             </View>
 
             <View style={styles.body}>
@@ -91,14 +117,6 @@ const AllFriends = ({ userID }) => {
                         { title: "", data: allAcceptedFriends },
                     ]}
                     renderItem={({ item }) => renderFriends(item[0], item[1])} // Each item is [userDetails, UserID]
-                    renderSectionHeader={({ section }) =>
-                        <View style={styles.sectionHeader}>
-                            <TouchableOpacity
-                                onPress={() => handleTitlePress(section.title)}>
-                                <Text style={styles.sectionHeaderText}>{section.title}</Text>
-                            </TouchableOpacity>
-                        </View>
-                    }
                     keyExtractor={(item, index) => index}
                 />
 
@@ -128,6 +146,11 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: "column",
         justifyContent: 'space-around',
+    },
+    sectionHeader: {
+        borderWidth: 1,
+        marginTop: 20,
+        margin: 5,
     },
     headerText: {
         fontWeight: '800',

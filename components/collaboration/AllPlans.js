@@ -37,8 +37,9 @@ const AllPlans = ({ navigation, userID }) => {
                         setAllBoards([...allBoards, collabBoard]);
                     }
                     setAllBoards([...newBoardState]);
+                } else {
+                    setAllBoards([]); // If no collab boards node under user
                 }
-                setAllBoards([]); // If no collab boards node under user
                 setIsLoading(false)
             })
     }

@@ -118,8 +118,11 @@ const registerForPushNotificationsAsync = async (userId) => {
         } catch (err) {
             console.log("Error putting user's expo notif token to Firebase", err);
         }
+    } else {
         alert('Must use physical device for Push Notifications');
+
     }
+
 
     if (Platform.OS === 'android') {
         Notifications.createChannelAndroidAsync('default', {
