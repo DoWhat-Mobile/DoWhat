@@ -11,7 +11,8 @@ import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyP
 /**
  * Modal that shows when user clicks "Invite friends from DoWhat" in FriendInput.js
  */
-const FriendInputModal = ({ onClose, userID, currUserName, selected_date, database }) => {
+const FriendInputModal = ({ onClose, userID, currUserName, selected_date, database,
+    navigation }) => {
     useEffect(() => {
         showAllMyFriends(); // All accepted friends
     }, []);
@@ -62,7 +63,7 @@ const FriendInputModal = ({ onClose, userID, currUserName, selected_date, databa
                 userAlreadyInvited(allFriends[user])]; // [name, userID, true/false]
             friends.push(formattedUser);
         }
-        setAllAcceptedFriends([...friends]);
+        setAllAcceptedFriends(friends);
     }
 
     const createUniqueBoardID = (currUser, currUserID) => {
@@ -240,6 +241,11 @@ const FriendInputModal = ({ onClose, userID, currUserName, selected_date, databa
                     keyExtractor={(item, index) => index}
                 />
             </View>
+            <TouchableOpacity onPress={() => navigation.navigate("Plan")}>
+                <Text>
+                    DONE
+                    </Text>
+            </TouchableOpacity>
         </View>
     );
 };

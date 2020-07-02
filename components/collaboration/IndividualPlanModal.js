@@ -15,8 +15,14 @@ import { inputBusyPeriodFromGcal } from '../../reusable-functions/GoogleCalendar
  */
 const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     useEffect(() => {
-        extractAndSetTopGenres(board.preferences);
+        listenToGenreChanges();
         extractAndSetInvitees(board.invitees);
+
+        // Unsubscribe to changes when component unmount
+        return () => {
+            firebase.database().
+                ref('collab_boards/' + board.boardID + '/preferences').off()
+        }
     }, []);
 
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
@@ -34,6 +40,15 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     ['CAFE', false], ['HAWKER', false],]);
 
     const [budget, setBudget] = useState(0);
+
+    // Subscribe to changes in Firebase
+    const listenToGenreChanges = () => {
+        // Add history of messages to the collab board
+        firebase.database().ref('collab_boards/' + board.boardID + '/preferences')
+            .on('value', snapshot => {
+                extractAndSetTopGenres(snapshot.val());
+            });
+    }
 
     const extractAndSetTopGenres = (object) => {
         var sortable = []; // Sort genre 
@@ -58,7 +73,6 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         newState[index][1] = !newState[index][1]; // Toggle between true/false
         setAllGenres([...newState]);
     }
-
 
     const handlePricePress = (price) => {
         setBudget(price);

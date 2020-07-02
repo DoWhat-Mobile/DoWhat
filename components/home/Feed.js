@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useCallback } from 'react';
 import {
     View, Text, StyleSheet, SectionList, ActivityIndicator,
     Image, FlatList, TouchableOpacity, Dimensions
 } from "react-native";
+import { useFocusEffect } from '@react-navigation/native'
 import { Card } from 'react-native-elements';
 import firebase from '../../database/firebase';
 import { handleEventsOf } from '../../reusable-functions/HomeFeedLogic';
 import { TIH_API_KEY } from 'react-native-dotenv';
 import { connect } from 'react-redux';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ReadMore from 'react-native-read-more-text';
 
 /**
@@ -16,12 +18,12 @@ import ReadMore from 'react-native-read-more-text';
  * @param {*} props 
  */
 const Feed = (props) => {
-
-    useEffect(() => {
-        if (isLoading) { // Prevent constant reloading when image renders
+    useFocusEffect(
+        useCallback(() => {
             getDataFromFirebase();
-        }
-    }, []);
+            return () => null;
+        }, [props.allEvents])
+    )
 
     const [isLoading, setIsLoading] = React.useState(true);
     const [eventData, setEventData] = React.useState([]);
@@ -124,7 +126,10 @@ const Feed = (props) => {
                             source={{ uri: imageURI }}
                             style={{ height: 100, width: '100%' }}
                         />
-                        <Text style={{ fontSize: 12, color: '#1d3557' }}>Rating: {eventRatings}</Text>
+                        <View style={{ flexDirection: 'row' }}>
+                            <MaterialCommunityIcons name="star" color={'#1d3557'} size={18} />
+                            <Text style={{ fontSize: 12, color: '#1d3557', marginTop: 2, }}> {eventRatings}</Text>
+                        </View>
                         <ReadMore
                             numberOfLines={4}
                             renderTruncatedFooter={renderTruncatedFooter}
@@ -166,6 +171,7 @@ const Feed = (props) => {
         };
 
         var imageURI = event[0].imageURL;
+        const eventRatings = event[1] + '/5'
 
         // If imageURI is a code, convert it to URI using TIH API
         if (imageURI.substring(0, 5) != 'https') {
@@ -184,6 +190,10 @@ const Feed = (props) => {
                             source={{ uri: imageURI }}
                             style={{ height: 100, width: Dimensions.get('window').width * 0.85 }}
                         />
+                        <View style={{ flexDirection: 'row' }}>
+                            <MaterialCommunityIcons name="star" color={'#1d3557'} size={18} />
+                            <Text style={{ fontSize: 12, color: '#1d3557', marginTop: 2, }}> {eventRatings}</Text>
+                        </View>
                         <ReadMore
                             numberOfLines={4}
                             renderTruncatedFooter={renderTruncatedFooter}
@@ -217,6 +227,7 @@ const Feed = (props) => {
         )
     }
 
+
     const renderFeed = (item, section) => {
         if (section.title == 'Hungry?') { // Render eateries
             return formatFoodArray(item);
@@ -232,10 +243,60 @@ const Feed = (props) => {
         )
     }
 
+    const scroll = (sectionIndex, itemIndex) => {
+        sectionListRef.scrollToLocation({ sectionIndex: sectionIndex, itemIndex: itemIndex, viewPosition: 0, viewOffSet: 10 })
+    }
+
+    const CategoryTitleText = ({ text }) => {
+        return (<Text style={styles.CategoryTitleText}>{text}</Text>)
+    }
+
+    var sectionListRef = {} // For anchor tag use
+
     return (
         <View style={styles.container}>
             <SectionList
                 onRefresh={() => refreshPage()}
+                ref={ref => (sectionListRef = ref)}
+                ListHeaderComponent={() => {
+                    return (
+                        <View style={styles.header}>
+                            <Text style={styles.headerText}>Check these categories out!</Text>
+                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', marginTop: 5, }}>
+                                <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-around' }}>
+                                    <View>
+                                        <TouchableOpacity onPress={() => scroll(0, 0)}
+                                            style={styles.headerCategory}>
+                                            <MaterialCommunityIcons name="cards-heart" color={'#d00000'} size={30} />
+                                        </TouchableOpacity>
+                                        <CategoryTitleText text='Popular' />
+                                    </View>
+                                    <View>
+                                        <TouchableOpacity onPress={() => scroll(1, 0)}
+                                            style={styles.headerCategory}>
+                                            <MaterialCommunityIcons name="silverware-variant" color={'#9d8189'} size={30} />
+                                        </TouchableOpacity>
+                                        <CategoryTitleText text='Eateries' />
+                                    </View>
+                                    <View>
+                                        <TouchableOpacity onPress={() => scroll(2, 0)}
+                                            style={styles.headerCategory}>
+                                            <MaterialCommunityIcons name="city" color={'#3d5a80'} size={30} />
+                                        </TouchableOpacity>
+                                        <CategoryTitleText text='Discover' />
+                                    </View>
+                                </View>
+                                <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
+                                    <TouchableOpacity onPress={() => props.navigation.navigate("Plan")}
+                                        style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
+                                        <MaterialCommunityIcons name="feature-search" color={'white'} size={30} />
+                                    </TouchableOpacity>
+                                    <CategoryTitleText text='Plan with Friends' />
+                                </View>
+                            </View>
+                        </View>
+                    )
+                }}
                 progressViewOffset={100}
                 refreshing={isRefreshing}
                 sections={[
@@ -271,6 +332,32 @@ const styles = StyleSheet.create({
     container: {
         marginTop: '2%',
         flex: 1,
+    },
+    headerText: {
+        color: 'grey',
+        fontFamily: 'serif',
+        fontSize: 16,
+        marginLeft: '2%',
+        textDecorationLine: 'underline',
+        textShadowColor: '#e85d04',
+    },
+    headerCategory: {
+        borderWidth: 0.5,
+        padding: 10,
+        borderRadius: 5,
+        elevation: 0.01,
+        alignSelf: 'center',
+
+    },
+    header: {
+        backgroundColor: '#f0efeb',
+        margin: 5,
+        elevation: 0.1,
+    },
+    CategoryTitleText: {
+        color: 'grey',
+        textAlign: 'center',
+        fontSize: 12,
     },
     sectionHeaderText: {
         fontSize: 18,

@@ -6,7 +6,8 @@ import { connect } from "react-redux";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Feed from './Feed';
-import Plan from '../collaboration/Planning';
+import Plan from '../collaboration/AllPlans';
+import Friends from './Friends';
 
 const Tab = createBottomTabNavigator();
 
@@ -32,10 +33,23 @@ const MyTabs = (props) => {
             <Tab.Screen
                 name="Plan"
                 component={Plan}
+                style={{ borderWidth: 1, backgroundColor: 'blue' }}
                 options={{
                     tabBarLabel: 'Plan',
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="feature-search" color={color} size={size} />
+                    ),
+                }}
+            />
+
+            <Tab.Screen
+                name="Friends"
+                component={Friends}
+                style={{ borderWidth: 1, backgroundColor: 'blue' }}
+                options={{
+                    tabBarLabel: 'Friends',
+                    tabBarIcon: ({ color, size }) => (
+                        <MaterialCommunityIcons name="account" color={color} size={size} />
                     ),
                 }}
             />

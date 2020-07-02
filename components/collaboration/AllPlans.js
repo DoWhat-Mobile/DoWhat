@@ -1,16 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity, Dimensions } from "react-native";
-import { Card } from 'react-native-elements';
+import React, { useCallback, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from "react-native";
+import { useFocusEffect } from '@react-navigation/native'
 import firebase from '../../database/firebase';
 import ListOfPlans from './ListOfPlans';
 import { connect } from 'react-redux';
 
 const AllPlans = ({ navigation, userID }) => {
-    useEffect(() => {
-        getUpcomingCollaborationsFromFirebase();
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            getUpcomingCollaborationsFromFirebase();
+            return () => null;
+        }, [])
+    )
 
     const [allBoards, setAllBoards] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const getUpcomingCollaborationsFromFirebase = async () => {
         firebase.database().ref()
@@ -24,32 +28,104 @@ const AllPlans = ({ navigation, userID }) => {
                     for (var board in allCollaborations) {
                         const boardID = board;
                         var collabBoard = database.collab_boards[boardID];
+                        if (isBoardOutdated(boardID)) {
+                            removeFromFirebase(collabBoard, boardID)
+                            continue;
+                        }
                         collabBoard.boardID = boardID; // Attach board ID to props of board 
                         newBoardState.push(collabBoard);
                         setAllBoards([...allBoards, collabBoard]);
                     }
                     setAllBoards([...newBoardState]);
                 }
+                setAllBoards([]); // If no collab boards node under user
+                setIsLoading(false)
             })
     }
 
+    // Clean data from Firebase if the board is outdated
+    const removeFromFirebase = async (board, boardID) => {
+        var updates = {}
+        updates['/collab_boards/' + boardID] = null;
+
+        // Add all the invitees to the updates(deletes) to be made
+        for (var name in board.invitees) {
+            const inviteeID = board.invitees[name];
+            updates['/users/' + inviteeID + '/collab_boards/' + boardID] = null;
+        }
+
+        // Delete collab board, as well as the invitations on each user's Firebase node
+        firebase.database().ref()
+            .update(updates);
+    }
+
+    const isBoardOutdated = (boardID) => {
+        var currDate = new Date();
+        const yesterday = currDate.setDate(currDate.getDate() - 1)
+        const boardDate = new Date(boardID.substring(boardID.indexOf('_') + 1));
+        return boardDate.getTime() <= yesterday;
+    }
+
+    const renderAppropriateScreen = () => {
+        if (allBoards.length == 0) { // Empty state
+            return (
+                <View style={styles.container}>
+                    <View style={{ flex: 5, justifyContent: 'center', }}>
+                        <Image
+                            style={styles.image}
+                            source={require("../../assets/clueless.png")}
+                        />
+                    </View>
+                    <View style={{ flex: 1, }}>
+                        <Text style={{
+                            fontSize: 20, fontWeight: 'bold', textAlign: "center",
+                            fontFamily: 'serif'
+                        }}>
+                            No plans yet
+                        </Text>
+                        <Text style={{
+                            margin: 5, fontSize: 14, color: 'grey', textAlign: "center",
+                            fontFamily: 'serif'
+                        }}>
+                            Add some friends in DoWhat and plan with them! Your plans with your DoWhat friends will appear here.
+                        </Text>
+                    </View>
+                    <View style={styles.footer}>
+                        <TouchableOpacity style={styles.planForMe} onPress={() => navigation.navigate("DateSelection")}>
+                            <Text style={styles.buttonText}>Plan my first activity</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )
+        }
+        return (
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <Text style={styles.headerText}> Upcoming Plans</Text>
+                </View>
+                <View style={styles.body}>
+                    <ListOfPlans plans={allBoards} refreshList={getUpcomingCollaborationsFromFirebase}
+                        navigation={navigation} userID={userID} />
+                </View>
+                <View style={styles.footer}>
+                    <TouchableOpacity style={styles.planForMe} onPress={() => navigation.navigate("DateSelection")}>
+                        <Text style={styles.buttonText}>Plan activities for me</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        )
+    }
+
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+                <ActivityIndicator size='large' />
+            </View>
+        )
+    }
+
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.headerText}> Upcoming Plans</Text>
-
-            </View>
-
-            <View style={styles.body}>
-                <ListOfPlans plans={allBoards} refreshList={getUpcomingCollaborationsFromFirebase}
-                    navigation={navigation} userID={userID} />
-            </View>
-
-            <View style={styles.footer}>
-                <Button title="Plan activities for me" onPress={() => navigation.navigate("DateSelection")} />
-            </View>
-
-        </View >
+        renderAppropriateScreen()
     );
 }
 
@@ -72,15 +148,41 @@ const styles = StyleSheet.create({
     },
     headerText: {
         textAlign: 'center',
-        fontWeight: '800',
-        fontSize: 20,
+        fontWeight: 'bold',
+        fontSize: 18,
+        fontFamily: 'serif'
+
     },
     body: {
         flex: 7,
         justifyContent: 'center',
     },
+    image: {
+        width: '100%',
+        borderTopWidth: 30,
+        borderRadius: 15,
+        borderWidth: 0.2,
+        borderColor: "#f0f0f0",
+        height: "90%",
+    },
+    planForMe: {
+        flex: 1,
+        flexDirection: "column",
+        alignSelf: "stretch",
+        alignContent: "stretch",
+        marginLeft: "5%",
+        marginRight: "5%",
+        marginTop: "8%"
+    },
+    buttonText: {
+        fontSize: 20,
+        borderWidth: 0.2,
+        textAlign: "center",
+        borderRadius: 10,
+        backgroundColor: "#cc5327",
+        color: "#fcf5f2",
+    },
     footer: {
         flex: 1,
-        justifyContent: 'flex-end'
     },
 });

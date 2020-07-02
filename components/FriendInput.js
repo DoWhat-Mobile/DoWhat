@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image, View, Text, StyleSheet, Modal } from "react-native";
 import * as Linking from "expo-linking";
 import firebase from "../database/firebase";
@@ -75,7 +76,7 @@ const FriendInput = (props) => {
                 onRequestClose={() => {
                     Alert.alert("Modal has been closed.");
                 }}>
-                <FriendInputModal onClose={closeModal} database={database} />
+                <FriendInputModal onClose={closeModal} database={database} navigation={props.navigation} />
             </Modal>
 
             <View style={styles.body}>
@@ -88,6 +89,7 @@ const FriendInput = (props) => {
                     <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#0088CC', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
                         onPress={() => shareWithTelegram(
                             encodeUserInfoToURL(DoWhatWebURL))}>
+                        <MaterialCommunityIcons name="send-circle" color={'blue'} size={20} />
                         <Text style={{ fontSize: 11, color: 'white' }}>Share with Telegram</Text>
                     </TouchableOpacity>
 
@@ -96,6 +98,7 @@ const FriendInput = (props) => {
                     <TouchableOpacity style={[styles.shareWithButton, { backgroundColor: '#25D366', padding: 3, paddingLeft: 10, paddingRight: 10 }]}
                         onPress={() => shareWithWhatsapp(
                             encodeUserInfoToURL(DoWhatWebURL))}>
+                        <MaterialCommunityIcons name="whatsapp" color={'green'} size={20} />
                         <Text style={{ fontSize: 11, color: 'white' }}>Share with Whatsapp</Text>
                     </TouchableOpacity>
                 </View>
