@@ -16,3 +16,4 @@ web-report/
 # API keys
 .env
 debug.log
+debug.log
