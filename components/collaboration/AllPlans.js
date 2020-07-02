@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import firebase from '../../database/firebase';
 import ListOfPlans from './ListOfPlans';
 import { connect } from 'react-redux';
@@ -59,24 +59,58 @@ const AllPlans = ({ navigation, userID }) => {
         return boardDate.getTime() <= yesterday;
     }
 
+    const renderAppropriateScreen = () => {
+        if (allBoards.length == 0) { // Empty state
+            return (
+                <View style={styles.container}>
+                    <View style={{ flex: 5, justifyContent: 'center', }}>
+                        <Image
+                            style={styles.image}
+                            source={require("../../assets/clueless.png")}
+                        />
+                    </View>
+                    <View style={{ flex: 1, }}>
+                        <Text style={{
+                            fontSize: 20, fontWeight: 'bold', textAlign: "center",
+                            fontFamily: 'serif'
+                        }}>
+                            No plans yet
+                        </Text>
+                        <Text style={{
+                            margin: 5, fontSize: 14, color: 'grey', textAlign: "center",
+                            fontFamily: 'serif'
+                        }}>
+                            When you create plans with your DoWhat friends, they will appear here.
+                        </Text>
+                    </View>
+                    <View style={styles.footer}>
+                        <TouchableOpacity style={styles.planForMe} onPress={() => navigation.navigate("DateSelection")}>
+                            <Text style={styles.buttonText}>Plan my first activity</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )
+        }
+        return (
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <Text style={styles.headerText}> Upcoming Plans</Text>
+                </View>
+                <View style={styles.body}>
+                    <ListOfPlans plans={allBoards} refreshList={getUpcomingCollaborationsFromFirebase}
+                        navigation={navigation} userID={userID} />
+                </View>
+                <View style={styles.footer}>
+                    <TouchableOpacity style={styles.planForMe} onPress={() => navigation.navigate("DateSelection")}>
+                        <Text style={styles.buttonText}>Plan activities for me</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        )
+    }
+
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.headerText}> Upcoming Plans</Text>
-
-            </View>
-
-            <View style={styles.body}>
-                <ListOfPlans plans={allBoards} refreshList={getUpcomingCollaborationsFromFirebase}
-                    navigation={navigation} userID={userID} />
-            </View>
-
-            <View style={styles.footer}>
-                <TouchableOpacity style={styles.planForMe} onPress={() => navigation.navigate("DateSelection")}>
-                    <Text style={styles.buttonText}>Plan activities for me</Text>
-                </TouchableOpacity>
-            </View>
-        </View >
+        renderAppropriateScreen()
     );
 }
 
@@ -105,6 +139,14 @@ const styles = StyleSheet.create({
     body: {
         flex: 7,
         justifyContent: 'center',
+    },
+    image: {
+        width: '100%',
+        borderTopWidth: 30,
+        borderRadius: 15,
+        borderWidth: 0.2,
+        borderColor: "#f0f0f0",
+        height: "90%",
     },
     planForMe: {
         flex: 1,
