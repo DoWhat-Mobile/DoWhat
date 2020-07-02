@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import firebase from '../../database/firebase';
 import ListOfPlans from './ListOfPlans';
 import { connect } from 'react-redux';
 
 const AllPlans = ({ navigation, userID }) => {
-    useEffect(() => {
+    navigation.useFocusEffect(() => {
         getUpcomingCollaborationsFromFirebase();
-    }, [])
+    })
 
     const [allBoards, setAllBoards] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const getUpcomingCollaborationsFromFirebase = async () => {
+        console.log("Get Upcoming collabs from FB called")
         firebase.database().ref()
             .once("value")
             .then((snapshot) => {
@@ -32,7 +34,9 @@ const AllPlans = ({ navigation, userID }) => {
                         setAllBoards([...allBoards, collabBoard]);
                     }
                     setAllBoards([...newBoardState]);
+                    console.log("Set boards called :")
                 }
+                setIsLoading(false)
             })
     }
 
@@ -80,7 +84,7 @@ const AllPlans = ({ navigation, userID }) => {
                             margin: 5, fontSize: 14, color: 'grey', textAlign: "center",
                             fontFamily: 'serif'
                         }}>
-                            When you create plans with your DoWhat friends, they will appear here.
+                            Add some friends in DoWhat and plan with them! Your plans with your DoWhat friends will appear here.
                         </Text>
                     </View>
                     <View style={styles.footer}>
@@ -109,6 +113,14 @@ const AllPlans = ({ navigation, userID }) => {
         )
     }
 
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+                <ActivityIndicator size='large' />
+            </View>
+        )
+    }
+
     return (
         renderAppropriateScreen()
     );
@@ -133,8 +145,10 @@ const styles = StyleSheet.create({
     },
     headerText: {
         textAlign: 'center',
-        fontWeight: '800',
-        fontSize: 20,
+        fontWeight: 'bold',
+        fontSize: 18,
+        fontFamily: 'serif'
+
     },
     body: {
         flex: 7,

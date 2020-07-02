@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { View, StyleSheet, Text, TouchableOpacity, SectionList, Dimensions, Modal } from 'react-native';
 import IndividualPlanModal from './IndividualPlanModal';
@@ -14,7 +14,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
  * The <SectionList> Component within the AllPlans component. This is the component
  * which shows all the plans that the user is part of.
  */
-const ListOfPlans = ({ plans, refreshList, navigation, userID, allEvents }) => {
+const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
+    useEffect(() => {
+    }, [plans])
+
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [boardModalVisibility, setBoardModalVisibility] = useState(false);
     const [boardDetails, setBoardDetails] = useState({})

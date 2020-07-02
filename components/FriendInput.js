@@ -76,7 +76,7 @@ const FriendInput = (props) => {
                 onRequestClose={() => {
                     Alert.alert("Modal has been closed.");
                 }}>
-                <FriendInputModal onClose={closeModal} database={database} />
+                <FriendInputModal onClose={closeModal} database={database} navigation={props.navigation} />
             </Modal>
 
             <View style={styles.body}>
