@@ -76,7 +76,11 @@ const FriendInput = (props) => {
                     Alert.alert("Modal has been closed.");
                 }}
             >
-                <FriendInputModal onClose={closeModal} database={database} />
+                <FriendInputModal
+                    onClose={closeModal}
+                    database={database}
+                    navigation={props.navigation}
+                />
             </Modal>
 
             <View style={styles.body}>
@@ -104,6 +108,11 @@ const FriendInput = (props) => {
                             shareWithTelegram(encodeUserInfoToURL(DoWhatWebURL))
                         }
                     >
+                        <MaterialCommunityIcons
+                            name="send-circle"
+                            color={"blue"}
+                            size={20}
+                        />
                         <Text style={{ fontSize: 11, color: "white" }}>
                             Share with Telegram
                         </Text>
@@ -125,6 +134,11 @@ const FriendInput = (props) => {
                             shareWithWhatsapp(encodeUserInfoToURL(DoWhatWebURL))
                         }
                     >
+                        <MaterialCommunityIcons
+                            name="whatsapp"
+                            color={"green"}
+                            size={20}
+                        />
                         <Text style={{ fontSize: 11, color: "white" }}>
                             Share with Whatsapp
                         </Text>
