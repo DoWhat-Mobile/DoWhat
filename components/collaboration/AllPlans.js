@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from "react-native";
+import { useFocusEffect } from '@react-navigation/native'
 import firebase from '../../database/firebase';
 import ListOfPlans from './ListOfPlans';
 import { connect } from 'react-redux';
 
 const AllPlans = ({ navigation, userID }) => {
-    navigation.useFocusEffect(() => {
-        getUpcomingCollaborationsFromFirebase();
-    })
+    useFocusEffect(
+        useCallback(() => {
+            getUpcomingCollaborationsFromFirebase();
+            return () => null;
+        }, [])
+    )
 
     const [allBoards, setAllBoards] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const getUpcomingCollaborationsFromFirebase = async () => {
-        console.log("Get Upcoming collabs from FB called")
         firebase.database().ref()
             .once("value")
             .then((snapshot) => {
@@ -34,8 +37,8 @@ const AllPlans = ({ navigation, userID }) => {
                         setAllBoards([...allBoards, collabBoard]);
                     }
                     setAllBoards([...newBoardState]);
-                    console.log("Set boards called :")
                 }
+                setAllBoards([]); // If no collab boards node under user
                 setIsLoading(false)
             })
     }

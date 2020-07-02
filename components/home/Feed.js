@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useCallback } from 'react';
 import {
     View, Text, StyleSheet, SectionList, ActivityIndicator,
     Image, FlatList, TouchableOpacity, Dimensions
 } from "react-native";
+import { useFocusEffect } from '@react-navigation/native'
 import { Card } from 'react-native-elements';
 import firebase from '../../database/firebase';
 import { handleEventsOf } from '../../reusable-functions/HomeFeedLogic';
@@ -17,12 +18,12 @@ import ReadMore from 'react-native-read-more-text';
  * @param {*} props 
  */
 const Feed = (props) => {
-
-    useEffect(() => {
-        if (isLoading) { // Prevent constant reloading when image renders
+    useFocusEffect(
+        useCallback(() => {
             getDataFromFirebase();
-        }
-    }, []);
+            return () => null;
+        }, [props.allEvents])
+    )
 
     const [isLoading, setIsLoading] = React.useState(true);
     const [eventData, setEventData] = React.useState([]);
