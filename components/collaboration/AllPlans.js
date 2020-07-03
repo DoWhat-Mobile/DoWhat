@@ -7,8 +7,12 @@ import { useFocusEffect } from '@react-navigation/native'
 import firebase from '../../database/firebase';
 import ListOfPlans from './ListOfPlans';
 import { connect } from 'react-redux';
+import RouteFilterModal from './RouteFilterModal';
 
-const AllPlans = ({ navigation, userID }) => {
+/**
+ * Parent component holding all the plans, and modal to start planning a new timeline 
+ */
+const AllPlans = ({ navigation, userID, route }) => {
     useFocusEffect(
         useCallback(() => {
             getUpcomingCollaborationsFromFirebase();
@@ -18,6 +22,7 @@ const AllPlans = ({ navigation, userID }) => {
 
     const [allBoards, setAllBoards] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [modalVisibility, setModalVisibility] = useState(false);
 
     const getUpcomingCollaborationsFromFirebase = async () => {
         firebase.database().ref()
@@ -35,6 +40,7 @@ const AllPlans = ({ navigation, userID }) => {
                             removeFromFirebase(collabBoard, boardID)
                             continue;
                         }
+
                         collabBoard.boardID = boardID; // Attach board ID to props of board 
                         newBoardState.push(collabBoard);
                         setAllBoards([...allBoards, collabBoard]);
@@ -74,6 +80,17 @@ const AllPlans = ({ navigation, userID }) => {
         if (allBoards.length == 0) { // Empty state
             return (
                 <View style={styles.container}>
+                    <Modal
+                        animationType="fade"
+                        transparent={true}
+                        visible={modalVisibility}
+                        onRequestClose={() => {
+                            closeModal()
+                        }}>
+                        <View style={styles.modalContainer}>
+                            <RouteFilterModal onClose={closeModal} navigation={navigation} />
+                        </View>
+                    </Modal>
                     <View style={{ flex: 5, justifyContent: 'center', }}>
                         <Image
                             style={styles.image}
@@ -95,7 +112,7 @@ const AllPlans = ({ navigation, userID }) => {
                         </Text>
                     </View>
                     <View style={styles.footer}>
-                        <TouchableOpacity style={styles.planForMe} onPress={() => navigation.navigate("DateSelection")}>
+                        <TouchableOpacity style={styles.planForMe} onPress={() => setModalVisibility(true)}>
                             <Text style={styles.buttonText}>Plan my first activity</Text>
                         </TouchableOpacity>
                     </View>
@@ -104,6 +121,17 @@ const AllPlans = ({ navigation, userID }) => {
         }
         return (
             <View style={styles.container}>
+                <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={modalVisibility}
+                    onRequestClose={() => {
+                        closeModal()
+                    }}>
+                    <View style={styles.modalContainer}>
+                        <RouteFilterModal onClose={closeModal} navigation={navigation} />
+                    </View>
+                </Modal>
                 <View style={styles.header}>
                     <Text style={styles.headerText}> Upcoming Plans</Text>
                 </View>
@@ -112,12 +140,16 @@ const AllPlans = ({ navigation, userID }) => {
                         navigation={navigation} userID={userID} />
                 </View>
                 <View style={styles.footer}>
-                    <TouchableOpacity style={styles.planForMe} onPress={() => navigation.navigate("DateSelection")}>
+                    <TouchableOpacity style={styles.planForMe} onPress={() => setModalVisibility(true)}>
                         <Text style={styles.buttonText}>Plan activities for me</Text>
                     </TouchableOpacity>
                 </View>
             </View>
         )
+    }
+
+    const closeModal = () => {
+        setModalVisibility(false);
     }
 
     if (isLoading) {
@@ -144,6 +176,12 @@ export default connect(mapStateToProps, null)(AllPlans);
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    modalContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
     },
     header: {
         flex: 1,

@@ -79,7 +79,7 @@ const DateSelection = (props) => {
 
     const syncWithFirebaseThenNavigate = () => {
         addSelectedDateToFirebase();
-        props.navigation.navigate("FriendInput");
+        props.navigation.navigate("FriendInput", { route: props.route.params.route });
     };
 
     const closeModal = () => {
