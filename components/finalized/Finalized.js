@@ -26,7 +26,7 @@ const Finalized = (props) => {
     const route = props.route.params.route;
     const accessRights = props.route.params.access;
     const weather = props.route.params.weather;
-    console.log(weather);
+    console.log(props.finalGenres);
     const onClose = () => {
         setVisible(false);
     };
@@ -59,7 +59,6 @@ const Finalized = (props) => {
             />
         );
     };
-
     const userGenres =
         route === "board" ? props.route.params.genres : props.finalGenres[0];
     const filters =

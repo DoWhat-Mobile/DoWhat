@@ -5,10 +5,9 @@ import { WEATHER_API_KEY } from "react-native-dotenv";
 const Loading = (props) => {
     const [weather, setWeather] = React.useState("");
     const [isLoading, setLoading] = React.useState(true);
-    const route = props.route.params.route;
+    // const route = props.route.params.route;
     React.useEffect(() => {
         const diff = props.difference;
-        console.log(diff);
         fetch(
             "https://api.openweathermap.org/data/2.5/onecall?lat=1.290270&lon=103.851959&%20exclude=hourly,daily&appid=" +
                 WEATHER_API_KEY
@@ -17,13 +16,12 @@ const Loading = (props) => {
             .then((data) => {
                 setWeather(data["daily"][diff]["weather"][0]["main"]);
                 setLoading(false);
-                console.log(weather);
             });
     }, []);
 
     const onComplete = () =>
         props.navigation.navigate("Finalized", {
-            route: route,
+            route: "manual",
             access: "host",
             weather: weather,
         });

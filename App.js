@@ -57,7 +57,7 @@ const MainNavigator = () => {
                     headerLeft: () => (
                         <HeaderBackButton
                             onPress={() => {
-                                navigation.navigate("Genre");
+                                navigation.navigate("DateSelection");
                             }}
                         />
                     ),
