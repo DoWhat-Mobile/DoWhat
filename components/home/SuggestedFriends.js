@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, FlatList, Text, Image, TouchableOpacity } from 'react-native';
 
-const SuggestedFriends = ({ friends }) => {
+const SuggestedFriends = ({ friends, openModal }) => {
     // Style of the individual cards
     const renderIndividualFriends = (friend) => {
         return (
@@ -41,7 +41,7 @@ const SuggestedFriends = ({ friends }) => {
         <View>
             <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
                 <Text style={{ color: 'black', marginLeft: 5 }}>Suggested Friends</Text>
-                <TouchableOpacity onPress={() => alert("View more friends")}>
+                <TouchableOpacity onPress={openModal}>
                     <Text style={{ color: '#6c757d', marginRight: 5 }}>See all</Text>
                 </TouchableOpacity>
             </View>

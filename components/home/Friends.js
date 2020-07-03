@@ -83,6 +83,10 @@ const AllFriends = ({ userID }) => {
         setModalVisible(false);
     }
 
+    const openModal = () => {
+        setModalVisible(true);
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -97,7 +101,7 @@ const AllFriends = ({ userID }) => {
             </View>
 
             <View style={styles.sectionHeader}>
-                <SuggestedFriends friends={allUsers} />
+                <SuggestedFriends friends={allUsers} openModal={openModal} />
             </View>
 
             <View style={styles.body}>
@@ -148,9 +152,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     sectionHeader: {
-        borderWidth: 1,
+        borderWidth: 0.1,
         marginTop: 20,
         margin: 5,
+        elevation: 5,
+        backgroundColor: '#eddcd2'
     },
     headerText: {
         fontWeight: '800',
@@ -183,7 +189,8 @@ const styles = StyleSheet.create({
 
     },
     friend: {
-        borderWidth: 1,
+        borderBottomWidth: 1,
+        borderBottomColor: 'grey',
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginLeft: '5%',

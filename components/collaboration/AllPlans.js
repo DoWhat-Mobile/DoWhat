@@ -1,5 +1,8 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+    View, Text, StyleSheet, Image,
+    TouchableOpacity, ActivityIndicator, Modal
+} from "react-native";
 import { useFocusEffect } from '@react-navigation/native'
 import firebase from '../../database/firebase';
 import ListOfPlans from './ListOfPlans';
