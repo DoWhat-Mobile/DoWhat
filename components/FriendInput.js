@@ -5,6 +5,7 @@ import * as Linking from "expo-linking";
 import firebase from "../database/firebase";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { connect } from "react-redux";
+import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyPeriods';
 import FriendInputModal from "./FriendInputModal";
 
 /**
@@ -39,19 +40,19 @@ const FriendInput = (props) => {
         // Deep linking
         Linking.openURL(
             "https://t.me/share/url?url=" +
-                url +
-                "&text=" +
-                "\n" +
-                "Here is the link to input your calendar availability!"
+            url +
+            "&text=" +
+            "\n" +
+            "Here is the link to input your calendar availability!"
         );
     };
 
     const shareWithWhatsapp = (url) => {
         Linking.openURL(
             "whatsapp://send?" +
-                "text=Here is the link to input your calendar availability! " +
-                "\n" +
-                url
+            "text=Here is the link to input your calendar availability! " +
+            "\n" +
+            url
         ).catch((err) => alert("Please download WhatsApp to use this feature"));
     };
 
@@ -63,133 +64,308 @@ const FriendInput = (props) => {
     // Hosted on AWS Amplify
     const DoWhatWebURL = "https://master.da00s432t0f9l.amplifyapp.com/";
 
-    return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.titleText}>Invite your friends</Text>
-            </View>
+    if (props.route.params.route == 'collab') {
+        return (
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <Text style={styles.titleText}>Invite your friends</Text>
+                </View>
 
-            <Modal
-                animationType="fade"
-                transparent={false}
-                visible={modalVisible}
-                onRequestClose={() => {
-                    Alert.alert("Modal has been closed.");
-                }}
-            >
-                <FriendInputModal
-                    onClose={closeModal}
-                    database={database}
-                    navigation={props.navigation}
-                />
-            </Modal>
-
-            <View style={styles.body}>
-                <Image
-                    style={styles.image}
-                    source={require("../assets/FriendsHangout.png")}
-                />
-                <Text style={styles.subtitleText}>
-                    You have chosen your date and inputted your availabilities,
-                    now it's time to invite some of your friends to join you!
+                <View style={styles.body}>
+                    <Image
+                        style={styles.image}
+                        source={require("../assets/FriendsHangout.png")}
+                    />
+                    <Text style={styles.subtitleText}>
+                        You have chosen your date and inputted your availabilities,
+                        now it's time to invite some of your friends to join you!
                 </Text>
+                </View>
 
-                <View style={styles.shareButtons}>
+                <View style={{ flex: 5, margin: 10, }}>
+                    <FriendInputModal
+                        onClose={closeModal}
+                        database={database}
+                        navigation={props.navigation}
+                    />
+                </View>
+
+                <View style={styles.footer}>
                     <TouchableOpacity
                         style={[
                             styles.shareWithButton,
                             {
-                                backgroundColor: "#0088CC",
-                                padding: 3,
-                                paddingLeft: 10,
-                                paddingRight: 10,
+                                marginTop: 10,
+                                backgroundColor: "#cc5327",
+                                padding: 10,
+                                paddingLeft: 25,
+                                paddingRight: 25,
                             },
                         ]}
-                        onPress={() =>
-                            shareWithTelegram(encodeUserInfoToURL(DoWhatWebURL))
-                        }
+                        onPress={() => props.navigation.navigate('Plan')}
                     >
-                        <MaterialCommunityIcons
-                            name="send-circle"
-                            color={"blue"}
-                            size={20}
-                        />
-                        <Text style={{ fontSize: 11, color: "white" }}>
-                            Share with Telegram
-                        </Text>
-                    </TouchableOpacity>
-
-                    <Text> | </Text>
-
-                    <TouchableOpacity
-                        style={[
-                            styles.shareWithButton,
-                            {
-                                backgroundColor: "#25D366",
-                                padding: 3,
-                                paddingLeft: 10,
-                                paddingRight: 10,
-                            },
-                        ]}
-                        onPress={() =>
-                            shareWithWhatsapp(encodeUserInfoToURL(DoWhatWebURL))
-                        }
-                    >
-                        <MaterialCommunityIcons
-                            name="whatsapp"
-                            color={"green"}
-                            size={20}
-                        />
-                        <Text style={{ fontSize: 11, color: "white" }}>
-                            Share with Whatsapp
-                        </Text>
+                        <Text style={{ fontSize: 16, color: "white" }}>
+                            DONE
+                    </Text>
                     </TouchableOpacity>
                 </View>
             </View>
+        );
 
-            <View style={styles.footer}>
-                <TouchableOpacity
-                    style={[
-                        styles.shareWithButton,
-                        {
-                            marginTop: 10,
-                            backgroundColor: "grey",
-                            padding: 3,
-                            paddingLeft: 10,
-                            paddingRight: 10,
-                        },
-                    ]}
-                    onPress={() => setModalVisible(true)}
+    } else if (props.route.params.route == 'manual') {
+        return (
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <Text style={styles.titleText}>Invite your friends</Text>
+                </View>
+
+                <Modal
+                    animationType="fade"
+                    transparent={false}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        Alert.alert("Modal has been closed.");
+                    }}
                 >
-                    <Text style={{ fontSize: 11, color: "white" }}>
-                        Invite friends from DoWhat
+                    <FriendInputModal
+                        onClose={closeModal}
+                        database={database}
+                        navigation={props.navigation}
+                    />
+                </Modal>
+
+                <View style={styles.body}>
+                    <Image
+                        style={styles.image}
+                        source={require("../assets/FriendsHangout.png")}
+                    />
+                    <Text style={styles.subtitleText}>
+                        You have chosen your date and inputted your availabilities,
+                        now it's time to invite some of your friends to join you!
+                </Text>
+
+                    <View style={styles.shareButtons}>
+                        <TouchableOpacity
+                            style={[
+                                styles.shareWithButton,
+                                {
+                                    backgroundColor: "#0088CC",
+                                    padding: 3,
+                                    paddingLeft: 10,
+                                    paddingRight: 10,
+                                },
+                            ]}
+                            onPress={() =>
+                                shareWithTelegram(encodeUserInfoToURL(DoWhatWebURL))
+                            }
+                        >
+                            <MaterialCommunityIcons
+                                name="send-circle"
+                                color={"blue"}
+                                size={20}
+                            />
+                            <Text style={{ fontSize: 11, color: "white" }}>
+                                Share with Telegram
+                        </Text>
+                        </TouchableOpacity>
+
+                        <Text> | </Text>
+
+                        <TouchableOpacity
+                            style={[
+                                styles.shareWithButton,
+                                {
+                                    backgroundColor: "#25D366",
+                                    padding: 3,
+                                    paddingLeft: 10,
+                                    paddingRight: 10,
+                                },
+                            ]}
+                            onPress={() =>
+                                shareWithWhatsapp(encodeUserInfoToURL(DoWhatWebURL))
+                            }
+                        >
+                            <MaterialCommunityIcons
+                                name="whatsapp"
+                                color={"green"}
+                                size={20}
+                            />
+                            <Text style={{ fontSize: 11, color: "white" }}>
+                                Share with Whatsapp
+                        </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                <View style={styles.footer}>
+                    <TouchableOpacity
+                        style={[
+                            styles.shareWithButton,
+                            {
+                                marginTop: 10,
+                                backgroundColor: "grey",
+                                padding: 3,
+                                paddingLeft: 10,
+                                paddingRight: 10,
+                            },
+                        ]}
+                        onPress={() => setModalVisible(true)}
+                    >
+                        <Text style={{ fontSize: 11, color: "white" }}>
+                            Invite friends from DoWhat
                     </Text>
-                </TouchableOpacity>
+                    </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={[
-                        styles.shareWithButton,
-                        {
-                            backgroundColor: "grey",
-                            padding: 3,
-                            paddingLeft: 10,
-                            paddingRight: 10,
-                        },
-                    ]}
-                    onPress={() =>
-                        props.navigation.navigate("Genre", { route: "link" })
-                    }
-                >
-                    <Text style={{ fontSize: 11, color: "white" }}>Done</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[
+                            styles.shareWithButton,
+                            {
+                                backgroundColor: "grey",
+                                padding: 3,
+                                paddingLeft: 10,
+                                paddingRight: 10,
+                            },
+                        ]}
+                        onPress={() =>
+                            props.navigation.navigate("Genre", { route: "link" })
+                        }
+                    >
+                        <Text style={{ fontSize: 11, color: "white" }}>Done</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
-    );
+        );
+    } else { // Invite friends without DoWhat app
+        return (
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <Text style={styles.titleText}>Invite your friends</Text>
+                </View>
+
+                <Modal
+                    animationType="fade"
+                    transparent={false}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        Alert.alert("Modal has been closed.");
+                    }}
+                >
+                    <FriendInputModal
+                        onClose={closeModal}
+                        database={database}
+                        navigation={props.navigation}
+                    />
+                </Modal>
+
+                <View style={styles.body}>
+                    <Image
+                        style={styles.image}
+                        source={require("../assets/FriendsHangout.png")}
+                    />
+                    <Text style={styles.subtitleText}>
+                        You have chosen your date and inputted your availabilities,
+                        now it's time to invite some of your friends to join you!
+                </Text>
+
+                    <View style={styles.shareButtons}>
+                        <TouchableOpacity
+                            style={[
+                                styles.shareWithButton,
+                                {
+                                    backgroundColor: "#0088CC",
+                                    padding: 3,
+                                    paddingLeft: 10,
+                                    paddingRight: 10,
+                                },
+                            ]}
+                            onPress={() =>
+                                shareWithTelegram(encodeUserInfoToURL(DoWhatWebURL))
+                            }
+                        >
+                            <MaterialCommunityIcons
+                                name="send-circle"
+                                color={"blue"}
+                                size={20}
+                            />
+                            <Text style={{ fontSize: 11, color: "white" }}>
+                                Share with Telegram
+                        </Text>
+                        </TouchableOpacity>
+
+                        <Text> | </Text>
+
+                        <TouchableOpacity
+                            style={[
+                                styles.shareWithButton,
+                                {
+                                    backgroundColor: "#25D366",
+                                    padding: 3,
+                                    paddingLeft: 10,
+                                    paddingRight: 10,
+                                },
+                            ]}
+                            onPress={() =>
+                                shareWithWhatsapp(encodeUserInfoToURL(DoWhatWebURL))
+                            }
+                        >
+                            <MaterialCommunityIcons
+                                name="whatsapp"
+                                color={"green"}
+                                size={20}
+                            />
+                            <Text style={{ fontSize: 11, color: "white" }}>
+                                Share with Whatsapp
+                        </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                <View style={styles.footer}>
+                    <TouchableOpacity
+                        style={[
+                            styles.shareWithButton,
+                            {
+                                marginTop: 10,
+                                backgroundColor: "grey",
+                                padding: 3,
+                                paddingLeft: 10,
+                                paddingRight: 10,
+                            },
+                        ]}
+                        onPress={() => setModalVisible(true)}
+                    >
+                        <Text style={{ fontSize: 11, color: "white" }}>
+                            Invite friends from DoWhat
+                    </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={[
+                            styles.shareWithButton,
+                            {
+                                backgroundColor: "grey",
+                                padding: 3,
+                                paddingLeft: 10,
+                                paddingRight: 10,
+                            },
+                        ]}
+                        onPress={() =>
+                            props.navigation.navigate("Genre", { route: "link" })
+                        }
+                    >
+                        <Text style={{ fontSize: 11, color: "white" }}>Done</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    }
 };
 
 const mapStateToProps = (state) => {
+    const dateInString = formatDateToString(state.date_select.date);
     return {
         userID: state.add_events.userID,
+        selected_date: dateInString,
     };
 };
 
@@ -206,15 +382,15 @@ const styles = StyleSheet.create({
         marginTop: "10%",
     },
     body: {
-        flex: 3,
+        flex: 5,
         alignContent: "center",
         alignItems: "center",
+        marginTop: 0,
         margin: "5%",
     },
     footer: {
-        flex: 1,
+        flex: 2,
         flexDirection: "column",
-        margin: "5%",
         alignContent: "center",
         alignItems: "center",
         justifyContent: "space-around",
