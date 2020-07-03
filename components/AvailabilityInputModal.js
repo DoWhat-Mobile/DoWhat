@@ -9,7 +9,7 @@ import {
 
 import { connect } from "react-redux";
 import { finalizeTimeline } from "../actions/timeline_actions";
-
+import { AntDesign } from "@expo/vector-icons";
 import Timeline from "./Timeline";
 import moment from "moment";
 

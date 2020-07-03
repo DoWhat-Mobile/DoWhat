@@ -8,7 +8,7 @@ import {
 } from "../../reusable-functions/GoogleCalendarInvite";
 import { handleRipple } from "../../reusable-functions/data_timeline";
 import moment from "moment-timezone";
-
+import firebase from "../../database/firebase";
 const Schedule = ({
     navigation,
     data,
@@ -16,6 +16,7 @@ const Schedule = ({
     mapUpdate,
     genres,
     accessRights,
+    userID,
 }) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
@@ -101,6 +102,10 @@ const Schedule = ({
         const formattedData = formatEventsData(events); // Formatted data contains event title
         // handleProcess function and all other logic is in GoogleCalendarInvite.js
         await handleProcess(formattedData, timingsArray);
+        let updates = {};
+        updates["/users/" + userID + "/busy_periods"] = null;
+
+        firebase.database().ref().update(updates);
         navigation.navigate("Home"); // navigate back once done
     };
 

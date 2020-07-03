@@ -18,7 +18,6 @@ import firebase from "../database/firebase";
 import Genre from "../components/genre/Genre";
 import { getBusyPeriodFromGoogleCal } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
 import { AntDesign } from "@expo/vector-icons";
-
 export const formatDate = (day, month, date) => {
     const possibleDays = [
         "Sunday",
@@ -55,6 +54,8 @@ const DateSelection = (props) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isFinalized, setIsFinalized] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
+
+    let synced = isButtonDisabled ? "synced" : "manual";
 
     const inputAvailabilities = () => {
         getBusyPeriodFromGoogleCal(props.userID, date); // User ID comes from Redux state
@@ -131,6 +132,7 @@ const DateSelection = (props) => {
         props.navigation.navigate("Loading", {
             // route: route,
             access: "host",
+            synced: synced,
         });
     };
 
