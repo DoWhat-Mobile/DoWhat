@@ -9,7 +9,7 @@ import { formatDate } from '../DateSelection';
  * in the app
  */
 const RouteFilterModal = ({ onClose, navigation }) => {
-    const routeOptions = ['manual', 'collab', 'invite']
+    const routeOptions = ['invite', 'collab', 'manual']
 
     // Navigate to date selection page, with props required for different routes
     const navigateToDateSelect = (item) => {
@@ -23,21 +23,21 @@ const RouteFilterModal = ({ onClose, navigation }) => {
         onClose()
     }
 
-    const renderManualCard = () => {
+    const renderInviteCard = () => {
         return (
             <TouchableOpacity style={[styles.individualCard, { backgroundColor: '#5846DE' }]}
-                onPress={() => navigateToDateSelect('collab')}>
-                <Text style={styles.titleText}>Plan with DoWhat Friends</Text>
+                onPress={() => navigateToDateSelect('invite')}>
+                <Text style={styles.titleText}>Plan with Friends without DoWhat app</Text>
                 <View>
                     <Text style={styles.subTitleText}>
-                        Select this option if you already have friends in DoWhat
+                        Select this option if your friends do not use DoWhat
                     </Text>
                 </View>
             </TouchableOpacity>
         )
     }
 
-    const renderInviteCard = () => {
+    const renderManualCard = () => {
         return (
             <TouchableOpacity style={[styles.individualCard, { backgroundColor: '#B65E76' }]}
                 onPress={() => navigateToDateSelect('manual')}>
@@ -54,11 +54,11 @@ const RouteFilterModal = ({ onClose, navigation }) => {
     const renderCollabCard = () => {
         return (
             <TouchableOpacity style={[styles.individualCard, { backgroundColor: '#E29E40' }]}
-                onPress={() => navigateToDateSelect('invite')}>
-                <Text style={styles.titleText}>Plan with Friends without DoWhat app</Text>
+                onPress={() => navigateToDateSelect('collab')}>
+                <Text style={styles.titleText}>Plan with DoWhat Friends</Text>
                 <View>
                     <Text style={styles.subTitleText}>
-                        Select this option if your friends do not use DoWhat
+                        Select this option if you already have friends in DoWhat
                     </Text>
                 </View>
             </TouchableOpacity>
@@ -88,6 +88,7 @@ const RouteFilterModal = ({ onClose, navigation }) => {
                     renderItem={({ item }) => (
                         renderIndividualOptions(item)
                     )}
+                    initialScrollIndex={0.65}
                     keyExtractor={(item, index) => item + index}
                 />
             </View>
