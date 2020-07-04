@@ -259,32 +259,6 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
         removeFromFriendList(friendID);
     }
 
-    /**
-     * Returns an Array of React injected elements used as data for <SectionList> 
-     * @param {*} allAppUsers 
-     */
-    const renderToView = (allAppUsers) => {
-        var moreUsers = [];
-        for (var id in allAppUsers) { // Find all users in database (This doesnt scale well with size...)
-            const user = allAppUsers[id];
-
-            if (userID == id) continue; // Dont display yourself as a friend to be added
-
-            if (friendRequestAlreadySent(user) || friendRequestAlreadyRejected(user)
-                || friendRequestAlreadyAccepted(user)) continue;
-
-            const formattedUser = [user, id, false]; // Last boolean flag is to see if friend request is already sent
-            moreUsers.push(formattedUser);
-
-        }
-
-        if (moreUsers.length == 0) { // no more friends found
-            alert("You have sent requests to all users already")
-        }
-
-        findFriends([...moreUsers]); // Add to redux state
-    }
-
     // Show friends that user has already accepted
     const renderFriends = (name, userID) => {
         return (

@@ -1,7 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, Text, TouchableOpacty } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import SuggestedFriends from './SuggestedFriends';
 
+/**
+ * AllSuggestedFriendsModal uses SuggestedFriends component, friends prop now includes
+ * all the DoWhat users instead of only a limited number in SuggestedFriends. 
+ */
 const AllSuggestedFriendsModal = ({ friends, closeOverlay }) => {
     return (
         <View style={styles.container}>
