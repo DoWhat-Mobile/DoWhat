@@ -23,13 +23,15 @@ const AllFriends = ({ userID }) => {
     const [suggestedFriends, setSuggestedFriends] = useState([]);
     const [allSuggestedFriends, setAllSuggestedFriends] = useState([]);
     const [overlayVisible, setOverlayVisible] = useState(false);
+    const [currUserDetails, setCurrUserDetails] = useState([]);
 
     const findFriendsFromFirebase = () => {
         firebase.database()
-            .ref("users")
+            .ref('users')
             .once("value")
             .then((snapshot) => {
                 const allAppUsers = snapshot.val();
+                setCurrUserDetails(allAppUsers[userID])
                 getSuggestedFriends(allAppUsers);
             })
     }
@@ -47,10 +49,8 @@ const AllFriends = ({ userID }) => {
                     }
                 }
                 return false; // If friend request not sent before.
-
             }
             return false; // No requests node, means not sent before
-
         }
         return false; // No friend node, means not sent before
     }
@@ -68,10 +68,8 @@ const AllFriends = ({ userID }) => {
                     }
                 }
                 return false; // If friend request not sent before.
-
             }
             return false; // No requests node, means not sent before
-
         }
         return false; // No friend node, means not sent before
     }
@@ -89,12 +87,29 @@ const AllFriends = ({ userID }) => {
                     }
                 }
                 return false; // If friend request not sent before.
-
             }
             return false; // No requests node, means not sent before
-
         }
         return false; // No friend node, means not sent before
+    }
+
+    // Check if the person has already sent a friend request to this current user
+    const hasPendingFriendRequest = (currRequesteeID) => {
+        if (currUserDetails.hasOwnProperty("friends")) {
+            const currUserFriends = currUserDetails.friends;
+            if (currUserFriends.hasOwnProperty("requests")) {
+                const currUserFriendRequests = currUserFriends.requests;
+                for (var name in currUserFriendRequests) {
+                    const requesteeID = currUserFriendRequests[name];
+                    if (currRequesteeID == requesteeID) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            return false;
+        }
+        return false;
     }
 
     // Filter out suggested friends from all DoWhat users in Firebase
@@ -106,7 +121,7 @@ const AllFriends = ({ userID }) => {
             if (userID == id) continue; // Dont display yourself as a friend to be added
 
             if (friendRequestAlreadySent(user) || friendRequestAlreadyRejected(user)
-                || friendRequestAlreadyAccepted(user)) continue;
+                || friendRequestAlreadyAccepted(user) || hasPendingFriendRequest(id)) continue;
 
             const formattedUser = [user, id, false]; // Last boolean flag is to see if friend request is already sent
             moreUsers.push(formattedUser);
@@ -120,6 +135,7 @@ const AllFriends = ({ userID }) => {
         setAllSuggestedFriends([...moreUsers]);
     }
 
+    // Render all the friends that this current user has (accepted)
     const showAllMyFriends = () => {
         firebase.database()
             .ref("users/" + userID)
