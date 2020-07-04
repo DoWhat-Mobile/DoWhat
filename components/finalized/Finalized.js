@@ -11,35 +11,40 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import Schedule from "./Schedule";
 import Map from "./Map";
+import TransitRoutes from "./TransitRoutes";
 import {
     data_timeline,
     genreEventObjectArray,
 } from "../../reusable-functions/data_timeline";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import TransitRoute from "./TransitRoutes";
+import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 
 const Finalized = (props) => {
     const [isLoading, setIsLoading] = React.useState(true);
     const [visible, setVisible] = React.useState(false);
     const [coord, setCoord] = React.useState([]);
     const [data, setData] = React.useState([]);
+    const [routes, setRoutes] = React.useState([]);
 
     const route = props.route.params.route;
     const accessRights = props.route.params.access;
     const weather = props.route.params.weather;
-    const currentEvents = props.route.params.currentEvents;
+    //const currentEvents = props.route.params.currentEvents;
+    const userLocation = props.route.params.userLocation;
     const userGenres = props.route.params.userGenres;
-    const timeline =
-        route === "board"
-            ? props.route.params.timeInterval
-            : props.route.params.synced === "synced"
-            ? props.route.params.time
-            : props.finalGenres[1];
+    const allData = props.route.params.data;
+
+    let busRoutes = [];
+    busRoutes.push(userLocation);
+
     const onClose = () => {
         setVisible(false);
     };
 
     const mapUpdate = (coord) => {
         setCoord(coord);
+        // setRoutes(routes)
     };
 
     const weatherIcon = (weather) => {
@@ -68,15 +73,18 @@ const Finalized = (props) => {
     };
 
     React.useEffect(() => {
-        const data = data_timeline(
-            timeline,
-            userGenres,
-            props.allEvents,
-            currentEvents
-        );
+        // const locations = data[3];
+        // let routesArray = [];
+        // for (i = 0; i < locations.length - 1; i++) {}
+        // fetch(
+        //     "https://maps.googleapis.com/maps/api/directions/json?origin=OrchardTurn&destination=UpperChangiRoadNorth&key=" +
+        //         GOOGLE_MAPS_API_KEY +
+        //         "&mode=transit&region=sg"
+        // );
 
-        setData(data);
-        setCoord(data[2]);
+        setData(allData);
+        setCoord(allData[2]);
+        setRoutes(busRoutes.concat(allData[3]));
         setIsLoading(false);
     }, []);
 
@@ -98,26 +106,31 @@ const Finalized = (props) => {
     } else {
         return (
             <View style={styles.container}>
-                {weatherIcon(weather)}
-                <Schedule
-                    data={data}
-                    navigation={props.navigation}
-                    mapUpdate={mapUpdate}
-                    genres={userGenres}
-                    accessRights={accessRights}
-                    userID={props.userID}
-                />
+                <View style={styles.header}>
+                    {weatherIcon(weather)}
+                    <TransitRoute />
+                </View>
+                <View style={styles.body}>
+                    <Schedule
+                        data={allData}
+                        navigation={props.navigation}
+                        mapUpdate={mapUpdate}
+                        genres={userGenres}
+                        accessRights={accessRights}
+                        userID={props.userID}
+                    />
 
-                <Modal animated visible={visible} animationType="fade">
-                    <Map onClose={onClose} coord={coord} />
-                </Modal>
-                <TouchableOpacity
-                    onPress={() => {
-                        setVisible(true);
-                    }}
-                >
-                    <Text style={{ fontSize: 20 }}>Open Map View</Text>
-                </TouchableOpacity>
+                    <Modal animated visible={visible} animationType="fade">
+                        <Map onClose={onClose} coord={coord} />
+                    </Modal>
+                    <TouchableOpacity
+                        onPress={() => {
+                            setVisible(true);
+                        }}
+                    >
+                        <Text style={{ fontSize: 20 }}>Open Map View</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     }
@@ -127,6 +140,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
+    },
+    header: {
+        flex: 1,
+    },
+    body: {
+        flex: 4,
     },
 });
 

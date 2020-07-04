@@ -8,13 +8,15 @@ import {
     data_timeline,
     genreEventObjectArray,
 } from "../reusable-functions/data_timeline";
+import * as Location from "expo-location";
 
 const Loading = (props) => {
     const [freeTime, setFreeTime] = React.useState([]);
     const [weather, setWeather] = React.useState("");
     const [isWeatherLoading, setWeatherLoading] = React.useState(true);
     const [isTimingsLoading, setTimingsLoading] = React.useState(true);
-
+    const [location, setLocation] = React.useState(null);
+    const [isLocationLoading, setLocationLoading] = React.useState(true);
     const route = props.route.params.route;
     const synced = props.route.params.synced;
 
@@ -24,15 +26,29 @@ const Loading = (props) => {
     const filters =
         route === "board" ? props.route.params.filters : props.finalGenres[2];
 
-    const currentEvents =
+    const manual = genreEventObjectArray(
+        userGenres,
+        props.allEvents,
+        filters,
+        weather
+    );
+
+    const timeline =
         route === "board"
-            ? props.route.params.currentEvents
-            : genreEventObjectArray(
-                  userGenres,
-                  props.allEvents,
-                  filters,
-                  "Clear"
-              );
+            ? props.route.params.timeInterval
+            : props.route.params.synced === "synced"
+            ? props.route.params.time
+            : props.finalGenres[1];
+
+    const currentEvents =
+        route === "board" ? props.route.params.currentEvents : manual;
+
+    const data = data_timeline(
+        timeline,
+        userGenres,
+        props.allEvents,
+        currentEvents
+    );
 
     // const data = data_timeline(
     //     timeline,
@@ -44,6 +60,17 @@ const Loading = (props) => {
     React.useEffect(() => {
         const diff = props.difference;
         const userId = firebase.auth().currentUser.uid; //Firebase UID of current user
+        (async () => {
+            let { status } = await Location.requestPermissionsAsync();
+            if (status !== "granted") {
+                console.log("denied");
+                // setErrorMsg("Permission to access location was denied");
+            }
+
+            let location = await Location.getCurrentPositionAsync({});
+            setLocation(location);
+            setLocationLoading(false);
+        })();
         firebase
             .database()
             .ref("users/" + userId)
@@ -85,14 +112,18 @@ const Loading = (props) => {
         props.navigation.navigate("Finalized", {
             route: route, //set manual for now
             access: "host", // set host for now
-            weather: "Clear",
+            weather: weather,
             synced: synced,
             time: freeTime,
-            currentEvents: currentEvents,
+            data: data,
             userGenres: userGenres,
+            userLocation: {
+                lat: location.coords.latitude,
+                long: location.coords.longitude,
+            },
         });
 
-    if (isWeatherLoading || isTimingsLoading) {
+    if (isWeatherLoading || isTimingsLoading || isLocationLoading) {
         return (
             <View
                 style={{
