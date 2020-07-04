@@ -8,10 +8,11 @@ import firebase from '../database/firebase';
 import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyPeriods';
 
 /**
- * Modal that shows when user clicks "Invite friends from DoWhat" in FriendInput.js
+ * Child component of FriendInput, displays the friends that can be invited, and holds
+ * the logic of inviting friends for collaboration. 
  */
 const FriendsDisplay = ({ userID, currUserName, selected_date, database,
-    navigation }) => {
+    currUserPreferenceArr, currUserFoodFilterObj }) => {
     useEffect(() => {
         showAllMyFriends(); // All accepted friends
     }, []);
@@ -70,6 +71,28 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
         return id;
     }
 
+    // Takes update object (to update Firebase), and includes the selected curr user preferences
+    const addCurrUserPreferences = (updates) => {
+        currUserPreferenceArr.forEach((preference) => {
+            updates['/preferences'][preference] += 1
+        })
+
+        const areaSelectedArr = currUserFoodFilterObj.area;
+        const cuisineSelectedArr = currUserFoodFilterObj.cuisine;
+        const priceSelected = currUserFoodFilterObj.price;
+
+        cuisineSelectedArr.forEach(cuisine => {
+            console.log(cuisine)
+            updates['/food_filters'].cuisine[cuisine.toLowerCase()] += 1;
+        })
+
+        areaSelectedArr.forEach(area => {
+            updates['/food_filters'].area[area.toLowerCase()] += 1;
+        })
+        updates['/food_filters'].price[priceSelected] += 1;
+        return updates;
+    }
+
     /**
      * Update process:
      * 1) Get information from Firebase, and create a board with a unique board ID
@@ -90,6 +113,10 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
         updates['/selected_date'] = selected_date; // selected_date from Redux state
         updates['/invitees/' + inviteeName] = inviteeID; // Add to list of invitees
         updates['/invitees/' + currUserName] = userID; // Add to list of invitees
+        updates['/availabilities/' + formattedUserEmail] = inviteeBusyPeriods;
+        updates['host'] = currUserName;
+        updates['/isNewlyAddedBoard'] = true;
+
         updates['/preferences'] = {
             adventure: 0,
             arts: 0,
@@ -102,13 +129,12 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
             area: { north: 0, east: 0, west: 0, central: 0 },
             cuisine: {
                 asian: 0, western: 0, chinese: 0, korean: 0, indian: 0,
-                japanese: 0, cafe: 0, local: 0
+                japanese: 0, cafe: 0, hawker: 0
             },
             price: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 }
         };
-        updates['/availabilities/' + formattedUserEmail] = inviteeBusyPeriods;
-        updates['host'] = currUserName;
-        updates['/isNewlyAddedBoard'] = true;
+
+        updates = addCurrUserPreferences(updates);
 
         firebase.database()
             .ref('collab_boards') // Create a collab board in Firebase
@@ -242,7 +268,9 @@ const mapStateToProps = (state) => {
     return {
         selected_date: dateInString,
         userID: state.add_events.userID,
-        currUserName: state.add_events.currUserName
+        currUserName: state.add_events.currUserName,
+        currUserPreferenceArr: state.genre.genres[0],
+        currUserFoodFilterObj: state.genre.genres[2],
     };
 };
 
