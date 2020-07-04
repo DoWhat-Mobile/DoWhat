@@ -10,7 +10,7 @@ import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyP
 /**
  * Modal that shows when user clicks "Invite friends from DoWhat" in FriendInput.js
  */
-const FriendInputModal = ({ userID, currUserName, selected_date, database,
+const FriendsDisplay = ({ userID, currUserName, selected_date, database,
     navigation }) => {
     useEffect(() => {
         showAllMyFriends(); // All accepted friends
@@ -246,7 +246,7 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, null)(FriendInputModal);
+export default connect(mapStateToProps, null)(FriendsDisplay);
 
 const styles = StyleSheet.create({
     container: {
