@@ -31,7 +31,7 @@ const Loading = (props) => {
                   userGenres,
                   props.allEvents,
                   filters,
-                  weather
+                  "Clear"
               );
 
     // const data = data_timeline(
@@ -85,7 +85,7 @@ const Loading = (props) => {
         props.navigation.navigate("Finalized", {
             route: route, //set manual for now
             access: "host", // set host for now
-            weather: weather,
+            weather: "Clear",
             synced: synced,
             time: freeTime,
             currentEvents: currentEvents,

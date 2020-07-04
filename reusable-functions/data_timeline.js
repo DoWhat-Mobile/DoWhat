@@ -89,7 +89,7 @@ export const genreEventObjectArray = (userGenres, events, filters, weather) => {
             }
         }
     } else {
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < userGenres.length || userGenres.length < 4; i++) {
             const genre = userGenres[i];
             if (genre !== "food") {
                 const eventObject = events[genre]["list"];
