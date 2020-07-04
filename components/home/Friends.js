@@ -9,6 +9,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import firebase from '../../database/firebase';
 import FriendRequestModal from './FriendRequestModal';
 import SuggestedFriends from './SuggestedFriends';
+import AllSuggestedFriendsModal from './AllSuggestedFriendsModal';
+import { Overlay } from 'react-native-elements';
 
 const AllFriends = ({ userID }) => {
     useEffect(() => {
@@ -18,7 +20,9 @@ const AllFriends = ({ userID }) => {
 
     const [allAcceptedFriends, setAllAcceptedFriends] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [allUsers, setAllUsers] = useState([]);
+    const [suggestedFriends, setSuggestedFriends] = useState([]);
+    const [allSuggestedFriends, setAllSuggestedFriends] = useState([]);
+    const [overlayVisible, setOverlayVisible] = useState(false);
 
     const findFriendsFromFirebase = () => {
         firebase.database()
@@ -26,17 +30,94 @@ const AllFriends = ({ userID }) => {
             .once("value")
             .then((snapshot) => {
                 const allAppUsers = snapshot.val();
-                var additions = [];
-                for (var userID in allAppUsers) {
-                    const userDetails = allAppUsers[userID];
-                    var obj = {
-                        name: userDetails.first_name + ' ' + userDetails.last_name,
-                        profilePicture: userDetails.profile_picture_url
-                    };
-                    additions.push(obj);
-                }
-                setAllUsers([...additions]);
+                getSuggestedFriends(allAppUsers);
             })
+    }
+
+    // Check if requests has been sent before, prevents spamming from a user.
+    const friendRequestAlreadySent = (user) => {
+        // Check if there is even a user node
+        if (user.hasOwnProperty('friends')) {
+            if (user.friends.hasOwnProperty('requests')) {
+                const allFriendRequests = user.friends.requests;
+
+                for (var requestee in allFriendRequests) {
+                    if (userID == allFriendRequests[requestee]) {
+                        return true;
+                    }
+                }
+                return false; // If friend request not sent before.
+
+            }
+            return false; // No requests node, means not sent before
+
+        }
+        return false; // No friend node, means not sent before
+    }
+
+    // Check if request has been rejected by the requetee before 
+    const friendRequestAlreadyAccepted = (user) => {
+        // Check if there is even a user node
+        if (user.hasOwnProperty('friends')) {
+            if (user.friends.hasOwnProperty('accepted')) {
+                const allFriendRequestsAccepts = user.friends.accepted;
+
+                for (var requestee in allFriendRequestsAccepts) {
+                    if (userID == allFriendRequestsAccepts[requestee]) {
+                        return true;
+                    }
+                }
+                return false; // If friend request not sent before.
+
+            }
+            return false; // No requests node, means not sent before
+
+        }
+        return false; // No friend node, means not sent before
+    }
+
+    // Check if request has been rejected by the requetee before 
+    const friendRequestAlreadyRejected = (user) => {
+        // Check if there is even a user node
+        if (user.hasOwnProperty('friends')) {
+            if (user.friends.hasOwnProperty('rejected')) {
+                const allFriendRequestsRejects = user.friends.rejected;
+
+                for (var requestee in allFriendRequestsRejects) {
+                    if (userID == allFriendRequestsRejects[requestee]) {
+                        return true;
+                    }
+                }
+                return false; // If friend request not sent before.
+
+            }
+            return false; // No requests node, means not sent before
+
+        }
+        return false; // No friend node, means not sent before
+    }
+
+    // Filter out suggested friends from all DoWhat users in Firebase
+    const getSuggestedFriends = (allAppUsers) => {
+        var moreUsers = [];
+        for (var id in allAppUsers) { // Find all users in database (This doesnt scale well with size...)
+            const user = allAppUsers[id];
+
+            if (userID == id) continue; // Dont display yourself as a friend to be added
+
+            if (friendRequestAlreadySent(user) || friendRequestAlreadyRejected(user)
+                || friendRequestAlreadyAccepted(user)) continue;
+
+            const formattedUser = [user, id, false]; // Last boolean flag is to see if friend request is already sent
+            moreUsers.push(formattedUser);
+
+        }
+
+        if (moreUsers.length == 0) { // no more friends found
+            return;
+        }
+        setSuggestedFriends([...moreUsers.slice(0, 4)]) // Limited friends shown
+        setAllSuggestedFriends([...moreUsers]);
     }
 
     const showAllMyFriends = () => {
@@ -83,12 +164,26 @@ const AllFriends = ({ userID }) => {
         setModalVisible(false);
     }
 
-    const openModal = () => {
-        setModalVisible(true);
+    const openOverlay = () => {
+        setOverlayVisible(true);
+    }
+
+    const closeOverlay = () => {
+        setOverlayVisible(false);
     }
 
     return (
         <View style={styles.container}>
+            <Overlay
+                isVisible={overlayVisible}
+                windowBackgroundColor="rgba(255, 255, 255, .5)"
+                overlayBackgroundColor="red"
+                width="auto"
+                height="auto"
+            >
+                <AllSuggestedFriendsModal friends={allSuggestedFriends} closeOverlay={closeOverlay} />
+            </Overlay>
+
             <View style={styles.header}>
                 <View style>
                     <Text style={styles.headerText}>My Friends</Text>
@@ -101,7 +196,7 @@ const AllFriends = ({ userID }) => {
             </View>
 
             <View style={styles.sectionHeader}>
-                <SuggestedFriends friends={allUsers} openModal={openModal} />
+                <SuggestedFriends friends={suggestedFriends} seeMore={openOverlay} fullView={false} />
             </View>
 
             <View style={styles.body}>
@@ -132,7 +227,6 @@ const AllFriends = ({ userID }) => {
 const mapStateToProps = (state) => {
     return {
         userID: state.add_events.userID,
-        allFriends: state.add_friends.allFriends
     };
 };
 
