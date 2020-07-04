@@ -1,82 +1,96 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    FlatList,
+} from "react-native";
+
+import { connect } from "react-redux";
+import { finalizeTimeline } from "../actions/timeline_actions";
 import { AntDesign } from "@expo/vector-icons";
-import { connect } from 'react-redux';
-import { getBusyPeriodFromGoogleCal } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
-import Timeline from './Timeline';
+import Timeline from "./Timeline";
+import moment from "moment";
 
 /**
  * The modal that shows when user selects each of the individual upcoming plans
  */
-const AvailabilityInputModal = ({ onClose, userID, date, styledDate, onFinalize }) => {
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
+const AvailabilityInputModal = ({
+    onClose,
+    styledDate,
+    onFinalize,
+    finalizeTimeline,
+    allTimings,
+}) => {
     const [boardIsFinalized, setBoardIsFinalized] = useState(false);
 
-    const inputAvailabilities = () => {
-        getBusyPeriodFromGoogleCal(userID, date); // User ID comes from Redux state
-        setIsButtonDisabled(true); // Prevent syncing google calendar twice
-    }
-
     const finalizeBoard = () => {
+        let finalTiming = [0, 24];
+        let startState = allTimings[0].startTime;
+        let start = parseInt(
+            moment(startState)
+                .tz("Asia/Singapore")
+                .format("HH:mm")
+                .substring(0, 2)
+        );
+        finalTiming[0] = start;
+        let endState = allTimings[0].endTime;
+        let val = parseInt(
+            moment(endState)
+                .tz("Asia/Singapore")
+                .format("HH:mm")
+                .substring(0, 2)
+        );
+        let end = val === 0 ? 24 : val;
+        finalTiming[1] = end;
+        console.log(finalTiming);
+        finalizeTimeline(finalTiming);
         onFinalize();
         onClose();
-    }
-
-    const renderInputAvailabilitiesButton = () => {
-        if (isButtonDisabled) {
-            return (
-                <View>
-                    <TouchableOpacity style={[styles.finalizeButton, { borderRadius: 20, backgroundColor: '#2a9d8f', borderWidth: 0.2 }]}
-                        disabled={true}
-                        onPress={() => finalizeBoard()}>
-                        <AntDesign
-                            name="check"
-                            size={20}
-                            style={{ color: 'white' }}
-                        />
-                        <Text style={{ color: 'white', marginLeft: 5 }}>
-                            Availabilities Inputted
-                            </Text>
-                    </TouchableOpacity>
-                </View>
-            );
-        } else {
-            return (
-                <TouchableOpacity style={styles.finalizeButton} onPress={() => inputAvailabilities()}
-                    disabled={isButtonDisabled}>
-                    <Text>Sync Google Calendar</Text>
-                </TouchableOpacity>
-            );
-        }
-    }
+    };
 
     const renderDoneButton = () => {
         if (boardIsFinalized) {
             return (
-                <TouchableOpacity style={[styles.finalizeButton, { borderRadius: 20, backgroundColor: '#e63946', borderWidth: 0.2 }]}
+                <TouchableOpacity
+                    style={[
+                        styles.finalizeButton,
+                        {
+                            borderRadius: 20,
+                            backgroundColor: "#e63946",
+                            borderWidth: 0.2,
+                        },
+                    ]}
                     disabled={true}
-                    onPress={() => finalizeBoard()}>
+                    onPress={() => finalizeBoard()}
+                >
                     <AntDesign
                         name="check"
                         size={20}
-                        style={{ color: 'white' }}
+                        style={{ color: "white" }}
                     />
                 </TouchableOpacity>
-            )
+            );
         }
         return (
-            <TouchableOpacity style={styles.finalizeButton} onPress={() => finalizeBoard()}>
+            <TouchableOpacity
+                style={styles.finalizeButton}
+                onPress={() => finalizeBoard()}
+            >
                 <Text>Done</Text>
             </TouchableOpacity>
         );
-    }
+    };
 
     return (
         <View style={styles.modal}>
             <Text style={styles.headerText}>
                 Availabilities input for {styledDate}
             </Text>
-            <AntDesign name="close" size={24}
+            <AntDesign
+                name="close"
+                size={24}
                 onPress={() => onClose()}
                 style={styles.close}
             />
@@ -86,29 +100,38 @@ const AvailabilityInputModal = ({ onClose, userID, date, styledDate, onFinalize 
             </View>
 
             <View style={styles.buttonGroup}>
-                {renderInputAvailabilitiesButton()}
+                {/* {renderInputAvailabilitiesButton()} */}
                 {renderDoneButton()}
             </View>
-        </View >
+        </View>
     );
-}
+};
+
+const mapDispatchToProps = {
+    finalizeTimeline,
+};
 
 const mapStateToProps = (state) => {
+    // Main user's timing
     return {
         userID: state.add_events.userID,
-        currUserName: state.add_events.currUserName
+        currUserName: state.add_events.currUserName,
+        allTimings: state.timeline.availableTimings,
     };
 };
 
-export default connect(mapStateToProps, null)(AvailabilityInputModal);
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(AvailabilityInputModal);
 
 const styles = StyleSheet.create({
     modal: {
         flex: 1,
-        marginBottom: '20%',
-        marginTop: '10%',
-        marginLeft: '5%',
-        marginRight: '5%',
+        marginBottom: "20%",
+        marginTop: "10%",
+        marginLeft: "5%",
+        marginRight: "5%",
         backgroundColor: "white",
         borderRadius: 20,
         shadowColor: "#000",
@@ -124,11 +147,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     headerText: {
-        fontWeight: '800',
+        fontWeight: "800",
         fontSize: 17,
-        marginTop: '15%',
-        marginLeft: '4%',
-        fontFamily: 'serif'
+        marginTop: "15%",
+        marginLeft: "4%",
+        fontFamily: "serif",
     },
     body: {
         flex: 9,
@@ -141,15 +164,15 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     buttonGroup: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        flexDirection: "row",
+        justifyContent: "space-between",
     },
     finalizeButton: {
         borderWidth: 1,
         borderRadius: 10,
-        justifyContent: 'center',
-        flexDirection: 'row',
-        alignSelf: 'flex-end',
+        justifyContent: "center",
+        flexDirection: "row",
+        alignSelf: "flex-end",
         padding: 5,
         marginRight: 10,
         marginLeft: 10,

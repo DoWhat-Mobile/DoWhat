@@ -26,7 +26,14 @@ const Finalized = (props) => {
     const route = props.route.params.route;
     const accessRights = props.route.params.access;
     const weather = props.route.params.weather;
-    console.log(weather);
+    const currentEvents = props.route.params.currentEvents;
+    const userGenres = props.route.params.userGenres;
+    const timeline =
+        route === "board"
+            ? props.route.params.timeInterval
+            : props.route.params.synced === "synced"
+            ? props.route.params.time
+            : props.finalGenres[1];
     const onClose = () => {
         setVisible(false);
     };
@@ -60,36 +67,17 @@ const Finalized = (props) => {
         );
     };
 
-    const userGenres =
-        route === "board" ? props.route.params.genres : props.finalGenres[0];
-    const filters =
-        route === "board" ? props.route.params.filters : props.finalGenres[2];
-    const timeline =
-        route === "board"
-            ? props.route.params.timeInterval
-            : props.finalGenres[1];
-    const currentEvents =
-        route === "board"
-            ? props.route.params.currentEvents
-            : genreEventObjectArray(
-                  userGenres,
-                  props.allEvents,
-                  filters,
-                  weather
-              );
-
     React.useEffect(() => {
-        if (props.allEvents != {}) {
-            const data = data_timeline(
-                timeline,
-                userGenres,
-                props.allEvents,
-                currentEvents
-            );
-            setData(data);
-            setCoord(data[2]);
-            setIsLoading(false);
-        }
+        const data = data_timeline(
+            timeline,
+            userGenres,
+            props.allEvents,
+            currentEvents
+        );
+
+        setData(data);
+        setCoord(data[2]);
+        setIsLoading(false);
     }, []);
 
     if (isLoading) {
@@ -117,6 +105,7 @@ const Finalized = (props) => {
                     mapUpdate={mapUpdate}
                     genres={userGenres}
                     accessRights={accessRights}
+                    userID={props.userID}
                 />
 
                 <Modal animated visible={visible} animationType="fade">
@@ -146,6 +135,7 @@ const mapStateToProps = (state) => {
         finalGenres: state.genre.genres,
         finalTiming: state.timeline.finalTiming,
         allEvents: state.add_events.events,
+        userID: state.add_events.userID,
     };
 };
 
