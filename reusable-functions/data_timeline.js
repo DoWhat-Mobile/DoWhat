@@ -89,7 +89,7 @@ export const genreEventObjectArray = (userGenres, events, filters, weather) => {
             }
         }
     } else {
-        for (i = 0; i < userGenres.length; i++) {
+        for (i = 0; i < 4; i++) {
             const genre = userGenres[i];
             if (genre !== "food") {
                 const eventObject = events[genre]["list"];
@@ -115,7 +115,7 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
     let startTime = timeline[0];
     let num = userGenres.length;
     let locationArray = [];
-
+    let routesArray = [];
     // checks if user selected food so dinner will be included if user has time 6pm onwards
     let food = userGenres.includes("food") && startTime <= 13 ? 1 : 0;
 
@@ -128,6 +128,7 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
                 let intervalObject = { start: "", end: "" };
                 intervalObject.start = startTime.toString() + ":00";
                 locationArray.push({ coord: event.coord, name: event.name });
+                routesArray.push(event.location);
 
                 data.push(objectFormatter(startTime, event, genre));
                 currentEvents.splice(i, 1);
@@ -154,7 +155,7 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
         if (startTime >= timeline[1] - 1) break;
     }
 
-    return [data, timingsArray, locationArray];
+    return [data, timingsArray, locationArray, routesArray];
 };
 
 /**

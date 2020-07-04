@@ -68,16 +68,13 @@ const Finalized = (props) => {
     };
 
     React.useEffect(() => {
-        //if (props.allEvents != {})
-        console.log(timeline);
-        console.log(userGenres);
-        console.log(currentEvents);
         const data = data_timeline(
             timeline,
             userGenres,
             props.allEvents,
             currentEvents
         );
+
         setData(data);
         setCoord(data[2]);
         setIsLoading(false);
