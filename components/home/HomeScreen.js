@@ -1,6 +1,3 @@
-/**
- * THIS SCREEN IS NOT IN USE CURRENTLY. NAVIGATES STRAIGHT TO AUTHSCREEN 
- */
 import React from "react";
 import { connect } from "react-redux";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
