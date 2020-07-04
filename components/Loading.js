@@ -57,6 +57,11 @@ const Loading = (props) => {
     //     currentEvents
     // );
 
+    const routesArray = (userLocation, arr) => {
+        let temp = [];
+        temp.push(userLocation);
+        return temp.concat(arr);
+    };
     React.useEffect(() => {
         const diff = props.difference;
         const userId = firebase.auth().currentUser.uid; //Firebase UID of current user
@@ -117,10 +122,13 @@ const Loading = (props) => {
             time: freeTime,
             data: data,
             userGenres: userGenres,
-            userLocation: {
-                lat: location.coords.latitude,
-                long: location.coords.longitude,
-            },
+            userLocation: routesArray(
+                {
+                    lat: location.coords.latitude,
+                    long: location.coords.longitude,
+                },
+                data[3]
+            ),
         });
 
     if (isWeatherLoading || isTimingsLoading || isLocationLoading) {

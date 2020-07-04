@@ -33,7 +33,6 @@ const Schedule = ({
             const startTime = dataObj.startTime;
             const event = dataObj.event;
             const genre = dataObj.genre;
-            console.log(startTime);
             formatData.push(objectFormatter(startTime, event, genre));
         }
 

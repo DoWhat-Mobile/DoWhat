@@ -27,14 +27,13 @@ const Finalized = (props) => {
     const [data, setData] = React.useState([]);
     const [routes, setRoutes] = React.useState([]);
 
-    const route = props.route.params.route;
+    //const route = props.route.params.route;
     const accessRights = props.route.params.access;
     const weather = props.route.params.weather;
     //const currentEvents = props.route.params.currentEvents;
     const userLocation = props.route.params.userLocation;
     const userGenres = props.route.params.userGenres;
     const allData = props.route.params.data;
-
     let busRoutes = [];
     busRoutes.push(userLocation);
 

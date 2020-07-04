@@ -2,8 +2,6 @@ import React from "react";
 import { View, Text } from "react-native";
 
 const TransitRoute = ({ routes }) => {
-    const routeHelper = () => {};
-
     return (
         <View>
             <Text>HELLOOOOO</Text>
