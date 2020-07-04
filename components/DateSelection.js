@@ -128,12 +128,7 @@ const DateSelection = (props) => {
 
     const syncWithFirebaseThenNavigate = () => {
         addSelectedDateToFirebase();
-        //props.navigation.navigate("FriendInput");
-        props.navigation.navigate("Loading", {
-            route: "manual",
-            access: "host",
-            synced: synced,
-        });
+        props.navigation.navigate("FriendInput", { route: props.route.params.route });
     };
 
     const closeModal = () => {

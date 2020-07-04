@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
     View, Text, StyleSheet, TouchableOpacity,
-    SectionList
+    FlatList
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
 import firebase from '../database/firebase';
 import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyPeriods';
@@ -11,7 +10,7 @@ import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyP
 /**
  * Modal that shows when user clicks "Invite friends from DoWhat" in FriendInput.js
  */
-const FriendInputModal = ({ onClose, userID, currUserName, selected_date, database,
+const FriendInputModal = ({ userID, currUserName, selected_date, database,
     navigation }) => {
     useEffect(() => {
         showAllMyFriends(); // All accepted friends
@@ -109,6 +108,7 @@ const FriendInputModal = ({ onClose, userID, currUserName, selected_date, databa
         };
         updates['/availabilities/' + formattedUserEmail] = inviteeBusyPeriods;
         updates['host'] = currUserName;
+        updates['/isNewlyAddedBoard'] = true;
 
         firebase.database()
             .ref('collab_boards') // Create a collab board in Firebase
@@ -180,72 +180,58 @@ const FriendInputModal = ({ onClose, userID, currUserName, selected_date, databa
         });
     }
 
-    // Format the data into the list
-    const renderFriends = (name, userID, requested) => {
+    // Format the data into the Flat List Component 
+    const renderIndividualFriends = (name, userID, requested) => {
         if (!requested) {
             return (
-                <View style={styles.friend}>
-                    <Text style={{ marginLeft: '2%' }}>{name.replace('_', ' ')}</Text>
-                    <View style={styles.buttonGroup}>
-                        <TouchableOpacity style={{ borderWidth: 1, borderRadius: 10, padding: 5 }}
-                            onPress={() => inviteForCollab(name, userID)}>
-                            <Text>Invite</Text>
-                        </TouchableOpacity>
+                <View style={styles.friendCard}>
+                    <View style={{ flex: 1, }}>
+                        <Text style={styles.nameStyle}>{name.replace('_', ' ')}</Text>
                     </View>
+                    <TouchableOpacity onPress={() => inviteForCollab(name, userID)}
+                        style={styles.addFriendButton}>
+                        <Text style={{
+                            fontWeight: 'bold', fontSize: 12, textAlign: 'center',
+                            color: '#1d3557'
+                        }}>
+                            Invite
+                </Text>
+                    </TouchableOpacity>
                 </View>
             )
+
         } else {
             return (
-                <View style={styles.friend}>
-                    <Text style={{ marginLeft: '2%' }}>{name.replace('_', ' ')}</Text>
-                    <View style={styles.buttonGroup}>
-                        <TouchableOpacity style={{ borderWidth: 1, borderRadius: 10, padding: 5, backgroundColor: 'green' }}
-                            onPress={() => inviteForCollab(name, userID)}>
-                            <Text style={{ color: 'white' }}>Invited</Text>
-                        </TouchableOpacity>
+                <View style={styles.friendCard}>
+                    <View style={{ flex: 1, }}>
+                        <Text style={styles.nameStyle}>{name.replace('_', ' ')}</Text>
                     </View>
+                    <TouchableOpacity disabled={true}
+                        style={[styles.addFriendButton, { backgroundColor: '#1a936f' }]}>
+                        <Text style={{
+                            fontWeight: 'bold', fontSize: 12, textAlign: 'center',
+                            color: '#f0f0f0'
+                        }}>
+                            Invitation Sent
+                </Text>
+                    </TouchableOpacity>
                 </View>
             )
         }
     }
 
+
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <View style>
-                    <Text style={styles.headerText}>Your Friends</Text>
-                </View>
-                <AntDesign
-                    name="close"
-                    size={24}
-                    onPress={() => onClose()}
-                    style={styles.close}
-                />
-            </View>
-
-            <View style={styles.body}>
-                <SectionList
-                    progressViewOffset={100}
-                    sections={[
-                        { title: "", data: allAcceptedFriends },
-                    ]}
-                    renderItem={({ item }) => renderFriends(item[0], item[1], item[2])} // Each item is [userDetails, UserID]
-                    renderSectionHeader={({ section }) =>
-                        <View style={styles.sectionHeader}>
-                            <TouchableOpacity
-                                onPress={() => handleTitlePress(section.title)}>
-                                <Text style={styles.sectionHeaderText}>{section.title}</Text>
-                            </TouchableOpacity>
-                        </View>
-                    }
-                    keyExtractor={(item, index) => index}
-                />
-            </View>
-            <TouchableOpacity onPress={() => navigation.navigate("Plan")}>
-                <Text>
-                    DONE
-                    </Text>
-            </TouchableOpacity>
+            <FlatList
+                data={allAcceptedFriends}
+                horizontal={true}
+                numColumns={1}
+                renderItem={({ item }) => (
+                    renderIndividualFriends(item[0], item[1], item[2])
+                )}
+                keyExtractor={(item, index) => item + index}
+            />
         </View>
     );
 };
@@ -266,31 +252,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    header: {
-        flex: 1,
-        flexDirection: "column",
-        justifyContent: 'space-around',
-    },
     headerText: {
         fontWeight: '800',
         fontSize: 20,
         marginTop: '15%',
         marginLeft: '8%',
         fontFamily: 'serif'
-
-    },
-    headerButton: {
-        flex: 1,
-        justifyContent: 'center',
-        alignSelf: 'flex-end',
-        borderRadius: 100,
-        paddingRight: 15,
-        paddingLeft: 15,
-        paddingBottom: 25,
-        paddingTop: 25,
-        marginBottom: 10,
-        marginRight: '5%',
-        borderWidth: 1,
     },
     body: {
         flex: 8,
@@ -331,4 +298,24 @@ const styles = StyleSheet.create({
         top: 15,
         bottom: 0,
     },
+    friendCard: {
+        borderWidth: 0.5,
+        margin: 8,
+        flexShrink: 1,
+        borderRadius: 5,
+        height: 150,
+        width: 120,
+    },
+    nameStyle: {
+        flexWrap: 'wrap',
+        textAlign: 'center',
+        marginTop: 5,
+
+    },
+    addFriendButton: {
+        borderWidth: 0.5,
+        margin: 5,
+        marginTop: 0,
+        borderColor: '#1d3557'
+    }
 });

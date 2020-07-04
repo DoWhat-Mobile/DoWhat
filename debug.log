@@ -364,8 +364,5 @@
 [0702/232522.880:ERROR:crash_report_database_win.cc(428)] unexpected header
 [0702/233522.882:ERROR:crash_report_database_win.cc(428)] unexpected header
 [0702/233522.882:ERROR:crash_report_database_win.cc(428)] unexpected header
-[0704/144932.643:ERROR:crash_report_database_win.cc(428)] unexpected header
-[0704/144932.643:ERROR:crash_report_database_win.cc(428)] unexpected header
-[0704/145432.641:ERROR:crash_report_database_win.cc(428)] unexpected header
-[0704/150932.652:ERROR:crash_report_database_win.cc(428)] unexpected header
-[0704/152432.658:ERROR:crash_report_database_win.cc(428)] unexpected header
+[0704/155432.674:ERROR:crash_report_database_win.cc(428)] unexpected header
+

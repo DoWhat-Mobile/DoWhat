@@ -12,6 +12,8 @@ import moment from "moment-timezone";
  * 5) Find the longest sequence of free timings found in 4).
  * 6) Have a minimum overlapping time cut off at 2h. This prevents time intervals from being too small. **NOT IMPLEMENTED**
  * 7) Omit anyone who can not be included in the min 2h time interval **NOT IMPLEMENTED**
+ * @param {*} allAttendees from firebase user node, user.attendees 
+ * @param {*} mainUserBusyPeriod from firebase user node, user.busy_periods 
  */
 export const findOverlappingIntervals = (allAttendees, mainUserBusyPeriod) => {
     var allAvailabilities = [];

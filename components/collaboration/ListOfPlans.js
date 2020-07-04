@@ -39,6 +39,11 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
     const viewMoreDetails = (board) => {
         setBoardDetails(board); // Pass in the details of the clicked board to the modal
         setBoardModalVisibility(true)
+
+        // Once board is opened, its no longer considered a new board
+        firebase.database()
+            .ref('collab_boards/' + board.boardID)
+            .update({ isNewlyAddedBoard: false });
     }
 
     // To open each individual collaboration board ChatRoom 
@@ -196,9 +201,36 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
                         borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
                 </View>
             )
+        } else if (board.isNewlyAddedBoard) {
+            return (
+                < TouchableOpacity
+                    onPress={() => viewMoreDetails(board)}>
+                    <View style={[styles.individualPlan, { backgroundColor: '#ff9f1c' }]}>
+                        <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
+                            <View>
+                                <Text style={{ color: 'black', fontSize: 16, fontWeight: '700' }}>
+                                    This is your newly added plan
+                                </Text>
+                                <Text>
+                                    Outing on: {board.selected_date}
+                                </Text>
+                                {collborationBoardText(board, isUserHost)}
+                            </View>
+                            <TouchableOpacity onPress={() => viewBoardChatRoom(board)}>
+                                <MaterialCommunityIcons name="chat" color={'black'} size={25} />
+                            </TouchableOpacity>
+                        </View>
+                        <Progress.Bar progress={finalizedFraction}
+                            width={Dimensions.get('window').width - 40}
+                            borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
+                    </View>
+                </TouchableOpacity >
+            )
         }
         return (
-            <TouchableOpacity onPress={() => viewMoreDetails(board)}>
+            < TouchableOpacity
+                onPress={() => viewMoreDetails(board)}>
+
                 <View style={styles.individualPlan}>
                     <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
                         <View>
@@ -215,12 +247,12 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
                         width={Dimensions.get('window').width - 40}
                         borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
                 </View>
-            </TouchableOpacity>
+            </TouchableOpacity >
         )
     }
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container]}>
             <Modal
                 animationType="fade"
                 transparent={true}
