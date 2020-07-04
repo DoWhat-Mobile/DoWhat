@@ -137,7 +137,7 @@ const SuggestedFriends = ({ friends, seeMore, fullView, currUserName, userID }) 
     return (
         <View>
             <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                <Text style={{ color: 'black', marginLeft: 5, fontFamily: 'serif', }}>
+                <Text style={{ color: 'black', marginLeft: 10, fontFamily: 'serif', }}>
                     {fullView ? 'All ' : ''}Suggested Friends
                 </Text>
                 <TouchableOpacity onPress={seeMore}>
@@ -146,15 +146,17 @@ const SuggestedFriends = ({ friends, seeMore, fullView, currUserName, userID }) 
                     </Text>
                 </TouchableOpacity>
             </View>
-            <FlatList
-                data={allFriends}
-                horizontal={false}
-                numColumns={4}
-                renderItem={({ item }) => (
-                    renderIndividualFriends(item)
-                )}
-                keyExtractor={(item, index) => item + index}
-            />
+            <View style={{ margin: 10 }}>
+                <FlatList
+                    data={allFriends}
+                    horizontal={false}
+                    numColumns={3}
+                    renderItem={({ item }) => (
+                        renderIndividualFriends(item)
+                    )}
+                    keyExtractor={(item, index) => item + index}
+                />
+            </View>
         </View>
     )
 }

@@ -11,6 +11,7 @@ import FriendRequestModal from './FriendRequestModal';
 import SuggestedFriends from './SuggestedFriends';
 import AllSuggestedFriendsModal from './AllSuggestedFriendsModal';
 import { Overlay } from 'react-native-elements';
+import { Badge } from 'react-native-elements';
 
 const AllFriends = ({ userID }) => {
     useEffect(() => {
@@ -23,7 +24,6 @@ const AllFriends = ({ userID }) => {
     const [suggestedFriends, setSuggestedFriends] = useState([]);
     const [allSuggestedFriends, setAllSuggestedFriends] = useState([]);
     const [overlayVisible, setOverlayVisible] = useState(false);
-    const [currUserDetails, setCurrUserDetails] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const findFriendsFromFirebase = () => {
@@ -32,8 +32,8 @@ const AllFriends = ({ userID }) => {
             .once("value")
             .then((snapshot) => {
                 const allAppUsers = snapshot.val();
-                setCurrUserDetails(allAppUsers[userID])
-                getSuggestedFriends(allAppUsers);
+                const currUserDetails = allAppUsers[userID]
+                getSuggestedFriends(allAppUsers, currUserDetails);
             })
     }
 
@@ -95,7 +95,7 @@ const AllFriends = ({ userID }) => {
     }
 
     // Check if the person has already sent a friend request to this current user
-    const hasPendingFriendRequest = (currRequesteeID) => {
+    const hasPendingFriendRequest = (currRequesteeID, currUserDetails) => {
         if (currUserDetails.hasOwnProperty("friends")) {
             const currUserFriends = currUserDetails.friends;
             if (currUserFriends.hasOwnProperty("requests")) {
@@ -114,15 +114,17 @@ const AllFriends = ({ userID }) => {
     }
 
     // Filter out suggested friends from all DoWhat users in Firebase
-    const getSuggestedFriends = (allAppUsers) => {
+    const getSuggestedFriends = (allAppUsers, currUserDetails) => {
         var moreUsers = [];
         for (var id in allAppUsers) { // Find all users in database (This doesnt scale well with size...)
             const user = allAppUsers[id];
 
             if (userID == id) continue; // Dont display yourself as a friend to be added
 
-            if (friendRequestAlreadySent(user) || friendRequestAlreadyRejected(user)
-                || friendRequestAlreadyAccepted(user) || hasPendingFriendRequest(id)) continue;
+            if (friendRequestAlreadySent(user) ||
+                friendRequestAlreadyRejected(user) ||
+                friendRequestAlreadyAccepted(user) ||
+                hasPendingFriendRequest(id, currUserDetails)) continue;
 
             const formattedUser = [user, id, false]; // Last boolean flag is to see if friend request is already sent
             moreUsers.push(formattedUser);
@@ -244,6 +246,7 @@ const AllFriends = ({ userID }) => {
                 <TouchableOpacity style={styles.headerButton}
                     onPress={() => setModalVisible(true)}>
                     <MaterialCommunityIcons name="account-plus" color={'black'} size={20} />
+                    <Badge value="2" status="error" containerStyle={{ position: "absolute", top: -4, right: -4 }} />
                 </TouchableOpacity>
             </View>
 
@@ -287,34 +290,33 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: "column",
         justifyContent: 'space-around',
+        borderWidth: 1
     },
     sectionHeader: {
         borderWidth: 0.1,
         marginTop: 20,
         margin: 5,
         elevation: 5,
-        backgroundColor: '#f0f0f0'
+        backgroundColor: '#f0f0f0',
     },
     headerText: {
         fontWeight: '800',
         fontSize: 20,
-        marginTop: '15%',
-        marginLeft: '8%',
-        fontFamily: 'serif'
+        marginTop: '10%',
+        fontFamily: 'serif',
+        alignSelf: 'center'
 
     },
     headerButton: {
         flex: 1,
         justifyContent: 'center',
         alignSelf: 'flex-end',
-        borderRadius: 100,
-        paddingRight: 15,
-        paddingLeft: 15,
-        paddingBottom: 25,
-        paddingTop: 25,
+        paddingRight: 10,
+        paddingLeft: 10,
+        paddingBottom: 20,
+        paddingTop: 20,
         marginBottom: 10,
         marginRight: '5%',
-        borderWidth: 1,
     },
     body: {
         flex: 8,
