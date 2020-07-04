@@ -26,7 +26,14 @@ const Finalized = (props) => {
     const route = props.route.params.route;
     const accessRights = props.route.params.access;
     const weather = props.route.params.weather;
-
+    const currentEvents = props.route.params.currentEvents;
+    const userGenres = props.route.params.userGenres;
+    const timeline =
+        route === "board"
+            ? props.route.params.timeInterval
+            : props.route.params.synced === "synced"
+            ? props.route.params.time
+            : props.finalGenres[1];
     const onClose = () => {
         setVisible(false);
     };
@@ -59,40 +66,21 @@ const Finalized = (props) => {
             />
         );
     };
-    const userGenres =
-        route === "board" ? props.route.params.genres : props.finalGenres[0];
-    const filters =
-        route === "board" ? props.route.params.filters : props.finalGenres[2];
-    const timeline =
-        route === "board"
-            ? props.route.params.timeInterval
-            : props.route.params.synced === "synced"
-            ? props.route.params.time
-            : props.finalGenres[1];
-
-    console.log(timeline);
-    const currentEvents =
-        route === "board"
-            ? props.route.params.currentEvents
-            : genreEventObjectArray(
-                  userGenres,
-                  props.allEvents,
-                  filters,
-                  weather
-              );
 
     React.useEffect(() => {
-        if (props.allEvents != {}) {
-            const data = data_timeline(
-                timeline,
-                userGenres,
-                props.allEvents,
-                currentEvents
-            );
-            setData(data);
-            setCoord(data[2]);
-            setIsLoading(false);
-        }
+        //if (props.allEvents != {})
+        console.log(timeline);
+        console.log(userGenres);
+        console.log(currentEvents);
+        const data = data_timeline(
+            timeline,
+            userGenres,
+            props.allEvents,
+            currentEvents
+        );
+        setData(data);
+        setCoord(data[2]);
+        setIsLoading(false);
     }, []);
 
     if (isLoading) {

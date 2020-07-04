@@ -75,7 +75,6 @@ export const filterHelper = (filters, events) => {
 
 export const genreEventObjectArray = (userGenres, events, filters, weather) => {
     let currentEvents = [];
-    console.log(weather);
 
     if (userGenres.includes("food")) {
         currentEvents.push(filterHelper(filters, events));

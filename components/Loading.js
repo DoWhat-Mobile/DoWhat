@@ -4,6 +4,10 @@ import { connect } from "react-redux";
 import { WEATHER_API_KEY } from "react-native-dotenv";
 import firebase from "../database/firebase";
 import { findOverlappingIntervals } from "../reusable-functions/OverlappingIntervals";
+import {
+    data_timeline,
+    genreEventObjectArray,
+} from "../reusable-functions/data_timeline";
 
 const Loading = (props) => {
     const [freeTime, setFreeTime] = React.useState([]);
@@ -11,8 +15,31 @@ const Loading = (props) => {
     const [isWeatherLoading, setWeatherLoading] = React.useState(true);
     const [isTimingsLoading, setTimingsLoading] = React.useState(true);
 
-    // const route = props.route.params.route;
+    const route = props.route.params.route;
     const synced = props.route.params.synced;
+
+    const userGenres =
+        route === "board" ? props.route.params.genres : props.finalGenres[0];
+
+    const filters =
+        route === "board" ? props.route.params.filters : props.finalGenres[2];
+
+    const currentEvents =
+        route === "board"
+            ? props.route.params.currentEvents
+            : genreEventObjectArray(
+                  userGenres,
+                  props.allEvents,
+                  filters,
+                  weather
+              );
+    // const data = data_timeline(
+    //     timeline,
+    //     userGenres,
+    //     props.allEvents,
+    //     currentEvents
+    // );
+
     React.useEffect(() => {
         const diff = props.difference;
         const userId = firebase.auth().currentUser.uid; //Firebase UID of current user
@@ -33,7 +60,7 @@ const Loading = (props) => {
             })
             .then((resultRange) => {
                 // resultRange is undefined if no friends synced their Gcal
-                console.log(resultRange);
+                //console.log(resultRange);
                 setFreeTime(resultRange); // Set state
                 setTimingsLoading(false);
             })
@@ -55,11 +82,13 @@ const Loading = (props) => {
 
     const onComplete = () =>
         props.navigation.navigate("Finalized", {
-            route: "manual",
-            access: "host",
+            route: route, //set manual for now
+            access: "host", // set host for now
             weather: weather,
             synced: synced,
             time: freeTime,
+            currentEvents: currentEvents,
+            userGenres: userGenres,
         });
 
     if (isWeatherLoading || isTimingsLoading) {
@@ -92,6 +121,9 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
+        finalGenres: state.genre.genres,
+        finalTiming: state.timeline.finalTiming,
+        allEvents: state.add_events.events,
         difference: state.date_select.difference,
     };
 };

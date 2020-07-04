@@ -130,7 +130,7 @@ const DateSelection = (props) => {
         addSelectedDateToFirebase();
         //props.navigation.navigate("FriendInput");
         props.navigation.navigate("Loading", {
-            // route: route,
+            route: "manual",
             access: "host",
             synced: synced,
         });
