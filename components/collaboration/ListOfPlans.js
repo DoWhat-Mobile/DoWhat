@@ -88,8 +88,7 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
     }
 
     const goToFinalized = (board, finalizedTimeline, boardID) => {
-        const isUserHost = boardID.substring(0, boardID.indexOf("_")) == userID;
-        const accessRights = isUserHost ? 'host' : 'attendee';
+        const accessRights = board.isUserHost ? 'host' : 'attendee';
 
         const topGenres = getTopVoted(board.preferences, 3);
         const topCuisines = getTopVoted(board.food_filters.cuisine, 3);
@@ -127,8 +126,8 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
         }
     }
 
-    const collborationBoardText = (board, isUserHost) => {
-        if (isUserHost) {
+    const collborationBoardText = (board) => {
+        if (board.isUserHost) {
             return (
                 <Text>
                     Initiated by me
@@ -174,8 +173,6 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
 
     const renderCollaborationBoard = (board) => {
         const finalizedFraction = getFinalizedFraction(board);
-        const isUserHost = board.boardID.
-            substring(0, board.boardID.indexOf("_")) == userID;
 
         if (finalizedFraction == 1) { // All invitees are ready
             generateFinalizedTimeline(board)
@@ -186,7 +183,7 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
                             <Text>
                                 Outing plan on {board.selected_date} is ready!
                             </Text>
-                            {collborationBoardText(board, isUserHost)}
+                            {collborationBoardText(board)}
                         </View>
                         <TouchableOpacity onPress={() => handleRouteToFinalized(board)}>
                             <AntDesign
@@ -214,7 +211,7 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
                                 <Text>
                                     Outing on: {board.selected_date}
                                 </Text>
-                                {collborationBoardText(board, isUserHost)}
+                                {collborationBoardText(board)}
                             </View>
                             <TouchableOpacity onPress={() => viewBoardChatRoom(board)}>
                                 <MaterialCommunityIcons name="chat" color={'black'} size={25} />
@@ -237,7 +234,7 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
                             <Text>
                                 Outing on: {board.selected_date}
                             </Text>
-                            {collborationBoardText(board, isUserHost)}
+                            {collborationBoardText(board)}
                         </View>
                         <TouchableOpacity onPress={() => viewBoardChatRoom(board)}>
                             <MaterialCommunityIcons name="chat" color={'black'} size={25} />

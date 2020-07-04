@@ -258,6 +258,33 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 
     const selectedDate = new Date(board.selected_date);
 
+    if (board.isUserHost) {
+        return (
+            <View style={styles.modal}>
+                <Text style={styles.headerText}>
+                    Your outing on {formatDate(selectedDate.getDay(),
+                    selectedDate.getMonth(), selectedDate.getDate())}
+                </Text>
+                <AntDesign name="close" size={24}
+                    onPress={() => onClose()}
+                    style={styles.close}
+                />
+
+                <View style={styles.body}>
+                    <Text style={{ textAlign: "center" }}>You are the host, wait for all your friends to input their collaboration</Text>
+                </View>
+
+                <View style={styles.footer}>
+                    {renderTopGenres(topGenres)}
+                    {renderInvitees(invitees)}
+                </View>
+
+                <View style={styles.buttonGroup}>
+                </View>
+            </View >
+        );
+    }
+
     return (
         <View style={styles.modal}>
             <Text style={styles.headerText}>

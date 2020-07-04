@@ -42,6 +42,7 @@ const AllPlans = ({ navigation, userID, route }) => {
                         }
 
                         collabBoard.boardID = boardID; // Attach board ID to props of board 
+                        collabBoard.isUserHost = boardID.substring(0, boardID.indexOf("_")) == userID;
                         newBoardState.push(collabBoard);
                         setAllBoards([...allBoards, collabBoard]);
                     }
