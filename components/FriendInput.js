@@ -6,7 +6,7 @@ import firebase from "../database/firebase";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyPeriods';
-import FriendInputModal from "./FriendInputModal";
+import FriendsDisplay from "./FriendsDisplay";
 
 /**
  * This component is a page for user to determine how many friends will be added to find the
@@ -83,7 +83,7 @@ const FriendInput = (props) => {
                 </View>
 
                 <View style={{ flex: 5, margin: 10, }}>
-                    <FriendInputModal
+                    <FriendsDisplay
                         onClose={closeModal}
                         database={database}
                         navigation={props.navigation}
@@ -118,22 +118,6 @@ const FriendInput = (props) => {
                 <View style={styles.header}>
                     <Text style={styles.titleText}>Invite your friends</Text>
                 </View>
-
-                <Modal
-                    animationType="fade"
-                    transparent={false}
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                        Alert.alert("Modal has been closed.");
-                    }}
-                >
-                    <FriendInputModal
-                        onClose={closeModal}
-                        database={database}
-                        navigation={props.navigation}
-                    />
-                </Modal>
-
                 <View style={styles.body}>
                     <Image
                         style={styles.image}
@@ -141,81 +125,10 @@ const FriendInput = (props) => {
                     />
                     <Text style={styles.subtitleText}>
                         You have chosen your date and inputted your availabilities,
-                        now it's time to invite some of your friends to join you!
+                        now input your friends' availabilities
                 </Text>
-
-                    <View style={styles.shareButtons}>
-                        <TouchableOpacity
-                            style={[
-                                styles.shareWithButton,
-                                {
-                                    backgroundColor: "#0088CC",
-                                    padding: 3,
-                                    paddingLeft: 10,
-                                    paddingRight: 10,
-                                },
-                            ]}
-                            onPress={() =>
-                                shareWithTelegram(encodeUserInfoToURL(DoWhatWebURL))
-                            }
-                        >
-                            <MaterialCommunityIcons
-                                name="send-circle"
-                                color={"blue"}
-                                size={20}
-                            />
-                            <Text style={{ fontSize: 11, color: "white" }}>
-                                Share with Telegram
-                        </Text>
-                        </TouchableOpacity>
-
-                        <Text> | </Text>
-
-                        <TouchableOpacity
-                            style={[
-                                styles.shareWithButton,
-                                {
-                                    backgroundColor: "#25D366",
-                                    padding: 3,
-                                    paddingLeft: 10,
-                                    paddingRight: 10,
-                                },
-                            ]}
-                            onPress={() =>
-                                shareWithWhatsapp(encodeUserInfoToURL(DoWhatWebURL))
-                            }
-                        >
-                            <MaterialCommunityIcons
-                                name="whatsapp"
-                                color={"green"}
-                                size={20}
-                            />
-                            <Text style={{ fontSize: 11, color: "white" }}>
-                                Share with Whatsapp
-                        </Text>
-                        </TouchableOpacity>
-                    </View>
                 </View>
-
                 <View style={styles.footer}>
-                    <TouchableOpacity
-                        style={[
-                            styles.shareWithButton,
-                            {
-                                marginTop: 10,
-                                backgroundColor: "grey",
-                                padding: 3,
-                                paddingLeft: 10,
-                                paddingRight: 10,
-                            },
-                        ]}
-                        onPress={() => setModalVisible(true)}
-                    >
-                        <Text style={{ fontSize: 11, color: "white" }}>
-                            Invite friends from DoWhat
-                    </Text>
-                    </TouchableOpacity>
-
                     <TouchableOpacity
                         style={[
                             styles.shareWithButton,
@@ -241,22 +154,6 @@ const FriendInput = (props) => {
                 <View style={styles.header}>
                     <Text style={styles.titleText}>Invite your friends</Text>
                 </View>
-
-                <Modal
-                    animationType="fade"
-                    transparent={false}
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                        Alert.alert("Modal has been closed.");
-                    }}
-                >
-                    <FriendInputModal
-                        onClose={closeModal}
-                        database={database}
-                        navigation={props.navigation}
-                    />
-                </Modal>
-
                 <View style={styles.body}>
                     <Image
                         style={styles.image}
@@ -264,7 +161,7 @@ const FriendInput = (props) => {
                     />
                     <Text style={styles.subtitleText}>
                         You have chosen your date and inputted your availabilities,
-                        now it's time to invite some of your friends to join you!
+                        now invite your friends to enter their availabilities as well!
                 </Text>
 
                     <View style={styles.shareButtons}>
@@ -273,9 +170,8 @@ const FriendInput = (props) => {
                                 styles.shareWithButton,
                                 {
                                     backgroundColor: "#0088CC",
-                                    padding: 3,
-                                    paddingLeft: 10,
-                                    paddingRight: 10,
+                                    paddingRight: 5,
+                                    paddingLeft: 5
                                 },
                             ]}
                             onPress={() =>
@@ -284,24 +180,18 @@ const FriendInput = (props) => {
                         >
                             <MaterialCommunityIcons
                                 name="send-circle"
-                                color={"blue"}
+                                color={"white"}
                                 size={20}
                             />
-                            <Text style={{ fontSize: 11, color: "white" }}>
-                                Share with Telegram
-                        </Text>
+                            <Text style={{ color: 'white' }}>Telegram Invite</Text>
                         </TouchableOpacity>
-
-                        <Text> | </Text>
-
                         <TouchableOpacity
                             style={[
                                 styles.shareWithButton,
                                 {
                                     backgroundColor: "#25D366",
-                                    padding: 3,
-                                    paddingLeft: 10,
-                                    paddingRight: 10,
+                                    paddingRight: 5,
+                                    paddingLeft: 5,
                                 },
                             ]}
                             onPress={() =>
@@ -310,12 +200,10 @@ const FriendInput = (props) => {
                         >
                             <MaterialCommunityIcons
                                 name="whatsapp"
-                                color={"green"}
+                                color={"white"}
                                 size={20}
                             />
-                            <Text style={{ fontSize: 11, color: "white" }}>
-                                Share with Whatsapp
-                        </Text>
+                            <Text style={{ color: 'white' }}>Whatsapp Invite</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -326,34 +214,19 @@ const FriendInput = (props) => {
                             styles.shareWithButton,
                             {
                                 marginTop: 10,
-                                backgroundColor: "grey",
-                                padding: 3,
-                                paddingLeft: 10,
-                                paddingRight: 10,
-                            },
-                        ]}
-                        onPress={() => setModalVisible(true)}
-                    >
-                        <Text style={{ fontSize: 11, color: "white" }}>
-                            Invite friends from DoWhat
-                    </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={[
-                            styles.shareWithButton,
-                            {
-                                backgroundColor: "grey",
-                                padding: 3,
-                                paddingLeft: 10,
-                                paddingRight: 10,
+                                backgroundColor: "#cc5327",
+                                padding: 10,
+                                paddingLeft: 25,
+                                paddingRight: 25,
                             },
                         ]}
                         onPress={() =>
                             props.navigation.navigate("Genre", { route: "link" })
                         }
                     >
-                        <Text style={{ fontSize: 11, color: "white" }}>Done</Text>
+                        <Text style={{ fontSize: 16, color: "white" }}>
+                            Done Inviting
+                    </Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -424,7 +297,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         borderWidth: 0.5,
         borderColor: "black",
-        paddingLeft: 3,
-        paddingRight: 3,
+        padding: 3,
+        flexDirection: 'row'
     },
 });
