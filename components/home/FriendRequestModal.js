@@ -7,12 +7,13 @@ import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
 import { removeFriend, findFriends } from '../../actions/friends_actions';
 import firebase from '../../database/firebase';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Avatar } from 'react-native-elements';
 
 const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, allFriends, onClose }) => {
     useEffect(() => {
         showFriendRequests();
-    })
+    }, [])
 
 
     const [currUserName, setCurrUserName] = React.useState('')
@@ -40,8 +41,9 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
     const addToState = (allFriendRequests) => {
         var friends = [];
         for (var user in allFriendRequests) {
-            // [name, userID]
-            const formattedUser = [user, allFriendRequests[user]];
+            // [name, userID, profilePicURL]
+            const formattedUser = [user, allFriendRequests[user].firebase_id,
+                allFriendRequests[user].picture_url];
             friends.push(formattedUser);
 
         }
@@ -97,19 +99,48 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
     }
 
     // Show friends that user has already accepted
-    const renderFriends = (name, userID) => {
+    const renderFriends = (name, userID, pictureURL) => {
         return (
             <View style={styles.friend}>
-                <Text style={{ marginLeft: '2%' }}>{name.replace('_', ' ')}</Text>
-                <View style={styles.buttonGroup}>
-                    <TouchableOpacity style={[styles.icon, { backgroundColor: '#00a896' }]}
-                        onPress={() => acceptFriendRequest(name, userID)}>
-                        <MaterialCommunityIcons name="check" color={'black'} size={20} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.icon, { backgroundColor: '#b5838d' }]}
-                        onPress={() => rejectFriendRequest(name, userID)}>
-                        <MaterialCommunityIcons name="close" color={'black'} size={20} />
-                    </TouchableOpacity>
+                <View style={{ margin: 5, marginTop: 10 }}>
+                    <Avatar
+                        rounded
+                        source={{
+                            uri: pictureURL
+                        }}
+                        size={50}
+                    />
+                </View>
+
+                <View style={{ flex: 1, justifyContent: 'center', flexDirection: 'column' }}>
+                    <Text style={{
+                        marginLeft: 10, fontSize: 16,
+                        fontWeight: '800', fontFamily: 'serif',
+                    }}>
+                        {name.replace(/_/g, ' ')}
+                    </Text>
+                    <Text style={{ color: 'grey', fontSize: 14, fontWeight: '200', marginLeft: 10 }}>
+                        Sent a friend request to you
+                        </Text>
+
+                    <View style={styles.buttonGroup}>
+                        <TouchableOpacity style={[styles.icon,
+                        {
+                            borderTopColor: '#7AB3EF', borderEndColor: '#6EE2E9', borderLeftColor: '#DED8DE',
+                            borderStartColor: '#D6A5D4', borderRightColor: '#DED8DE', borderBottomColor: '#4ACFEA'
+                        }]}
+                            onPress={() => acceptFriendRequest(name, userID)}>
+                            <Text>Accept</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.icon, {
+                            marginLeft: 20,
+                            borderTopColor: '#D6A5D4', borderEndColor: '#A49CF8', borderLeftColor: '#A49CF8',
+                            borderStartColor: '#D6A5D4', borderRightColor: '#DED8DE', borderBottomColor: '#D6A5D4'
+                        }]}
+                            onPress={() => rejectFriendRequest(name, userID)}>
+                            <Text>Decline</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         )
@@ -134,7 +165,7 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
                         sections={[
                             { title: "", data: friendRequests },
                         ]}
-                        renderItem={({ item }) => renderFriends(item[0], item[1])} // Each item is [userDetails, UserID]
+                        renderItem={({ item }) => renderFriends(item[0], item[1], item[2])}
                         keyExtractor={(item, index) => index}
                     />
                 </View>
@@ -181,22 +212,21 @@ const styles = StyleSheet.create({
         flex: 7,
     },
     friend: {
-        borderWidth: 1,
+        borderWidth: 0.5,
+        margin: 5,
+        borderColor: 'grey',
         flexDirection: 'row',
+        alignSelf: 'center',
         justifyContent: 'space-between',
-        marginLeft: '5%',
-        marginRight: '10%',
-        paddingBottom: '2%',
-        paddingTop: '2%',
+        height: 100,
+        width: '70%',
         borderRadius: 8,
 
     },
     buttonGroup: {
+        marginTop: 5,
         flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignContent: 'space-between',
-        padding: 5,
+        marginLeft: 10,
 
     },
     close: {
@@ -208,7 +238,10 @@ const styles = StyleSheet.create({
     },
     icon: {
         borderWidth: 1,
-        borderRadius: 5,
+        padding: 5,
+        paddingLeft: 10,
+        paddingRight: 10,
+        borderRadius: 50,
 
     },
     title: {

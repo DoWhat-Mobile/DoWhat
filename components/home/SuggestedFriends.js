@@ -9,7 +9,8 @@ import { View, StyleSheet, FlatList, Text, Image, TouchableOpacity } from 'react
  * in Friends only renders the first 4 suggested friends. 
  * The toggling is controlled by the boolean flag "fullView" props 
  */
-const SuggestedFriends = ({ friends, seeMore, fullView, currUserName, userID }) => {
+const SuggestedFriends = ({ friends, seeMore, fullView, currUserName,
+    userID, currUserProfilePicture }) => {
     useEffect(() => {
         setAllFriends(friends);
     }, [])
@@ -25,7 +26,7 @@ const SuggestedFriends = ({ friends, seeMore, fullView, currUserName, userID }) 
     const sendFriendRequest = async (firebaseUID) => {
         const requestSender = userID; // Current app userID from Redux State
         const status = {};
-        status[currUserName] = requestSender;
+        status[currUserName] = { firebase_id: requestSender, picture_url: currUserProfilePicture };
         try {
             firebase.database()
                 .ref("users/" + firebaseUID) // This is the friend that we are adding's UID
@@ -164,7 +165,8 @@ const SuggestedFriends = ({ friends, seeMore, fullView, currUserName, userID }) 
 const mapStateToProps = (state) => {
     return {
         userID: state.add_events.userID,
-        currUserName: state.add_events.currUserName
+        currUserName: state.add_events.currUserName,
+        currUserProfilePicture: state.add_events.profilePicture
     };
 };
 

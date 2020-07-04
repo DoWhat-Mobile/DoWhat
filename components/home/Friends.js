@@ -12,6 +12,7 @@ import SuggestedFriends from './SuggestedFriends';
 import AllSuggestedFriendsModal from './AllSuggestedFriendsModal';
 import { Overlay } from 'react-native-elements';
 import { Badge } from 'react-native-elements';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const AllFriends = ({ userID }) => {
     useEffect(() => {
@@ -25,6 +26,7 @@ const AllFriends = ({ userID }) => {
     const [allSuggestedFriends, setAllSuggestedFriends] = useState([]);
     const [overlayVisible, setOverlayVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [noOfFriendRequests, setNoOfFriendRequests] = useState(0);
 
     const findFriendsFromFirebase = () => {
         firebase.database()
@@ -45,7 +47,7 @@ const AllFriends = ({ userID }) => {
                 const allFriendRequests = user.friends.requests;
 
                 for (var requestee in allFriendRequests) {
-                    if (userID == allFriendRequests[requestee]) {
+                    if (userID == allFriendRequests[requestee].firebase_id) {
                         return true;
                     }
                 }
@@ -64,7 +66,7 @@ const AllFriends = ({ userID }) => {
                 const allFriendRequestsAccepts = user.friends.accepted;
 
                 for (var requestee in allFriendRequestsAccepts) {
-                    if (userID == allFriendRequestsAccepts[requestee]) {
+                    if (userID == allFriendRequestsAccepts[requestee].firebase_id) {
                         return true;
                     }
                 }
@@ -83,7 +85,7 @@ const AllFriends = ({ userID }) => {
                 const allFriendRequestsRejects = user.friends.rejected;
 
                 for (var requestee in allFriendRequestsRejects) {
-                    if (userID == allFriendRequestsRejects[requestee]) {
+                    if (userID == allFriendRequestsRejects[requestee].firebase_id) {
                         return true;
                     }
                 }
@@ -100,8 +102,10 @@ const AllFriends = ({ userID }) => {
             const currUserFriends = currUserDetails.friends;
             if (currUserFriends.hasOwnProperty("requests")) {
                 const currUserFriendRequests = currUserFriends.requests;
+                const noOfRequests = Object.keys(currUserFriendRequests).length;
+                setNoOfFriendRequests(noOfRequests);
                 for (var name in currUserFriendRequests) {
-                    const requesteeID = currUserFriendRequests[name];
+                    const requesteeID = currUserFriendRequests[name].firebase_id;
                     if (currRequesteeID == requesteeID) {
                         return true;
                     }
@@ -239,14 +243,28 @@ const AllFriends = ({ userID }) => {
             </Overlay>
 
             <View style={styles.header}>
+                <LinearGradient
+                    colors={['#D69750', '#D5461E']}
+                    start={[0.1, 0.1]}
+                    end={[0.9, 0.9]}
+                    style={{
+                        position: 'absolute',
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        height: 200,
+                    }}
+                />
                 <View style>
                     <Text style={styles.headerText}>My Friends</Text>
                 </View>
 
                 <TouchableOpacity style={styles.headerButton}
                     onPress={() => setModalVisible(true)}>
-                    <MaterialCommunityIcons name="account-plus" color={'black'} size={20} />
-                    <Badge value="2" status="error" containerStyle={{ position: "absolute", top: -4, right: -4 }} />
+                    <MaterialCommunityIcons name="account-plus" color={'white'} size={20} />
+                    {noOfFriendRequests == 0 ? null :
+                        <Badge value={noOfFriendRequests.toString()} status="primary" containerStyle={{ position: "absolute", top: -4, right: -4 }} />
+                    }
                 </TouchableOpacity>
             </View>
 
@@ -290,7 +308,6 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: "column",
         justifyContent: 'space-around',
-        borderWidth: 1
     },
     sectionHeader: {
         borderWidth: 0.1,
@@ -304,7 +321,8 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginTop: '10%',
         fontFamily: 'serif',
-        alignSelf: 'center'
+        alignSelf: 'center',
+        color: 'white'
 
     },
     headerButton: {
