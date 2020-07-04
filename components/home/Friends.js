@@ -198,6 +198,31 @@ const AllFriends = ({ userID }) => {
         )
     }
 
+    const renderAllAcceptedFriends = () => {
+        if (allAcceptedFriends.length == 0) { // No accepted friends, show empty state screen
+            return (
+                <View>
+                    <Text style={{
+                        margin: 5, fontSize: 14, color: 'grey', textAlign: "center",
+                        fontFamily: 'serif'
+                    }}>
+                        No friends yet, your added friends will appear here
+                    </Text>
+                </View>
+            )
+        }
+        return (
+            <SectionList
+                progressViewOffset={100}
+                sections={[
+                    { title: "", data: allAcceptedFriends },
+                ]}
+                renderItem={({ item }) => renderFriends(item[0], item[1])} // Each item is [userDetails, UserID]
+                keyExtractor={(item, index) => index}
+            />
+        )
+    }
+
     return (
         <View style={styles.container}>
             <Overlay
@@ -206,6 +231,7 @@ const AllFriends = ({ userID }) => {
                 overlayBackgroundColor="red"
                 width="auto"
                 height="auto"
+                overlayStyle={{ width: '90%', height: '80%' }}
             >
                 <AllSuggestedFriendsModal friends={allSuggestedFriends} closeOverlay={closeOverlay} />
             </Overlay>
@@ -235,16 +261,7 @@ const AllFriends = ({ userID }) => {
                     }}>
                     <FriendRequestModal onClose={closeModal} />
                 </Modal>
-
-                <SectionList
-                    progressViewOffset={100}
-                    sections={[
-                        { title: "", data: allAcceptedFriends },
-                    ]}
-                    renderItem={({ item }) => renderFriends(item[0], item[1])} // Each item is [userDetails, UserID]
-                    keyExtractor={(item, index) => index}
-                />
-
+                {renderAllAcceptedFriends()}
             </View>
         </View>
     );
@@ -276,7 +293,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         margin: 5,
         elevation: 5,
-        backgroundColor: '#eddcd2'
+        backgroundColor: '#f0f0f0'
     },
     headerText: {
         fontWeight: '800',

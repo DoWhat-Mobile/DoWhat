@@ -137,11 +137,11 @@ const SuggestedFriends = ({ friends, seeMore, fullView, currUserName, userID }) 
     return (
         <View>
             <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                <Text style={{ color: 'black', marginLeft: 5 }}>
+                <Text style={{ color: 'black', marginLeft: 5, fontFamily: 'serif', }}>
                     {fullView ? 'All ' : ''}Suggested Friends
                 </Text>
                 <TouchableOpacity onPress={seeMore}>
-                    <Text style={{ color: '#6c757d', marginRight: 5 }}>
+                    <Text style={{ color: '#6c757d', marginRight: 5, fontFamily: 'serif' }}>
                         {fullView ? 'Close' : 'See all'}
                     </Text>
                 </TouchableOpacity>
