@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    View, Text, StyleSheet,
+    View, Text, StyleSheet, ActivityIndicator,
     TouchableOpacity, SectionList, Modal
 } from "react-native";
 import { connect } from 'react-redux';
@@ -24,6 +24,7 @@ const AllFriends = ({ userID }) => {
     const [allSuggestedFriends, setAllSuggestedFriends] = useState([]);
     const [overlayVisible, setOverlayVisible] = useState(false);
     const [currUserDetails, setCurrUserDetails] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const findFriendsFromFirebase = () => {
         firebase.database()
@@ -133,6 +134,7 @@ const AllFriends = ({ userID }) => {
         }
         setSuggestedFriends([...moreUsers.slice(0, 4)]) // Limited friends shown
         setAllSuggestedFriends([...moreUsers]);
+        setIsLoading(false); // Render screen once data loads
     }
 
     // Render all the friends that this current user has (accepted)
@@ -186,6 +188,14 @@ const AllFriends = ({ userID }) => {
 
     const closeOverlay = () => {
         setOverlayVisible(false);
+    }
+
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+                <ActivityIndicator size='large' />
+            </View>
+        )
     }
 
     return (
