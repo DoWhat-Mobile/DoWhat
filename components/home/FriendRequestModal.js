@@ -7,10 +7,9 @@ import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
 import { removeFriend, findFriends } from '../../actions/friends_actions';
 import firebase from '../../database/firebase';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Avatar } from 'react-native-elements';
 
-const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, allFriends, onClose }) => {
+const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
     useEffect(() => {
         showFriendRequests();
     }, [])
@@ -57,13 +56,19 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
         setFriendRequests([...newState]);
     }
 
-    const acceptFriendRequest = (name, friendID) => {
+    const acceptFriendRequest = (name, friendID, pictureURL) => {
         // Update from Firebase
         let database = firebase.database();
 
         var updates = {};
-        updates['users/' + userID + '/friends/accepted/' + name] = friendID;
-        updates['users/' + friendID + '/friends/accepted/' + currUserName] = userID;
+        updates['users/' + userID + '/friends/accepted/' + name] = {
+            firebase_id: friendID,
+            picture_url: pictureURL
+        };
+        updates['users/' + friendID + '/friends/accepted/' + currUserName] = {
+            firebase_id: userID,
+            picture_url: currUserProfilePicture
+        };
 
         // Accept friend, update both users since friendship goes both ways
         database.ref().update(updates) // Perform simultanoues update for 2 locations in Firebase
@@ -129,7 +134,7 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
                             borderTopColor: '#7AB3EF', borderEndColor: '#6EE2E9', borderLeftColor: '#DED8DE',
                             borderStartColor: '#D6A5D4', borderRightColor: '#DED8DE', borderBottomColor: '#4ACFEA'
                         }]}
-                            onPress={() => acceptFriendRequest(name, userID)}>
+                            onPress={() => acceptFriendRequest(name, userID, pictureURL)}>
                             <Text>Accept</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.icon, {
@@ -178,7 +183,8 @@ const FriendRequestModal = ({ navigation, userID, removeFriend, findFriends, all
 const mapStateToProps = (state) => {
     return {
         userID: state.add_events.userID,
-        allFriends: state.add_friends.allFriends
+        allFriends: state.add_friends.allFriends,
+        currUserProfilePicture: state.add_events.profilePicture
     };
 };
 

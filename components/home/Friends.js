@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
     View, Text, StyleSheet, ActivityIndicator,
     TouchableOpacity, SectionList, Modal
 } from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
 import { connect } from 'react-redux';
 import { removeFriend, findFriends } from '../../actions/friends_actions';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -15,10 +16,13 @@ import { Badge } from 'react-native-elements';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const AllFriends = ({ userID }) => {
-    useEffect(() => {
-        showAllMyFriends(); // All accepted friends
-        findFriendsFromFirebase();
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            showAllMyFriends(); // All accepted friends
+            findFriendsFromFirebase();
+            return () => null;
+        }, [])
+    )
 
     const [allAcceptedFriends, setAllAcceptedFriends] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
@@ -47,7 +51,7 @@ const AllFriends = ({ userID }) => {
                 const allFriendRequests = user.friends.requests;
 
                 for (var requestee in allFriendRequests) {
-                    if (userID == allFriendRequests[requestee].firebase_id) {
+                    if (userID == allFriendRequests[requestee]) {
                         return true;
                     }
                 }
@@ -66,7 +70,7 @@ const AllFriends = ({ userID }) => {
                 const allFriendRequestsAccepts = user.friends.accepted;
 
                 for (var requestee in allFriendRequestsAccepts) {
-                    if (userID == allFriendRequestsAccepts[requestee].firebase_id) {
+                    if (userID == allFriendRequestsAccepts[requestee]) {
                         return true;
                     }
                 }
@@ -85,7 +89,7 @@ const AllFriends = ({ userID }) => {
                 const allFriendRequestsRejects = user.friends.rejected;
 
                 for (var requestee in allFriendRequestsRejects) {
-                    if (userID == allFriendRequestsRejects[requestee].firebase_id) {
+                    if (userID == allFriendRequestsRejects[requestee]) {
                         return true;
                     }
                 }
