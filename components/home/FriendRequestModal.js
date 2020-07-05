@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import {
-    View, Text, StyleSheet, Button, TouchableOpacity,
-    Dimensions, SectionList, Image
+    View, Text, StyleSheet, TouchableOpacity,
+    Dimensions, SectionList
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';

@@ -12,7 +12,7 @@ import FriendRequestModal from './FriendRequestModal';
 import SuggestedFriends from './SuggestedFriends';
 import AllSuggestedFriendsModal from './AllSuggestedFriendsModal';
 import { Overlay } from 'react-native-elements';
-import { Badge } from 'react-native-elements';
+import { Badge, Avatar } from 'react-native-elements';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const AllFriends = ({ userID }) => {
@@ -166,20 +166,26 @@ const AllFriends = ({ userID }) => {
     const addToState = (allFriends) => {
         var friends = [];
         for (var user in allFriends) {
-            // [name, userID]
-            const formattedUser = [user, allFriends[user]];
+            const formattedUser = [user, allFriends[user].firebase_id,
+                allFriends[user].picture_url];
             friends.push(formattedUser);
-
         }
         setAllAcceptedFriends([...friends]);
     }
 
-    const renderFriends = (name, userID) => {
+    const renderFriends = (name, userID, pictureURL) => {
         return (
             <View style={styles.friend}>
+                <Avatar
+                    rounded
+                    source={{
+                        uri: pictureURL
+                    }}
+                    size={50}
+                />
                 <Text style={{ marginLeft: '2%' }}>{name.replace(/_/g, ' ')}</Text>
                 <View style={styles.buttonGroup}>
-                    <TouchableOpacity style={{ borderWidth: 1, borderRadius: 10, padding: 5 }}
+                    <TouchableOpacity style={{ borderWidth: 1, borderRadius: 10, padding: 2 }}
                         onPress={() => alert("More details about user (future enhancement)")}>
                         <Text>More details</Text>
                     </TouchableOpacity>
@@ -227,7 +233,8 @@ const AllFriends = ({ userID }) => {
                 sections={[
                     { title: "", data: allAcceptedFriends },
                 ]}
-                renderItem={({ item }) => renderFriends(item[0], item[1])} // Each item is [userDetails, UserID]
+                // Item is [name, firebaseUID, pictureURL]
+                renderItem={({ item }) => renderFriends(item[0], item[1], item[2])}
                 keyExtractor={(item, index) => index}
             />
         )
