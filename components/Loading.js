@@ -8,17 +8,16 @@ import {
     data_timeline,
     genreEventObjectArray,
 } from "../reusable-functions/data_timeline";
-import * as Location from "expo-location";
 
 const Loading = (props) => {
     const [freeTime, setFreeTime] = React.useState([]);
     const [weather, setWeather] = React.useState("");
     const [isWeatherLoading, setWeatherLoading] = React.useState(true);
     const [isTimingsLoading, setTimingsLoading] = React.useState(true);
-    const [location, setLocation] = React.useState(null);
-    const [isLocationLoading, setLocationLoading] = React.useState(true);
     const route = props.route.params.route;
     const synced = props.route.params.synced;
+
+    const userLocation = props.route.params.userLocation;
 
     const userGenres =
         route === "board" ? props.route.params.genres : props.finalGenres[0];
@@ -50,13 +49,6 @@ const Loading = (props) => {
         currentEvents
     );
 
-    // const data = data_timeline(
-    //     timeline,
-    //     userGenres,
-    //     props.allEvents,
-    //     currentEvents
-    // );
-
     const routesArray = (userLocation, arr) => {
         let temp = [];
         temp.push(userLocation);
@@ -65,17 +57,6 @@ const Loading = (props) => {
     React.useEffect(() => {
         const diff = props.difference;
         const userId = firebase.auth().currentUser.uid; //Firebase UID of current user
-        (async () => {
-            let { status } = await Location.requestPermissionsAsync();
-            if (status !== "granted") {
-                console.log("denied");
-                // setErrorMsg("Permission to access location was denied");
-            }
-
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation(location);
-            setLocationLoading(false);
-        })();
         firebase
             .database()
             .ref("users/" + userId)
@@ -124,14 +105,14 @@ const Loading = (props) => {
             userGenres: userGenres,
             userLocation: routesArray(
                 {
-                    lat: location.coords.latitude,
-                    long: location.coords.longitude,
+                    lat: userLocation.coords.latitude,
+                    long: userLocation.coords.longitude,
                 },
                 data[3]
             ),
         });
 
-    if (isWeatherLoading || isTimingsLoading || isLocationLoading) {
+    if (isWeatherLoading || isTimingsLoading) {
         return (
             <View
                 style={{
