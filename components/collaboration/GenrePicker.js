@@ -1,20 +1,27 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from "react-native";
+import { Badge } from 'react-native-elements';
 
-const GenrePicker = ({ allGenres, handleGenreSelect }) => {
+const GenrePicker = ({ allGenres, handleGenreSelect, topGenres }) => {
     const renderGenres = (genre, selected, index) => {
+        if (topGenres.length == 0) return; // Waiting for state to be updated
+
+        const top1 = topGenres[0][0].toUpperCase();
+        const top2 = topGenres[1][0].toUpperCase();
+        const top3 = topGenres[2][0].toUpperCase();
+        const isTopGenre = genre == top1 || genre == top2 || genre == top3;
         if (!selected) {
             return (
                 <View>
-                    {/* 
-                   <Badge
-                        status="success"
-                        containerStyle={{ position: 'absolute', bottom: 1, right: 4 }}
-                        value={2}
-                        badgeStyle={{ backgroundColor: '#121001' }}
-                        textStyle={{ fontSize: 10 }}
-                    />
-                   */}
+                    {isTopGenre
+                        ? <Badge
+                            containerStyle={{ position: 'absolute', top: -2, left: -2 }}
+                            value={'❤️'}
+                            badgeStyle={{ backgroundColor: 'white' }}
+                            textStyle={{ fontSize: 10 }}
+                        />
+                        : null}
+
                     <TouchableOpacity style={styles.genreButton}
                         onPress={() => handleGenreSelect(index)}>
                         <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{genre}</Text>
@@ -34,15 +41,14 @@ const GenrePicker = ({ allGenres, handleGenreSelect }) => {
                             color: '#FEFBFA', fontWeight: '100'
                         }}>{genre}</Text>
                     </TouchableOpacity>
-                    {/*
-                    <Badge
-                        status="success"
-                        containerStyle={{ position: 'absolute', bottom: 1, right: 4 }}
-                        value={2}
-                        badgeStyle={{ backgroundColor: '#FEFBFA' }}
-                        textStyle={{ color: '#121011', fontSize: 10 }}
-                    />
-                    */}
+                    {isTopGenre
+                        ? <Badge
+                            containerStyle={{ position: 'absolute', top: -2, left: -2 }}
+                            value={'❤️'}
+                            badgeStyle={{ backgroundColor: 'white' }}
+                            textStyle={{ fontSize: 10 }}
+                        />
+                        : null}
                 </View>
             );
         }

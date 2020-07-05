@@ -28,7 +28,6 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     }, []);
 
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
-    const [boardIsFinalized, setBoardIsFinalized] = useState(false);
     const [topGenres, setTopGenres] = useState([]);
     const [allGenres, setAllGenres] = useState([['ADVENTURE', false], ['ARTS', false],
     ['LEISURE', false], ['NATURE', false], ['NIGHTLIFE', false], ['FOOD', false]]);
@@ -93,34 +92,24 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     }
 
     const renderFoodFilter = (foodIsSelected) => {
-        if (foodIsSelected) {
-            return (
-                <View style={styles.foodFilters}>
-                    <FoodLocation location={location} handleLocationSelect={handleLocationSelect} />
-                    <FoodCuisine cuisine={cuisine} handleCuisineSelect={handleCuisineSelect} />
-                    <FoodPrice handlePricePress={(price) => handlePricePress(price)} />
-                </View>
-            );
-        }
-    }
-
-    // Top three genre choices from all the votes of invitees
-    const renderTopGenres = (top) => {
-        if (top.length == 0) { // If useEffect haven't setState of top Genre yet
-            return (
-                <Text style={{ marginTop: 5, marginLeft: 5 }}>
-                    Top genres:
+        return (
+            <View pointerEvents={foodIsSelected ? 'auto' : 'none'}
+                style={styles.foodFilters}>
+                {foodIsSelected
+                    ? null
+                    : <Text style={{
+                        position: 'absolute', right: 5, top: 12,
+                        fontSize: 12, fontWeight: '400', color: '#E86830',
+                        fontFamily: 'serif'
+                    }}>
+                        Select food to enable filter selection
                 </Text>
-            )
-
-        } else {
-            const topThree = [top[0][0], top[1][0], top[2][0]]
-            return (
-                <Text style={{ marginTop: 5, marginLeft: 5 }}>
-                    Top genres: {topThree.toString()}
-                </Text>
-            )
-        }
+                }
+                <FoodLocation location={location} handleLocationSelect={handleLocationSelect} />
+                <FoodCuisine cuisine={cuisine} handleCuisineSelect={handleCuisineSelect} />
+                <FoodPrice handlePricePress={(price) => handlePricePress(price)} />
+            </View>
+        );
     }
 
     const formatInvitee = (name, pictureURL, isUserHost) => {
@@ -215,7 +204,6 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
             .ref('collab_boards/' + board.boardID)
             .update(updates)
 
-        setBoardIsFinalized(true); // Changes style of finalize button
         onClose() // Close modal
     }
 
@@ -229,15 +217,10 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         if (isButtonDisabled) {
             return (
                 <View>
-                    <TouchableOpacity style={[styles.finalizeButton, { borderRadius: 20, backgroundColor: '#2a9d8f', borderWidth: 0.2 }]}
+                    <TouchableOpacity style={[styles.finalizeButton, { backgroundColor: '#2a9d8f', borderWidth: 0.1 }]}
                         disabled={true}
                         onPress={() => finalizeBoard()}>
-                        <AntDesign
-                            name="check"
-                            size={20}
-                            style={{ color: 'white' }}
-                        />
-                        <Text style={{ color: 'white', marginLeft: 5 }}>
+                        <Text style={{ color: 'white', fontFamily: 'serif' }}>
                             Availabilities Inputted
                             </Text>
                     </TouchableOpacity>
@@ -247,38 +230,27 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
             return (
                 <TouchableOpacity style={styles.finalizeButton} onPress={() => inputAvailabilities()}
                     disabled={isButtonDisabled}>
-                    <Text>Input Availabilities</Text>
+                    <Text style={{ fontFamily: 'serif' }}>Input Availabilities</Text>
                 </TouchableOpacity>
             );
         }
     }
 
     const renderFinalizeButton = () => {
-        if (boardIsFinalized) {
-            return (
-                <TouchableOpacity style={[styles.finalizeButton, { borderRadius: 20, backgroundColor: '#e63946', borderWidth: 0.2 }]}
-                    disabled={true}
-                    onPress={() => finalizeBoard()}>
-                    <AntDesign
-                        name="check"
-                        size={20}
-                        style={{ color: 'white' }}
-                    />
-                </TouchableOpacity>
-            )
-        }
         return (
-            <TouchableOpacity style={styles.finalizeButton} onPress={() => finalizeBoard()}>
-                <Text>Finalize</Text>
+            <TouchableOpacity onPress={() => finalizeBoard()}>
+                <Text style={{
+                    fontFamily: 'serif', color: '#E86830', fontWeight: 'bold',
+                    fontSize: 14
+                }}>Finalize Selections</Text>
             </TouchableOpacity>
         );
     }
 
-    const selectedDate = new Date(board.selected_date);
-
-    if (!board.isUserHost) {
+    // Top portion of modal, which is identical for both host and invitees' board
+    const renderTopPortion = (isUserHost) => {
         return (
-            <View style={styles.modal}>
+            <View>
                 <LinearGradient
                     colors={['#e86830', '#e86838']}
                     start={[0.1, 0.1]}
@@ -289,36 +261,58 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                         right: -10,
                         top: -10,
                         height: 120,
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
                     }}
                 />
                 <View style={styles.header}>
-                    <Text style={styles.headerText}>
-                        Your outing on {formatDate(selectedDate.getDay(),
-                        selectedDate.getMonth(), selectedDate.getDate())}
-                    </Text>
-                    <Text style={{ color: '#f0f0f0', fontFamily: 'serif', fontSize: 12 }}>
-                        Hosted by you
+                    <View>
+                        <Text style={styles.headerText}>
+                            Your outing on {formatDate(selectedDate.getDay(),
+                            selectedDate.getMonth(), selectedDate.getDate())}
                         </Text>
-                    <AntDesign name="close" size={24}
-                        onPress={() => onClose()}
-                        style={styles.close}
-                    />
+                        <Text style={{ color: '#f0f0f0', fontFamily: 'serif', fontSize: 12 }}>
+                            Hosted by {isUserHost ? 'you' : board.host.replace(/_/g, ' ')}
+                        </Text>
+                    </View>
+                    <View>
+                        <AntDesign name="close" size={24}
+                            onPress={() => onClose()}
+                            style={styles.close}
+                        />
+                    </View>
                 </View>
+            </View>
+        )
+    }
 
+    // Check if current user has already inputted preferences
+    const userHasFinalized = () => {
+        for (var name in board.finalized) {
+            if (board.finalized[name] == userID) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    const selectedDate = new Date(board.selected_date);
+
+    if (board.isUserHost || userHasFinalized()) {
+        return (
+            <View style={styles.modal}>
+                {renderTopPortion(board.isUserHost)}
                 <View style={styles.invitedPeople}>
                     {renderInvitees(board.invitees)}
                 </View>
+                <View style={[styles.body, { justifyContent: 'center', alignItems: 'center' }]}>
+                    <Text style={styles.sectionHeaderText}>
+                        You have successfully inputted your preferences
+                        </Text>
+                    <Text style={styles.sectionSubHeaderText}>
+                        Please wait for all your friends to input their preferences
+                    </Text>
 
-                <View style={styles.body}>
-                    <Text style={{ textAlign: "center" }}>Please wait for all your friends to input their collaboration</Text>
-
-                </View>
-
-                <View style={styles.footer}>
-                    {renderTopGenres(topGenres)}
-                </View>
-
-                <View style={styles.buttonGroup}>
                 </View>
             </View >
         );
@@ -326,31 +320,8 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 
     return (
         <View style={styles.modal}>
-            <LinearGradient
-                colors={['#e86830', '#e86838']}
-                start={[0.1, 0.1]}
-                end={[0.9, 0.9]}
-                style={{
-                    position: 'absolute',
-                    left: -10,
-                    right: -10,
-                    top: -10,
-                    height: 120,
-                }}
-            />
-            <View style={styles.header}>
-                <Text style={styles.headerText}>
-                    Your outing on {formatDate(selectedDate.getDay(),
-                    selectedDate.getMonth(), selectedDate.getDate())}
-                </Text>
-                <Text style={{ color: '#f0f0f0', fontFamily: 'serif', fontSize: 12 }}>
-                    Hosted by {board.host.replace(/_/g, ' ')}
-                </Text>
-                <AntDesign name="close" size={24}
-                    onPress={() => onClose()}
-                    style={styles.close}
-                />
-            </View>
+            {renderTopPortion(board.isUserHost)}
+
             <View style={styles.invitedPeople}>
                 {renderInvitees(board.invitees)}
             </View>
@@ -359,13 +330,13 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                 <View style={styles.genreSelection}>
                     <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
                         <View style={{ flexDirection: "column" }}>
-                            <Text style={styles.genreSelectionText}>Possible Preferences {'&'} Genres</Text>
-                            <Text style={{ fontSize: 12, color: '#5C5656', fontWeight: '100' }}>
+                            <Text style={styles.sectionHeaderText}>Possible Preferences {'&'} Genres</Text>
+                            <Text style={styles.sectionSubHeaderText}>
                                 Select according to your preference
                             </Text>
                         </View>
                         <View style={{ flexDirection: 'row' }}>
-                            <Text style={{ color: '#5C5656' }}>Voted </Text>
+                            <Text style={{ color: '#5C5656', fontSize: 14, marginTop: 2 }}>Finalized </Text>
                             <Text style={{
                                 borderWidth: 0.2, padding: 2, backgroundColor: '#E86830',
                                 borderColor: 'grey', borderRadius: 5, textAlign: 'center',
@@ -375,17 +346,23 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                             </Text>
                         </View>
                     </View>
-                    <GenrePicker allGenres={allGenres} handleGenreSelect={handleGenreSelect} />
+                    <GenrePicker allGenres={allGenres} handleGenreSelect={handleGenreSelect}
+                        topGenres={topGenres} />
                 </View>
                 {renderFoodFilter(allGenres[5][1])}
             </View>
 
             <View style={styles.footer}>
-                {renderTopGenres(topGenres)}
+                <View style={{ flexDirection: 'column' }}>
+                    <Text style={styles.sectionHeaderText}>Possible Timings</Text>
+                    <Text style={styles.sectionSubHeaderText}>
+                        Input your available timings
+                 </Text>
+                </View>
+                {renderInputAvailabilitiesButton()}
             </View>
 
             <View style={styles.buttonGroup}>
-                {renderInputAvailabilitiesButton()}
                 {renderFinalizeButton()}
             </View>
         </View >
@@ -408,6 +385,8 @@ const styles = StyleSheet.create({
     },
     header: {
         flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
     headerText: {
         fontWeight: '800',
@@ -430,7 +409,7 @@ const styles = StyleSheet.create({
     },
     body: {
         flex: 4,
-        marginTop: '40%',
+        marginTop: '60%',
     },
     genreSelection: {
         borderBottomWidth: 1.5,
@@ -443,37 +422,41 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         margin: 5,
     },
-    genreSelectionText: {
+    sectionHeaderText: {
         fontFamily: 'serif',
         fontSize: 15,
         fontWeight: '800'
     },
+    sectionSubHeaderText: {
+        fontSize: 12, color: '#A4A4A6', fontWeight: '100'
+    },
     foodFilters: {
+        borderBottomWidth: 1.5,
+        borderBottomColor: '#e4e4e4',
+        paddingBottom: 10
     },
     footer: {
-        flex: 1,
+        flex: 1.6,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
     buttonGroup: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        borderTopWidth: 1.5,
+        borderTopColor: '#e4e4e4',
+        paddingTop: 10,
 
     },
     finalizeButton: {
         borderWidth: 1,
-        borderRadius: 10,
-        justifyContent: 'center',
-        flexDirection: 'row',
-        alignSelf: 'flex-end',
+        borderRadius: 5,
         padding: 5,
         marginRight: 10,
         marginLeft: 10,
+        alignSelf: 'flex-start',
     },
     close: {
-        position: "absolute",
-        left: 330,
-        right: 0,
-        top: 5,
-        bottom: 0,
-        color: 'white'
+        color: 'white',
     },
 });
