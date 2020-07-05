@@ -100,7 +100,7 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
      * 2) The board ID is the curr inviter's Firebase UID.
      * 3) Add a pointer with the board ID to all the invited people so they can reference it. 
      */
-    const updateCollabBoard = (currUser, inviteeBusyPeriods, currUserName, currUserID,
+    const updateCollabBoard = (currUser, currUserBusyPeriods, currUserName, currUserID,
         inviteeName, inviteeID, inviteePictureURL) => {
         const userGmail = currUser.gmail;
         const uniqueBoardID = createUniqueBoardID(currUser, currUserID);
@@ -123,8 +123,9 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
             profile_pic: currUserProfilePicture,
             isUserHost: true,
         }; // Add to list of invitees
-        updates['/availabilities/' + formattedUserEmail] = inviteeBusyPeriods;
+        updates['/availabilities/' + formattedUserEmail] = currUserBusyPeriods;
         updates['host'] = currUserName;
+        updates['finalized/' + currUserName] = userID; // Host finalized selection already
         updates['/isNewlyAddedBoard'] = true;
 
         updates['/preferences'] = {

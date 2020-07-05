@@ -10,6 +10,7 @@ import GenrePicker from './GenrePicker';
 import firebase from '../../database/firebase'
 import { inputBusyPeriodFromGcal } from '../../reusable-functions/GoogleCalendarGetBusyPeriods';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Avatar } from 'react-native-elements'
 
 /**
  * The modal that shows when user selects each of the individual upcoming plans
@@ -28,7 +29,6 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
     const [boardIsFinalized, setBoardIsFinalized] = useState(false);
-    const [invitees, setInvitees] = useState([]);
     const [topGenres, setTopGenres] = useState([]);
     const [allGenres, setAllGenres] = useState([['ADVENTURE', false], ['ARTS', false],
     ['LEISURE', false], ['NATURE', false], ['NIGHTLIFE', false], ['FOOD', false]]);
@@ -63,10 +63,10 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     const extractAndSetInvitees = (object) => {
         var newState = [];
         for (var name in object) {
-            console.log(object[name])
-            newState.push(name);
+            const userDetails = [name, object[name].profile_pic, object[name].isUserHost];
+            newState.push(userDetails);
         }
-        setInvitees([...newState]);
+        return newState;
     }
 
 
@@ -123,27 +123,43 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         }
     }
 
-    const formatInvitee = (item, index) => {
+    const formatInvitee = (name, pictureURL, isUserHost) => {
+        const userName = name.replace(/_/g, ' ');
         return (
-            <View>
-                <TouchableOpacity style={styles.genreButton} disabled={true}>
-                    <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{item}</Text>
-                </TouchableOpacity>
-            </View>
+            <View style={{
+                width: 75, height: 100, margin: 5, marginTop: 10,
+                alignItems: "center"
+            }}>
+                <Avatar imageProps={{ borderRadius: 10 }}
+                    source={{
+                        uri: pictureURL
+                    }}
+                    size={50}
+                />
+
+                <Text style={{
+                    fontFamily: 'serif', fontSize: 11, fontWeight: '100',
+                    textAlign: "center", color: "#5C5656", marginTop: 4,
+                }}>{userName}</Text>
+            </View >
         )
     }
 
     const renderInvitees = (invitees) => {
-        for (var i = 0; i < invitees.length; i++) {
-            invitees[i] = invitees[i].replace(/_/g, ' ');
-        }
+        const formattedInvitees = extractAndSetInvitees(invitees);
+
         return (
-            <View style={{ flex: 1, flexDirection: "row" }}>
-                <Text style={{ marginTop: 5, marginLeft: 5 }}>Invitees: </Text>
+            <View style={{ flex: 1, }}>
+                <Text style={{
+                    fontSize: 16, fontWeight: '800', fontFamily: 'serif',
+                    marginLeft: 16, marginTop: 5
+                }}>
+                    Invited ({formattedInvitees.length})
+                    </Text>
                 <FlatList
-                    data={invitees}
+                    data={formattedInvitees}
                     horizontal={true}
-                    renderItem={({ item, index }) => formatInvitee(item, index)}
+                    renderItem={({ item, index }) => formatInvitee(item[0], item[1], item[2])}
                     keyExtractor={(item, index) => item + index} />
             </View>
         )
@@ -260,11 +276,11 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 
     const selectedDate = new Date(board.selected_date);
 
-    if (board.isUserHost) {
+    if (!board.isUserHost) {
         return (
             <View style={styles.modal}>
                 <LinearGradient
-                    colors={['#F3491C', '#E13F19']}
+                    colors={['#e86830', '#e86838']}
                     start={[0.1, 0.1]}
                     end={[0.9, 0.9]}
                     style={{
@@ -272,7 +288,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                         left: -10,
                         right: -10,
                         top: -10,
-                        height: 100,
+                        height: 120,
                     }}
                 />
                 <View style={styles.header}>
@@ -280,7 +296,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                         Your outing on {formatDate(selectedDate.getDay(),
                         selectedDate.getMonth(), selectedDate.getDate())}
                     </Text>
-                    <Text style={{ color: '#D7C4B7', fontFamily: 'serif', fontSize: 12 }}>
+                    <Text style={{ color: '#f0f0f0', fontFamily: 'serif', fontSize: 12 }}>
                         Hosted by you
                         </Text>
                     <AntDesign name="close" size={24}
@@ -290,17 +306,12 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                 </View>
 
                 <View style={styles.invitedPeople}>
-                    <Text style={{
-                        fontSize: 16, fontWeight: '800', fontFamily: 'serif',
-                        marginLeft: 10, marginTop: 5
-                    }}>
-                        Invited (2)
-                    </Text>
-                    {renderInvitees(invitees)}
+                    {renderInvitees(board.invitees)}
                 </View>
 
                 <View style={styles.body}>
-                    <Text style={{ textAlign: "center" }}>You are the host, wait for all your friends to input their collaboration</Text>
+                    <Text style={{ textAlign: "center" }}>Please wait for all your friends to input their collaboration</Text>
+
                 </View>
 
                 <View style={styles.footer}>
@@ -315,18 +326,55 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 
     return (
         <View style={styles.modal}>
-            <Text style={styles.headerText}>
-                Your outing on {formatDate(selectedDate.getDay(),
-                selectedDate.getMonth(), selectedDate.getDate())}
-            </Text>
-            <AntDesign name="close" size={24}
-                onPress={() => onClose()}
-                style={styles.close}
+            <LinearGradient
+                colors={['#e86830', '#e86838']}
+                start={[0.1, 0.1]}
+                end={[0.9, 0.9]}
+                style={{
+                    position: 'absolute',
+                    left: -10,
+                    right: -10,
+                    top: -10,
+                    height: 120,
+                }}
             />
+            <View style={styles.header}>
+                <Text style={styles.headerText}>
+                    Your outing on {formatDate(selectedDate.getDay(),
+                    selectedDate.getMonth(), selectedDate.getDate())}
+                </Text>
+                <Text style={{ color: '#f0f0f0', fontFamily: 'serif', fontSize: 12 }}>
+                    Hosted by {board.host.replace(/_/g, ' ')}
+                </Text>
+                <AntDesign name="close" size={24}
+                    onPress={() => onClose()}
+                    style={styles.close}
+                />
+            </View>
+            <View style={styles.invitedPeople}>
+                {renderInvitees(board.invitees)}
+            </View>
 
             <View style={styles.body}>
                 <View style={styles.genreSelection}>
-                    <Text style={styles.genreSelectionText}>Select your moods:</Text>
+                    <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: "column" }}>
+                            <Text style={styles.genreSelectionText}>Possible Preferences {'&'} Genres</Text>
+                            <Text style={{ fontSize: 12, color: '#5C5656', fontWeight: '100' }}>
+                                Select according to your preference
+                            </Text>
+                        </View>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={{ color: '#5C5656' }}>Voted </Text>
+                            <Text style={{
+                                borderWidth: 0.2, padding: 2, backgroundColor: '#E86830',
+                                borderColor: 'grey', borderRadius: 5, textAlign: 'center',
+                                paddingLeft: 5, paddingRight: 5, color: '#FEFBFA', marginBottom: 15
+                            }}>
+                                {Object.keys(board.finalized).length}/{Object.keys(board.invitees).length}
+                            </Text>
+                        </View>
+                    </View>
                     <GenrePicker allGenres={allGenres} handleGenreSelect={handleGenreSelect} />
                 </View>
                 {renderFoodFilter(allGenres[5][1])}
@@ -334,7 +382,6 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 
             <View style={styles.footer}>
                 {renderTopGenres(topGenres)}
-                {renderInvitees(invitees)}
             </View>
 
             <View style={styles.buttonGroup}>
@@ -361,7 +408,6 @@ const styles = StyleSheet.create({
     },
     header: {
         flex: 1,
-        borderWidth: 1,
     },
     headerText: {
         fontWeight: '800',
@@ -373,7 +419,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: '10%',
         left: '5%',
-        borderWidth: 2,
+        borderWidth: 0.5,
         height: '20%',
         width: '90%',
         borderRadius: 10,
@@ -384,10 +430,12 @@ const styles = StyleSheet.create({
     },
     body: {
         flex: 4,
-        marginTop: '30%',
-        borderWidth: 1,
+        marginTop: '40%',
     },
     genreSelection: {
+        borderBottomWidth: 1.5,
+        borderBottomColor: '#e4e4e4',
+        paddingBottom: 10
     },
     genreButton: {
         borderWidth: 0.5,
@@ -397,7 +445,6 @@ const styles = StyleSheet.create({
     },
     genreSelectionText: {
         fontFamily: 'serif',
-        marginLeft: 5,
         fontSize: 15,
         fontWeight: '800'
     },
@@ -405,12 +452,10 @@ const styles = StyleSheet.create({
     },
     footer: {
         flex: 1,
-        borderWidth: 1,
     },
     buttonGroup: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        borderWidth: 1,
 
     },
     finalizeButton: {
@@ -429,5 +474,6 @@ const styles = StyleSheet.create({
         right: 0,
         top: 5,
         bottom: 0,
+        color: 'white'
     },
 });

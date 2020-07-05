@@ -15,9 +15,16 @@ const FoodLocation = ({ location, handleLocationSelect }) => {
         } else {
             return (
                 <View>
-                    <TouchableOpacity style={[styles.genreButton, { backgroundColor: '#e5e5e5' }]}
+                    <TouchableOpacity style={[styles.genreButton, {
+                        backgroundColor: '#E86830',
+                        borderColor: '#E13F19'
+                    }]}
                         onPress={() => handleLocationSelect(index)}>
-                        <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{location}</Text>
+                        <Text style={{
+                            fontFamily: 'serif', fontSize: 11,
+                            color: '#FEFBFA', fontWeight: '100'
+                        }}>
+                            {location}</Text>
                     </TouchableOpacity>
                 </View>
             );
@@ -26,7 +33,7 @@ const FoodLocation = ({ location, handleLocationSelect }) => {
 
     return (
         <View style={{ marginTop: 10 }}>
-            <Text style={styles.genreSelectionText}>Location:</Text>
+            <Text style={styles.genreSelectionText}>Location</Text>
             <FlatList
                 data={location}
                 horizontal={true}
@@ -42,13 +49,12 @@ export default FoodLocation;
 const styles = StyleSheet.create({
     genreButton: {
         borderWidth: 0.5,
-        padding: 3,
+        padding: 10,
         borderRadius: 5,
         margin: 5,
     },
     genreSelectionText: {
         fontFamily: 'serif',
-        marginLeft: 5,
         fontSize: 15,
         fontWeight: '800'
     },

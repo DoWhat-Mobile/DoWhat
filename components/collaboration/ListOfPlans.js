@@ -10,7 +10,6 @@ import { findOverlappingIntervals } from '../../reusable-functions/OverlappingIn
 import { Overlay } from 'react-native-elements';
 import { genreEventObjectArray } from '../../reusable-functions/data_timeline';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 
 /**
  * The <SectionList> Component within the AllPlans component. This is the component

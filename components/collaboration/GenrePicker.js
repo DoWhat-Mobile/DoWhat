@@ -6,6 +6,15 @@ const GenrePicker = ({ allGenres, handleGenreSelect }) => {
         if (!selected) {
             return (
                 <View>
+                    {/* 
+                   <Badge
+                        status="success"
+                        containerStyle={{ position: 'absolute', bottom: 1, right: 4 }}
+                        value={2}
+                        badgeStyle={{ backgroundColor: '#121001' }}
+                        textStyle={{ fontSize: 10 }}
+                    />
+                   */}
                     <TouchableOpacity style={styles.genreButton}
                         onPress={() => handleGenreSelect(index)}>
                         <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{genre}</Text>
@@ -15,10 +24,25 @@ const GenrePicker = ({ allGenres, handleGenreSelect }) => {
         } else {
             return (
                 <View>
-                    <TouchableOpacity style={[styles.genreButton, { backgroundColor: '#e5e5e5' }]}
+                    <TouchableOpacity style={[styles.genreButton, {
+                        backgroundColor: '#E86830',
+                        borderColor: '#E13F19'
+                    }]}
                         onPress={() => handleGenreSelect(index)}>
-                        <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{genre}</Text>
+                        <Text style={{
+                            fontFamily: 'serif', fontSize: 11,
+                            color: '#FEFBFA', fontWeight: '100'
+                        }}>{genre}</Text>
                     </TouchableOpacity>
+                    {/*
+                    <Badge
+                        status="success"
+                        containerStyle={{ position: 'absolute', bottom: 1, right: 4 }}
+                        value={2}
+                        badgeStyle={{ backgroundColor: '#FEFBFA' }}
+                        textStyle={{ color: '#121011', fontSize: 10 }}
+                    />
+                    */}
                 </View>
             );
         }
@@ -39,7 +63,7 @@ export default GenrePicker;
 const styles = StyleSheet.create({
     genreButton: {
         borderWidth: 0.5,
-        padding: 3,
+        padding: 10,
         borderRadius: 5,
         margin: 5,
     },

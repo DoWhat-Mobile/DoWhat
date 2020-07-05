@@ -36,7 +36,7 @@ const FoodPrice = ({ handlePricePress }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.genreSelectionText}>Price:</Text>
+            <Text style={styles.genreSelectionText}>Price</Text>
             <View style={styles.buttonContainer}>{buttons()}</View>
         </View>
     );
@@ -45,8 +45,12 @@ const FoodPrice = ({ handlePricePress }) => {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        marginLeft: 5,
         marginTop: 10,
+    },
+    genreSelectionText: {
+        fontFamily: 'serif',
+        fontSize: 15,
+        fontWeight: '800'
     },
     button: {
         marginHorizontal: 1,
