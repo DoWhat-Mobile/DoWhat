@@ -70,7 +70,7 @@ const AllFriends = ({ userID }) => {
                 const allFriendRequestsAccepts = user.friends.accepted;
 
                 for (var requestee in allFriendRequestsAccepts) {
-                    if (userID == allFriendRequestsAccepts[requestee]) {
+                    if (userID == allFriendRequestsAccepts[requestee].firebase_id) {
                         return true;
                     }
                 }
@@ -177,7 +177,7 @@ const AllFriends = ({ userID }) => {
     const renderFriends = (name, userID) => {
         return (
             <View style={styles.friend}>
-                <Text style={{ marginLeft: '2%' }}>{name.replace('_', ' ')}</Text>
+                <Text style={{ marginLeft: '2%' }}>{name.replace(/_/g, ' ')}</Text>
                 <View style={styles.buttonGroup}>
                     <TouchableOpacity style={{ borderWidth: 1, borderRadius: 10, padding: 5 }}
                         onPress={() => alert("More details about user (future enhancement)")}>
