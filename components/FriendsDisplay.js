@@ -5,6 +5,7 @@ import {
 } from "react-native";
 import { connect } from 'react-redux';
 import firebase from '../database/firebase';
+import { Avatar } from 'react-native-elements';
 import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyPeriods';
 
 /**
@@ -59,8 +60,9 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
     const addToState = (allFriends) => {
         var friends = [];
         for (var user in allFriends) {
-            var formattedUser = [user, allFriends[user],
-                userAlreadyInvited(allFriends[user])]; // [name, userID, true/false]
+            var formattedUser = [user, allFriends[user].firebase_id,
+                userAlreadyInvited(allFriends[user]),
+                allFriends[user].picture_url]; // [name, userID, true/false, profilePicURL]
             friends.push(formattedUser);
         }
         setAllAcceptedFriends(friends);
@@ -82,7 +84,6 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
         const priceSelected = currUserFoodFilterObj.price;
 
         cuisineSelectedArr.forEach(cuisine => {
-            console.log(cuisine)
             updates['/food_filters'].cuisine[cuisine.toLowerCase()] += 1;
         })
 
@@ -207,43 +208,54 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
     }
 
     // Format the data into the Flat List Component 
-    const renderIndividualFriends = (name, userID, requested) => {
-        if (!requested) {
-            return (
-                <View style={styles.friendCard}>
-                    <View style={{ flex: 1, }}>
-                        <Text style={styles.nameStyle}>{name.replace('_', ' ')}</Text>
-                    </View>
+    const renderIndividualFriends = (name, userID, requested, pictureURL) => {
+        const inviteButton = () => {
+            if (!requested) {
+                return (
                     <TouchableOpacity onPress={() => inviteForCollab(name, userID)}
                         style={styles.addFriendButton}>
                         <Text style={{
                             fontWeight: 'bold', fontSize: 12, textAlign: 'center',
-                            color: '#1d3557'
+                            color: '#1d3557', borderTopColor: '#7AB3EF',
+                            borderEndColor: '#6EE2E9', borderLeftColor: '#DED8DE',
+                            borderStartColor: '#D6A5D4', borderRightColor: '#DED8DE',
+                            borderBottomColor: '#4ACFEA'
                         }}>
                             Invite
-                </Text>
+                        </Text>
                     </TouchableOpacity>
-                </View>
-            )
-
-        } else {
+                )
+            }
             return (
-                <View style={styles.friendCard}>
-                    <View style={{ flex: 1, }}>
-                        <Text style={styles.nameStyle}>{name.replace('_', ' ')}</Text>
-                    </View>
-                    <TouchableOpacity disabled={true}
-                        style={[styles.addFriendButton, { backgroundColor: '#1a936f' }]}>
-                        <Text style={{
-                            fontWeight: 'bold', fontSize: 12, textAlign: 'center',
-                            color: '#f0f0f0'
-                        }}>
-                            Invitation Sent
+                <TouchableOpacity disabled={true}
+                    style={[styles.addFriendButton, { backgroundColor: '#1a936f' }]}>
+                    <Text style={{
+                        fontWeight: 'bold', fontSize: 12, textAlign: 'center',
+                        color: '#f0f0f0'
+                    }}>
+                        Invitation Sent
                 </Text>
-                    </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
             )
         }
+
+        return (
+            <View style={styles.friendCard}>
+                <View style={{ marginLeft: '28%', marginTop: 10 }}>
+                    <Avatar
+                        rounded
+                        source={{
+                            uri: pictureURL
+                        }}
+                        size={50}
+                    />
+                </View>
+                <View style={{ flex: 1, }}>
+                    <Text style={styles.nameStyle}>{name.replace(/_/g, ' ')}</Text>
+                </View>
+                {inviteButton()}
+            </View>
+        )
     }
 
 
@@ -254,7 +266,7 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
                 horizontal={true}
                 numColumns={1}
                 renderItem={({ item }) => (
-                    renderIndividualFriends(item[0], item[1], item[2])
+                    renderIndividualFriends(item[0], item[1], item[2], item[3])
                 )}
                 keyExtractor={(item, index) => item + index}
             />
