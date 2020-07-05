@@ -74,6 +74,9 @@ const getTopEateries = (restaurants, hawkers, cafes) => {
 
         result.push(eatery);
     }
+    result.sort((x, y) => {
+        return y[1] - x[1];
+    })
     return [result]; // Array for formatting in flatList
 }
 
@@ -170,6 +173,9 @@ const getTopEventsFromGenres = (genre1, genre2, allCategories) => {
         }
         result.push(event);
     }
+    result.sort((x, y) => {
+        return y[1] - x[1];
+    })
     return result;
 }
 
@@ -227,6 +233,9 @@ const getPopularEvents = (allCategories, low, high) => {
         }
         result.push(event);
     }
+    result.sort((x, y) => { // Sort in descending
+        return y[1] - x[1];
+    })
     return result;
 }
 

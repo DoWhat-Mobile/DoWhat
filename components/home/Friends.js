@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
     View, Text, StyleSheet, ActivityIndicator,
     TouchableOpacity, SectionList, Modal
 } from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
 import { connect } from 'react-redux';
 import { removeFriend, findFriends } from '../../actions/friends_actions';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -11,14 +12,17 @@ import FriendRequestModal from './FriendRequestModal';
 import SuggestedFriends from './SuggestedFriends';
 import AllSuggestedFriendsModal from './AllSuggestedFriendsModal';
 import { Overlay } from 'react-native-elements';
-import { Badge } from 'react-native-elements';
+import { Badge, Avatar } from 'react-native-elements';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const AllFriends = ({ userID }) => {
-    useEffect(() => {
-        showAllMyFriends(); // All accepted friends
-        findFriendsFromFirebase();
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            showAllMyFriends(); // All accepted friends
+            findFriendsFromFirebase();
+            return () => null;
+        }, [])
+    )
 
     const [allAcceptedFriends, setAllAcceptedFriends] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
@@ -47,7 +51,7 @@ const AllFriends = ({ userID }) => {
                 const allFriendRequests = user.friends.requests;
 
                 for (var requestee in allFriendRequests) {
-                    if (userID == allFriendRequests[requestee].firebase_id) {
+                    if (userID == allFriendRequests[requestee]) {
                         return true;
                     }
                 }
@@ -85,7 +89,7 @@ const AllFriends = ({ userID }) => {
                 const allFriendRequestsRejects = user.friends.rejected;
 
                 for (var requestee in allFriendRequestsRejects) {
-                    if (userID == allFriendRequestsRejects[requestee].firebase_id) {
+                    if (userID == allFriendRequestsRejects[requestee]) {
                         return true;
                     }
                 }
@@ -162,20 +166,26 @@ const AllFriends = ({ userID }) => {
     const addToState = (allFriends) => {
         var friends = [];
         for (var user in allFriends) {
-            // [name, userID]
-            const formattedUser = [user, allFriends[user]];
+            const formattedUser = [user, allFriends[user].firebase_id,
+                allFriends[user].picture_url];
             friends.push(formattedUser);
-
         }
         setAllAcceptedFriends([...friends]);
     }
 
-    const renderFriends = (name, userID) => {
+    const renderFriends = (name, userID, pictureURL) => {
         return (
             <View style={styles.friend}>
-                <Text style={{ marginLeft: '2%' }}>{name.replace('_', ' ')}</Text>
+                <Avatar
+                    rounded
+                    source={{
+                        uri: pictureURL
+                    }}
+                    size={50}
+                />
+                <Text style={{ marginLeft: '2%' }}>{name.replace(/_/g, ' ')}</Text>
                 <View style={styles.buttonGroup}>
-                    <TouchableOpacity style={{ borderWidth: 1, borderRadius: 10, padding: 5 }}
+                    <TouchableOpacity style={{ borderWidth: 1, borderRadius: 10, padding: 2 }}
                         onPress={() => alert("More details about user (future enhancement)")}>
                         <Text>More details</Text>
                     </TouchableOpacity>
@@ -223,7 +233,8 @@ const AllFriends = ({ userID }) => {
                 sections={[
                     { title: "", data: allAcceptedFriends },
                 ]}
-                renderItem={({ item }) => renderFriends(item[0], item[1])} // Each item is [userDetails, UserID]
+                // Item is [name, firebaseUID, pictureURL]
+                renderItem={({ item }) => renderFriends(item[0], item[1], item[2])}
                 keyExtractor={(item, index) => index}
             />
         )
