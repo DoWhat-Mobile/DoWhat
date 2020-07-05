@@ -13,7 +13,7 @@ import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyP
  * the logic of inviting friends for collaboration. 
  */
 const FriendsDisplay = ({ userID, currUserName, selected_date, database,
-    currUserPreferenceArr, currUserFoodFilterObj }) => {
+    currUserPreferenceArr, currUserFoodFilterObj, currUserProfilePicture }) => {
     useEffect(() => {
         showAllMyFriends(); // All accepted friends
     }, []);
@@ -100,7 +100,8 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
      * 2) The board ID is the curr inviter's Firebase UID.
      * 3) Add a pointer with the board ID to all the invited people so they can reference it. 
      */
-    const updateCollabBoard = (currUser, inviteeBusyPeriods, currUserName, currUserID, inviteeName, inviteeID) => {
+    const updateCollabBoard = (currUser, inviteeBusyPeriods, currUserName, currUserID,
+        inviteeName, inviteeID, inviteePictureURL) => {
         const userGmail = currUser.gmail;
         const uniqueBoardID = createUniqueBoardID(currUser, currUserID);
         const formattedUserEmail = userGmail.replace(/\./g, '@').slice(0, -10); // Firebase cant have '@' 
@@ -112,8 +113,16 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
 
         var updates = {};
         updates['/selected_date'] = selected_date; // selected_date from Redux state
-        updates['/invitees/' + inviteeName] = inviteeID; // Add to list of invitees
-        updates['/invitees/' + currUserName] = userID; // Add to list of invitees
+        updates['/invitees/' + inviteeName] = {
+            firebase_id: inviteeID,
+            profile_pic: inviteePictureURL,
+            isUserHost: false,
+        }; // Add to list of invitees
+        updates['/invitees/' + currUserName] = {
+            firebase_id: userID,
+            profile_pic: currUserProfilePicture,
+            isUserHost: true,
+        }; // Add to list of invitees
         updates['/availabilities/' + formattedUserEmail] = inviteeBusyPeriods;
         updates['host'] = currUserName;
         updates['/isNewlyAddedBoard'] = true;
@@ -154,7 +163,7 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
      * 2) Get curr user's availabilities, gmail, name, and ID
      * 3) Create a new collaboration board with the given information 
      */
-    const inviteForCollab = (name, inviteeID) => {
+    const inviteForCollab = (name, inviteeID, pictureURL) => {
         // Get push token, and other collaboration data
         firebase.database()
             .ref()
@@ -170,7 +179,8 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
                 if (currUser.hasOwnProperty('busy_periods')) {
                     currUserBusyPeriods = currUser.busy_periods;
                 }
-                updateCollabBoard(currUser, currUserBusyPeriods, currUserName, userID, name, inviteeID);
+                updateCollabBoard(currUser, currUserBusyPeriods, currUserName, userID,
+                    name, inviteeID, pictureURL);
             })
         removeInvitedFriendFromList(inviteeID)
     }
@@ -212,7 +222,7 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
         const inviteButton = () => {
             if (!requested) {
                 return (
-                    <TouchableOpacity onPress={() => inviteForCollab(name, userID)}
+                    <TouchableOpacity onPress={() => inviteForCollab(name, userID, pictureURL)}
                         style={styles.addFriendButton}>
                         <Text style={{
                             fontWeight: 'bold', fontSize: 12, textAlign: 'center',
@@ -283,6 +293,7 @@ const mapStateToProps = (state) => {
         currUserName: state.add_events.currUserName,
         currUserPreferenceArr: state.genre.genres[0],
         currUserFoodFilterObj: state.genre.genres[2],
+        currUserProfilePicture: state.add_events.profilePicture
     };
 };
 

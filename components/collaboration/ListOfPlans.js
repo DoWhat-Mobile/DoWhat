@@ -7,8 +7,10 @@ import firebase from '../../database/firebase';
 import { AntDesign } from "@expo/vector-icons";
 import * as Progress from 'react-native-progress';
 import { findOverlappingIntervals } from '../../reusable-functions/OverlappingIntervals';
+import { Overlay } from 'react-native-elements';
 import { genreEventObjectArray } from '../../reusable-functions/data_timeline';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 /**
  * The <SectionList> Component within the AllPlans component. This is the component
@@ -250,15 +252,15 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
 
     return (
         <View style={[styles.container]}>
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={boardModalVisibility}
-                onRequestClose={() => {
-                    closeModal()
-                }}>
+            <Overlay
+                isVisible={boardModalVisibility}
+                windowBackgroundColor="rgba(255, 255, 255, .5)"
+                width="auto"
+                height="auto"
+                overlayStyle={{ width: '95%', height: '95%', borderRadius: 20, }}
+            >
                 <IndividualPlanModal onClose={closeModal} board={boardDetails} />
-            </Modal>
+            </Overlay>
 
             <Modal
                 animationType="fade"

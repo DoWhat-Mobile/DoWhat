@@ -9,6 +9,7 @@ import FoodCuisine from './FoodCuisine';
 import GenrePicker from './GenrePicker';
 import firebase from '../../database/firebase'
 import { inputBusyPeriodFromGcal } from '../../reusable-functions/GoogleCalendarGetBusyPeriods';
+import { LinearGradient } from 'expo-linear-gradient';
 
 /**
  * The modal that shows when user selects each of the individual upcoming plans
@@ -62,6 +63,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     const extractAndSetInvitees = (object) => {
         var newState = [];
         for (var name in object) {
+            console.log(object[name])
             newState.push(name);
         }
         setInvitees([...newState]);
@@ -133,7 +135,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 
     const renderInvitees = (invitees) => {
         for (var i = 0; i < invitees.length; i++) {
-            invitees[i] = invitees[i].replace('_', ' ');
+            invitees[i] = invitees[i].replace(/_/g, ' ');
         }
         return (
             <View style={{ flex: 1, flexDirection: "row" }}>
@@ -261,14 +263,41 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     if (board.isUserHost) {
         return (
             <View style={styles.modal}>
-                <Text style={styles.headerText}>
-                    Your outing on {formatDate(selectedDate.getDay(),
-                    selectedDate.getMonth(), selectedDate.getDate())}
-                </Text>
-                <AntDesign name="close" size={24}
-                    onPress={() => onClose()}
-                    style={styles.close}
+                <LinearGradient
+                    colors={['#F3491C', '#E13F19']}
+                    start={[0.1, 0.1]}
+                    end={[0.9, 0.9]}
+                    style={{
+                        position: 'absolute',
+                        left: -10,
+                        right: -10,
+                        top: -10,
+                        height: 100,
+                    }}
                 />
+                <View style={styles.header}>
+                    <Text style={styles.headerText}>
+                        Your outing on {formatDate(selectedDate.getDay(),
+                        selectedDate.getMonth(), selectedDate.getDate())}
+                    </Text>
+                    <Text style={{ color: '#D7C4B7', fontFamily: 'serif', fontSize: 12 }}>
+                        Hosted by you
+                        </Text>
+                    <AntDesign name="close" size={24}
+                        onPress={() => onClose()}
+                        style={styles.close}
+                    />
+                </View>
+
+                <View style={styles.invitedPeople}>
+                    <Text style={{
+                        fontSize: 16, fontWeight: '800', fontFamily: 'serif',
+                        marginLeft: 10, marginTop: 5
+                    }}>
+                        Invited (2)
+                    </Text>
+                    {renderInvitees(invitees)}
+                </View>
 
                 <View style={styles.body}>
                     <Text style={{ textAlign: "center" }}>You are the host, wait for all your friends to input their collaboration</Text>
@@ -276,7 +305,6 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 
                 <View style={styles.footer}>
                     {renderTopGenres(topGenres)}
-                    {renderInvitees(invitees)}
                 </View>
 
                 <View style={styles.buttonGroup}>
@@ -329,34 +357,35 @@ export default connect(mapStateToProps, null)(IndividualPlanModal);
 const styles = StyleSheet.create({
     modal: {
         flex: 1,
-        marginBottom: '20%',
-        marginTop: '10%',
-        marginLeft: '5%',
-        marginRight: '5%',
-        backgroundColor: "white",
-        borderRadius: 20,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 10,
-            height: 20,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 10,
+        borderRadius: 10,
     },
     header: {
         flex: 1,
+        borderWidth: 1,
     },
     headerText: {
         fontWeight: '800',
         fontSize: 20,
-        marginTop: '15%',
-        marginLeft: '8%',
-        fontFamily: 'serif'
+        fontFamily: 'serif',
+        color: '#FEFBFA'
+    },
+    invitedPeople: {
+        position: 'absolute',
+        top: '10%',
+        left: '5%',
+        borderWidth: 2,
+        height: '20%',
+        width: '90%',
+        borderRadius: 10,
+        elevation: 10,
+        backgroundColor: '#FEFBFA',
+        borderColor: '#A4A4A6'
+
     },
     body: {
         flex: 4,
-        margin: 10,
+        marginTop: '30%',
+        borderWidth: 1,
     },
     genreSelection: {
     },
@@ -376,12 +405,12 @@ const styles = StyleSheet.create({
     },
     footer: {
         flex: 1,
-        margin: 10,
-        marginTop: 0,
+        borderWidth: 1,
     },
     buttonGroup: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        borderWidth: 1,
 
     },
     finalizeButton: {
@@ -398,7 +427,7 @@ const styles = StyleSheet.create({
         position: "absolute",
         left: 330,
         right: 0,
-        top: 25,
+        top: 5,
         bottom: 0,
     },
 });
