@@ -85,18 +85,6 @@ class AuthScreen extends Component {
     render() {
         return (
             <View style={style.container}>
-                <LinearGradient
-                    colors={['#D69750', '#D5461E']}
-                    start={[0.1, 0.1]}
-                    end={[0.9, 0.9]}
-                    style={{
-                        position: 'absolute',
-                        left: 0,
-                        right: 0,
-                        top: 0,
-                        height: 200,
-                    }}
-                />
                 <View style={style.headers}>
                     <Image
                         style={{
@@ -135,6 +123,7 @@ class AuthScreen extends Component {
                             color="black"
                             iconStyle={{}}
                             borderRadius={5}
+                            style={{ borderWidth: 1, borderColor: '#C2BDAB' }}
                             onPress={this.signInToGoogle}
                         >
                             Sign in with Google
