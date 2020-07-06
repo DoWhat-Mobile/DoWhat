@@ -127,6 +127,9 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
             const genre = currentEvents.map((x) => Object.keys(x)[0])[i];
             const event = currentEvents[i][genre];
             if (events[genre].slots.includes(startTime)) {
+                if (startTime + events[genre]["duration"] >= timeline[1]) {
+                    break;
+                }
                 let intervalObject = { start: "", end: "" };
                 intervalObject.start = startTime.toString() + ":00";
                 locationArray.push({ coord: event.coord, name: event.name });
@@ -157,7 +160,7 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
 
         if (startTime >= timeline[1] - 1) break;
     }
-
+    console.log(timingsArray);
     return [data, timingsArray, locationArray, busRoutes];
 };
 

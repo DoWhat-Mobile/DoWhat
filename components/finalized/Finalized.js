@@ -18,7 +18,6 @@ import {
 } from "../../reusable-functions/data_timeline";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import TransitRoute from "./TransitRoutes";
-import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 
 const Finalized = (props) => {
     const [isLoading, setIsLoading] = React.useState(true);
@@ -31,11 +30,9 @@ const Finalized = (props) => {
     const accessRights = props.route.params.access;
     const weather = props.route.params.weather;
     //const currentEvents = props.route.params.currentEvents;
-    const userLocation = props.route.params.userLocation;
     const userGenres = props.route.params.userGenres;
     const allData = props.route.params.data;
-    let busRoutes = [];
-    busRoutes.push(userLocation);
+    //console.log(props.route.params.routeGuide);
 
     const onClose = () => {
         setVisible(false);
@@ -80,10 +77,13 @@ const Finalized = (props) => {
         //         GOOGLE_MAPS_API_KEY +
         //         "&mode=transit&region=sg"
         // );
-
+        //console.log(allData);
+        const passed = props.route.params.routeGuide;
+        //console.log(passed);
         setData(allData);
         setCoord(allData[2]);
-        setRoutes(busRoutes.concat(allData[3]));
+        setRoutes(props.route.params.routeGuide);
+        //ionsole.log(props.route.params.routeGuide);
         setIsLoading(false);
     }, []);
 
@@ -107,7 +107,7 @@ const Finalized = (props) => {
             <View style={styles.container}>
                 <View style={styles.header}>
                     {weatherIcon(weather)}
-                    <TransitRoute />
+                    <TransitRoute routes={routes} />
                 </View>
                 <View style={styles.body}>
                     <Schedule
