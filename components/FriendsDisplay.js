@@ -5,6 +5,7 @@ import {
 } from "react-native";
 import { connect } from 'react-redux';
 import firebase from '../database/firebase';
+import { Avatar } from 'react-native-elements';
 import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyPeriods';
 
 /**
@@ -12,7 +13,7 @@ import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyP
  * the logic of inviting friends for collaboration. 
  */
 const FriendsDisplay = ({ userID, currUserName, selected_date, database,
-    currUserPreferenceArr, currUserFoodFilterObj }) => {
+    currUserPreferenceArr, currUserFoodFilterObj, currUserProfilePicture }) => {
     useEffect(() => {
         showAllMyFriends(); // All accepted friends
     }, []);
@@ -59,8 +60,9 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
     const addToState = (allFriends) => {
         var friends = [];
         for (var user in allFriends) {
-            var formattedUser = [user, allFriends[user],
-                userAlreadyInvited(allFriends[user])]; // [name, userID, true/false]
+            var formattedUser = [user, allFriends[user].firebase_id,
+                userAlreadyInvited(allFriends[user]),
+                allFriends[user].picture_url]; // [name, userID, true/false, profilePicURL]
             friends.push(formattedUser);
         }
         setAllAcceptedFriends(friends);
@@ -73,23 +75,28 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
 
     // Takes update object (to update Firebase), and includes the selected curr user preferences
     const addCurrUserPreferences = (updates) => {
+        var foodSelected = false;
         currUserPreferenceArr.forEach((preference) => {
             updates['/preferences'][preference] += 1
+            if (preference == 'food') { // If food is selected
+                foodSelected = true;
+            }
         })
 
-        const areaSelectedArr = currUserFoodFilterObj.area;
-        const cuisineSelectedArr = currUserFoodFilterObj.cuisine;
-        const priceSelected = currUserFoodFilterObj.price;
+        if (foodSelected) {
+            const areaSelectedArr = currUserFoodFilterObj.area;
+            const cuisineSelectedArr = currUserFoodFilterObj.cuisine;
+            const priceSelected = currUserFoodFilterObj.price;
 
-        cuisineSelectedArr.forEach(cuisine => {
-            console.log(cuisine)
-            updates['/food_filters'].cuisine[cuisine.toLowerCase()] += 1;
-        })
+            cuisineSelectedArr.forEach(cuisine => {
+                updates['/food_filters'].cuisine[cuisine.toLowerCase()] += 1;
+            })
 
-        areaSelectedArr.forEach(area => {
-            updates['/food_filters'].area[area.toLowerCase()] += 1;
-        })
-        updates['/food_filters'].price[priceSelected] += 1;
+            areaSelectedArr.forEach(area => {
+                updates['/food_filters'].area[area.toLowerCase()] += 1;
+            })
+            updates['/food_filters'].price[priceSelected] += 1;
+        }
         return updates;
     }
 
@@ -99,7 +106,8 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
      * 2) The board ID is the curr inviter's Firebase UID.
      * 3) Add a pointer with the board ID to all the invited people so they can reference it. 
      */
-    const updateCollabBoard = (currUser, inviteeBusyPeriods, currUserName, currUserID, inviteeName, inviteeID) => {
+    const updateCollabBoard = (currUser, currUserBusyPeriods, currUserName, currUserID,
+        inviteeName, inviteeID, inviteePictureURL, inviteeGmail) => {
         const userGmail = currUser.gmail;
         const uniqueBoardID = createUniqueBoardID(currUser, currUserID);
         const formattedUserEmail = userGmail.replace(/\./g, '@').slice(0, -10); // Firebase cant have '@' 
@@ -111,10 +119,21 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
 
         var updates = {};
         updates['/selected_date'] = selected_date; // selected_date from Redux state
-        updates['/invitees/' + inviteeName] = inviteeID; // Add to list of invitees
-        updates['/invitees/' + currUserName] = userID; // Add to list of invitees
-        updates['/availabilities/' + formattedUserEmail] = inviteeBusyPeriods;
+        updates['/invitees/' + userID] = {
+            profile_pic: currUserProfilePicture,
+            isUserHost: true,
+            name: currUserName,
+            gmail: formattedUserEmail
+        }; // Add to list of invitees
+        updates['/invitees/' + inviteeID] = {
+            profile_pic: inviteePictureURL,
+            isUserHost: false,
+            name: inviteeName,
+            gmail: inviteeGmail
+        }; // Add to list of invitees
+        updates['/availabilities/' + formattedUserEmail] = currUserBusyPeriods;
         updates['host'] = currUserName;
+        updates['finalized/' + currUserName] = userID; // Host finalized selection already
         updates['/isNewlyAddedBoard'] = true;
 
         updates['/preferences'] = {
@@ -153,7 +172,7 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
      * 2) Get curr user's availabilities, gmail, name, and ID
      * 3) Create a new collaboration board with the given information 
      */
-    const inviteForCollab = (name, inviteeID) => {
+    const inviteForCollab = (name, inviteeID, pictureURL) => {
         // Get push token, and other collaboration data
         firebase.database()
             .ref()
@@ -162,6 +181,7 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
                 const database = snapshot.val();
                 const invitee = database.users[inviteeID];
                 const pushToken = invitee.push_token; // To send push notification
+                const inviteeGmail = invitee.gmail;
                 sendPushNotification(pushToken, name)
 
                 const currUser = database.users[userID]; // UserID from Redux State
@@ -169,7 +189,8 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
                 if (currUser.hasOwnProperty('busy_periods')) {
                     currUserBusyPeriods = currUser.busy_periods;
                 }
-                updateCollabBoard(currUser, currUserBusyPeriods, currUserName, userID, name, inviteeID);
+                updateCollabBoard(currUser, currUserBusyPeriods, currUserName, userID,
+                    name, inviteeID, pictureURL, inviteeGmail);
             })
         removeInvitedFriendFromList(inviteeID)
     }
@@ -207,43 +228,54 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
     }
 
     // Format the data into the Flat List Component 
-    const renderIndividualFriends = (name, userID, requested) => {
-        if (!requested) {
-            return (
-                <View style={styles.friendCard}>
-                    <View style={{ flex: 1, }}>
-                        <Text style={styles.nameStyle}>{name.replace('_', ' ')}</Text>
-                    </View>
-                    <TouchableOpacity onPress={() => inviteForCollab(name, userID)}
+    const renderIndividualFriends = (name, userID, requested, pictureURL) => {
+        const inviteButton = () => {
+            if (!requested) {
+                return (
+                    <TouchableOpacity onPress={() => inviteForCollab(name, userID, pictureURL)}
                         style={styles.addFriendButton}>
                         <Text style={{
                             fontWeight: 'bold', fontSize: 12, textAlign: 'center',
-                            color: '#1d3557'
+                            color: '#1d3557', borderTopColor: '#7AB3EF',
+                            borderEndColor: '#6EE2E9', borderLeftColor: '#DED8DE',
+                            borderStartColor: '#D6A5D4', borderRightColor: '#DED8DE',
+                            borderBottomColor: '#4ACFEA'
                         }}>
                             Invite
-                </Text>
+                        </Text>
                     </TouchableOpacity>
-                </View>
-            )
-
-        } else {
+                )
+            }
             return (
-                <View style={styles.friendCard}>
-                    <View style={{ flex: 1, }}>
-                        <Text style={styles.nameStyle}>{name.replace('_', ' ')}</Text>
-                    </View>
-                    <TouchableOpacity disabled={true}
-                        style={[styles.addFriendButton, { backgroundColor: '#1a936f' }]}>
-                        <Text style={{
-                            fontWeight: 'bold', fontSize: 12, textAlign: 'center',
-                            color: '#f0f0f0'
-                        }}>
-                            Invitation Sent
+                <TouchableOpacity disabled={true}
+                    style={[styles.addFriendButton, { backgroundColor: '#1a936f' }]}>
+                    <Text style={{
+                        fontWeight: 'bold', fontSize: 12, textAlign: 'center',
+                        color: '#f0f0f0'
+                    }}>
+                        Invitation Sent
                 </Text>
-                    </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
             )
         }
+
+        return (
+            <View style={styles.friendCard}>
+                <View style={{ marginLeft: '28%', marginTop: 10 }}>
+                    <Avatar
+                        rounded
+                        source={{
+                            uri: pictureURL
+                        }}
+                        size={50}
+                    />
+                </View>
+                <View style={{ flex: 1, }}>
+                    <Text style={styles.nameStyle}>{name.replace(/_/g, ' ')}</Text>
+                </View>
+                {inviteButton()}
+            </View>
+        )
     }
 
 
@@ -254,7 +286,7 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
                 horizontal={true}
                 numColumns={1}
                 renderItem={({ item }) => (
-                    renderIndividualFriends(item[0], item[1], item[2])
+                    renderIndividualFriends(item[0], item[1], item[2], item[3])
                 )}
                 keyExtractor={(item, index) => item + index}
             />
@@ -271,6 +303,7 @@ const mapStateToProps = (state) => {
         currUserName: state.add_events.currUserName,
         currUserPreferenceArr: state.genre.genres[0],
         currUserFoodFilterObj: state.genre.genres[2],
+        currUserProfilePicture: state.add_events.profilePicture
     };
 };
 

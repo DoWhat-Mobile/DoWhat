@@ -11,8 +11,7 @@ import firebase from '../../database/firebase';
 import FriendRequestModal from './FriendRequestModal';
 import SuggestedFriends from './SuggestedFriends';
 import AllSuggestedFriendsModal from './AllSuggestedFriendsModal';
-import { Overlay } from 'react-native-elements';
-import { Badge, Avatar } from 'react-native-elements';
+import { Badge, Avatar, Overlay } from 'react-native-elements';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const AllFriends = ({ userID }) => {

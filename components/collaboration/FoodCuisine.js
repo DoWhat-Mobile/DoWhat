@@ -15,9 +15,15 @@ const FoodCuisine = ({ cuisine, handleCuisineSelect }) => {
         } else {
             return (
                 <View>
-                    <TouchableOpacity style={[styles.genreButton, { backgroundColor: '#e5e5e5' }]}
+                    <TouchableOpacity style={[styles.genreButton, {
+                        backgroundColor: '#E86830',
+                        borderColor: '#E13F19'
+                    }]}
                         onPress={() => handleCuisineSelect(index)}>
-                        <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{cuisine}</Text>
+                        <Text style={{
+                            fontFamily: 'serif', fontSize: 11,
+                            color: '#FEFBFA', fontWeight: '100'
+                        }}>{cuisine}</Text>
                     </TouchableOpacity>
                 </View>
             );
@@ -26,7 +32,7 @@ const FoodCuisine = ({ cuisine, handleCuisineSelect }) => {
 
     return (
         <View style={{ marginTop: 10 }}>
-            <Text style={styles.genreSelectionText}>Cuisine:</Text>
+            <Text style={styles.genreSelectionText}>Cuisine</Text>
             <FlatList
                 data={cuisine}
                 horizontal={true}
@@ -42,13 +48,12 @@ export default FoodCuisine;
 const styles = StyleSheet.create({
     genreButton: {
         borderWidth: 0.5,
-        padding: 3,
+        padding: 10,
         borderRadius: 5,
         margin: 5,
     },
     genreSelectionText: {
         fontFamily: 'serif',
-        marginLeft: 5,
         fontSize: 15,
         fontWeight: '800'
     },

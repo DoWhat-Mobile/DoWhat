@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
 import { formatDate } from '../DateSelection';
@@ -9,6 +9,8 @@ import FoodCuisine from './FoodCuisine';
 import GenrePicker from './GenrePicker';
 import firebase from '../../database/firebase'
 import { inputBusyPeriodFromGcal } from '../../reusable-functions/GoogleCalendarGetBusyPeriods';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Avatar, Badge } from 'react-native-elements'
 
 /**
  * The modal that shows when user selects each of the individual upcoming plans
@@ -16,7 +18,6 @@ import { inputBusyPeriodFromGcal } from '../../reusable-functions/GoogleCalendar
 const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     useEffect(() => {
         listenToGenreChanges();
-        extractAndSetInvitees(board.invitees);
 
         // Unsubscribe to changes when component unmount
         return () => {
@@ -26,8 +27,6 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     }, []);
 
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
-    const [boardIsFinalized, setBoardIsFinalized] = useState(false);
-    const [invitees, setInvitees] = useState([]);
     const [topGenres, setTopGenres] = useState([]);
     const [allGenres, setAllGenres] = useState([['ADVENTURE', false], ['ARTS', false],
     ['LEISURE', false], ['NATURE', false], ['NIGHTLIFE', false], ['FOOD', false]]);
@@ -61,10 +60,12 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 
     const extractAndSetInvitees = (object) => {
         var newState = [];
-        for (var name in object) {
-            newState.push(name);
+        for (var firebaseID in object) {
+            const userDetails = [object[firebaseID].name,
+            object[firebaseID].profile_pic, object[firebaseID].isUserHost];
+            newState.push(userDetails);
         }
-        setInvitees([...newState]);
+        return newState;
     }
 
 
@@ -91,57 +92,74 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     }
 
     const renderFoodFilter = (foodIsSelected) => {
-        if (foodIsSelected) {
-            return (
-                <View style={styles.foodFilters}>
-                    <FoodLocation location={location} handleLocationSelect={handleLocationSelect} />
-                    <FoodCuisine cuisine={cuisine} handleCuisineSelect={handleCuisineSelect} />
-                    <FoodPrice handlePricePress={(price) => handlePricePress(price)} />
-                </View>
-            );
-        }
-    }
-
-    // Top three genre choices from all the votes of invitees
-    const renderTopGenres = (top) => {
-        if (top.length == 0) { // If useEffect haven't setState of top Genre yet
-            return (
-                <Text style={{ marginTop: 5, marginLeft: 5 }}>
-                    Top genres:
-                </Text>
-            )
-
-        } else {
-            const topThree = [top[0][0], top[1][0], top[2][0]]
-            return (
-                <Text style={{ marginTop: 5, marginLeft: 5 }}>
-                    Top genres: {topThree.toString()}
-                </Text>
-            )
-        }
-    }
-
-    const formatInvitee = (item, index) => {
         return (
-            <View>
-                <TouchableOpacity style={styles.genreButton} disabled={true}>
-                    <Text style={{ fontFamily: 'serif', fontSize: 11, fontWeight: '100' }}>{item}</Text>
-                </TouchableOpacity>
+            <View pointerEvents={foodIsSelected ? 'auto' : 'none'}
+                style={styles.foodFilters}>
+                {foodIsSelected
+                    ? null
+                    : <Text style={{
+                        position: 'absolute', right: 5, top: 12,
+                        fontSize: 12, fontWeight: '400', color: '#E86830',
+                        fontFamily: 'serif'
+                    }}>
+                        Select food to enable filter selection
+                </Text>
+                }
+                <FoodLocation location={location} handleLocationSelect={handleLocationSelect} />
+                <FoodCuisine cuisine={cuisine} handleCuisineSelect={handleCuisineSelect} />
+                <FoodPrice handlePricePress={(price) => handlePricePress(price)} />
             </View>
+        );
+    }
+
+    const formatInvitee = (name, pictureURL, isUserHost) => {
+        const userName = name.replace(/_/g, ' ');
+        return (
+            <View style={{
+                width: 75, height: 100, margin: 5, marginTop: 10,
+                alignItems: "center"
+            }}>
+                <Avatar imageProps={{ borderRadius: 10 }}
+                    source={{
+                        uri: pictureURL
+                    }}
+                    size={50}
+                />
+                {isUserHost
+                    ? <Badge
+                        status="primary"
+                        containerStyle={{ position: 'absolute', top: -4, left: -4 }}
+                        value={'Host'}
+                    />
+                    : null}
+
+                <Text style={{
+                    fontFamily: 'serif', fontSize: 11, fontWeight: '100',
+                    textAlign: "center", color: "#5C5656", marginTop: 4,
+                }}>{userName}</Text>
+            </View >
         )
     }
 
-    const renderInvitees = (invitees) => {
-        for (var i = 0; i < invitees.length; i++) {
-            invitees[i] = invitees[i].replace('_', ' ');
-        }
+    const renderInvitees = (invitees, rejectees) => {
+        const formattedInvitees = extractAndSetInvitees(invitees);
+        const formattedRejectees = rejectees == undefined
+            ? []
+            : extractAndSetInvitees(rejectees); // Users who opted out
+        const data = [...formattedInvitees, ...formattedRejectees];
+
         return (
-            <View style={{ flex: 1, flexDirection: "row" }}>
-                <Text style={{ marginTop: 5, marginLeft: 5 }}>Invitees: </Text>
+            <View style={{ flex: 1, }}>
+                <Text style={{
+                    fontSize: 16, fontWeight: '800', fontFamily: 'serif',
+                    marginLeft: 16, marginTop: 5
+                }}>
+                    Invited ({data.length})
+                    </Text>
                 <FlatList
-                    data={invitees}
+                    data={data}
                     horizontal={true}
-                    renderItem={({ item, index }) => formatInvitee(item, index)}
+                    renderItem={({ item, index }) => formatInvitee(item[0], item[1], item[2])}
                     keyExtractor={(item, index) => item + index} />
             </View>
         )
@@ -197,7 +215,6 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
             .ref('collab_boards/' + board.boardID)
             .update(updates)
 
-        setBoardIsFinalized(true); // Changes style of finalize button
         onClose() // Close modal
     }
 
@@ -211,15 +228,10 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         if (isButtonDisabled) {
             return (
                 <View>
-                    <TouchableOpacity style={[styles.finalizeButton, { borderRadius: 20, backgroundColor: '#2a9d8f', borderWidth: 0.2 }]}
+                    <TouchableOpacity style={[styles.finalizeButton, { backgroundColor: '#2a9d8f', borderWidth: 0.1 }]}
                         disabled={true}
                         onPress={() => finalizeBoard()}>
-                        <AntDesign
-                            name="check"
-                            size={20}
-                            style={{ color: 'white' }}
-                        />
-                        <Text style={{ color: 'white', marginLeft: 5 }}>
+                        <Text style={{ color: 'white', fontFamily: 'serif' }}>
                             Availabilities Inputted
                             </Text>
                     </TouchableOpacity>
@@ -229,57 +241,94 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
             return (
                 <TouchableOpacity style={styles.finalizeButton} onPress={() => inputAvailabilities()}
                     disabled={isButtonDisabled}>
-                    <Text>Input Availabilities</Text>
+                    <Text style={{ fontFamily: 'serif' }}>Input Availabilities</Text>
                 </TouchableOpacity>
             );
         }
     }
 
-    const renderFinalizeButton = () => {
-        if (boardIsFinalized) {
-            return (
-                <TouchableOpacity style={[styles.finalizeButton, { borderRadius: 20, backgroundColor: '#e63946', borderWidth: 0.2 }]}
-                    disabled={true}
-                    onPress={() => finalizeBoard()}>
-                    <AntDesign
-                        name="check"
-                        size={20}
-                        style={{ color: 'white' }}
-                    />
-                </TouchableOpacity>
-            )
-        }
+    // Top portion of modal, which is identical for both host and invitees' board
+    const renderTopPortion = (isUserHost) => {
         return (
-            <TouchableOpacity style={styles.finalizeButton} onPress={() => finalizeBoard()}>
-                <Text>Finalize</Text>
-            </TouchableOpacity>
-        );
+            <View>
+                <LinearGradient
+                    colors={['#e86830', '#e86838']}
+                    start={[0.1, 0.1]}
+                    end={[0.9, 0.9]}
+                    style={{
+                        position: 'absolute',
+                        left: -10,
+                        right: -10,
+                        top: -10,
+                        height: 120,
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
+                    }}
+                />
+                <View style={styles.header}>
+                    <View>
+                        <Text style={styles.headerText}>
+                            Your outing on {formatDate(selectedDate.getDay(),
+                            selectedDate.getMonth(), selectedDate.getDate())}
+                        </Text>
+                        <Text style={{ color: '#f0f0f0', fontFamily: 'serif', fontSize: 12 }}>
+                            Hosted by {isUserHost ? 'you' : board.host.replace(/_/g, ' ')}
+                        </Text>
+                    </View>
+                    <View>
+                        <AntDesign name="close" size={24}
+                            onPress={() => onClose()}
+                            style={styles.close}
+                        />
+                    </View>
+                </View>
+            </View>
+        )
+    }
+
+    // Check if current user has already inputted preferences
+    const userHasFinalized = () => {
+        for (var name in board.finalized) {
+            if (board.finalized[name] == userID) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // When user opts out, handle database updates
+    const handleOptOut = () => {
+        var updates = {}
+        updates['/collab_boards/' + board.boardID + '/invitees/' + userID] = null;
+        // Transfer user information to rejected node
+        updates['/collab_boards/' + board.boardID + '/rejected/' + userID] = board.invitees[userID];
+        // Remove from user's collab boards list
+        updates['/users/' + userID + '/collab_boards/' + board.boardID] = null;
+        updates['/collab_boards/' + board.boardID + '/finalized/' + currUserName] = userID;
+
+        firebase.database()
+            .ref()
+            .update(updates)
+        onClose();
     }
 
     const selectedDate = new Date(board.selected_date);
 
-    if (board.isUserHost) {
+    if (board.isUserHost || userHasFinalized()) {
         return (
             <View style={styles.modal}>
-                <Text style={styles.headerText}>
-                    Your outing on {formatDate(selectedDate.getDay(),
-                    selectedDate.getMonth(), selectedDate.getDate())}
-                </Text>
-                <AntDesign name="close" size={24}
-                    onPress={() => onClose()}
-                    style={styles.close}
-                />
-
-                <View style={styles.body}>
-                    <Text style={{ textAlign: "center" }}>You are the host, wait for all your friends to input their collaboration</Text>
+                {renderTopPortion(board.isUserHost)}
+                <View style={styles.invitedPeople}>
+                    {renderInvitees(board.invitees, board.rejected)}
                 </View>
+                <View style={[styles.body, { justifyContent: 'center', alignItems: 'center' }]}>
+                    <Text style={styles.sectionHeaderText}>
+                        You have successfully inputted your preferences
+                        </Text>
+                    <Text style={styles.sectionSubHeaderText}>
+                        Please wait for all your friends to input their preferences
+                    </Text>
 
-                <View style={styles.footer}>
-                    {renderTopGenres(topGenres)}
-                    {renderInvitees(invitees)}
-                </View>
-
-                <View style={styles.buttonGroup}>
                 </View>
             </View >
         );
@@ -287,31 +336,76 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 
     return (
         <View style={styles.modal}>
-            <Text style={styles.headerText}>
-                Your outing on {formatDate(selectedDate.getDay(),
-                selectedDate.getMonth(), selectedDate.getDate())}
-            </Text>
-            <AntDesign name="close" size={24}
-                onPress={() => onClose()}
-                style={styles.close}
-            />
+            {renderTopPortion(board.isUserHost)}
+
+            <View style={styles.invitedPeople}>
+                {renderInvitees(board.invitees, board.rejected)}
+            </View>
 
             <View style={styles.body}>
                 <View style={styles.genreSelection}>
-                    <Text style={styles.genreSelectionText}>Select your moods:</Text>
-                    <GenrePicker allGenres={allGenres} handleGenreSelect={handleGenreSelect} />
+                    <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: "column" }}>
+                            <Text style={styles.sectionHeaderText}>Possible Preferences {'&'} Genres</Text>
+                            <Text style={styles.sectionSubHeaderText}>
+                                Select according to your preference
+                            </Text>
+                        </View>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={{ color: '#5C5656', fontSize: 14, marginTop: 2 }}>Finalized </Text>
+                            <Text style={{
+                                borderWidth: 0.2, padding: 2, backgroundColor: '#E86830',
+                                borderColor: 'grey', borderRadius: 5, textAlign: 'center',
+                                paddingLeft: 5, paddingRight: 5, color: '#FEFBFA', marginBottom: 15
+                            }}>
+                                {Object.keys(board.finalized).length}/
+                                {Object.keys(board.invitees).length +
+                                    (board.hasOwnProperty('rejected')
+                                        ? Object.keys(board.rejected).length : 0)}
+                            </Text>
+                        </View>
+                    </View>
+                    <GenrePicker allGenres={allGenres} handleGenreSelect={handleGenreSelect}
+                        topGenres={topGenres} />
                 </View>
                 {renderFoodFilter(allGenres[5][1])}
             </View>
 
             <View style={styles.footer}>
-                {renderTopGenres(topGenres)}
-                {renderInvitees(invitees)}
+                <View style={{ flexDirection: 'column' }}>
+                    <Text style={styles.sectionHeaderText}>Possible Timings</Text>
+                    <Text style={styles.sectionSubHeaderText}>
+                        Input your available timings
+                 </Text>
+                </View>
+                {renderInputAvailabilitiesButton()}
             </View>
 
             <View style={styles.buttonGroup}>
-                {renderInputAvailabilitiesButton()}
-                {renderFinalizeButton()}
+                <TouchableOpacity onPress={() => finalizeBoard()}>
+                    <Text style={{
+                        fontFamily: 'serif', color: '#E86830', fontWeight: 'bold',
+                        fontSize: 14
+                    }}>Finalize Selections</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => Alert.alert(
+                    'Opt Out',
+                    'Are you sure you want to opt out of this collaboration?',
+                    [
+                        {
+                            text: 'No',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel'
+                        },
+                        { text: 'Yes', onPress: () => handleOptOut() }
+                    ],
+                    { cancelable: false }
+                )}>
+                    <Text style={{
+                        fontFamily: 'serif', color: '#E86830', fontWeight: 'bold',
+                        fontSize: 14
+                    }}>Opt Out</Text>
+                </TouchableOpacity>
             </View>
         </View >
     );
@@ -329,36 +423,40 @@ export default connect(mapStateToProps, null)(IndividualPlanModal);
 const styles = StyleSheet.create({
     modal: {
         flex: 1,
-        marginBottom: '20%',
-        marginTop: '10%',
-        marginLeft: '5%',
-        marginRight: '5%',
-        backgroundColor: "white",
-        borderRadius: 20,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 10,
-            height: 20,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 10,
+        borderRadius: 10,
     },
     header: {
         flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
     headerText: {
         fontWeight: '800',
         fontSize: 20,
-        marginTop: '15%',
-        marginLeft: '8%',
-        fontFamily: 'serif'
+        fontFamily: 'serif',
+        color: '#FEFBFA'
+    },
+    invitedPeople: {
+        position: 'absolute',
+        top: '10%',
+        left: '5%',
+        borderWidth: 0.5,
+        height: '20%',
+        width: '90%',
+        borderRadius: 10,
+        elevation: 10,
+        backgroundColor: '#FEFBFA',
+        borderColor: '#A4A4A6'
+
     },
     body: {
         flex: 4,
-        margin: 10,
+        marginTop: '60%',
     },
     genreSelection: {
+        borderBottomWidth: 1.5,
+        borderBottomColor: '#e4e4e4',
+        paddingBottom: 10
     },
     genreButton: {
         borderWidth: 0.5,
@@ -366,39 +464,41 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         margin: 5,
     },
-    genreSelectionText: {
+    sectionHeaderText: {
         fontFamily: 'serif',
-        marginLeft: 5,
         fontSize: 15,
         fontWeight: '800'
     },
+    sectionSubHeaderText: {
+        fontSize: 12, color: '#A4A4A6', fontWeight: '100'
+    },
     foodFilters: {
+        borderBottomWidth: 1.5,
+        borderBottomColor: '#e4e4e4',
+        paddingBottom: 10
     },
     footer: {
-        flex: 1,
-        margin: 10,
-        marginTop: 0,
+        flex: 1.6,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
     buttonGroup: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        borderTopWidth: 1.5,
+        borderTopColor: '#e4e4e4',
+        paddingTop: 10,
 
     },
     finalizeButton: {
         borderWidth: 1,
-        borderRadius: 10,
-        justifyContent: 'center',
-        flexDirection: 'row',
-        alignSelf: 'flex-end',
+        borderRadius: 5,
         padding: 5,
         marginRight: 10,
         marginLeft: 10,
+        alignSelf: 'flex-start',
     },
     close: {
-        position: "absolute",
-        left: 330,
-        right: 0,
-        top: 25,
-        bottom: 0,
+        color: 'white',
     },
 });

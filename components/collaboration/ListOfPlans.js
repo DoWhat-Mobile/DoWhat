@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { View, StyleSheet, Text, TouchableOpacity, SectionList, Dimensions, Modal } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, SectionList, Modal } from 'react-native';
 import IndividualPlanModal from './IndividualPlanModal';
 import ChatRoomModal from './ChatRoomModal';
 import firebase from '../../database/firebase';
-import { AntDesign } from "@expo/vector-icons";
-import * as Progress from 'react-native-progress';
 import { findOverlappingIntervals } from '../../reusable-functions/OverlappingIntervals';
+import { Overlay } from 'react-native-elements';
 import { genreEventObjectArray } from '../../reusable-functions/data_timeline';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { formatDate } from '../DateSelection';
 
 /**
  * The <SectionList> Component within the AllPlans component. This is the component
  * which shows all the plans that the user is part of.
  */
-const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
-    const [isRefreshing, setIsRefreshing] = useState(false);
+const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
     const [boardModalVisibility, setBoardModalVisibility] = useState(false);
     const [boardDetails, setBoardDetails] = useState({})
     const [boardChatRoomVisibility, setBoardChatRoomVisibility] = useState(false);
@@ -26,13 +25,6 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
 
     const closeChatModal = () => {
         setBoardChatRoomVisibility(false);
-    }
-
-    // Not functional yet
-    const refreshPage = () => {
-        setIsRefreshing(true);
-        refreshList();
-        setIsRefreshing(false);
     }
 
     // To open each individual collaboration board modal
@@ -117,28 +109,18 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
 
     // Fraction of invitees that have finalized their collaboration inputs
     const getFinalizedFraction = (board) => {
+        var noOfRejectees = 0;
+        if (board.hasOwnProperty('rejected')) {
+            noOfRejectees = Object.keys(board.rejected).length;
+        }
+
         if (board.hasOwnProperty('finalized')) {
-            const total = Object.keys(board.invitees).length;
+            const total = Object.keys(board.invitees).length + noOfRejectees;
             const confirmed = Object.keys(board.finalized).length;
             return confirmed / total;
         } else {
             return 0;
         }
-    }
-
-    const collborationBoardText = (board) => {
-        if (board.isUserHost) {
-            return (
-                <Text>
-                    Initiated by me
-                </Text>
-            )
-        }
-        return (
-            <Text>
-                Invited by: {board.host.replace("_", " ")}
-            </Text>
-        )
     }
 
     // So that all users of collaboration board gets the same finalized timeline
@@ -156,7 +138,10 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
             .update(updates);
     }
 
-    const generateFinalizedTimeline = (board) => {
+    // Generate finalized timeline only when all invitees have responded, finalizedFraction == 1
+    const generateFinalizedTimeline = (board, isBoardFinalized) => {
+        if (!isBoardFinalized) return;
+
         const topGenres = getTopVoted(board.preferences, 3);
         const topCuisines = getTopVoted(board.food_filters.cuisine, 3);
         const topArea = getTopVoted(board.food_filters.area, 2);
@@ -172,93 +157,98 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
     }
 
     const renderCollaborationBoard = (board) => {
-        const finalizedFraction = getFinalizedFraction(board);
+        const isBoardFinalized = getFinalizedFraction(board) == 1;
+        const selectedDate = new Date(board.selected_date);
+        const formattedDate = formatDate(selectedDate.getDay(),
+            selectedDate.getMonth(), selectedDate.getDate());
 
-        if (finalizedFraction == 1) { // All invitees are ready
-            generateFinalizedTimeline(board)
-            return (
-                <View style={[styles.individualPlan, { backgroundColor: '#eddcd2' }]}>
+        const boardTitleString = () => {
+            return isBoardFinalized
+                ? 'Timeline generated'
+                : board.isNewlyAddedBoard
+                    ? 'Newly added board'
+                    : 'Collaboration in progress';
+        }
+
+        const boardSubTitleString = () => {
+            return isBoardFinalized
+                ? 'Your schedule is ready to view!'
+                : board.isNewlyAddedBoard
+                    ? 'Check me out!'
+                    : 'Wait for all your friends to finalize their input!';
+        }
+
+        const cardColorStyle = () => {
+            return isBoardFinalized
+                ? { backgroundColor: '#eddcd2' }
+                : board.isNewlyAddedBoard
+                    ? { backgroundColor: 'white', borderColor: '#eddcd2', borderWidth: 4, elevation: 1 }
+                    : { backgroundColor: 'white' };
+        }
+
+        generateFinalizedTimeline(board, isBoardFinalized)
+        return (
+            <TouchableOpacity onPress={() => isBoardFinalized
+                ? handleRouteToFinalized(board)
+                : viewMoreDetails(board)}>
+                <View style={[styles.individualPlan, cardColorStyle()]}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View>
-                            <Text>
-                                Outing plan on {board.selected_date} is ready!
+                            <Text style={styles.sectionSubHeaderText}>
+                                {formattedDate}
                             </Text>
-                            {collborationBoardText(board)}
                         </View>
-                        <TouchableOpacity onPress={() => handleRouteToFinalized(board)}>
-                            <AntDesign
-                                name="arrowright"
-                                size={30}
-                                style={{ color: 'black' }}
-                            />
-                        </TouchableOpacity>
+                        <Text style={styles.sectionSubHeaderText}>
+                            By {board.isUserHost ? 'Me' : board.host.replace(/_/g, ' ')}
+                        </Text>
                     </View>
-                    <Progress.Bar progress={finalizedFraction}
-                        width={Dimensions.get('window').width - 40}
-                        borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
-                </View>
-            )
-        } else if (board.isNewlyAddedBoard) {
-            return (
-                < TouchableOpacity
-                    onPress={() => viewMoreDetails(board)}>
-                    <View style={[styles.individualPlan, { backgroundColor: '#ff9f1c' }]}>
-                        <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                            <View>
-                                <Text style={{ color: 'black', fontSize: 16, fontWeight: '700' }}>
-                                    This is your newly added plan
-                                </Text>
-                                <Text>
-                                    Outing on: {board.selected_date}
-                                </Text>
-                                {collborationBoardText(board)}
-                            </View>
-                            <TouchableOpacity onPress={() => viewBoardChatRoom(board)}>
+
+                    <Text style={styles.sectionHeaderText}>
+                        {boardTitleString()}
+                    </Text>
+                    <Text style={styles.sectionSubHeaderText}>
+                        {boardSubTitleString()}
+                    </Text>
+
+                    <View style={{ flexDirection: "row", justifyContent: 'space-between', marginTop: '12%' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginTop: 2 }}>
+                            <Text style={{
+                                fontSize: 11,
+                                borderWidth: 0.2, padding: 2, backgroundColor: '#E86830',
+                                borderColor: 'grey', borderRadius: 5, textAlign: 'center',
+                                paddingLeft: 5, paddingRight: 5, color: '#FEFBFA', marginBottom: 15
+                            }}>
+                                {Object.keys(board.finalized).length}/
+                                {Object.keys(board.invitees).length +
+                                    (board.hasOwnProperty('rejected')
+                                        ? Object.keys(board.rejected).length : 0)}
+                            </Text>
+                            <Text style={[styles.sectionSubHeaderText, { color: '#554E4E' }]}>  responded</Text>
+                        </View>
+
+                        <View style={{ flexDirection: 'row' }}>
+                            <TouchableOpacity
+                                onPress={() => viewBoardChatRoom(board)}>
                                 <MaterialCommunityIcons name="chat" color={'black'} size={25} />
                             </TouchableOpacity>
                         </View>
-                        <Progress.Bar progress={finalizedFraction}
-                            width={Dimensions.get('window').width - 40}
-                            borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
                     </View>
-                </TouchableOpacity >
-            )
-        }
-        return (
-            < TouchableOpacity
-                onPress={() => viewMoreDetails(board)}>
-
-                <View style={styles.individualPlan}>
-                    <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                        <View>
-                            <Text>
-                                Outing on: {board.selected_date}
-                            </Text>
-                            {collborationBoardText(board)}
-                        </View>
-                        <TouchableOpacity onPress={() => viewBoardChatRoom(board)}>
-                            <MaterialCommunityIcons name="chat" color={'black'} size={25} />
-                        </TouchableOpacity>
-                    </View>
-                    <Progress.Bar progress={finalizedFraction}
-                        width={Dimensions.get('window').width - 40}
-                        borderWidth={0} unfilledColor={'#f1faee'} color={'#457b9d'} />
                 </View>
-            </TouchableOpacity >
+            </TouchableOpacity>
         )
     }
 
     return (
         <View style={[styles.container]}>
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={boardModalVisibility}
-                onRequestClose={() => {
-                    closeModal()
-                }}>
+            <Overlay
+                isVisible={boardModalVisibility}
+                windowBackgroundColor="rgba(255, 255, 255, .5)"
+                width="auto"
+                height="auto"
+                overlayStyle={{ width: '95%', height: '95%', borderRadius: 20, }}
+            >
                 <IndividualPlanModal onClose={closeModal} board={boardDetails} />
-            </Modal>
+            </Overlay>
 
             <Modal
                 animationType="fade"
@@ -271,9 +261,7 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, refreshList }) => {
             </Modal>
 
             <SectionList
-                onRefresh={() => refreshPage()}
                 progressViewOffset={100}
-                refreshing={isRefreshing}
                 sections={[
                     { title: "", data: plans },
                 ]}
@@ -297,10 +285,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     individualPlan: {
-        borderWidth: 1,
+        borderWidth: 0.1,
         borderRadius: 10,
-        marginLeft: 10,
-        marginRight: 10,
+        start: '10%',
+        width: '80%',
+        height: 150,
         padding: 10,
         marginTop: 10,
         paddingBottom: 5,
@@ -309,6 +298,24 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: '800',
         fontSize: 20,
+    },
+    sectionHeaderText: {
+        fontFamily: 'serif',
+        color: '#4f4f4f',
+        fontSize: 15,
+        fontWeight: 'bold',
+        marginTop: 15,
+    },
+    sectionSubHeaderText: {
+        fontSize: 12, color: '#A4A4A6', fontWeight: '100'
+    },
+    icon: {
+        borderWidth: 1,
+        padding: 5,
+        paddingLeft: 10,
+        paddingRight: 10,
+        borderRadius: 50,
+
     },
     footer: {
         flex: 1,
