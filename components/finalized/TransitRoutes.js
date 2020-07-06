@@ -6,7 +6,7 @@ const TransitRoute = ({ routes }) => {
 
     React.useEffect(() => {
         setRoutes(routes);
-        //console.log(routes);
+        console.log(routes);
     }, []);
     return (
         <View>
