@@ -9,7 +9,6 @@ import {
     OAuthConfig,
 } from "../reusable-functions/GoogleAuthentication";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { LinearGradient } from 'expo-linear-gradient';
 
 /**
  * Authentication page for login with Google

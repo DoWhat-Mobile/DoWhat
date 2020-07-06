@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View, Text, StyleSheet, TouchableOpacity,
-    Dimensions, SectionList, Image
+    Dimensions, SectionList, Image, ActivityIndicator
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
@@ -14,8 +14,9 @@ const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
         showFriendRequests();
     }, [])
 
-    const [currUserName, setCurrUserName] = React.useState('')
-    const [friendRequests, setFriendRequests] = React.useState([]);
+    const [currUserName, setCurrUserName] = useState('')
+    const [friendRequests, setFriendRequests] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const showFriendRequests = () => {
         firebase.database()
@@ -31,6 +32,7 @@ const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
 
                     }
                 }
+                setIsLoading(false);
             }
             )
     }
@@ -150,7 +152,6 @@ const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
         )
     }
 
-
     const emptyStateScreen = () => {
         return (
             <View style={{ flex: 1 }}>
@@ -171,6 +172,14 @@ const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
                 }}>
                     All your friend requests will be here
                 </Text>
+            </View>
+        )
+    }
+
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+                <ActivityIndicator size='large' />
             </View>
         )
     }
