@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import {
     View, Text, StyleSheet, TouchableOpacity,
-    Dimensions, SectionList
+    Dimensions, SectionList, Image
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
@@ -13,7 +13,6 @@ const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
     useEffect(() => {
         showFriendRequests();
     }, [])
-
 
     const [currUserName, setCurrUserName] = React.useState('')
     const [friendRequests, setFriendRequests] = React.useState([]);
@@ -151,6 +150,31 @@ const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
         )
     }
 
+
+    const emptyStateScreen = () => {
+        return (
+            <View style={{ flex: 1 }}>
+                <Image
+                    style={{ alignSelf: 'center', width: '70%', height: '60%', borderRadius: 20 }}
+                    source={require("../../assets/EmptyFriendState.png")}
+                />
+                <Text style={{
+                    textAlign: 'center', justifyContent: 'center',
+                    fontSize: 16, fontFamily: 'serif', fontWeight: 'bold',
+                    marginTop: 20,
+                }}>
+                    No friend requests
+                </Text>
+                <Text style={{
+                    textAlign: "center",
+                    fontSize: 12, color: '#A4A4A6', fontWeight: '100'
+                }}>
+                    All your friend requests will be here
+                </Text>
+            </View>
+        )
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -159,11 +183,14 @@ const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
                     name="close"
                     size={24}
                     onPress={() => onClose()}
-                    style={styles.close}
+                    style={{ marginRight: 20, marginTop: 2 }}
                 />
             </View>
 
             <View style={styles.body}>
+                {friendRequests == 0
+                    ? emptyStateScreen()
+                    : null}
                 <View style={styles.friendRequests}>
                     <SectionList
                         progressViewOffset={100}
@@ -200,7 +227,9 @@ const styles = StyleSheet.create({
     },
     header: {
         flex: 1,
-        justifyContent: "center",
+        marginTop: '10%',
+        justifyContent: "space-between",
+        flexDirection: 'row'
     },
     headerButton: {
         flex: 1,
@@ -234,13 +263,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginLeft: 10,
 
-    },
-    close: {
-        position: "absolute",
-        left: 350,
-        right: 0,
-        top: 15,
-        bottom: 0,
     },
     icon: {
         borderWidth: 1,
