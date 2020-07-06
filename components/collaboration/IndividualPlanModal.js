@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
 import { formatDate } from '../DateSelection';
@@ -18,7 +18,6 @@ import { Avatar, Badge } from 'react-native-elements'
 const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     useEffect(() => {
         listenToGenreChanges();
-        extractAndSetInvitees(board.invitees);
 
         // Unsubscribe to changes when component unmount
         return () => {
@@ -61,8 +60,9 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 
     const extractAndSetInvitees = (object) => {
         var newState = [];
-        for (var name in object) {
-            const userDetails = [name, object[name].profile_pic, object[name].isUserHost];
+        for (var firebaseID in object) {
+            const userDetails = [object[firebaseID].name,
+            object[firebaseID].profile_pic, object[firebaseID].isUserHost];
             newState.push(userDetails);
         }
         return newState;
@@ -141,8 +141,12 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         )
     }
 
-    const renderInvitees = (invitees) => {
+    const renderInvitees = (invitees, rejectees) => {
         const formattedInvitees = extractAndSetInvitees(invitees);
+        const formattedRejectees = rejectees == undefined
+            ? []
+            : extractAndSetInvitees(rejectees); // Users who opted out
+        const data = [...formattedInvitees, ...formattedRejectees];
 
         return (
             <View style={{ flex: 1, }}>
@@ -150,10 +154,10 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                     fontSize: 16, fontWeight: '800', fontFamily: 'serif',
                     marginLeft: 16, marginTop: 5
                 }}>
-                    Invited ({formattedInvitees.length})
+                    Invited ({data.length})
                     </Text>
                 <FlatList
-                    data={formattedInvitees}
+                    data={data}
                     horizontal={true}
                     renderItem={({ item, index }) => formatInvitee(item[0], item[1], item[2])}
                     keyExtractor={(item, index) => item + index} />
@@ -292,6 +296,22 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         return false;
     }
 
+    // When user opts out, handle database updates
+    const handleOptOut = () => {
+        var updates = {}
+        updates['/collab_boards/' + board.boardID + '/invitees/' + userID] = null;
+        // Transfer user information to rejected node
+        updates['/collab_boards/' + board.boardID + '/rejected/' + userID] = board.invitees[userID];
+        // Remove from user's collab boards list
+        updates['/users/' + userID + '/collab_boards/' + board.boardID] = null;
+        updates['/collab_boards/' + board.boardID + '/finalized/' + currUserName] = userID;
+
+        firebase.database()
+            .ref()
+            .update(updates)
+        onClose();
+    }
+
     const selectedDate = new Date(board.selected_date);
 
     if (board.isUserHost || userHasFinalized()) {
@@ -299,7 +319,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
             <View style={styles.modal}>
                 {renderTopPortion(board.isUserHost)}
                 <View style={styles.invitedPeople}>
-                    {renderInvitees(board.invitees)}
+                    {renderInvitees(board.invitees, board.rejected)}
                 </View>
                 <View style={[styles.body, { justifyContent: 'center', alignItems: 'center' }]}>
                     <Text style={styles.sectionHeaderText}>
@@ -319,7 +339,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
             {renderTopPortion(board.isUserHost)}
 
             <View style={styles.invitedPeople}>
-                {renderInvitees(board.invitees)}
+                {renderInvitees(board.invitees, board.rejected)}
             </View>
 
             <View style={styles.body}>
@@ -338,7 +358,10 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                                 borderColor: 'grey', borderRadius: 5, textAlign: 'center',
                                 paddingLeft: 5, paddingRight: 5, color: '#FEFBFA', marginBottom: 15
                             }}>
-                                {Object.keys(board.finalized).length}/{Object.keys(board.invitees).length}
+                                {Object.keys(board.finalized).length}/
+                                {Object.keys(board.invitees).length +
+                                    (board.hasOwnProperty('rejected')
+                                        ? Object.keys(board.rejected).length : 0)}
                             </Text>
                         </View>
                     </View>
@@ -365,7 +388,19 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                         fontSize: 14
                     }}>Finalize Selections</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => alert('opt out')}>
+                <TouchableOpacity onPress={() => Alert.alert(
+                    'Opt Out',
+                    'Are you sure you want to opt out of this collaboration?',
+                    [
+                        {
+                            text: 'No',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel'
+                        },
+                        { text: 'Yes', onPress: () => handleOptOut() }
+                    ],
+                    { cancelable: false }
+                )}>
                     <Text style={{
                         fontFamily: 'serif', color: '#E86830', fontWeight: 'bold',
                         fontSize: 14

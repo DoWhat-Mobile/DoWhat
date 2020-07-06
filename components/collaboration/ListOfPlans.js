@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { View, StyleSheet, Text, TouchableOpacity, SectionList, Dimensions, Modal } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, SectionList, Modal } from 'react-native';
 import IndividualPlanModal from './IndividualPlanModal';
 import ChatRoomModal from './ChatRoomModal';
 import firebase from '../../database/firebase';
-import { AntDesign } from "@expo/vector-icons";
-import * as Progress from 'react-native-progress'
 import { findOverlappingIntervals } from '../../reusable-functions/OverlappingIntervals';
 import { Overlay } from 'react-native-elements';
 import { genreEventObjectArray } from '../../reusable-functions/data_timeline';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { formatDate } from '../DateSelection';
-import { selectDate } from '../../actions/date_select_action';
 
 /**
  * The <SectionList> Component within the AllPlans component. This is the component
@@ -112,8 +109,13 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
 
     // Fraction of invitees that have finalized their collaboration inputs
     const getFinalizedFraction = (board) => {
+        var noOfRejectees = 0;
+        if (board.hasOwnProperty('rejected')) {
+            noOfRejectees = Object.keys(board.rejected).length;
+        }
+
         if (board.hasOwnProperty('finalized')) {
-            const total = Object.keys(board.invitees).length;
+            const total = Object.keys(board.invitees).length + noOfRejectees;
             const confirmed = Object.keys(board.finalized).length;
             return confirmed / total;
         } else {
@@ -186,7 +188,9 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
 
         generateFinalizedTimeline(board, isBoardFinalized)
         return (
-            <TouchableOpacity disabled={isBoardFinalized} onPress={() => viewMoreDetails(board)}>
+            <TouchableOpacity onPress={() => isBoardFinalized
+                ? handleRouteToFinalized(board)
+                : viewMoreDetails(board)}>
                 <View style={[styles.individualPlan, cardColorStyle()]}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View>
@@ -206,33 +210,28 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
                         {boardSubTitleString()}
                     </Text>
 
-                    <View style={{ flexDirection: 'row', marginTop: 2 }}>
-                        <Text style={{
-                            fontSize: 11,
-                            borderWidth: 0.2, padding: 2, backgroundColor: '#E86830',
-                            borderColor: 'grey', borderRadius: 5, textAlign: 'center',
-                            paddingLeft: 5, paddingRight: 5, color: '#FEFBFA', marginBottom: 15
-                        }}>
-                            {Object.keys(board.finalized).length}/{Object.keys(board.invitees).length}
-                        </Text>
-                        <Text style={[styles.sectionSubHeaderText, { color: '#554E4E' }]}>  responded</Text>
-                    </View>
+                    <View style={{ flexDirection: "row", justifyContent: 'space-between', marginTop: '12%' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginTop: 2 }}>
+                            <Text style={{
+                                fontSize: 11,
+                                borderWidth: 0.2, padding: 2, backgroundColor: '#E86830',
+                                borderColor: 'grey', borderRadius: 5, textAlign: 'center',
+                                paddingLeft: 5, paddingRight: 5, color: '#FEFBFA', marginBottom: 15
+                            }}>
+                                {Object.keys(board.finalized).length}/
+                                {Object.keys(board.invitees).length +
+                                    (board.hasOwnProperty('rejected')
+                                        ? Object.keys(board.rejected).length : 0)}
+                            </Text>
+                            <Text style={[styles.sectionSubHeaderText, { color: '#554E4E' }]}>  responded</Text>
+                        </View>
 
-                    <View style={{ flexDirection: "row", justifyContent: 'flex-end' }}>
-                        <TouchableOpacity style={{ marginTop: 3, }}
-                            onPress={() => viewBoardChatRoom(board)}>
-                            <MaterialCommunityIcons name="chat" color={'black'} size={25} />
-                        </TouchableOpacity>
-                        {isBoardFinalized
-                            ? <TouchableOpacity onPress={() => handleRouteToFinalized(board)}>
-                                <AntDesign
-                                    name="arrowright"
-                                    size={30}
-                                    style={{ color: 'black' }}
-                                />
+                        <View style={{ flexDirection: 'row' }}>
+                            <TouchableOpacity
+                                onPress={() => viewBoardChatRoom(board)}>
+                                <MaterialCommunityIcons name="chat" color={'black'} size={25} />
                             </TouchableOpacity>
-                            : null
-                        }
+                        </View>
                     </View>
                 </View>
             </TouchableOpacity>

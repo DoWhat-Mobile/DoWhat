@@ -245,10 +245,10 @@ const formatAttendeeFromCollabBoard = (attendees, userId) => {
 
     var allFormattedEmails = [];
 
-    for (var email in attendees) {
-        const inviteeFirebaseID = attendees[email];
+    for (var user in attendees) {
+        const inviteeFirebaseID = user;
         if (inviteeFirebaseID == userId) continue; // Don't invite yourself, since you are the host
-        const modifiedEmail = email.replace(/\@/g, '.') + '@gmail.com';
+        const modifiedEmail = attendees[user].gmail.replace(/\@/g, '.') + '@gmail.com';
         const formattedEmail = { 'email': modifiedEmail };
         allFormattedEmails.push(formattedEmail);
     }

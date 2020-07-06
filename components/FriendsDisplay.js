@@ -107,7 +107,7 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
      * 3) Add a pointer with the board ID to all the invited people so they can reference it. 
      */
     const updateCollabBoard = (currUser, currUserBusyPeriods, currUserName, currUserID,
-        inviteeName, inviteeID, inviteePictureURL) => {
+        inviteeName, inviteeID, inviteePictureURL, inviteeGmail) => {
         const userGmail = currUser.gmail;
         const uniqueBoardID = createUniqueBoardID(currUser, currUserID);
         const formattedUserEmail = userGmail.replace(/\./g, '@').slice(0, -10); // Firebase cant have '@' 
@@ -119,15 +119,17 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
 
         var updates = {};
         updates['/selected_date'] = selected_date; // selected_date from Redux state
-        updates['/invitees/' + currUserName] = {
-            firebase_id: userID,
+        updates['/invitees/' + userID] = {
             profile_pic: currUserProfilePicture,
             isUserHost: true,
+            name: currUserName,
+            gmail: formattedUserEmail
         }; // Add to list of invitees
-        updates['/invitees/' + inviteeName] = {
-            firebase_id: inviteeID,
+        updates['/invitees/' + inviteeID] = {
             profile_pic: inviteePictureURL,
             isUserHost: false,
+            name: inviteeName,
+            gmail: inviteeGmail
         }; // Add to list of invitees
         updates['/availabilities/' + formattedUserEmail] = currUserBusyPeriods;
         updates['host'] = currUserName;
@@ -179,6 +181,7 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
                 const database = snapshot.val();
                 const invitee = database.users[inviteeID];
                 const pushToken = invitee.push_token; // To send push notification
+                const inviteeGmail = invitee.gmail;
                 sendPushNotification(pushToken, name)
 
                 const currUser = database.users[userID]; // UserID from Redux State
@@ -187,7 +190,7 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
                     currUserBusyPeriods = currUser.busy_periods;
                 }
                 updateCollabBoard(currUser, currUserBusyPeriods, currUserName, userID,
-                    name, inviteeID, pictureURL);
+                    name, inviteeID, pictureURL, inviteeGmail);
             })
         removeInvitedFriendFromList(inviteeID)
     }
