@@ -80,7 +80,6 @@ const Loading = (props) => {
         format.instructions = instructions;
         format.mode = obj.travel_mode;
         format.start = start;
-        //format.transit_details = obj.transit_details;
 
         return format;
     };
@@ -90,31 +89,39 @@ const Loading = (props) => {
         let temp = [];
         temp.push(userLocation);
         const updated = temp.concat(arr);
+        for (let i = 0; i < updated.length - 1; i++) {
+            let obj = [];
+            let origin =
+                typeof updated[i] === "object"
+                    ? updated[i].lat + "," + updated[i].long
+                    : updated[i];
+            let destination = updated[i + 1];
+            try {
+                let resp = await fetch(
+                    "https://maps.googleapis.com/maps/api/directions/json?origin=" +
+                        origin +
+                        "&destination=" +
+                        destination +
+                        "&key=" +
+                        GOOGLE_MAPS_API_KEY +
+                        "&mode=transit&region=sg"
+                );
+                //console.log(JSON.stringify(await resp.json()));
+                let response = (await resp.json())["routes"][0]["legs"][0][
+                    "steps"
+                ];
+                for (let j = 0; j < response.length; j++) {
+                    obj.push(await routeFormatter(await response[j]));
+                }
+                //result.push(routeFormatter(await response[0]));
 
-        let origin = updated[0].lat + "," + updated[0].long;
-        let destination = updated[updated.length - 1];
-        //for (let i = 0; i < updated.length; i++) {
-        try {
-            let resp = await fetch(
-                "https://maps.googleapis.com/maps/api/directions/json?origin=" +
-                    origin +
-                    "&destination=" +
-                    destination +
-                    "&key=" +
-                    GOOGLE_MAPS_API_KEY +
-                    "&mode=transit&region=sg"
-            );
-            //console.log(JSON.stringify(await resp.json()));
-            let response = (await resp.json())["routes"][0]["legs"][0]["steps"];
-            for (let j = 0; j < response.length; j++) {
-                result.push(await routeFormatter(await response[j]));
+                //result.push(response);
+            } catch (err) {
+                console.log("hi");
             }
-            //result.push(routeFormatter(await response[0]));
-
-            //result.push(response);
-        } catch (err) {
-            console.log("hi");
+            result.push(obj);
         }
+
         //}
         setRoutes(result);
         setRoutesLoading(false);
