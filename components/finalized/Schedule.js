@@ -6,7 +6,10 @@ import {
     handleProcess,
     formatEventsData,
 } from "../../reusable-functions/GoogleCalendarInvite";
-import { handleRipple } from "../../reusable-functions/data_timeline";
+import {
+    handleRipple,
+    objectFormatter,
+} from "../../reusable-functions/data_timeline";
 import moment from "moment-timezone";
 import firebase from "../../database/firebase";
 const Schedule = ({
@@ -24,7 +27,16 @@ const Schedule = ({
     const [timingsArray, setTimingsArray] = React.useState([]);
 
     React.useEffect(() => {
-        setEvents(data[0]);
+        let formatData = [];
+        for (i = 0; i < data[0].length; i++) {
+            const dataObj = data[0][i];
+            const startTime = dataObj.startTime;
+            const event = dataObj.event;
+            const genre = dataObj.genre;
+            formatData.push(objectFormatter(startTime, event, genre));
+        }
+
+        setEvents(formatData);
         setTimingsArray(data[1]);
     }, []);
 

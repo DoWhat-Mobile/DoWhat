@@ -77,7 +77,8 @@ export const genreEventObjectArray = (userGenres, events, filters, weather) => {
     let currentEvents = [];
 
     if (userGenres.includes("food")) {
-        currentEvents.push(filterHelper(filters, events));
+        const filterObject = filterHelper(filters, events);
+        currentEvents.push(filterObject);
     }
     if (weather === "Rain" || weather === "Thunderstorm") {
         for (i = 0; i < userGenres.length; i++) {
@@ -85,7 +86,8 @@ export const genreEventObjectArray = (userGenres, events, filters, weather) => {
             if (genre !== "food") {
                 const eventObject = events[genre]["list"];
                 const rand = Math.floor(Math.random() * eventObject.length);
-                currentEvents.push({ [genre]: events[genre]["list"][rand] });
+                const event = events[genre]["list"][rand];
+                currentEvents.push({ [genre]: event });
             }
         }
     } else {
@@ -115,9 +117,9 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
     let startTime = timeline[0];
     let num = userGenres.length;
     let locationArray = [];
-    let routesArray = [];
     // checks if user selected food so dinner will be included if user has time 6pm onwards
     let food = userGenres.includes("food") && startTime <= 13 ? 1 : 0;
+    let busRoutes = [];
 
     // formats data array to be passed into Timeline library
     while (currentEvents.length !== 0) {
@@ -125,12 +127,16 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
             const genre = currentEvents.map((x) => Object.keys(x)[0])[i];
             const event = currentEvents[i][genre];
             if (events[genre].slots.includes(startTime)) {
+                if (startTime + events[genre]["duration"] >= timeline[1]) {
+                    break;
+                }
                 let intervalObject = { start: "", end: "" };
                 intervalObject.start = startTime.toString() + ":00";
                 locationArray.push({ coord: event.coord, name: event.name });
-                routesArray.push(event.location);
+                busRoutes.push(event.location);
 
-                data.push(objectFormatter(startTime, event, genre));
+                data.push({ startTime: startTime, event: event, genre: genre });
+                //data.push(objectFormatter(startTime, event, genre));
                 currentEvents.splice(i, 1);
                 startTime += events[genre]["duration"];
 
@@ -154,8 +160,8 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
 
         if (startTime >= timeline[1] - 1) break;
     }
-
-    return [data, timingsArray, locationArray, routesArray];
+    console.log(timingsArray);
+    return [data, timingsArray, locationArray, busRoutes];
 };
 
 /**

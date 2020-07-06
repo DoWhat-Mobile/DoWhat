@@ -18,6 +18,8 @@ import firebase from "../database/firebase";
 import Genre from "../components/genre/Genre";
 import { getBusyPeriodFromGoogleCal } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
 import { AntDesign } from "@expo/vector-icons";
+import * as Location from "expo-location";
+
 export const formatDate = (day, month, date) => {
     const possibleDays = [
         "Sunday",
@@ -54,6 +56,22 @@ const DateSelection = (props) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isFinalized, setIsFinalized] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
+    const [location, setLocation] = React.useState(null);
+    const [isLoading, setLoading] = React.useState(false);
+
+    React.useEffect(() => {
+        (async () => {
+            let { status } = await Location.requestPermissionsAsync();
+            if (status !== "granted") {
+                console.log("denied");
+                // setErrorMsg("Permission to access location was denied");
+            }
+
+            let location = await Location.getCurrentPositionAsync({});
+            setLocation(location);
+            setLoading(false);
+        })();
+    }, []);
 
     let synced = isButtonDisabled ? "synced" : "manual";
 
@@ -133,6 +151,7 @@ const DateSelection = (props) => {
                 route: "manual",
                 access: "host",
                 synced: synced,
+                userLocation: location,
             });
         } else {
             props.navigation.navigate("FriendInput", {
@@ -149,76 +168,82 @@ const DateSelection = (props) => {
         setIsFinalized(true);
     };
 
-    return (
-        <View style={styles.container}>
-            <View style={styles.dateInput}>
-                <Text style={styles.header}>Plan Event On</Text>
+    if (isLoading) {
+        return <Text>Loading</Text>;
+    } else {
+        return (
+            <View style={styles.container}>
+                <View style={styles.dateInput}>
+                    <Text style={styles.header}>Plan Event On</Text>
 
-                <TouchableOpacity
-                    style={{ marginBottom: 5 }}
-                    onPress={() => showDatepicker()}
+                    <TouchableOpacity
+                        style={{ marginBottom: 5 }}
+                        onPress={() => showDatepicker()}
+                    >
+                        <Text style={styles.date}>
+                            {formatDate(
+                                date.getDay(),
+                                date.getMonth(),
+                                date.getDate()
+                            )}
+                        </Text>
+                    </TouchableOpacity>
+                    <View style={styles.availsInput}>
+                        <Text style={styles.header}>Availabilities</Text>
+                        <TouchableOpacity onPress={() => setModalVisible(true)}>
+                            <Text style={styles.date}>
+                                {isFinalized
+                                    ? "Successfully inputted"
+                                    : "Input range"}
+                            </Text>
+                        </TouchableOpacity>
+                        {renderInputAvailabilitiesButton()}
+                    </View>
+                </View>
+
+                {show && (
+                    <DateTimePicker
+                        testID="dateTimePicker"
+                        timeZoneOffsetInMinutes={0}
+                        value={date}
+                        mode={mode}
+                        is24Hour={true}
+                        display="calendar"
+                        minimumDate={new Date()}
+                        onChange={onChange}
+                    />
+                )}
+
+                <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        closeModal();
+                    }}
                 >
-                    <Text style={styles.date}>
-                        {formatDate(
+                    <AvailabilityInputModal
+                        onClose={closeModal}
+                        date={date}
+                        onFinalize={onFinalize}
+                        styledDate={formatDate(
                             date.getDay(),
                             date.getMonth(),
                             date.getDate()
                         )}
-                    </Text>
-                </TouchableOpacity>
-                <View style={styles.availsInput}>
-                    <Text style={styles.header}>Availabilities</Text>
-                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <Text style={styles.date}>
-                            {isFinalized
-                                ? "Successfully inputted"
-                                : "Input range"}
-                        </Text>
-                    </TouchableOpacity>
-                    {renderInputAvailabilitiesButton()}
+                    />
+                </Modal>
+
+                <View style={{ flex: 0, marginBottom: 80 }}>
+                    <Genre
+                        syncWithFirebaseThenNavigate={
+                            syncWithFirebaseThenNavigate
+                        }
+                    />
                 </View>
             </View>
-
-            {show && (
-                <DateTimePicker
-                    testID="dateTimePicker"
-                    timeZoneOffsetInMinutes={0}
-                    value={date}
-                    mode={mode}
-                    is24Hour={true}
-                    display="calendar"
-                    minimumDate={new Date()}
-                    onChange={onChange}
-                />
-            )}
-
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                    closeModal();
-                }}
-            >
-                <AvailabilityInputModal
-                    onClose={closeModal}
-                    date={date}
-                    onFinalize={onFinalize}
-                    styledDate={formatDate(
-                        date.getDay(),
-                        date.getMonth(),
-                        date.getDate()
-                    )}
-                />
-            </Modal>
-
-            <View style={{ flex: 0, marginBottom: 80 }}>
-                <Genre
-                    syncWithFirebaseThenNavigate={syncWithFirebaseThenNavigate}
-                />
-            </View>
-        </View>
-    );
+        );
+    }
 };
 const mapStateToProps = (state) => {
     return {
