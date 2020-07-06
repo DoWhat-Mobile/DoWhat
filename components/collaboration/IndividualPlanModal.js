@@ -10,7 +10,7 @@ import GenrePicker from './GenrePicker';
 import firebase from '../../database/firebase'
 import { inputBusyPeriodFromGcal } from '../../reusable-functions/GoogleCalendarGetBusyPeriods';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Avatar } from 'react-native-elements'
+import { Avatar, Badge } from 'react-native-elements'
 
 /**
  * The modal that shows when user selects each of the individual upcoming plans
@@ -125,6 +125,13 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                     }}
                     size={50}
                 />
+                {isUserHost
+                    ? <Badge
+                        status="primary"
+                        containerStyle={{ position: 'absolute', top: -4, left: -4 }}
+                        value={'Host'}
+                    />
+                    : null}
 
                 <Text style={{
                     fontFamily: 'serif', fontSize: 11, fontWeight: '100',
@@ -234,17 +241,6 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                 </TouchableOpacity>
             );
         }
-    }
-
-    const renderFinalizeButton = () => {
-        return (
-            <TouchableOpacity onPress={() => finalizeBoard()}>
-                <Text style={{
-                    fontFamily: 'serif', color: '#E86830', fontWeight: 'bold',
-                    fontSize: 14
-                }}>Finalize Selections</Text>
-            </TouchableOpacity>
-        );
     }
 
     // Top portion of modal, which is identical for both host and invitees' board
@@ -363,7 +359,18 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
             </View>
 
             <View style={styles.buttonGroup}>
-                {renderFinalizeButton()}
+                <TouchableOpacity onPress={() => finalizeBoard()}>
+                    <Text style={{
+                        fontFamily: 'serif', color: '#E86830', fontWeight: 'bold',
+                        fontSize: 14
+                    }}>Finalize Selections</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => alert('opt out')}>
+                    <Text style={{
+                        fontFamily: 'serif', color: '#E86830', fontWeight: 'bold',
+                        fontSize: 14
+                    }}>Opt Out</Text>
+                </TouchableOpacity>
             </View>
         </View >
     );

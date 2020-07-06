@@ -75,22 +75,28 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
 
     // Takes update object (to update Firebase), and includes the selected curr user preferences
     const addCurrUserPreferences = (updates) => {
+        var foodSelected = false;
         currUserPreferenceArr.forEach((preference) => {
             updates['/preferences'][preference] += 1
+            if (preference == 'food') { // If food is selected
+                foodSelected = true;
+            }
         })
 
-        const areaSelectedArr = currUserFoodFilterObj.area;
-        const cuisineSelectedArr = currUserFoodFilterObj.cuisine;
-        const priceSelected = currUserFoodFilterObj.price;
+        if (foodSelected) {
+            const areaSelectedArr = currUserFoodFilterObj.area;
+            const cuisineSelectedArr = currUserFoodFilterObj.cuisine;
+            const priceSelected = currUserFoodFilterObj.price;
 
-        cuisineSelectedArr.forEach(cuisine => {
-            updates['/food_filters'].cuisine[cuisine.toLowerCase()] += 1;
-        })
+            cuisineSelectedArr.forEach(cuisine => {
+                updates['/food_filters'].cuisine[cuisine.toLowerCase()] += 1;
+            })
 
-        areaSelectedArr.forEach(area => {
-            updates['/food_filters'].area[area.toLowerCase()] += 1;
-        })
-        updates['/food_filters'].price[priceSelected] += 1;
+            areaSelectedArr.forEach(area => {
+                updates['/food_filters'].area[area.toLowerCase()] += 1;
+            })
+            updates['/food_filters'].price[priceSelected] += 1;
+        }
         return updates;
     }
 
@@ -113,15 +119,15 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
 
         var updates = {};
         updates['/selected_date'] = selected_date; // selected_date from Redux state
-        updates['/invitees/' + inviteeName] = {
-            firebase_id: inviteeID,
-            profile_pic: inviteePictureURL,
-            isUserHost: false,
-        }; // Add to list of invitees
         updates['/invitees/' + currUserName] = {
             firebase_id: userID,
             profile_pic: currUserProfilePicture,
             isUserHost: true,
+        }; // Add to list of invitees
+        updates['/invitees/' + inviteeName] = {
+            firebase_id: inviteeID,
+            profile_pic: inviteePictureURL,
+            isUserHost: false,
         }; // Add to list of invitees
         updates['/availabilities/' + formattedUserEmail] = currUserBusyPeriods;
         updates['host'] = currUserName;

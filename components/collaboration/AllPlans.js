@@ -16,7 +16,7 @@ const AllPlans = ({ navigation, userID, route }) => {
     useFocusEffect(
         useCallback(() => {
             getUpcomingCollaborationsFromFirebase();
-            return () => null;
+            return () => firebase.database().ref().off();
         }, [])
     )
 
@@ -26,8 +26,7 @@ const AllPlans = ({ navigation, userID, route }) => {
 
     const getUpcomingCollaborationsFromFirebase = async () => {
         firebase.database().ref()
-            .once("value")
-            .then((snapshot) => {
+            .on('value', snapshot => {
                 const database = snapshot.val();
                 const allUsers = database.users;
                 if (allUsers[userID].hasOwnProperty('collab_boards')) {
@@ -61,7 +60,7 @@ const AllPlans = ({ navigation, userID, route }) => {
 
         // Add all the invitees to the updates(deletes) to be made
         for (var name in board.invitees) {
-            const inviteeID = board.invitees[name];
+            const inviteeID = board.invitees[name].firebase_id;
             updates['/users/' + inviteeID + '/collab_boards/' + boardID] = null;
         }
 
