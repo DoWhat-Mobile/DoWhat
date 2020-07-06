@@ -1,6 +1,3 @@
-/**
- * Authentication page for login with Facebook, Google, or proceed without logging in
- */
 import React, { Component } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
@@ -12,7 +9,11 @@ import {
     OAuthConfig,
 } from "../reusable-functions/GoogleAuthentication";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { LinearGradient } from 'expo-linear-gradient';
 
+/**
+ * Authentication page for login with Google
+ */
 class AuthScreen extends Component {
     componentDidMount() {
         this.checkIfLoggedIn();
@@ -84,36 +85,56 @@ class AuthScreen extends Component {
     render() {
         return (
             <View style={style.container}>
+                <LinearGradient
+                    colors={['#D69750', '#D5461E']}
+                    start={[0.1, 0.1]}
+                    end={[0.9, 0.9]}
+                    style={{
+                        position: 'absolute',
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        height: 200,
+                    }}
+                />
                 <View style={style.headers}>
-                    <Text style={{ fontSize: 20, fontWeight: "500" }}>
-                        Welcome to DoWhat!
-                    </Text>
-                    <Text style={{ fontSize: 14, color: "grey" }}>
-                        No plan? No problem.
-                    </Text>
-                </View>
-
-                <View style={style.body}>
                     <Image
-                        style={style.image}
+                        style={{
+                            width: '100%', marginBottom: "15%",
+                            backgroundColor: "#F4F3EE", height: "90%",
+                        }}
                         source={require("../assets/Singapore.png")}
                     />
                 </View>
 
+                <View style={style.body}>
+                    <Text style={{
+                        fontSize: 20, fontWeight: "800",
+                        fontFamily: 'serif'
+                    }}>
+                        Welcome to DoWhat!
+                    </Text>
+                    <Text style={{ fontSize: 12, color: "grey", fontFamily: 'serif' }}>
+                        An automated planner that curates your perfect day out, all at your fingertips.
+                        Sign in to begin.
+                    </Text>
+                </View>
+
                 <View style={style.footer}>
+                    {/*
                     <TouchableOpacity onPress={() => firebase.auth().signOut()}>
                         <Text style={{ color: "blue" }}>
                             Sign out of account
                         </Text>
                     </TouchableOpacity>
-
+                    */}
                     <View style={style.icons}>
                         <Icon.Button
                             name="google"
                             backgroundColor="white"
-                            color="grey"
+                            color="black"
                             iconStyle={{}}
-                            borderRadius={10}
+                            borderRadius={5}
                             onPress={this.signInToGoogle}
                         >
                             Sign in with Google
@@ -135,48 +156,25 @@ const style = StyleSheet.create({
     container: {
         flex: 1,
     },
-
     headers: {
-        flex: 1,
-        marginLeft: "10%",
-        marginTop: "10%",
-    },
-
-    body: {
         flex: 5,
-        alignItems: "center",
-        alignContent: "center",
-        justifyContent: "center",
     },
-
+    body: {
+        flex: 1,
+        marginLeft: '8%',
+        marginRight: '8%'
+    },
     footer: {
         alignContent: "center",
         alignItems: "center",
         flexDirection: "column-reverse",
         marginBottom: "10%",
     },
-
     google: {
         resizeMode: "contain",
     },
-
-    facebook: {
-        width: 40,
-        height: 40,
-    },
-
     icons: {
         flexDirection: "row",
         justifyContent: "center",
-    },
-    image: {
-        width: "90%",
-        borderTopWidth: 30,
-        marginBottom: "15%",
-        borderRadius: 15,
-        borderWidth: 0.2,
-        borderColor: "grey",
-        backgroundColor: "#F4F3EE",
-        height: "90%",
     },
 });
