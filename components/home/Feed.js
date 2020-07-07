@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
     View, Text, StyleSheet, SectionList, ActivityIndicator,
     Image, FlatList, TouchableOpacity, Dimensions
@@ -25,9 +25,9 @@ const Feed = (props) => {
         }, [props.allEvents])
     )
 
-    const [isLoading, setIsLoading] = React.useState(true);
-    const [eventData, setEventData] = React.useState([]);
-    const [isRefreshing, setIsRefreshing] = React.useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [eventData, setEventData] = useState([]);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     const getDataFromFirebase = async () => {
         try {
@@ -251,6 +251,11 @@ const Feed = (props) => {
         return (<Text style={styles.CategoryTitleText}>{text}</Text>)
     }
 
+    const signOut = () => {
+        firebase.auth().signOut();
+        props.navigation.navigate("Auth")
+    }
+
     var sectionListRef = {} // For anchor tag use
 
     return (
@@ -261,7 +266,18 @@ const Feed = (props) => {
                 ListHeaderComponent={() => {
                     return (
                         <View style={styles.header}>
-                            <Text style={styles.headerText}>Check these categories out!</Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={styles.headerText}>Check these categories out!</Text>
+                                <TouchableOpacity onPress={signOut}>
+                                    <Text style={{
+                                        color: "grey", textDecorationLine: 'underline',
+                                        marginRight: 5, marginTop: 2
+                                    }}>
+                                        Sign out
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', marginTop: 5, }}>
                                 <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-around' }}>
                                     <View>
