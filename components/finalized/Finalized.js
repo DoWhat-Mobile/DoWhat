@@ -29,7 +29,6 @@ const Finalized = (props) => {
     //const route = props.route.params.route;
     const accessRights = props.route.params.access;
     const weather = props.route.params.weather;
-    //const currentEvents = props.route.params.currentEvents;
     const userGenres = props.route.params.userGenres;
     const allData = props.route.params.data;
     //console.log(props.route.params.routeGuide);
@@ -43,8 +42,12 @@ const Finalized = (props) => {
         // setRoutes(routes)
     };
 
-    const routeUpdate = (routes) => {
-        setRoutes(routes);
+    const routeUpdate = (selected, unsatisfied) => {
+        let temp = routes;
+        const result = temp.map((item) => {
+            return item == unsatisfied.location ? selected.location : item;
+        });
+        setRoutes(result);
     };
 
     const weatherIcon = (weather) => {
@@ -73,21 +76,10 @@ const Finalized = (props) => {
     };
 
     React.useEffect(() => {
-        // const locations = data[3];
-        // let routesArray = [];
-        // for (i = 0; i < locations.length - 1; i++) {}
-        // fetch(
-        //     "https://maps.googleapis.com/maps/api/directions/json?origin=OrchardTurn&destination=UpperChangiRoadNorth&key=" +
-        //         GOOGLE_MAPS_API_KEY +
-        //         "&mode=transit&region=sg"
-        // );
-        //console.log(allData);
         const passed = props.route.params.routeGuide;
-        //console.log(passed);
         setData(allData);
         setCoord(allData[2]);
         setRoutes(props.route.params.routeGuide);
-        //ionsole.log(props.route.params.routeGuide);
         setIsLoading(false);
     }, []);
 

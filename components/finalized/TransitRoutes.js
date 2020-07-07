@@ -83,9 +83,6 @@ const TransitRoute = ({ routes }) => {
                 for (let j = 0; j < response.length; j++) {
                     obj.push(await routeFormatter(await response[j]));
                 }
-                //result.push(routeFormatter(await response[0]));
-
-                //result.push(response);
             } catch (err) {
                 console.log("hi");
             }
@@ -97,17 +94,9 @@ const TransitRoute = ({ routes }) => {
         setRoutesLoading(false);
     };
 
-    //     routesArray(
-    //     {
-    //         lat: userLocation.coords.latitude,
-    //         long: userLocation.coords.longitude,
-    //     },
-    //     data[3]
-    // );
-
     React.useEffect(() => {
         routesArray(routes);
-    }, []);
+    }, [routes]);
     if (isRoutesLoading) {
         return (
             <View

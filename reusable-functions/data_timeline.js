@@ -231,6 +231,7 @@ export const data_shuffle = (events, genres, time, unsatisfied) => {
             ),
             genre: unsatisfied,
             coord: event.coord,
+            location: event.location,
         };
         // ensure no duplicate objects
         const checkName = (obj) => obj.title === event.name;
@@ -287,6 +288,7 @@ export const objectFormatter = (startTime, event, genre) => {
 
         genre: genre,
         coord: event.coord,
+        location: event.location,
     };
 };
 

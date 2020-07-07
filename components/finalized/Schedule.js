@@ -50,8 +50,9 @@ const Schedule = ({
             const obj = { coord: item.coord, name: item.title };
             return obj;
         });
-        const updatedRoutes = setEvents(updatedData);
+        setEvents(updatedData);
         mapUpdate(updatedCoord);
+        routeUpdate(selected, unsatisfied);
     };
 
     const onClose = () => {
