@@ -108,13 +108,6 @@ class AuthScreen extends Component {
                 </View>
 
                 <View style={style.footer}>
-                    {/*
-                    <TouchableOpacity onPress={() => firebase.auth().signOut()}>
-                        <Text style={{ color: "blue" }}>
-                            Sign out of account
-                        </Text>
-                    </TouchableOpacity>
-                    */}
                     <View style={style.icons}>
                         <Icon.Button
                             name="google"

@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         borderWidth: 0.2,
         textAlign: "center",
-        borderRadius: 10,
+        borderRadius: 5,
         backgroundColor: "#cc5327",
         color: "#fcf5f2",
     },
