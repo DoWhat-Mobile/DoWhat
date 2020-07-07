@@ -5,7 +5,13 @@ import { FontAwesome5 } from "@expo/vector-icons";
 const Route = ({ item }) => {
     const block = (item) => {
         return (
-            <View style={{ marginHorizontal: 10 }}>
+            <View
+                style={{
+                    marginHorizontal: 10,
+                    marginVertical: 10,
+                    //marginBottom: 10,
+                }}
+            >
                 {item.mode === "WALKING" ? (
                     <FontAwesome5 name="walking" size={24} color="black" />
                 ) : item.instructions.includes("Bus") ? (

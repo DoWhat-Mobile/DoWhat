@@ -12,12 +12,13 @@ import {
 } from "../../reusable-functions/data_timeline";
 import moment from "moment-timezone";
 import firebase from "../../database/firebase";
+import TransitRoutes from "./TransitRoutes";
 const Schedule = ({
     navigation,
     data,
     allEvents,
     mapUpdate,
-    routeUpdate,
+    initRoutes,
     genres,
     accessRights,
     userID,
@@ -26,6 +27,7 @@ const Schedule = ({
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
     const [timingsArray, setTimingsArray] = React.useState([]);
+    const [routes, setRoutes] = React.useState([]);
 
     React.useEffect(() => {
         let formatData = [];
@@ -36,11 +38,17 @@ const Schedule = ({
             const genre = dataObj.genre;
             formatData.push(objectFormatter(startTime, event, genre));
         }
-
+        setRoutes(initRoutes);
         setEvents(formatData);
         setTimingsArray(data[1]);
     }, []);
-
+    const routeUpdate = (selected, unsatisfied) => {
+        let temp = routes;
+        const result = temp.map((item) => {
+            return item == unsatisfied.location ? selected.location : item;
+        });
+        setRoutes(result);
+    };
     const onReselect = (selected) => {
         const updatedData = events.map((item) => {
             if (item === unsatisfied) return selected;
@@ -148,6 +156,7 @@ const Schedule = ({
                     }}
                 />
             </View>
+            <TransitRoutes routes={routes} />
             <View style={styles.footer}>{renderProceedButton()}</View>
         </View>
     );

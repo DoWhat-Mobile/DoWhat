@@ -3,7 +3,7 @@ import { View, Text, ActivityIndicator, FlatList } from "react-native";
 import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 import Route from "./Route";
 
-const TransitRoute = ({ routes }) => {
+const TransitRoutes = ({ routes }) => {
     const [allRoutes, setRoutes] = React.useState([]);
     const [isRoutesLoading, setRoutesLoading] = React.useState(true);
 
@@ -117,13 +117,18 @@ const TransitRoute = ({ routes }) => {
         );
     } else {
         return (
-            <FlatList
-                data={allRoutes}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => <Route item={item} />}
-            />
-            // <Route data={allRoutes[0]} />;
+            <View style={{ flex: 1 }}>
+                {allRoutes.map((item) => {
+                    return <Route item={item} />;
+                })}
+            </View>
         );
+
+        // <FlatList
+        //     data={allRoutes}
+        //     keyExtractor={(item, index) => index.toString()}
+        //     renderItem={({ item }) => <Route item={item} />}
+        // />
     }
 };
-export default TransitRoute;
+export default TransitRoutes;
