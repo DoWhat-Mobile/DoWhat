@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
+import Route from "./Route";
 
 const TransitRoute = ({ routes }) => {
     const [allRoutes, setRoutes] = React.useState([]);
@@ -8,6 +9,7 @@ const TransitRoute = ({ routes }) => {
 
     const routeFormatter = async (obj) => {
         let format = {
+            key: "",
             distance: "",
             duration: "",
             instructions: "",
@@ -53,6 +55,7 @@ const TransitRoute = ({ routes }) => {
         format.instructions = instructions;
         format.mode = obj.travel_mode;
         format.start = start;
+        format.key = instructions;
 
         return format;
     };
@@ -84,17 +87,17 @@ const TransitRoute = ({ routes }) => {
                     obj.push(await routeFormatter(await response[j]));
                 }
             } catch (err) {
-                console.log("hi");
+                console.log(err);
             }
             result.push(obj);
         }
-
         //}
         setRoutes(result);
         setRoutesLoading(false);
     };
 
     React.useEffect(() => {
+        console.log(routes);
         routesArray(routes);
     }, [routes]);
     if (isRoutesLoading) {
@@ -113,12 +116,7 @@ const TransitRoute = ({ routes }) => {
             </View>
         );
     } else {
-        console.log(allRoutes);
-        return (
-            <View>
-                <Text>HELLOOOOO</Text>
-            </View>
-        );
+        return <Route data={allRoutes[0]} />;
     }
 };
 export default TransitRoute;
