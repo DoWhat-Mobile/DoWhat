@@ -17,6 +17,7 @@ const Schedule = ({
     data,
     allEvents,
     mapUpdate,
+    routeUpdate,
     genres,
     accessRights,
     userID,
@@ -49,7 +50,7 @@ const Schedule = ({
             const obj = { coord: item.coord, name: item.title };
             return obj;
         });
-        setEvents(updatedData);
+        const updatedRoutes = setEvents(updatedData);
         mapUpdate(updatedCoord);
     };
 

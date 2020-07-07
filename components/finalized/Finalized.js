@@ -43,6 +43,10 @@ const Finalized = (props) => {
         // setRoutes(routes)
     };
 
+    const routeUpdate = (routes) => {
+        setRoutes(routes);
+    };
+
     const weatherIcon = (weather) => {
         return weather === "Rain" || weather === "Thunderstorm" ? (
             <MaterialCommunityIcons
@@ -114,6 +118,7 @@ const Finalized = (props) => {
                         data={allData}
                         navigation={props.navigation}
                         mapUpdate={mapUpdate}
+                        routeUpdate={routeUpdate}
                         genres={userGenres}
                         accessRights={accessRights}
                         userID={props.userID}
