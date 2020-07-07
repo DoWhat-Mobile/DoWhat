@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, FlatList } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-const Route = ({ data }) => {
+const Route = ({ item }) => {
     const block = (item) => {
         return (
             <View style={{ marginHorizontal: 10 }}>
@@ -25,7 +25,7 @@ const Route = ({ data }) => {
     return (
         <View style={{ flex: 1 }}>
             <FlatList
-                data={data}
+                data={item}
                 horizontal={true}
                 keyExtractor={(item) => item.key}
                 renderItem={({ item }) => block(item)}
