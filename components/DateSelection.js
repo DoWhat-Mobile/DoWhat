@@ -73,7 +73,8 @@ const DateSelection = (props) => {
             setLocation(location);
         })()
             .then(() => {
-                addGcalEventsToRedux();
+                // addGcalEventsToRedux();
+                setLoading(false);
             });
     }, []);
 
@@ -136,7 +137,6 @@ const DateSelection = (props) => {
                     console.log("API call successful: ", allEventsArr)
                     props.extractCalendarEvents(data.items) // Add events to redux state
                     setCurrUserCalendarEvents(data.items);
-                    console.log("Current User's events:", currUserCalendarEvents)
                     setLoading(false);
                 });
         } catch (e) {
