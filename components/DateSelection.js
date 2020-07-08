@@ -120,12 +120,14 @@ const DateSelection = (props) => {
         }
     };
 
-    const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShow(Platform.OS === "ios");
-        setDate(currentDate);
-        props.selectDate(currentDate); // Set date in redux state
-    };
+    // Passed to Calendar.js child component
+    const onDateChange = (selectedDate) => {
+        const tail = (new Date()).toISOString().substring(10);
+        const formattedDateString = selectedDate + tail;
+        const formattedDate = new Date(formattedDateString);
+        setDate(formattedDate);
+        props.selectDate(formattedDate); // Set date in redux state
+    }
 
     const showMode = (currentMode) => {
         setShow(true);
@@ -278,20 +280,7 @@ const DateSelection = (props) => {
         //     // ListFooterComponent={lowerContent} 
         //     />
         // </SafeAreaView>
-        <ScrollView horizontal={false} style={styles.container}>
-            {show && (
-                <DateTimePicker
-                    testID="dateTimePicker"
-                    timeZoneOffsetInMinutes={0}
-                    value={date}
-                    mode={mode}
-                    is24Hour={true}
-                    display="calendar"
-                    minimumDate={new Date()}
-                    onChange={onChange}
-                />
-            )}
-
+        <View style={styles.container}>
             <Modal
                 animationType="fade"
                 transparent={true}
@@ -312,12 +301,8 @@ const DateSelection = (props) => {
                 />
             </Modal>
             <View style={styles.dateInput}>
-                <Text style={styles.header}>Plan Event On</Text>
-
-                <TouchableOpacity
-                    style={{ marginBottom: 5 }}
-                    onPress={() => showDatepicker()}
-                >
+                <View style={{ flexDirection: 'row' }}>
+                    <Text style={styles.header}>Plan Event On</Text>
                     <Text style={styles.date}>
                         {formatDate(
                             date.getDay(),
@@ -325,33 +310,33 @@ const DateSelection = (props) => {
                             date.getDate()
                         )}
                     </Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={{ flex: 3 }}>
-                <Calendar />
-            </View>
-
-                <View style={styles.availsInput}>
-                    <Text style={styles.header}>Availabilities</Text>
-                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <Text style={styles.date}>
-                            {isFinalized
-                                ? "Successfully inputted"
-                                : "Input range"}
-                        </Text>
-                    </TouchableOpacity>
-                    {renderInputAvailabilitiesButton()}
                 </View>
+            </View>
+            <View style={{ flex: 9, borderWidth: 1 }}>
+                <Calendar currDate={new Date()} onDateChange={onDateChange} />
+            </View>
 
-            <View style={{ flex: 0, marginBottom: 80 }}>
+
+            <View style={styles.availsInput}>
+                <Text style={styles.header}>Availabilities</Text>
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <Text style={styles.date}>
+                        {isFinalized
+                            ? "Successfully inputted"
+                            : "Input range"}
+                    </Text>
+                </TouchableOpacity>
+                {renderInputAvailabilitiesButton()}
+            </View>
+
+            <View style={{ flex: 8, }}>
                 <Genre
                     syncWithFirebaseThenNavigate={
                         syncWithFirebaseThenNavigate
                     }
                 />
             </View>
-        </ScrollView>
+        </View>
     );
 };
 const mapStateToProps = (state) => {
@@ -390,11 +375,11 @@ const styles = StyleSheet.create({
         flex: 1,
         alignContent: "flex-start",
         alignItems: "flex-start",
-        marginTop: "20%",
-        marginLeft: "5%",
+        borderWidth: 1
     },
     availsInput: {
-        marginLeft: "5%",
+        borderWidth: 1,
+
     },
     button: {
         fontSize: 20,

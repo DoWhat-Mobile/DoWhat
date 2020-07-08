@@ -7,11 +7,11 @@ const testIDs = require('./calendarTestIDs');
 /**
  * Component for integrated calendar view
  */
-const Calendar = (props) => {
+const Calendar = ({ currDate, onDateChange }) => {
     const [items, setItems] = useState({
-        '2020-07-07': [{ name: 'item 1 - any js object' }],
-        '2020-07-07': [{ name: 'item 2 - any js object', height: 80 }],
-        '2020-07-07': [{ name: 'item 3 - any js object' }, { name: 'any js object' }]
+        '2020-07-08': [{ name: 'item 1 - any js object' }],
+        '2020-07-08': [{ name: 'item 2 - any js object', height: 80 }],
+        '2020-07-08': [{ name: 'item 3 - any js object' }, { name: 'any js object' }]
     });
 
     const loadItems = (day) => {
@@ -66,6 +66,8 @@ const Calendar = (props) => {
         return date.toISOString().split('T')[0];
     }
 
+    const currFormattedDate = currDate.toISOString().substring(0, 10);
+
     return (
         <Agenda
             testID={testIDs.agenda.CONTAINER}
@@ -73,18 +75,19 @@ const Calendar = (props) => {
             futureScrollRange={1}
             items={items}
             // loadItemsForMonth={(month) => loadItems(month)}
-            selected={'2020-07-07'}
+            selected={currFormattedDate}
             renderItem={(item, firstItemInDay) => renderItem(item)}
             renderEmptyDate={() => renderEmptyDate()}
             renderEmptyData={() => null}
             rowHasChanged={(r1, r2) => rowHasChanged(r1, r2)}
-            onDayPress={(day) => { console.log('day pressed', day) }}
+            onDayPress={(day) => onDateChange(day.dateString)}
             markedDates={{
-                '2020-07-08': { marked: true },
+                '2020-07-09': { marked: true },
             }}
+            minDate={currFormattedDate}
             theme={{
-                selectedDayBackgroundColor: '#E86830',
-                // calendarBackground: 'red', agendaKnobColor: 'green'
+                selectedDayBackgroundColor: '#E86830', agendaKnobColor: '#E86830'
+                // calendarBackground: 'red', 
             }}
             //renderDay={(day, item) => (<Text>{day ? day.day: 'item'}</Text>)}
             // hideExtraDays={false}

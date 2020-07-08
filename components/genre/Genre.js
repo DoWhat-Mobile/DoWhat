@@ -205,8 +205,8 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
     },
     button: {
-        borderRadius: 20,
-        padding: 20,
+        borderRadius: 10,
+        padding: 10,
         borderWidth: StyleSheet.hairlineWidth,
         marginHorizontal: 10,
         marginVertical: 10,
