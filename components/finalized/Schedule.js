@@ -9,10 +9,12 @@ import {
 import {
     handleRipple,
     objectFormatter,
+    renderDetail,
 } from "../../reusable-functions/data_timeline";
 import moment from "moment-timezone";
 import firebase from "../../database/firebase";
 import TransitRoutes from "./TransitRoutes";
+
 const Schedule = ({
     navigation,
     data,
@@ -42,6 +44,7 @@ const Schedule = ({
         setEvents(formatData);
         setTimingsArray(data[1]);
     }, []);
+
     const routeUpdate = (selected, unsatisfied) => {
         let temp = routes;
         const result = temp.map((item) => {
@@ -161,6 +164,7 @@ const Schedule = ({
                         backgroundColor: "#BBDAFF",
                         borderRadius: 10,
                     }}
+                    renderDetail={renderDetail}
                 />
             </View>
             <TransitRoutes routes={routes} />

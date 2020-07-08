@@ -1,7 +1,8 @@
 import React from "react";
-import { Text } from "react-native";
+import { Text, View, Image } from "react-native";
 import ReadMore from "react-native-read-more-text";
 import { parse } from "expo-linking";
+import { TIH_API_KEY } from "react-native-dotenv";
 
 /**
  * handles filter for food to be added in data array. Returns array of data that is formatted to be passed as props into
@@ -83,7 +84,8 @@ export const genreEventObjectArray = (userGenres, events, filters, weather) => {
     if (weather === "Rain" || weather === "Thunderstorm") {
         for (i = 0; i < userGenres.length; i++) {
             const genre = userGenres[i] === "food" ? "food" : "indoors";
-            if (genre !== "food") {
+            if (genre === "indoors") {
+                console.log(genre);
                 const eventObject = events[genre]["list"];
                 const rand = Math.floor(Math.random() * eventObject.length);
                 const event = events[genre]["list"][rand];
@@ -244,48 +246,30 @@ export const data_shuffle = (events, genres, time, unsatisfied) => {
  * Creates the object with keys (time, title description) that the timeline library accepts
  */
 export const objectFormatter = (startTime, event, genre) => {
-    const renderTruncatedFooter = (handlePress) => {
-        return (
-            <Text
-                style={{ color: "#595959", marginTop: 5 }}
-                onPress={handlePress}
-            >
-                Read more
-            </Text>
-        );
-    };
-
-    const renderRevealedFooter = (handlePress) => {
-        return (
-            <Text
-                style={{ color: "#595959", marginTop: 5 }}
-                onPress={handlePress}
-            >
-                Show less
-            </Text>
-        );
-    };
-    let text = event.tags.includes("Indoors")
-        ? event.location + " " + "(Indoors)"
-        : event.location;
+    let imageURI = event.image;
+    if (imageURI.substring(0, 5) != "https") {
+        imageURI =
+            "https://tih-api.stb.gov.sg/media/v1/download/uuid/" +
+            imageURI +
+            "?apikey=" +
+            TIH_API_KEY;
+    }
     return {
         time: startTime + ":00",
-        title: event.name,
+        title: event.tags.includes("Indoors")
+            ? event.name + " " + "(Indoors)"
+            : event.name,
 
-        description: (
-            <ReadMore
-                numberOfLines={4}
-                renderTruncatedFooter={renderTruncatedFooter}
-                renderRevealedFooter={renderRevealedFooter}
-            >
-                <Text style={{ fontSize: 16 }}>
-                    {text}
-                    {"\n\n"}
-                    {event.description}
-                </Text>
-            </ReadMore>
-        ),
+        description:
+            "                                                        " +
+            event.location +
+            "\n\n" +
+            event.description,
+        //</Text>
+        // </ReadMore>
 
+        lineColor: "#cc5327",
+        imageUrl: imageURI,
         genre: genre,
         coord: event.coord,
         location: event.location,
@@ -372,4 +356,75 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
         newTimingsArray[index].start = newStartTime;
     }
     return newTimingsArray;
+};
+
+export const renderDetail = (rowData, sectionID, rowID) => {
+    const renderTruncatedFooter = (handlePress) => {
+        return (
+            <Text
+                style={{ color: "#595959", marginTop: 5 }}
+                onPress={handlePress}
+            >
+                Read more
+            </Text>
+        );
+    };
+
+    const renderRevealedFooter = (handlePress) => {
+        return (
+            <Text
+                style={{ color: "#595959", marginTop: 5 }}
+                onPress={handlePress}
+            >
+                Show less
+            </Text>
+        );
+    };
+    let title = (
+        <Text
+            style={{
+                fontSize: 16,
+                fontWeight: "bold",
+                marginLeft: 5,
+            }}
+        >
+            {rowData.title}
+        </Text>
+    );
+    let desc = null;
+    if (rowData.description && rowData.imageUrl)
+        desc = (
+            <View
+                style={{
+                    paddingRight: 50,
+                }}
+            >
+                {title}
+                <Image
+                    source={{ uri: rowData.imageUrl }}
+                    style={{
+                        width: 240,
+                        height: 120,
+                        borderRadius: 25,
+                        marginTop: 10,
+                        marginLeft: 5,
+                    }}
+                />
+                <ReadMore
+                    numberOfLines={1}
+                    renderTruncatedFooter={renderTruncatedFooter}
+                    renderRevealedFooter={renderRevealedFooter}
+                >
+                    <Text
+                        style={{
+                            flex: 1,
+                        }}
+                    >
+                        {rowData.description}
+                    </Text>
+                </ReadMore>
+            </View>
+        );
+
+    return <View style={{ flex: 1 }}>{desc}</View>;
 };

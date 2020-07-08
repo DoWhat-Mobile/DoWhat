@@ -37,23 +37,6 @@ const Loading = (props) => {
         const diff = props.difference;
         const userId = firebase.auth().currentUser.uid; //Firebase UID of current user
 
-        const currentEvents =
-            route === "board"
-                ? props.route.params.currentEvents
-                : genreEventObjectArray(
-                      userGenres,
-                      props.allEvents,
-                      filters,
-                      weather
-                  );
-        const data = data_timeline(
-            timeline,
-            userGenres,
-            props.allEvents,
-            currentEvents
-        );
-        setData(data);
-
         firebase
             .database()
             .ref("users/" + userId)
@@ -86,7 +69,26 @@ const Loading = (props) => {
         )
             .then((response) => response.json())
             .then((data) => {
-                setWeather(data["daily"][diff]["weather"][0]["main"]);
+                const value = data["daily"][diff]["weather"][0]["main"];
+                setWeather(value);
+
+                const currentEvents =
+                    route === "board"
+                        ? props.route.params.currentEvents
+                        : genreEventObjectArray(
+                              userGenres,
+                              props.allEvents,
+                              filters,
+                              value
+                          );
+                const allEvents = data_timeline(
+                    timeline,
+                    userGenres,
+                    props.allEvents,
+                    currentEvents
+                );
+                setData(allEvents);
+
                 setWeatherLoading(false);
             });
     }, []);
