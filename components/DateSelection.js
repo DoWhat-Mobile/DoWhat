@@ -1,24 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-    TouchableOpacity,
-    View,
-    Button,
-    Platform,
-    Text,
-    StyleSheet,
-    Image,
-    ImageBackground,
-    Modal,
+    TouchableOpacity, View, Text, StyleSheet,
+    Modal, ActivityIndicator,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { connect } from "react-redux";
 import { selectDate } from "../actions/date_select_action";
+import { extractCalendarEvents } from "../actions/auth_screen_actions"
 import AvailabilityInputModal from "./AvailabilityInputModal";
 import firebase from "../database/firebase";
 import Genre from "../components/genre/Genre";
-import { getBusyPeriodFromGoogleCal } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
+import { getBusyPeriodFromGoogleCal, checkIfTokenExpired } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
+import { OAuthConfig } from "../reusable-functions/GoogleAuthentication";
 import { AntDesign } from "@expo/vector-icons";
 import * as Location from "expo-location";
+import Calendar from './Calendar';
+import * as AppAuth from "expo-app-auth";
+import { REACT_APP_GOOGLE_API_KEY } from 'react-native-dotenv';
 
 export const formatDate = (day, month, date) => {
     const possibleDays = [
@@ -30,6 +27,7 @@ export const formatDate = (day, month, date) => {
         "Friday",
         "Saturday",
     ];
+
     const possibleMonths = [
         "January",
         "February",
@@ -44,22 +42,26 @@ export const formatDate = (day, month, date) => {
         "November",
         "December",
     ];
+
     const curDay = possibleDays[day];
     const curMonth = possibleMonths[month];
     return curDay + ", " + curMonth + " " + date;
 };
 
+/**
+ * DateSelection Page is where user inputs availablilities, selected date, as well as outing
+ * preferences. 
+ */
 const DateSelection = (props) => {
     const [date, setDate] = useState(new Date()); // new Date() gives today's date
-    const [mode, setMode] = useState("date");
-    const [show, setShow] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [isFinalized, setIsFinalized] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
-    const [location, setLocation] = React.useState(null);
-    const [isLoading, setLoading] = React.useState(false);
+    const [location, setLocation] = useState(null);
+    const [isLoading, setLoading] = useState(true);
+    const [currUserCalendarEvents, setCurrUserCalendarEvents] = useState([]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         (async () => {
             let { status } = await Location.requestPermissionsAsync();
             if (status !== "granted") {
@@ -69,16 +71,84 @@ const DateSelection = (props) => {
 
             let location = await Location.getCurrentPositionAsync({});
             setLocation(location);
-            setLoading(false);
-        })();
+        })()
+            .then(() => {
+                // addGcalEventsToRedux();
+                setLoading(false);
+            });
     }, []);
 
     let synced = isButtonDisabled ? "synced" : "manual";
+
+    // Events that are already in the current user's Google calendar
+    const addGcalEventsToRedux = async () => {
+        firebase.database().ref('users/' + props.userID)
+            .once("value")
+            .then((snapshot) => {
+                const userData = snapshot.val();
+                const token = {
+                    accessToken: userData.access_token,
+                    refreshToken: userData.refresh_token,
+                    accessTokenExpirationDate:
+                        userData.access_token_expiration,
+                };
+                makeGcalAPICall(token);
+
+            })
+    }
+
+    const makeGcalAPICall = async (token) => {
+        // Ensure access token validity
+        var accessToken = token.accessToken;
+        accessToken = (
+            await AppAuth.refreshAsync(OAuthConfig, token.refreshToken)
+        ).accessToken;
+        if (checkIfTokenExpired(token.accessTokenExpirationDate)) {
+            // Use refresh token to generate new access token if access token has expired
+            accessToken = (
+                await AppAuth.refreshAsync(OAuthConfig, token.refreshToken)
+            ).accessToken;
+        }
+
+        // Get the time range to extract events from
+        const todayDate = (new Date()).toISOString().substring(0, 10);
+        var oneWeekFromToday = new Date();
+        oneWeekFromToday.setDate(oneWeekFromToday.getDate() + 7);
+        const weekLater = oneWeekFromToday.toISOString().substring(0, 10);
+
+        try {
+            fetch(
+                "https://www.googleapis.com/calendar/v3/calendars/primary/events?" + // Fetch from primary calendar 
+                "timeMax=" + weekLater + "T23%3A59%3A00%2B08%3A00&" + //23:59hrs
+                "timeMin=" + todayDate + "T00%3A00%3A00%2B08%3A00&" + // 00:00hrs 
+                "prettyPrint=true&key=" + REACT_APP_GOOGLE_API_KEY,
+                {
+                    method: "GET",
+                    headers: new Headers({
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + accessToken,
+                    }),
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    const allEventsArr = data.items;
+                    console.log("API call successful: ", allEventsArr)
+                    props.extractCalendarEvents(data.items) // Add events to redux state
+                    setCurrUserCalendarEvents(data.items);
+                    setLoading(false);
+                });
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     const inputAvailabilities = () => {
         getBusyPeriodFromGoogleCal(props.userID, date); // User ID comes from Redux state
         setIsButtonDisabled(true); // Prevent syncing google calendar twice
     };
+
     const renderInputAvailabilitiesButton = () => {
         if (isButtonDisabled) {
             return (
@@ -119,21 +189,14 @@ const DateSelection = (props) => {
         }
     };
 
-    const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShow(Platform.OS === "ios");
-        setDate(currentDate);
-        props.selectDate(currentDate); // Set date in redux state
-    };
-
-    const showMode = (currentMode) => {
-        setShow(true);
-        setMode(currentMode);
-    };
-
-    const showDatepicker = () => {
-        showMode("date");
-    };
+    // Passed to Calendar.js child component
+    const onDateChange = (selectedDate) => {
+        const tail = (new Date()).toISOString().substring(10);
+        const formattedDateString = selectedDate + tail;
+        const formattedDate = new Date(formattedDateString);
+        setDate(formattedDate);
+        props.selectDate(formattedDate); // Set date in redux state
+    }
 
     const addSelectedDateToFirebase = () => {
         const userId = firebase.auth().currentUser.uid;
@@ -169,90 +232,86 @@ const DateSelection = (props) => {
     };
 
     if (isLoading) {
-        return <Text>Loading</Text>;
-    } else {
         return (
-            <View style={styles.container}>
-                <View style={styles.dateInput}>
-                    <Text style={styles.header}>Plan Event On</Text>
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+                <ActivityIndicator size='large' />
+            </View>
+        )
+    }
 
-                    <TouchableOpacity
-                        style={{ marginBottom: 5 }}
-                        onPress={() => showDatepicker()}
-                    >
-                        <Text style={styles.date}>
-                            {formatDate(
-                                date.getDay(),
-                                date.getMonth(),
-                                date.getDate()
-                            )}
-                        </Text>
-                    </TouchableOpacity>
-                    <View style={styles.availsInput}>
-                        <Text style={styles.header}>Availabilities</Text>
-                        <TouchableOpacity onPress={() => setModalVisible(true)}>
-                            <Text style={styles.date}>
-                                {isFinalized
-                                    ? "Successfully inputted"
-                                    : "Input range"}
-                            </Text>
-                        </TouchableOpacity>
-                        {renderInputAvailabilitiesButton()}
-                    </View>
-                </View>
-
-                {show && (
-                    <DateTimePicker
-                        testID="dateTimePicker"
-                        timeZoneOffsetInMinutes={0}
-                        value={date}
-                        mode={mode}
-                        is24Hour={true}
-                        display="calendar"
-                        minimumDate={new Date()}
-                        onChange={onChange}
-                    />
-                )}
-
-                <Modal
-                    animationType="fade"
-                    transparent={true}
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                        closeModal();
-                    }}
-                >
-                    <AvailabilityInputModal
-                        onClose={closeModal}
-                        date={date}
-                        onFinalize={onFinalize}
-                        styledDate={formatDate(
+    return (
+        <View style={styles.container}>
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    closeModal();
+                }}
+            >
+                <AvailabilityInputModal
+                    onClose={closeModal}
+                    date={date}
+                    onFinalize={onFinalize}
+                    styledDate={formatDate(
+                        date.getDay(),
+                        date.getMonth(),
+                        date.getDate()
+                    )}
+                />
+            </Modal>
+            <View style={styles.dateInput}>
+                <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                    <Text style={styles.header}>Plan Event On: </Text>
+                    <Text style={styles.date}>
+                        {formatDate(
                             date.getDay(),
                             date.getMonth(),
                             date.getDate()
                         )}
-                    />
-                </Modal>
-
-                <View style={{ flex: 0, marginBottom: 80 }}>
-                    <Genre
-                        syncWithFirebaseThenNavigate={
-                            syncWithFirebaseThenNavigate
-                        }
-                    />
+                    </Text>
                 </View>
             </View>
-        );
-    }
+            <View style={styles.calendar}>
+                <Calendar currDate={new Date()} onDateChange={onDateChange} userEvents={currUserCalendarEvents} />
+            </View>
+
+
+            <View style={styles.availsInput}>
+                <Text style={[styles.header, { color: '#F9F0E6', textAlign: 'center' }]}>
+                    Input your available timings
+                </Text>
+                <View style={{ flexDirection: "row", justifyContent: 'space-evenly' }}>
+                    <TouchableOpacity onPress={() => setModalVisible(true)}>
+                        <Text style={[styles.date, { color: '#F9F0E6' }]}>
+                            {isFinalized
+                                ? "Successfully inputted"
+                                : "Input range"}
+                        </Text>
+                    </TouchableOpacity>
+                    {renderInputAvailabilitiesButton()}
+                </View>
+            </View>
+
+            <View style={styles.genreSelection}>
+                <Genre
+                    syncWithFirebaseThenNavigate={
+                        syncWithFirebaseThenNavigate
+                    }
+                />
+            </View>
+        </View>
+    );
 };
 const mapStateToProps = (state) => {
+    console.log("Redux state events is : ", state.add_events.currUserCalendarEvents)
     return {
         userID: state.add_events.userID,
         currUserName: state.add_events.currUserName,
     };
 };
 const mapDispatchToProps = {
-    selectDate,
+    selectDate, extractCalendarEvents
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DateSelection);
@@ -261,40 +320,40 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    continue: {
-        flex: 1,
-        flexDirection: "column",
-        alignSelf: "stretch",
-        alignContent: "stretch",
-        marginLeft: "5%",
-        marginRight: "5%",
-        marginTop: 400,
-    },
     header: {
-        fontWeight: "200",
+        fontWeight: "bold",
         fontSize: 20,
-        color: "black",
+        fontFamily: 'serif',
         borderTopEndRadius: 5,
         paddingRight: 10,
         paddingLeft: 10,
+        color: 'black'
     },
     date: {
-        textDecorationLine: "underline",
-        fontSize: 18,
-        color: "black",
-        borderTopEndRadius: 5,
+        fontWeight: "500",
+        fontSize: 20,
+        fontFamily: 'serif',
         paddingRight: 10,
-        paddingLeft: 35,
+        color: 'black',
+        textDecorationLine: 'underline'
     },
     dateInput: {
         flex: 1,
         alignContent: "flex-start",
         alignItems: "flex-start",
-        marginTop: "20%",
-        marginLeft: "5%",
     },
     availsInput: {
-        marginLeft: "5%",
+        flex: 2,
+        borderRadius: 30,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
+        backgroundColor: '#F28333',
+    },
+    calendar: {
+        flex: 7,
+    },
+    genreSelection: {
+        flex: 5, backgroundColor: "#F28333"
     },
     button: {
         fontSize: 20,
@@ -310,4 +369,17 @@ const styles = StyleSheet.create({
         alignContent: "center",
         justifyContent: "center",
     },
+    item: {
+        backgroundColor: 'white',
+        flex: 1,
+        borderRadius: 5,
+        padding: 10,
+        marginRight: 10,
+        marginTop: 17
+    },
+    emptyDate: {
+        height: 15,
+        flex: 1,
+        paddingTop: 30
+    }
 });

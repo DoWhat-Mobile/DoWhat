@@ -1,8 +1,8 @@
 
-import { ADD_EVENTS } from './types';
-import { ADD_UID } from './types';
-import { ADD_PROFILE_PICTURE } from './types';
-import { ADD_CURR_USER_NAME } from './types';
+import {
+    ADD_EVENTS, EXTRACT_CALENDAR_EVENTS,
+    ADD_UID, ADD_PROFILE_PICTURE, ADD_CURR_USER_NAME
+} from './types';
 
 export const addEvents = (values) => dispatch => {
     const newState = {
@@ -31,6 +31,14 @@ export const addProfilePicture = (values) => dispatch => {
 export const addCurrUserName = (values) => dispatch => {
     const newState = {
         type: ADD_CURR_USER_NAME,
+        payload: values,
+    }
+    dispatch(newState);
+};
+
+export const extractCalendarEvents = (values) => dispatch => {
+    const newState = {
+        type: EXTRACT_CALENDAR_EVENTS,
         payload: values,
     }
     dispatch(newState);

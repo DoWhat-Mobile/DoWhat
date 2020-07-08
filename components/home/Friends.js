@@ -19,7 +19,7 @@ const AllFriends = ({ userID }) => {
         useCallback(() => {
             showAllMyFriends(); // All accepted friends
             findFriendsFromFirebase();
-            return () => null;
+            return () => firebase.database().ref('users').off();
         }, [])
     )
 
@@ -31,15 +31,15 @@ const AllFriends = ({ userID }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [noOfFriendRequests, setNoOfFriendRequests] = useState(0);
 
+    // Subscribe to DB changes
     const findFriendsFromFirebase = () => {
         firebase.database()
             .ref('users')
-            .once("value")
-            .then((snapshot) => {
+            .on("value", (snapshot) => {
                 const allAppUsers = snapshot.val();
                 const currUserDetails = allAppUsers[userID]
                 getSuggestedFriends(allAppUsers, currUserDetails);
-            })
+            });
     }
 
     // Check if requests has been sent before, prevents spamming from a user.

@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
-import { addEvents, addUID, addCurrUserName, addProfilePicture } from "../actions/auth_screen_actions";
+import {
+    addEvents, addUID, addCurrUserName,
+    addProfilePicture
+} from "../actions/auth_screen_actions";
 const firebase = require('firebase');
 import * as AppAuth from "expo-app-auth";
 import {
@@ -20,7 +23,7 @@ class AuthScreen extends Component {
     }
 
     // Add database of all events from firebase to redux state
-    addEventsToState = () => {
+    addEventsToState = async () => {
         firebase
             .database()
             .ref("events")
@@ -108,13 +111,6 @@ class AuthScreen extends Component {
                 </View>
 
                 <View style={style.footer}>
-                    {/*
-                    <TouchableOpacity onPress={() => firebase.auth().signOut()}>
-                        <Text style={{ color: "blue" }}>
-                            Sign out of account
-                        </Text>
-                    </TouchableOpacity>
-                    */}
                     <View style={style.icons}>
                         <Icon.Button
                             name="google"
@@ -138,7 +134,13 @@ const mapDispatchToProps = {
     addEvents, addUID, addCurrUserName, addProfilePicture
 };
 
-export default connect(null, mapDispatchToProps)(AuthScreen);
+const mapStateToProps = (state) => {
+    return {
+        userID: state.add_events.userID,
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AuthScreen);
 
 const style = StyleSheet.create({
     container: {

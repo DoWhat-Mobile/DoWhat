@@ -13,7 +13,7 @@ const Genre = (props) => {
     const [selected, setSelected] = React.useState([]);
     const [preference, setPreference] = React.useState({});
     // const [isLoading, setIsLoading] = React.useState(true);
-    const genreType = ["adventure", "arts", "leisure", "nature", "nightlife"];
+    const genreType = ["ADVENTURE", "ARTS", "LEISURE", "NATURE", "NIGHTLIFE"];
     const finalized = [];
 
     const [freeTime, setFreeTime] = React.useState([]);
@@ -109,8 +109,10 @@ const Genre = (props) => {
             >
                 <Text
                     style={{
-                        fontSize: 18,
-                        color: selected.includes(items) ? "green" : "black",
+                        fontSize: 14,
+                        fontFamily: 'serif',
+                        fontWeight: '500',
+                        color: selected.includes(items) ? '#E86830' : "white",
                     }}
                 >
                     {items}
@@ -129,7 +131,7 @@ const Genre = (props) => {
             </Modal>
 
             <View style={styles.textContainer}>
-                <Text style={{ fontFamily: "serif", fontSize: 20 }}>
+                <Text style={{ fontFamily: "serif", fontSize: 16, color: 'white' }}>
                     Choose your favourite genres!
                 </Text>
             </View>
@@ -143,13 +145,15 @@ const Genre = (props) => {
                 >
                     <Text
                         style={{
-                            fontSize: 18,
+                            fontSize: 14,
+                            fontWeight: '500',
+                            fontFamily: 'serif',
                             color: selected.includes("food")
-                                ? "green"
-                                : "black",
+                                ? '#E86830'
+                                : "white",
                         }}
                     >
-                        Food
+                        FOOD
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -198,6 +202,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
+        borderWidth: 1,
     },
     buttonContainer: {
         flexDirection: "row",
@@ -205,15 +210,14 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
     },
     button: {
-        borderRadius: 20,
-        padding: 20,
+        borderRadius: 10,
+        padding: 8,
         borderWidth: StyleSheet.hairlineWidth,
         marginHorizontal: 10,
         marginVertical: 10,
     },
     textContainer: {
-        alignItems: "center",
-        marginVertical: 60,
+        alignItems: "flex-start",
     },
     continue: {
         flexDirection: "column",
@@ -221,15 +225,15 @@ const styles = StyleSheet.create({
         alignContent: "stretch",
         marginLeft: "5%",
         marginRight: "5%",
-        //marginTop: 400,
+        marginTop: '10%',
     },
     continueButton: {
         fontSize: 20,
-        borderWidth: 0.2,
+        fontFamily: 'serif',
         textAlign: "center",
-        borderRadius: 10,
-        backgroundColor: "#cc5327",
-        color: "#fcf5f2",
+        borderRadius: 5,
+        backgroundColor: "#f9f0E6",
+        color: "#3F1D38",
     },
 });
 
