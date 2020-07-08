@@ -179,107 +179,7 @@ const DateSelection = (props) => {
         )
     }
 
-    const upperContent = () => {
-        return (
-            <View>
-                {show && (
-                    <DateTimePicker
-                        testID="dateTimePicker"
-                        timeZoneOffsetInMinutes={0}
-                        value={date}
-                        mode={mode}
-                        is24Hour={true}
-                        display="calendar"
-                        minimumDate={new Date()}
-                        onChange={onChange}
-                    />
-                )}
-
-                <Modal
-                    animationType="fade"
-                    transparent={true}
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                        closeModal();
-                    }}
-                >
-                    <AvailabilityInputModal
-                        onClose={closeModal}
-                        date={date}
-                        onFinalize={onFinalize}
-                        styledDate={formatDate(
-                            date.getDay(),
-                            date.getMonth(),
-                            date.getDate()
-                        )}
-                    />
-                </Modal>
-                <View style={styles.dateInput}>
-                    <Text style={styles.header}>Plan Event On</Text>
-
-                    <TouchableOpacity
-                        style={{ marginBottom: 5 }}
-                        onPress={() => showDatepicker()}
-                    >
-                        <Text style={styles.date}>
-                            {formatDate(
-                                date.getDay(),
-                                date.getMonth(),
-                                date.getDate()
-                            )}
-                        </Text>
-                    </TouchableOpacity>
-                    <View style={styles.availsInput}>
-                        <Text style={styles.header}>Availabilities</Text>
-                        <TouchableOpacity onPress={() => setModalVisible(true)}>
-                            <Text style={styles.date}>
-                                {isFinalized
-                                    ? "Successfully inputted"
-                                    : "Input range"}
-                            </Text>
-                        </TouchableOpacity>
-                        {renderInputAvailabilitiesButton()}
-                    </View>
-                </View>
-
-                <View style={{ flex: 1 }}>
-                    <Calendar />
-                </View>
-            </View>
-        )
-    }
-
-    const lowerContent = () => {
-        return (
-            <View style={{ flex: 0, marginBottom: 80 }}>
-                <Genre
-                    syncWithFirebaseThenNavigate={
-                        syncWithFirebaseThenNavigate
-                    }
-                />
-            </View>
-        )
-    }
-
     return (
-        // <SafeAreaView style={{ flex: 1 }}>
-        //     <FlatList
-        //         data={['0', '1']}
-        //         keyExtractor={(data) => data}
-        //         renderItem={({ item, index }) => {
-        //             switch (index) {
-        //                 case 0:
-        //                     return upperContent()
-        //                 case 1:
-        //                     return lowerContent()
-        //                 default:
-        //                     return null;
-        //             }
-        //         }}
-        //     // ListHeaderComponent={upperContent}
-        //     // ListFooterComponent={lowerContent} 
-        //     />
-        // </SafeAreaView>
         <View style={styles.container}>
             <Modal
                 animationType="fade"
@@ -301,8 +201,8 @@ const DateSelection = (props) => {
                 />
             </Modal>
             <View style={styles.dateInput}>
-                <View style={{ flexDirection: 'row' }}>
-                    <Text style={styles.header}>Plan Event On</Text>
+                <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                    <Text style={styles.header}>Plan Event On: </Text>
                     <Text style={styles.date}>
                         {formatDate(
                             date.getDay(),
@@ -312,24 +212,28 @@ const DateSelection = (props) => {
                     </Text>
                 </View>
             </View>
-            <View style={{ flex: 9, borderWidth: 1 }}>
+            <View style={styles.calendar}>
                 <Calendar currDate={new Date()} onDateChange={onDateChange} />
             </View>
 
 
             <View style={styles.availsInput}>
-                <Text style={styles.header}>Availabilities</Text>
-                <TouchableOpacity onPress={() => setModalVisible(true)}>
-                    <Text style={styles.date}>
-                        {isFinalized
-                            ? "Successfully inputted"
-                            : "Input range"}
-                    </Text>
-                </TouchableOpacity>
-                {renderInputAvailabilitiesButton()}
+                <Text style={[styles.header, { color: '#F9F0E6', textAlign: 'center' }]}>
+                    Input your available timings
+                </Text>
+                <View style={{ flexDirection: "row", justifyContent: 'space-evenly' }}>
+                    <TouchableOpacity onPress={() => setModalVisible(true)}>
+                        <Text style={[styles.date, { color: '#F9F0E6' }]}>
+                            {isFinalized
+                                ? "Successfully inputted"
+                                : "Input range"}
+                        </Text>
+                    </TouchableOpacity>
+                    {renderInputAvailabilitiesButton()}
+                </View>
             </View>
 
-            <View style={{ flex: 8, }}>
+            <View style={styles.genreSelection}>
                 <Genre
                     syncWithFirebaseThenNavigate={
                         syncWithFirebaseThenNavigate
@@ -356,30 +260,39 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        fontWeight: "200",
+        fontWeight: "bold",
         fontSize: 20,
-        color: "black",
+        fontFamily: 'serif',
         borderTopEndRadius: 5,
         paddingRight: 10,
         paddingLeft: 10,
+        color: 'black'
     },
     date: {
-        textDecorationLine: "underline",
-        fontSize: 18,
-        color: "black",
-        borderTopEndRadius: 5,
+        fontWeight: "500",
+        fontSize: 20,
+        fontFamily: 'serif',
         paddingRight: 10,
-        paddingLeft: 35,
+        color: 'black',
+        textDecorationLine: 'underline'
     },
     dateInput: {
         flex: 1,
         alignContent: "flex-start",
         alignItems: "flex-start",
-        borderWidth: 1
     },
     availsInput: {
-        borderWidth: 1,
-
+        flex: 2,
+        borderRadius: 30,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
+        backgroundColor: '#F28333',
+    },
+    calendar: {
+        flex: 7,
+    },
+    genreSelection: {
+        flex: 5, backgroundColor: "#F28333"
     },
     button: {
         fontSize: 20,

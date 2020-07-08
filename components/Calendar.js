@@ -9,9 +9,9 @@ const testIDs = require('./calendarTestIDs');
  */
 const Calendar = ({ currDate, onDateChange }) => {
     const [items, setItems] = useState({
-        '2020-07-08': [{ name: 'item 1 - any js object' }],
-        '2020-07-08': [{ name: 'item 2 - any js object', height: 80 }],
-        '2020-07-08': [{ name: 'item 3 - any js object' }, { name: 'any js object' }]
+        '2020-07-10': [{ name: 'item 1 - any js object' }],
+        '2020-07-09': [{ name: 'item 2 - any js object', height: 80 }],
+        '2020-07-08': [{ name: 'item 3 - any js object' }, { name: 'any js object' }, { name: 'item 3 - any js object' }, { name: 'any js object' }]
     });
 
     const loadItems = (day) => {
@@ -57,6 +57,14 @@ const Calendar = ({ currDate, onDateChange }) => {
         );
     }
 
+    const renderEmptyData = () => {
+        return (
+            <View>
+                <Text>Nothing planned on this date</Text>
+            </View>
+        )
+    }
+
     const rowHasChanged = (r1, r2) => {
         return r1.name !== r2.name;
     }
@@ -78,7 +86,7 @@ const Calendar = ({ currDate, onDateChange }) => {
             selected={currFormattedDate}
             renderItem={(item, firstItemInDay) => renderItem(item)}
             renderEmptyDate={() => renderEmptyDate()}
-            renderEmptyData={() => null}
+            renderEmptyData={() => renderEmptyData()}
             rowHasChanged={(r1, r2) => rowHasChanged(r1, r2)}
             onDayPress={(day) => onDateChange(day.dateString)}
             markedDates={{
@@ -86,13 +94,24 @@ const Calendar = ({ currDate, onDateChange }) => {
             }}
             minDate={currFormattedDate}
             theme={{
-                selectedDayBackgroundColor: '#E86830', agendaKnobColor: '#E86830'
-                // calendarBackground: 'red', 
+                // agendaDayNumColor: 'white', agendaDayTextColor: '#FEF0D5',
+                agendaKnobColor: '#F28333', selectedDayBackgroundColor: '#F28333'
+                // selectedDayBackgroundColor: '#244749',
+                // backgroundColor: '#F4AC65', agendaTodayColor: '#3C58B9',
+                // calendarBackground: '#F28333',
+                // todayTextColor: '#3C58B9', textDisabledColor: '#C0B2B3',
+                // dayTextColor: 'white', textSectionTitleColor: 'white',
+                // monthTextColor: 'white',
+
             }}
             //renderDay={(day, item) => (<Text>{day ? day.day: 'item'}</Text>)}
             // hideExtraDays={false}
             // Agenda container style
-            style={{ margin: 20 }}
+            style={{
+                margin: 10, borderBottomLeftRadius: 25, borderBottomRightRadius: 25,
+                borderRadius: 10,
+                backgroundColor: '#F28333'
+            }}
         />
     )
 }

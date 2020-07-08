@@ -227,7 +227,6 @@ const Feed = (props) => {
         )
     }
 
-
     const renderFeed = (item, section) => {
         if (section.title == 'Hungry?') { // Render eateries
             return formatFoodArray(item);
@@ -235,13 +234,6 @@ const Feed = (props) => {
         return renderWhatsPopular(item);
     }
 
-    if (isLoading) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center' }}>
-                <ActivityIndicator size='large' />
-            </View>
-        )
-    }
 
     const scroll = (sectionIndex, itemIndex) => {
         sectionListRef.scrollToLocation({ sectionIndex: sectionIndex, itemIndex: itemIndex, viewPosition: 0, viewOffSet: 10 })
@@ -257,6 +249,14 @@ const Feed = (props) => {
     }
 
     var sectionListRef = {} // For anchor tag use
+
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+                <ActivityIndicator size='large' />
+            </View>
+        )
+    }
 
     return (
         <View style={styles.container}>
