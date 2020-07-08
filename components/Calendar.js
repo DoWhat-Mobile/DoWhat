@@ -14,14 +14,10 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
 
     }, []);
 
-    const [items, setItems] = useState({
-        '2020-07-10': [{ name: 'item 1 - any js object' }],
-        '2020-07-09': [{ name: 'item 2 - any js object', height: 80 }],
-        '2020-07-08': [{ name: 'item 3 - any js object' }, { name: 'any js object' }, { name: 'item 3 - any js object' }, { name: 'any js object' }]
-    });
+    const [items, setItems] = useState({});
 
     const loadUserEvents = () => {
-        console.log("User Events passed to child is: ", userEvents); //Sanity check
+        //  console.log("User Events passed to child is: ", userEvents); //Sanity check
         var formattedItems = {}; // For use with calendar library
 
         userEvents.forEach(event => {
@@ -41,48 +37,44 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
                 // One hour is represented with 40px of height
                 formattedItems[date] = [{
                     name: name, start: startTime,
-                    end: endTime, height: duration * 40
+                    end: endTime, height: duration * 40,
+                    duration: duration
                 }]
             }
         })
         setItems(formattedItems);
     }
 
-    const loadItems = (day) => {
-        setTimeout(() => {
-            for (let i = -15; i < 85; i++) {
-                const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-                const strTime = timeToString(time);
-                if (!items[strTime]) {
-                    items[strTime] = [];
-                    const numItems = Math.floor(Math.random() * 3 + 1);
-                    for (let j = 0; j < numItems; j++) {
-                        items[strTime].push({
-                            name: 'Item for ' + strTime + ' #' + j,
-                            height: Math.max(50, Math.floor(Math.random() * 150))
-                        });
-                    }
-                }
-            }
-            const newItems = {};
-            Object.keys(items).forEach(key => { newItems[key] = items[key]; });
-            setItems({ items: newItems });
-        }, 1000);
-    }
-
     const renderItem = (item) => {
-        console.log(item)
         return (
             <TouchableOpacity
                 testID={testIDs.agenda.ITEM}
                 style={[styles.item, { height: item.height }]}
                 onPress={() => Alert.alert(item.name)}
             >
-                <Text>{item.name}</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{
+                        fontWeight: 'bold',
+                        fontSize: 13, color: '#241A3C'
+                    }}>
+                        {item.name}
+                    </Text>
+                    <Text style={{ fontSize: 12, color: '#C1AEB1', fontWeight: '500' }}>
+                        {item.duration} hrs
+                </Text>
+                </View>
+
+                <Text style={{
+                    fontSize: 12, color: '#C1AEB1', fontWeight: '500',
+                    marginTop: 8
+                }}>
+                    {item.start}-{item.end}hrs
+                </Text>
             </TouchableOpacity>
         );
     }
 
+    // For case when item is empty array
     const renderEmptyDate = () => {
         return (
             <View style={styles.emptyDate}>
@@ -93,8 +85,19 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
 
     const renderEmptyData = () => {
         return (
-            <View>
-                <Text>Nothing planned on this date</Text>
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+                <Text style={{
+                    fontSize: 16, fontWeight: 'bold', fontFamily: 'serif',
+                    textAlign: 'center'
+                }}>
+                    You have nothing planned on this day.
+                    </Text>
+                <Text style={{
+                    fontSize: 13, fontWeight: '500', fontFamily: 'serif',
+                    color: 'grey', textAlign: 'center'
+                }}>
+                    You could use this day to plan an outing with your friends!
+                    </Text>
             </View>
         )
     }
@@ -103,9 +106,12 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
         return r1.name !== r2.name;
     }
 
-    const timeToString = (time) => {
-        const date = new Date(time);
-        return date.toISOString().split('T')[0];
+    const setMarkedDates = () => {
+        var formattedMarkings = {}
+        for (var date in items) {
+            formattedMarkings[date] = { marked: true }
+        }
+        return formattedMarkings;
     }
 
     const currFormattedDate = currDate.toISOString().substring(0, 10);
@@ -123,9 +129,7 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
             renderEmptyData={() => renderEmptyData()}
             rowHasChanged={(r1, r2) => rowHasChanged(r1, r2)}
             onDayPress={(day) => onDateChange(day.dateString)}
-            markedDates={{
-                '2020-07-09': { marked: true },
-            }}
+            markedDates={setMarkedDates()}
             minDate={currFormattedDate}
             theme={{
                 // agendaDayNumColor: 'white', agendaDayTextColor: '#FEF0D5',
@@ -138,8 +142,6 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
                 // monthTextColor: 'white',
 
             }}
-            //renderDay={(day, item) => (<Text>{day ? day.day: 'item'}</Text>)}
-            // hideExtraDays={false}
             // Agenda container style
             style={{
                 margin: 10, borderBottomLeftRadius: 25, borderBottomRightRadius: 25,
