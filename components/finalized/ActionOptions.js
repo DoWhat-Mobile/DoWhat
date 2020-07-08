@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, Modal, Dimensions } from "react-native";
 import ShuffleModal from "./ShuffleModal";
 import TimeEdit from "./TimeEdit";
+import { AntDesign } from "@expo/vector-icons";
 
 const ActionOptions = (props) => {
     const [shuffleVisible, setShuffleVisible] = React.useState(false);
@@ -10,6 +11,19 @@ const ActionOptions = (props) => {
 
     return (
         <View style={{ flex: 1, flexDirection: "row" }}>
+            <AntDesign
+                name="close"
+                size={24}
+                onPress={() => props.onClose()}
+                style={{
+                    position: "absolute",
+                    left: 350,
+                    right: 0,
+                    top: 15,
+                    bottom: 0,
+                    zIndex: 1,
+                }}
+            />
             <Modal animated visible={shuffleVisible} animationType="fade">
                 <ShuffleModal
                     onReselect={props.onReselect}

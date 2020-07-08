@@ -174,27 +174,6 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
  * @param {*} unsatisfied is the genre of the event that the user is reselecting
  */
 export const data_shuffle = (events, genres, time, unsatisfied) => {
-    const renderTruncatedFooter = (handlePress) => {
-        return (
-            <Text
-                style={{ color: "#595959", marginTop: 5 }}
-                onPress={handlePress}
-            >
-                Read more
-            </Text>
-        );
-    };
-
-    const renderRevealedFooter = (handlePress) => {
-        return (
-            <Text
-                style={{ color: "#595959", marginTop: 5 }}
-                onPress={handlePress}
-            >
-                Show less
-            </Text>
-        );
-    };
     let data = [];
     let selectable = [];
     for (i = 0; i < genres.length; i++) {
@@ -213,30 +192,11 @@ export const data_shuffle = (events, genres, time, unsatisfied) => {
     for (i = 0; i < 3; i++) {
         let randomNumber = Math.floor(Math.random() * selectable.length);
         let event = selectable[randomNumber];
-        let text = event.tags.includes("Indoors")
-            ? event.location + " " + "(Indoors)"
-            : event.location;
-        let obj = {
-            title: event.name,
-            time: time,
-            description: (
-                <ReadMore
-                    numberOfLines={3}
-                    renderTruncatedFooter={renderTruncatedFooter}
-                    renderRevealedFooter={renderRevealedFooter}
-                >
-                    <Text>
-                        {text} {"\n\n"}
-                        {event.description}
-                    </Text>
-                </ReadMore>
-            ),
-            genre: unsatisfied,
-            coord: event.coord,
-            location: event.location,
-        };
+
+        let obj = objectFormatter(time.substring(0, 2), event, unsatisfied);
+
         // ensure no duplicate objects
-        const checkName = (obj) => obj.title === event.name;
+        const checkName = (object) => object.title === obj.title;
         if (!data.some(checkName)) data.push(obj);
     }
     return data;
@@ -261,12 +221,10 @@ export const objectFormatter = (startTime, event, genre) => {
             : event.name,
 
         description:
-            "                                                        " +
+            "                                                                                               " +
             event.location +
             "\n\n" +
             event.description,
-        //</Text>
-        // </ReadMore>
 
         lineColor: "#cc5327",
         imageUrl: imageURI,
@@ -362,7 +320,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
     const renderTruncatedFooter = (handlePress) => {
         return (
             <Text
-                style={{ color: "#595959", marginTop: 5 }}
+                style={{ color: "#595959", marginTop: 5, marginLeft: 5 }}
                 onPress={handlePress}
             >
                 Read more
@@ -373,7 +331,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
     const renderRevealedFooter = (handlePress) => {
         return (
             <Text
-                style={{ color: "#595959", marginTop: 5 }}
+                style={{ color: "#595959", marginTop: 5, marginLeft: 5 }}
                 onPress={handlePress}
             >
                 Show less

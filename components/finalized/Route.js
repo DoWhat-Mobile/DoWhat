@@ -35,14 +35,12 @@ const Route = ({ item }) => {
         );
     };
     return (
-        <View style={{ flex: 1 }}>
-            <FlatList
-                data={item}
-                horizontal={true}
-                keyExtractor={(item) => item.key}
-                renderItem={({ item }) => block(item)}
-            />
-        </View>
+        <FlatList
+            data={item}
+            horizontal={true}
+            keyExtractor={(item) => item.key}
+            renderItem={({ item }) => block(item)}
+        />
     );
 };
 
