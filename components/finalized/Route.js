@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 const Route = ({ item }) => {
@@ -7,9 +7,8 @@ const Route = ({ item }) => {
         return (
             <View
                 style={{
-                    marginHorizontal: 10,
                     marginVertical: 10,
-                    //marginBottom: 10,
+                    marginHorizontal: 10,
                 }}
             >
                 {item.mode === "WALKING" ? (
@@ -19,11 +18,18 @@ const Route = ({ item }) => {
                 ) : (
                     <FontAwesome5 name="train" size={24} color="black" />
                 )}
-                <View style={{ width: 250 }}>
-                    <Text>
-                        {item.distance} {item.duration}
+                <View style={{ width: 200 }}>
+                    <Text style={{ fontSize: 13 }}>
+                        {item.distance} {item.duration} {"\n"}
                     </Text>
-                    <Text>{item.instructions}</Text>
+                    <View
+                        style={{
+                            borderBottomColor: "black",
+                            borderBottomWidth: StyleSheet.hairlineWidth,
+                            width: 300,
+                        }}
+                    />
+                    <Text style={{ fontSize: 14 }}>{item.instructions}</Text>
                 </View>
             </View>
         );

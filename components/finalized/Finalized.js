@@ -7,7 +7,7 @@ import {
     Modal,
     ActivityIndicator,
     ScrollView,
-    SafeAreaView,
+    Image,
 } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
@@ -15,6 +15,7 @@ import Schedule from "./Schedule";
 import Map from "./Map";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { YellowBox } from "react-native";
+import moment from "moment";
 
 const Finalized = (props) => {
     YellowBox.ignoreWarnings(["VirtualizedLists should never be nested"]);
@@ -43,21 +44,21 @@ const Finalized = (props) => {
                 name="weather-pouring"
                 size={24}
                 color="black"
-                style={{ marginLeft: 350 }}
+                style={styles.icon}
             />
         ) : weather === "Clouds" ? (
             <MaterialCommunityIcons
                 name="weather-cloudy"
                 size={24}
                 color="black"
-                style={{ marginLeft: 350 }}
+                style={styles.icon}
             />
         ) : (
             <MaterialCommunityIcons
                 name="weather-sunny"
                 size={24}
                 color="black"
-                style={{ marginLeft: 350 }}
+                style={styles.icon}
             />
         );
     };
@@ -87,10 +88,44 @@ const Finalized = (props) => {
     } else {
         return (
             <ScrollView style={styles.container}>
-                <View style={styles.header}>{weatherIcon(weather)}</View>
-                <Text>HI</Text>
-                {/* <TransitRoutes routes={routes} /> */}
+                <View style={styles.header}>
+                    <View
+                        style={{
+                            marginLeft: 10,
+                            flexDirection: "row",
+                            alignItems: "flex-start",
+                        }}
+                    >
+                        <Text
+                            style={{
+                                fontSize: 22,
+                                lineHeight: 23,
+                                marginTop: 15,
+                                marginLeft: 10,
+                                fontWeight: "bold",
+                            }}
+                        >
+                            Weather on {moment(props.date).date()}
+                        </Text>
+                        <Text style={{ fontSize: 11, lineHeight: 20 }}>th</Text>
+
+                        {weatherIcon(weather)}
+                    </View>
+                </View>
+                <View style={styles.image}>
+                    <TouchableOpacity onPress={() => setVisible(true)}>
+                        <Image
+                            style={{
+                                borderRadius: 10,
+                                height: 120,
+                                width: 360,
+                            }}
+                            source={require("../../assets/map.png")}
+                        />
+                    </TouchableOpacity>
+                </View>
                 <View style={styles.body}>
+                    <Text style={styles.title}>Events</Text>
                     <Schedule
                         data={allData}
                         navigation={props.navigation}
@@ -104,13 +139,6 @@ const Finalized = (props) => {
                     <Modal animated visible={visible} animationType="fade">
                         <Map onClose={onClose} coord={coord} />
                     </Modal>
-                    <TouchableOpacity
-                        onPress={() => {
-                            setVisible(true);
-                        }}
-                    >
-                        <Text style={{ fontSize: 20 }}>Open Map View</Text>
-                    </TouchableOpacity>
                 </View>
             </ScrollView>
         );
@@ -120,13 +148,33 @@ const Finalized = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        //justifyContent: "center",
+        backgroundColor: "white",
     },
     header: {
-        flex: 1,
+        flex: 0,
+        // justifyContent: "center",
+        // alignItems: "center",
     },
     body: {
-        // flex: 4,
+        //flex: 4,
+    },
+    image: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        //height: 40,
+    },
+    icon: {
+        fontSize: 35,
+        marginVertical: 10,
+        marginLeft: 170,
+    },
+    title: {
+        marginTop: 10,
+        marginBottom: -25,
+        marginLeft: 20,
+        fontSize: 25,
+        fontWeight: "bold",
     },
 });
 
@@ -136,6 +184,7 @@ const mapStateToProps = (state) => {
         finalTiming: state.timeline.finalTiming,
         allEvents: state.add_events.events,
         userID: state.add_events.userID,
+        date: state.date_select.date,
     };
 };
 

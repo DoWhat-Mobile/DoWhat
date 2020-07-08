@@ -158,7 +158,7 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
             food = 0;
         }
 
-        if (startTime >= timeline[1] - 1) break;
+        if (startTime >= timeline[1]) break;
     }
     console.log(timingsArray);
     return [data, timingsArray, locationArray, busRoutes];
@@ -278,7 +278,7 @@ export const objectFormatter = (startTime, event, genre) => {
                 renderTruncatedFooter={renderTruncatedFooter}
                 renderRevealedFooter={renderRevealedFooter}
             >
-                <Text>
+                <Text style={{ fontSize: 16 }}>
                     {text}
                     {"\n\n"}
                     {event.description}

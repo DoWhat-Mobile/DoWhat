@@ -154,6 +154,13 @@ const Schedule = ({
                         padding: 5,
                         borderRadius: 13,
                     }}
+                    detailContainerStyle={{
+                        marginBottom: 20,
+                        paddingLeft: 5,
+                        paddingRight: 5,
+                        backgroundColor: "#BBDAFF",
+                        borderRadius: 10,
+                    }}
                 />
             </View>
             <TransitRoutes routes={routes} />
@@ -174,15 +181,20 @@ const styles = StyleSheet.create({
     footer: {
         flex: 1,
         alignItems: "center",
+        marginVertical: 30,
+        marginLeft: 200,
     },
     proceed: {
-        borderWidth: 0.5,
-        marginBottom: "5%",
-        paddingTop: "1%",
-        paddingBottom: "1%",
-        paddingLeft: "20%",
-        paddingRight: "20%",
-        borderRadius: 5,
+        //borderWidth: 0.5,
+        paddingTop: "3%",
+        paddingBottom: "3%",
+        paddingLeft: "15%",
+        paddingRight: "15%",
+        borderRadius: 20,
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#fcf5f2",
+        backgroundColor: "#cc5327",
     },
 });
 

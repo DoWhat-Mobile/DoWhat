@@ -27,7 +27,7 @@ const TransitRoutes = ({ routes }) => {
             instructions =
                 "Take " +
                 name +
-                "(" +
+                " (" +
                 num_stops +
                 " stops" +
                 ")" +
@@ -117,9 +117,34 @@ const TransitRoutes = ({ routes }) => {
         );
     } else {
         return (
-            <View style={{ flex: 1 }}>
-                {allRoutes.map((item) => {
-                    return <Route item={item} />;
+            <View
+                style={{
+                    flex: 1,
+                    marginHorizontal: 20,
+                    marginTop: -5,
+                }}
+            >
+                <Text
+                    style={{
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        marginBottom: 10,
+                    }}
+                >
+                    Directions
+                </Text>
+                {allRoutes.map((item, i) => {
+                    return (
+                        <View
+                            key={i}
+                            style={{
+                                borderWidth: 1,
+                                borderRadius: 10,
+                            }}
+                        >
+                            <Route key={i} item={item} />
+                        </View>
+                    );
                 })}
             </View>
         );
