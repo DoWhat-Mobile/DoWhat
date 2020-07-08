@@ -26,6 +26,7 @@ export const ADD_EVENTS = "ADD_EVENTS";
 export const ADD_UID = "ADD_UID";
 export const ADD_PROFILE_PICTURE = "ADD_PROFILE_PICTURE";
 export const ADD_CURR_USER_NAME = "ADD_CURR_USER_NAME";
+export const EXTRACT_CALENDAR_EVENTS = "EXTRACT_CALENDAR_EVENTS"
 
 /**
  * Actions friends screen

@@ -1,18 +1,52 @@
-import React, { useState, Component } from "react";
+import React, { useState, useEffect, Component } from "react";
 import { Alert, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Agenda } from 'react-native-calendars';
+import moment from 'moment';
 
 const testIDs = require('./calendarTestIDs');
 
 /**
  * Component for integrated calendar view
  */
-const Calendar = ({ currDate, onDateChange }) => {
+const Calendar = ({ currDate, onDateChange, userEvents }) => {
+    useEffect(() => {
+        loadUserEvents()
+
+    }, []);
+
     const [items, setItems] = useState({
         '2020-07-10': [{ name: 'item 1 - any js object' }],
         '2020-07-09': [{ name: 'item 2 - any js object', height: 80 }],
         '2020-07-08': [{ name: 'item 3 - any js object' }, { name: 'any js object' }, { name: 'item 3 - any js object' }, { name: 'any js object' }]
     });
+
+    const loadUserEvents = () => {
+        console.log("User Events passed to child is: ", userEvents); //Sanity check
+        var formattedItems = {}; // For use with calendar library
+
+        userEvents.forEach(event => {
+            const startTime = event.start.dateTime.substring(11, 16);
+            const endTime = event.end.dateTime.substring(11, 16);
+            const date = event.start.dateTime.substring(0, 10);
+            const name = event.summary;
+            const startMoment = moment(date + ' ' + startTime)
+            const endMoment = moment(date + ' ' + endTime)
+            const duration = moment.duration(endMoment.diff(startMoment)).asHours();
+            if (formattedItems.hasOwnProperty(date)) { // Add to the same date if it exists
+                formattedItems[date].push({
+                    name: name, start: startTime,
+                    end: endTime, height: duration * 40
+                })
+            } else {
+                // One hour is represented with 40px of height
+                formattedItems[date] = [{
+                    name: name, start: startTime,
+                    end: endTime, height: duration * 40
+                }]
+            }
+        })
+        setItems(formattedItems);
+    }
 
     const loadItems = (day) => {
         setTimeout(() => {

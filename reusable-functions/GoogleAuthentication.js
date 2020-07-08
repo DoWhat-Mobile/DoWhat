@@ -4,7 +4,7 @@ import {
     STANDALONE_GOOGLE_ANDROID_CLIENT_ID,
 } from "react-native-dotenv";
 import store from "../store";
-import { addUID } from "../actions/auth_screen_actions";
+import { addUID, addCurrUserName, addProfilePicture } from "../actions/auth_screen_actions";
 import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import Constants from "expo-constants";
@@ -21,7 +21,7 @@ const isUserEqual = (googleUser, firebaseUser) => {
         for (var i = 0; i < providerData.length; i++) {
             if (
                 providerData[i].providerId ===
-                    firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
+                firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
                 providerData[i].uid === googleUser.getBasicProfile().getId()
             ) {
                 // We don't need to reauth the Firebase connection.
@@ -49,8 +49,11 @@ export const onSignIn = (googleUser) => {
                 .auth()
                 .signInWithCredential(credential)
                 .then(function (result) {
-                    // Add user ID  to Redux state
+                    // Add to Redux state for first time signed-in users 
                     store.dispatch(addUID(result.user.uid));
+                    store.dispatch(addCurrUserName(user.displayName.replace(/ /g, "_")))
+                    store.dispatch(addProfilePicture(user.photoURL));
+
                     // Add push token to Firebase for notification sending
                     registerForPushNotificationsAsync(result.user.uid);
                     // Add user information to DB

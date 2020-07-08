@@ -106,7 +106,7 @@ const getUserEmailThenBusyPeriod = async (token, userID, selectedDate) => {
     }
 };
 
-const checkIfTokenExpired = (accessTokenExpirationDate) => {
+export const checkIfTokenExpired = (accessTokenExpirationDate) => {
     return new Date(accessTokenExpirationDate) < new Date();
 };
 

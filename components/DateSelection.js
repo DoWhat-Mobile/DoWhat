@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from "react";
 import {
-    TouchableOpacity, View, Button, Platform, Text, StyleSheet, Image, ImageBackground,
-    Modal, ActivityIndicator, ScrollView, FlatList, SafeAreaView
+    TouchableOpacity, View, Text, StyleSheet,
+    Modal, ActivityIndicator,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { connect } from "react-redux";
 import { selectDate } from "../actions/date_select_action";
+import { extractCalendarEvents } from "../actions/auth_screen_actions"
 import AvailabilityInputModal from "./AvailabilityInputModal";
 import firebase from "../database/firebase";
 import Genre from "../components/genre/Genre";
-import { getBusyPeriodFromGoogleCal } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
+import { getBusyPeriodFromGoogleCal, checkIfTokenExpired } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
+import { OAuthConfig } from "../reusable-functions/GoogleAuthentication";
 import { AntDesign } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import Calendar from './Calendar';
+import * as AppAuth from "expo-app-auth";
+import { REACT_APP_GOOGLE_API_KEY } from 'react-native-dotenv';
 
 export const formatDate = (day, month, date) => {
     const possibleDays = [
@@ -51,13 +54,12 @@ export const formatDate = (day, month, date) => {
  */
 const DateSelection = (props) => {
     const [date, setDate] = useState(new Date()); // new Date() gives today's date
-    const [mode, setMode] = useState("date");
-    const [show, setShow] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [isFinalized, setIsFinalized] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
     const [location, setLocation] = useState(null);
-    const [isLoading, setLoading] = useState(false);
+    const [isLoading, setLoading] = useState(true);
+    const [currUserCalendarEvents, setCurrUserCalendarEvents] = useState([]);
 
     useEffect(() => {
         (async () => {
@@ -69,11 +71,78 @@ const DateSelection = (props) => {
 
             let location = await Location.getCurrentPositionAsync({});
             setLocation(location);
-            setLoading(false);
-        })();
+        })()
+            .then(() => {
+                addGcalEventsToRedux();
+            });
     }, []);
 
     let synced = isButtonDisabled ? "synced" : "manual";
+
+    // Events that are already in the current user's Google calendar
+    const addGcalEventsToRedux = async () => {
+        firebase.database().ref('users/' + props.userID)
+            .once("value")
+            .then((snapshot) => {
+                const userData = snapshot.val();
+                const token = {
+                    accessToken: userData.access_token,
+                    refreshToken: userData.refresh_token,
+                    accessTokenExpirationDate:
+                        userData.access_token_expiration,
+                };
+                makeGcalAPICall(token);
+
+            })
+    }
+
+    const makeGcalAPICall = async (token) => {
+        // Ensure access token validity
+        var accessToken = token.accessToken;
+        accessToken = (
+            await AppAuth.refreshAsync(OAuthConfig, token.refreshToken)
+        ).accessToken;
+        if (checkIfTokenExpired(token.accessTokenExpirationDate)) {
+            // Use refresh token to generate new access token if access token has expired
+            accessToken = (
+                await AppAuth.refreshAsync(OAuthConfig, token.refreshToken)
+            ).accessToken;
+        }
+
+        // Get the time range to extract events from
+        const todayDate = (new Date()).toISOString().substring(0, 10);
+        var oneWeekFromToday = new Date();
+        oneWeekFromToday.setDate(oneWeekFromToday.getDate() + 7);
+        const weekLater = oneWeekFromToday.toISOString().substring(0, 10);
+
+        try {
+            fetch(
+                "https://www.googleapis.com/calendar/v3/calendars/primary/events?" + // Fetch from primary calendar 
+                "timeMax=" + weekLater + "T23%3A59%3A00%2B08%3A00&" + //23:59hrs
+                "timeMin=" + todayDate + "T00%3A00%3A00%2B08%3A00&" + // 00:00hrs 
+                "prettyPrint=true&key=" + REACT_APP_GOOGLE_API_KEY,
+                {
+                    method: "GET",
+                    headers: new Headers({
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + accessToken,
+                    }),
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    const allEventsArr = data.items;
+                    console.log("API call successful: ", allEventsArr)
+                    props.extractCalendarEvents(data.items) // Add events to redux state
+                    setCurrUserCalendarEvents(data.items);
+                    console.log("Current User's events:", currUserCalendarEvents)
+                    setLoading(false);
+                });
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     const inputAvailabilities = () => {
         getBusyPeriodFromGoogleCal(props.userID, date); // User ID comes from Redux state
@@ -128,15 +197,6 @@ const DateSelection = (props) => {
         setDate(formattedDate);
         props.selectDate(formattedDate); // Set date in redux state
     }
-
-    const showMode = (currentMode) => {
-        setShow(true);
-        setMode(currentMode);
-    };
-
-    const showDatepicker = () => {
-        showMode("date");
-    };
 
     const addSelectedDateToFirebase = () => {
         const userId = firebase.auth().currentUser.uid;
@@ -213,7 +273,7 @@ const DateSelection = (props) => {
                 </View>
             </View>
             <View style={styles.calendar}>
-                <Calendar currDate={new Date()} onDateChange={onDateChange} />
+                <Calendar currDate={new Date()} onDateChange={onDateChange} userEvents={currUserCalendarEvents} />
             </View>
 
 
@@ -244,13 +304,14 @@ const DateSelection = (props) => {
     );
 };
 const mapStateToProps = (state) => {
+    console.log("Redux state events is : ", state.add_events.currUserCalendarEvents)
     return {
         userID: state.add_events.userID,
         currUserName: state.add_events.currUserName,
     };
 };
 const mapDispatchToProps = {
-    selectDate,
+    selectDate, extractCalendarEvents
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DateSelection);

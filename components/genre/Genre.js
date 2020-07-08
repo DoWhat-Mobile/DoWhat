@@ -112,7 +112,7 @@ const Genre = (props) => {
                         fontSize: 14,
                         fontFamily: 'serif',
                         fontWeight: '500',
-                        color: selected.includes(items) ? '#E86830' : "black",
+                        color: selected.includes(items) ? '#E86830' : "white",
                     }}
                 >
                     {items}
@@ -131,7 +131,7 @@ const Genre = (props) => {
             </Modal>
 
             <View style={styles.textContainer}>
-                <Text style={{ fontFamily: "serif", fontSize: 16 }}>
+                <Text style={{ fontFamily: "serif", fontSize: 16, color: 'white' }}>
                     Choose your favourite genres!
                 </Text>
             </View>
@@ -150,7 +150,7 @@ const Genre = (props) => {
                             fontFamily: 'serif',
                             color: selected.includes("food")
                                 ? '#E86830'
-                                : "black",
+                                : "white",
                         }}
                     >
                         FOOD
