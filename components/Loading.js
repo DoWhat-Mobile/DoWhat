@@ -92,7 +92,7 @@ const Loading = (props) => {
                 storeFinalizedEventsInCollabBoard(allEvents);
 
 
-                setData(allEvents);
+                setData(allEvents)
 
                 setWeatherLoading(false);
             });
@@ -124,14 +124,13 @@ const Loading = (props) => {
         //console.log(routeGuide);
         props.navigation.navigate("Finalized", {
             route: route, // 'board' | 'manual' 
-            access: accessRights, // 'host' | 'invitee'
+            access: accessRights, // 'host
             weather: weather,
             synced: synced,
             time: freeTime,
             data: data,
             userGenres: userGenres,
             routeGuide: routes,
-            board: props.route.params.board,
         });
     };
     if (isWeatherLoading || isTimingsLoading) {

@@ -29,9 +29,11 @@ const Schedule = ({
     board, // For board route, will be undefined for other route
 }) => {
     const [events, setEvents] = React.useState([]);
+    const [eventsInFirebase, setEventsInFirebase] = React.useState([])
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
     const [timingsArray, setTimingsArray] = React.useState([]);
+
     const [routes, setRoutes] = React.useState([]);
 
     React.useEffect(() => {
@@ -45,6 +47,7 @@ const Schedule = ({
         }
         setRoutes(initRoutes);
         setEvents(formatData);
+        setEventsInFirebase(data)
         setTimingsArray(data[1]);
     }, []);
 
@@ -64,6 +67,8 @@ const Schedule = ({
             const obj = { coord: item.coord, name: item.title };
             return obj;
         });
+
+        const updatedFirebase = eventsInFirebase.map(ite)
         setEvents(updatedData);
         mapUpdate(updatedCoord);
         routeUpdate(selected, unsatisfied);
@@ -129,6 +134,7 @@ const Schedule = ({
     const sendGcalInviteAndResetAttendeeData = async () => {
         const formattedData = formatEventsData(events); // Formatted data contains event title
         if (route == 'board') { // collab board route
+            // Create calendar event and send calendar invite to invitees
             await handleBoardRouteProcess(formattedData, timingsArray,
                 board)
         } else {

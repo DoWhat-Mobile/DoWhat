@@ -60,24 +60,6 @@ const DateSelection = (props) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isFinalized, setIsFinalized] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
-    //const [location, setLocation] = useState(null);
-    //const [isLoading, setLoading] = useState(true);
-
-    // useEffect(() => {
-    //     (async () => {
-    //         let { status } = await Location.requestPermissionsAsync();
-    //         if (status !== "granted") {
-    //             console.log("denied");
-    //             // setErrorMsg("Permission to access location was denied");
-    //         }
-
-    //         let location = await Location.getCurrentPositionAsync({});
-    //         //console.log(location);
-
-    //         props.setLocation(location);
-    //         setLoading(false);
-    //     })()
-    // }, []);
 
     let synced = isButtonDisabled ? "synced" : "manual";
 
@@ -86,13 +68,13 @@ const DateSelection = (props) => {
         setIsButtonDisabled(true); // Prevent syncing google calendar twice
     };
 
-    const renderInputAvailabilitiesButton = () => {
+    const renderSyncCalendarButton = () => {
         if (isButtonDisabled) {
             return (
                 <View>
                     <TouchableOpacity
                         style={[
-                            styles.finalizeButton,
+                            styles.manualInputButton,
                             {
                                 borderRadius: 20,
                                 backgroundColor: "#2a9d8f",
@@ -116,11 +98,13 @@ const DateSelection = (props) => {
         } else {
             return (
                 <TouchableOpacity
-                    style={styles.finalizeButton}
+                    style={styles.manualInputButton}
                     onPress={() => inputAvailabilities()}
                     disabled={isButtonDisabled}
                 >
-                    <Text>Sync Google Calendar</Text>
+                    <Text style={{ color: 'white' }}>
+                        Sync Google Calendar
+                        </Text>
                 </TouchableOpacity>
             );
         }
@@ -211,25 +195,31 @@ const DateSelection = (props) => {
                 <Text
                     style={[
                         styles.header,
-                        { color: "#F9F0E6", textAlign: "center" },
+                        { color: "#F9F0E6", textAlign: "center", marginTop: 5 },
                     ]}
                 >
                     Input your available timings
                 </Text>
-                <View
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "space-evenly",
-                    }}
-                >
-                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <Text style={[styles.date, { color: "#F9F0E6" }]}>
-                            {isFinalized
-                                ? "Successfully inputted"
-                                : "Input range"}
-                        </Text>
-                    </TouchableOpacity>
-                    {renderInputAvailabilitiesButton()}
+                <View style={{
+                    flex: 0.5, justifyContent: 'space-around', borderBottomWidth: 0.7,
+                    borderColor: '#C0B2B3'
+                }}>
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            justifyContent: "space-evenly",
+                        }}
+                    >
+                        <TouchableOpacity style={styles.manualInputButton}
+                            onPress={() => setModalVisible(true)}>
+                            <Text style={[styles.inputAvailabilities, { color: "#F9F0E6" }]}>
+                                {isFinalized
+                                    ? "Successfully inputted"
+                                    : "Manual Input"}
+                            </Text>
+                        </TouchableOpacity>
+                        {renderSyncCalendarButton()}
+                    </View>
                 </View>
             </View>
 
@@ -317,6 +307,15 @@ const styles = StyleSheet.create({
         padding: 10,
         marginRight: 10,
         marginTop: 17,
+    },
+    manualInputButton: {
+        borderWidth: 0.5,
+        borderRadius: 5,
+        padding: 3,
+        paddingLeft: 6,
+        paddingRight: 6,
+        backgroundColor: '#244749'
+
     },
     emptyDate: {
         height: 15,

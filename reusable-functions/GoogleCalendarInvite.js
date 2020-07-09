@@ -57,7 +57,7 @@ const updateUserPreferences = async (userPreferences, userId, formattedData) => 
     }
     formattedData.forEach(event => {
         const genre = event.eventGenre;
-        if (genre == 'indoors') {
+        if (genre == 'indoors') { // Since most indoor activities are arts
             finalPreferneces['arts'] += 1;
         } else {
             finalPreferneces[genre] += 1;

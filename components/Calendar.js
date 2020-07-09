@@ -30,16 +30,19 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
             const startMoment = moment(date + ' ' + startTime)
             const endMoment = moment(date + ' ' + endTime)
             const duration = moment.duration(endMoment.diff(startMoment)).asHours();
+            const height = duration * 60 < 60 ? 60 : duration * 60;
+
             if (formattedItems.hasOwnProperty(date)) { // Add to the same date if it exists
                 formattedItems[date].push({
                     name: name, start: startTime,
-                    end: endTime, height: duration * 40
+                    end: endTime, height: height,
+                    duration: duration
                 })
             } else {
                 // One hour is represented with 40px of height
                 formattedItems[date] = [{
                     name: name, start: startTime,
-                    end: endTime, height: duration * 40,
+                    end: endTime, height: height,
                     duration: duration
                 }]
             }

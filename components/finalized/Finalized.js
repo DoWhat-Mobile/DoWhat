@@ -29,7 +29,8 @@ const Finalized = (props) => {
     const accessRights = props.route.params.access;
     const weather = props.route.params.weather;
     const userGenres = props.route.params.userGenres;
-    const allData = props.route.params.data;
+    const currentEvents = props.route.params.data;
+    const timingsArray = props.route.params.timingsArray
 
     const onClose = () => {
         setVisible(false);
@@ -66,7 +67,7 @@ const Finalized = (props) => {
 
     React.useEffect(() => {
         const passed = props.route.params.routeGuide;
-        setData(allData);
+
         setCoord(allData[2]);
         setIsLoading(false);
     }, []);
@@ -138,8 +139,6 @@ const Finalized = (props) => {
                         accessRights={accessRights}
                         userID={props.userID}
                         initRoutes={props.route.params.routeGuide}
-                        route={props.route.params.route}
-                        board={props.route.params.board}
                     />
 
                     <Modal animated visible={visible} animationType="fade">

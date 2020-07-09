@@ -14,8 +14,8 @@ export const filterHelper = (filters, events) => {
     const genre = filters.cuisine.includes("Hawker")
         ? "hawker"
         : filters.cuisine.includes("Cafe")
-        ? "cafes"
-        : "restaurants";
+            ? "cafes"
+            : "restaurants";
 
     const eventList = events[genre]["list"];
     // so there will be a variety of places to choose from
@@ -128,7 +128,7 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
         for (i = 0; i < currentEvents.length; i++) {
             const genre = currentEvents
                 .map((x) => Object.keys(x)[0])
-                [i].toLowerCase();
+            [i].toLowerCase();
             const event = currentEvents[i][genre];
             if (events[genre].slots.includes(startTime)) {
                 if (startTime + events[genre]["duration"] >= timeline[1]) {
@@ -269,7 +269,7 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
     if (
         hourDifference > 0 &&
         parseInt(newStartTime.substring(0, 2)) >=
-            parseInt(newTimingsArray[index].end.substring(0, 2))
+        parseInt(newTimingsArray[index].end.substring(0, 2))
     ) {
         for (i = index; i < newTimingsArray.length; i++) {
             newTimingsArray[i] = startEndChange(
@@ -293,7 +293,7 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
         hourDifference < 0 &&
         index != 0 &&
         parseInt(newStartTime.substring(0, 2)) >
-            parseInt(newTimingsArray[index - 1].start.substring(0, 2))
+        parseInt(newTimingsArray[index - 1].start.substring(0, 2))
     ) {
         newTimingsArray[index].start = newStartTime;
         newTimingsArray[index - 1].end = newStartTime;
@@ -305,7 +305,7 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
         hourDifference < 0 &&
         index != 0 &&
         parseInt(newStartTime.substring(0, 2)) <=
-            parseInt(newTimingsArray[index - 1].start.substring(0, 2))
+        parseInt(newTimingsArray[index - 1].start.substring(0, 2))
     ) {
         for (i = index; i >= 0; i--) {
             newTimingsArray[i] = startEndChange(
