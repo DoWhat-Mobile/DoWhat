@@ -79,7 +79,7 @@ const Loading = (props) => {
                               userGenres,
                               props.allEvents,
                               filters,
-                              value
+                              "S"
                           );
                 const allEvents = data_timeline(
                     timeline,

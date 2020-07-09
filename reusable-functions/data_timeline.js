@@ -82,7 +82,7 @@ export const genreEventObjectArray = (userGenres, events, filters, weather) => {
         currentEvents.push(filterObject);
     }
     if (weather === "Rain" || weather === "Thunderstorm") {
-        for (i = 0; i < userGenres.length; i++) {
+        for (let i = 0; i < userGenres.length; i++) {
             const genre = userGenres[i] === "food" ? "food" : "indoors";
             if (genre === "indoors") {
                 console.log(genre);
@@ -94,7 +94,7 @@ export const genreEventObjectArray = (userGenres, events, filters, weather) => {
         }
     } else {
         for (i = 0; i < userGenres.length; i++) {
-            const genre = userGenres[i];
+            const genre = userGenres[i].toLowerCase();
             if (genre !== "food") {
                 const eventObject = events[genre]["list"];
                 const rand = Math.floor(Math.random() * eventObject.length);
@@ -126,7 +126,9 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
     // formats data array to be passed into Timeline library
     while (currentEvents.length !== 0) {
         for (i = 0; i < currentEvents.length; i++) {
-            const genre = currentEvents.map((x) => Object.keys(x)[0])[i];
+            const genre = currentEvents
+                .map((x) => Object.keys(x)[0])
+                [i].toLowerCase();
             const event = currentEvents[i][genre];
             if (events[genre].slots.includes(startTime)) {
                 if (startTime + events[genre]["duration"] >= timeline[1]) {
@@ -177,7 +179,7 @@ export const data_shuffle = (events, genres, time, unsatisfied) => {
     let data = [];
     let selectable = [];
     for (i = 0; i < genres.length; i++) {
-        let type = genres[i].toString();
+        let type = genres[i].toString().toLowerCase();
         if (type === "food") {
             Array.prototype.push.apply(selectable, events["hawker"]["list"]);
             Array.prototype.push.apply(selectable, events["cafes"]["list"]);
@@ -193,7 +195,11 @@ export const data_shuffle = (events, genres, time, unsatisfied) => {
         let randomNumber = Math.floor(Math.random() * selectable.length);
         let event = selectable[randomNumber];
 
-        let obj = objectFormatter(time.substring(0, 2), event, unsatisfied);
+        let obj = objectFormatter(
+            time.substring(0, 2),
+            event,
+            unsatisfied.toLowerCase()
+        );
 
         // ensure no duplicate objects
         const checkName = (object) => object.title === obj.title;
