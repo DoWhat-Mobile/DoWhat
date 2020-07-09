@@ -66,7 +66,9 @@ const makeGcalAPICall = async (token) => {
             "timeMin=" +
             todayDate +
             "T00%3A00%3A00%2B08%3A00&" + // 00:00hrs
-            "prettyPrint=true&key=" +
+            "prettyPrint=true&" +
+            "orderBy=startTime&" +
+            "singleEvents=true&key=" +
             REACT_APP_GOOGLE_API_KEY,
             {
                 method: "GET",
