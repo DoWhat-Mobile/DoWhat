@@ -60,9 +60,10 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
     const addToState = (allFriends) => {
         var friends = [];
         for (var user in allFriends) {
+            // [name, userID, true/false, profilePicURL]
             var formattedUser = [user, allFriends[user].firebase_id,
                 userAlreadyInvited(allFriends[user]),
-                allFriends[user].picture_url]; // [name, userID, true/false, profilePicURL]
+                allFriends[user].picture_url];
             friends.push(formattedUser);
         }
         setAllAcceptedFriends(friends);
@@ -76,7 +77,8 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
     // Takes update object (to update Firebase), and includes the selected curr user preferences
     const addCurrUserPreferences = (updates) => {
         var foodSelected = false;
-        currUserPreferenceArr.forEach((preference) => {
+        currUserPreferenceArr.forEach((upperCasePreference) => {
+            const preference = upperCasePreference.toLowerCase()
             updates['/preferences'][preference] += 1
             if (preference == 'food') { // If food is selected
                 foodSelected = true;
@@ -212,7 +214,7 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
             to: push_token, // from user's Firebase node 
             sound: 'default',
             title: 'Collaboration Invite',
-            body: currUserName + ' is inviting you to collaborate on an outing!',
+            body: currUserName.replace(/_/g, ' ') + ' is inviting you to collaborate on an outing!',
             data: { data: 'goes here' },
             _displayInForeground: true,
         };

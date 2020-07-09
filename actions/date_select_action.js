@@ -1,4 +1,4 @@
-import { DATE_SELECT } from './types';
+import { DATE_SELECT, USER_LOCATION } from './types';
 
 export const selectDate = (values) => dispatch => {
     const newState = {
@@ -7,3 +7,11 @@ export const selectDate = (values) => dispatch => {
     }
     dispatch(newState);
 };
+
+export const setLocation = (values) => dispatch => {
+    const newState = {
+        type: USER_LOCATION,
+        payload: values
+    }
+    dispatch(newState);
+}

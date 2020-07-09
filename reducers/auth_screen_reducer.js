@@ -27,7 +27,7 @@ export default function (state = initState, action) {
             return Object.assign({}, state, {
                 currUserName: action.payload,
             });
-        case ADD_CURR_USER_NAME:
+        case EXTRACT_CALENDAR_EVENTS:
             return Object.assign({}, state, {
                 currUserCalendarEvents: action.payload,
             });

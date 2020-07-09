@@ -30,9 +30,9 @@ const Loading = (props) => {
         route === "board"
             ? props.route.params.timeInterval
             : props.route.params.synced === "synced"
-            ? props.route.params.time
-            : props.finalGenres[1];
-    const userLocation = props.route.params.userLocation;
+                ? props.route.params.time
+                : props.finalGenres[1];
+    const userLocation = props.userLocation;
     React.useEffect(() => {
         const diff = props.difference;
         const userId = firebase.auth().currentUser.uid; //Firebase UID of current user
@@ -65,7 +65,7 @@ const Loading = (props) => {
             });
         fetch(
             "https://api.openweathermap.org/data/2.5/onecall?lat=1.290270&lon=103.851959&%20exclude=hourly,daily&appid=" +
-                WEATHER_API_KEY
+            WEATHER_API_KEY
         )
             .then((response) => response.json())
             .then((data) => {
@@ -76,11 +76,11 @@ const Loading = (props) => {
                     route === "board"
                         ? props.route.params.currentEvents
                         : genreEventObjectArray(
-                              userGenres,
-                              props.allEvents,
-                              filters,
-                              "S"
-                          );
+                            userGenres,
+                            props.allEvents,
+                            filters,
+                            value
+                        );
                 const allEvents = data_timeline(
                     timeline,
                     userGenres,
@@ -146,6 +146,7 @@ const mapStateToProps = (state) => {
         finalTiming: state.timeline.finalTiming,
         allEvents: state.add_events.events,
         difference: state.date_select.difference,
+        userLocation: state.date_select.userLocation
     };
 };
 

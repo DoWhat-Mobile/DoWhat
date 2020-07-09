@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import {
     addEvents, addUID, addCurrUserName,
-    addProfilePicture
+    addProfilePicture, extractCalendarEvents
 } from "../actions/auth_screen_actions";
 const firebase = require('firebase');
 import * as AppAuth from "expo-app-auth";
@@ -11,6 +11,8 @@ import {
     onSignIn,
     OAuthConfig,
 } from "../reusable-functions/GoogleAuthentication";
+import { checkIfTokenExpired } from '../reusable-functions/GoogleCalendarGetBusyPeriods';
+import { REACT_APP_GOOGLE_API_KEY } from 'react-native-dotenv';
 import Icon from "react-native-vector-icons/FontAwesome";
 
 /**
@@ -21,6 +23,74 @@ class AuthScreen extends Component {
         this.checkIfLoggedIn();
         this.addEventsToState(); // Add events from Firebase DB to Redux state
     }
+
+    // Events that are already in the current user's Google calendar
+    addGcalEventsToRedux = async (userID) => {
+        firebase
+            .database()
+            .ref("users/" + userID)
+            .once("value")
+            .then((snapshot) => {
+                const userData = snapshot.val();
+                const token = {
+                    accessToken: userData.access_token,
+                    refreshToken: userData.refresh_token,
+                    accessTokenExpirationDate: userData.access_token_expiration,
+                };
+                this.makeGcalAPICall(token);
+            });
+    };
+
+    // Get user's added calendar events within a one week period
+    makeGcalAPICall = async (token) => {
+        // Ensure access token validity
+        var accessToken = token.accessToken;
+        accessToken = (
+            await AppAuth.refreshAsync(OAuthConfig, token.refreshToken)
+        ).accessToken;
+        if (checkIfTokenExpired(token.accessTokenExpirationDate)) {
+            // Use refresh token to generate new access token if access token has expired
+            accessToken = (
+                await AppAuth.refreshAsync(OAuthConfig, token.refreshToken)
+            ).accessToken;
+        }
+
+        // Get the time range to extract events from
+        const todayDate = new Date().toISOString().substring(0, 10);
+        var oneWeekFromToday = new Date();
+        oneWeekFromToday.setDate(oneWeekFromToday.getDate() + 7);
+        const weekLater = oneWeekFromToday.toISOString().substring(0, 10);
+
+        try {
+            fetch(
+                "https://www.googleapis.com/calendar/v3/calendars/primary/events?" + // Fetch from primary calendar
+                "timeMax=" +
+                weekLater +
+                "T23%3A59%3A00%2B08%3A00&" + //23:59hrs
+                "timeMin=" +
+                todayDate +
+                "T00%3A00%3A00%2B08%3A00&" + // 00:00hrs
+                "prettyPrint=true&key=" +
+                REACT_APP_GOOGLE_API_KEY,
+                {
+                    method: "GET",
+                    headers: new Headers({
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + accessToken,
+                    }),
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    const allEventsArr = data.items;
+                    console.log("API call successful: ", allEventsArr);
+                    this.props.extractCalendarEvents(data.items); // Add events to redux state
+                });
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
     // Add database of all events from firebase to redux state
     addEventsToState = async () => {
@@ -41,6 +111,7 @@ class AuthScreen extends Component {
                 this.props.addUID(user.uid) // Add user ID to Redux state
                 this.props.addProfilePicture(user.photoURL);
                 this.props.navigation.navigate("Home");
+                this.addGcalEventsToRedux(user.uid);
             }
         });
     };
@@ -131,7 +202,7 @@ class AuthScreen extends Component {
 }
 
 const mapDispatchToProps = {
-    addEvents, addUID, addCurrUserName, addProfilePicture
+    addEvents, addUID, addCurrUserName, addProfilePicture, extractCalendarEvents
 };
 
 const mapStateToProps = (state) => {

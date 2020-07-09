@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Component } from "react";
 import { Alert, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Agenda } from 'react-native-calendars';
+import { connect } from 'react-redux'
 import moment from 'moment';
 
 const testIDs = require('./calendarTestIDs');
@@ -17,7 +18,8 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
     const [items, setItems] = useState({});
 
     const loadUserEvents = () => {
-        //  console.log("User Events passed to child is: ", userEvents); //Sanity check
+        console.log("User Events passed to child is: ", userEvents); //Sanity check
+        if (userEvents == undefined) return;
         var formattedItems = {}; // For use with calendar library
 
         userEvents.forEach(event => {
@@ -152,7 +154,19 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
     )
 }
 
-export default Calendar;
+const mapStateToProps = (state) => {
+    console.log(
+        "Redux state events is : ",
+        state.add_events.currUserCalendarEvents
+    );
+    return {
+        userID: state.add_events.userID,
+        currUserName: state.add_events.currUserName,
+        userEvents: state.add_events.currUserCalendarEvents
+    };
+};
+
+export default connect(mapStateToProps, null)(Calendar);
 
 const styles = StyleSheet.create({
     item: {

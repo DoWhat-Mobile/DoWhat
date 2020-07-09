@@ -18,7 +18,7 @@ export const FINALIZE_GENRE = "FINALIZE_GENRE";
  * Actions for date selection
  */
 export const DATE_SELECT = "DATE_SELECT";
-
+export const USER_LOCATION = 'USER_LOCATION'
 /**
  * Actions for auth screen
  */

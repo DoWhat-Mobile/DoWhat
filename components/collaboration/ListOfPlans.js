@@ -74,19 +74,19 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
             .then((snapshot) => {
                 const currBoard = snapshot.val();
                 const finalizedTimeline = board.finalized_timeline;
-                goToFinalized(currBoard, finalizedTimeline, board.boardID)
+                goToFinalized(currBoard, finalizedTimeline, board)
 
             })
     }
 
-    const goToFinalized = (board, finalizedTimeline, boardID) => {
-        const accessRights = board.isUserHost ? 'host' : 'attendee';
+    const goToFinalized = (boardFromFirebase, finalizedTimeline, boardFromParent) => {
+        const accessRights = boardFromParent.isUserHost ? 'host' : 'attendee';
 
-        const topGenres = getTopVoted(board.preferences, 3);
-        const topCuisines = getTopVoted(board.food_filters.cuisine, 3);
-        const topArea = getTopVoted(board.food_filters.area, 2);
-        const topPrice = getTopVoted(board.food_filters.price, 1)[0];
-        const timeInterval = findOverlappingIntervals(board.availabilities, undefined);
+        const topGenres = getTopVoted(boardFromFirebase.preferences, 3);
+        const topCuisines = getTopVoted(boardFromFirebase.food_filters.cuisine, 3);
+        const topArea = getTopVoted(boardFromFirebase.food_filters.area, 2);
+        const topPrice = getTopVoted(boardFromFirebase.food_filters.price, 1)[0];
+        const timeInterval = findOverlappingIntervals(boardFromFirebase.availabilities, undefined);
         const myFilters = {
             area: topArea,
             cuisine: topCuisines,
@@ -94,17 +94,18 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
         };
 
         var navigationProps = {
-            route: "board",
+            route: "boardFromFirebase",
             genres: topGenres,
             timeInterval: timeInterval,
             filters: myFilters,
-            board: board, // for Gcal Invite 
+            board: boardFromFirebase, // for Gcal Invite 
             currentEvents: finalizedTimeline,
             access: accessRights// 'host' | 'invitee' 
+            //userLocation: 
 
         }
         console.log("navigation props: ", navigationProps.access);
-        navigation.navigate("Finalized", navigationProps);
+        navigation.navigate("Loading", navigationProps);
     }
 
     // Fraction of invitees that have finalized their collaboration inputs

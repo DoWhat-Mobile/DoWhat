@@ -1,10 +1,11 @@
-import { DATE_SELECT } from "../actions/types";
+import { DATE_SELECT, USER_LOCATION } from "../actions/types";
 import moment from "moment";
 
 const initState = {
     date: new Date(), // Start inital date with current date
     difference: 0,
     initDate: new Date(),
+    userLocation: null
 };
 
 export default function (state = initState, action) {
@@ -18,6 +19,11 @@ export default function (state = initState, action) {
 
                 //,
             };
+
+        case USER_LOCATION:
+            return {
+                userLocation: action.payload
+            }
 
         default:
             return state;
