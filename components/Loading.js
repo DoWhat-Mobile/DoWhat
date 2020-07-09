@@ -79,11 +79,11 @@ const Loading = (props) => {
                               userGenres,
                               props.allEvents,
                               filters,
-                              value
+                              value,
+                              timeline[1]
                           );
                 const allEvents = data_timeline(
                     timeline,
-                    userGenres,
                     props.allEvents,
                     currentEvents
                 );
@@ -94,12 +94,12 @@ const Loading = (props) => {
     }, []);
 
     const onComplete = () => {
-        let temp = [];
-        temp.push({
-            lat: userLocation.coords.latitude,
-            long: userLocation.coords.longitude,
-        });
-        let routes = temp.concat(data[3]);
+        // let temp = [];
+        // temp.push({
+        //     lat: userLocation.coords.latitude,
+        //     long: userLocation.coords.longitude,
+        // });
+        // let routes = temp.concat(data[3]);
         //console.log(routeGuide);
         props.navigation.navigate("Finalized", {
             route: route, //set manual for now
@@ -109,7 +109,7 @@ const Loading = (props) => {
             time: freeTime,
             data: data,
             userGenres: userGenres,
-            routeGuide: routes,
+            //routeGuide: routes,
         });
     };
     if (isWeatherLoading || isTimingsLoading) {

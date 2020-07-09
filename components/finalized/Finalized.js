@@ -67,7 +67,7 @@ const Finalized = (props) => {
     React.useEffect(() => {
         const passed = props.route.params.routeGuide;
         setData(allData);
-        setCoord(allData[2]);
+        //setCoord(allData[2]);
         setIsLoading(false);
     }, []);
 
@@ -131,7 +131,9 @@ const Finalized = (props) => {
                         {weatherIcon(weather)}
                     </View>
                     <Schedule
-                        data={allData}
+                        scheduleData={data[0]}
+                        //transitData
+                        timings={data[1]}
                         navigation={props.navigation}
                         mapUpdate={mapUpdate}
                         genres={userGenres}
@@ -141,7 +143,7 @@ const Finalized = (props) => {
                     />
 
                     <Modal animated visible={visible} animationType="fade">
-                        <Map onClose={onClose} coord={coord} />
+                        <Map onClose={onClose} coord={data[2]} />
                     </Modal>
                 </View>
             </ScrollView>

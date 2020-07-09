@@ -74,15 +74,22 @@ export const filterHelper = (filters, events) => {
     return { [genre]: temp[rand] };
 };
 
-export const genreEventObjectArray = (userGenres, events, filters, weather) => {
+export const genreEventObjectArray = (
+    userGenres,
+    events,
+    filters,
+    weather,
+    endTime
+) => {
     let currentEvents = [];
-
+    let dinner = 0;
+    if (userGenres.includes("food") && endTime >= 18) dinner = 1;
     if (userGenres.includes("food")) {
         const filterObject = filterHelper(filters, events);
         currentEvents.push(filterObject);
     }
     if (weather === "Rain" || weather === "Thunderstorm") {
-        for (i = 0; i < userGenres.length; i++) {
+        for (let i = 0; i < userGenres.length; i++) {
             const genre = userGenres[i] === "food" ? "food" : "indoors";
             if (genre === "indoors") {
                 console.log(genre);
@@ -102,6 +109,7 @@ export const genreEventObjectArray = (userGenres, events, filters, weather) => {
             }
         }
     }
+    if (dinner == 1) currentEvents.push(filterHelper(filters, events));
     return currentEvents;
 };
 
@@ -113,32 +121,33 @@ export const genreEventObjectArray = (userGenres, events, filters, weather) => {
  * @param {*} events is the database of all events
  * @param {*} filters is the food filters the user selected
  */
-export const data_timeline = (timeline, userGenres, events, currentEvents) => {
+export const data_timeline = (timeline, events, currentEvents) => {
     const data = [];
     const timingsArray = [];
     let startTime = timeline[0];
-    let num = userGenres.length;
+    let num = currentEvents.length;
     let locationArray = [];
-    // checks if user selected food so dinner will be included if user has time 6pm onwards
-    let food = userGenres.includes("food") && startTime <= 13 ? 1 : 0;
     let busRoutes = [];
 
     // formats data array to be passed into Timeline library
     while (currentEvents.length !== 0) {
-        for (i = 0; i < currentEvents.length; i++) {
+        for (let i = 0; i < currentEvents.length; i++) {
             const genre = currentEvents.map((x) => Object.keys(x)[0])[i];
             const event = currentEvents[i][genre];
+            console.log("WHYYYYY", event.name);
             if (events[genre].slots.includes(startTime)) {
+                console.log("HELLLLLLLLLLLLLLLLOooooooooooooooo");
                 if (startTime + events[genre]["duration"] >= timeline[1]) {
                     break;
                 }
+
                 let intervalObject = { start: "", end: "" };
                 intervalObject.start = startTime.toString() + ":00";
                 locationArray.push({ coord: event.coord, name: event.name });
                 busRoutes.push(event.location);
 
                 data.push({ startTime: startTime, event: event, genre: genre });
-                //data.push(objectFormatter(startTime, event, genre));
+
                 currentEvents.splice(i, 1);
                 startTime += events[genre]["duration"];
 
@@ -152,17 +161,12 @@ export const data_timeline = (timeline, userGenres, events, currentEvents) => {
 
         if (num === currentEvents.length) {
             startTime++;
-        }
-        num = currentEvents.length; // in case the start time is too early and there are no time slots to schedule
-
-        if (food === 1 && startTime >= 18 && startTime < 20) {
-            currentEvents.push({ hawker: events["hawker"]["list"][4] });
-            food = 0;
+        } else {
+            num = currentEvents.length; // in case the start time is too early and there are no time slots to schedule
         }
 
         if (startTime >= timeline[1]) break;
     }
-    console.log(timingsArray);
     return [data, timingsArray, locationArray, busRoutes];
 };
 

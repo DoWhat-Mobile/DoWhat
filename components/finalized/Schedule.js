@@ -17,15 +17,17 @@ import TransitRoutes from "./TransitRoutes";
 
 const Schedule = ({
     navigation,
-    data,
+    scheduleData,
     allEvents,
     mapUpdate,
     initRoutes,
     genres,
     accessRights,
     userID,
+    timings,
 }) => {
     const [events, setEvents] = React.useState([]);
+    const [firebaseData, setFirebase] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
     const [timingsArray, setTimingsArray] = React.useState([]);
@@ -33,16 +35,18 @@ const Schedule = ({
 
     React.useEffect(() => {
         let formatData = [];
-        for (i = 0; i < data[0].length; i++) {
-            const dataObj = data[0][i];
+        let tempData = [];
+        for (i = 0; i < scheduleData.length; i++) {
+            const dataObj = scheduleData[i];
             const startTime = dataObj.startTime;
             const event = dataObj.event;
             const genre = dataObj.genre;
             formatData.push(objectFormatter(startTime, event, genre));
+            tempData.push({ genre: event });
         }
-        setRoutes(initRoutes);
+        //setRoutes(initRoutes);
         setEvents(formatData);
-        setTimingsArray(data[1]);
+        setTimingsArray(timings);
     }, []);
 
     const routeUpdate = (selected, unsatisfied) => {
@@ -60,6 +64,10 @@ const Schedule = ({
         const updatedCoord = updatedData.map((item) => {
             const obj = { coord: item.coord, name: item.title };
             return obj;
+        });
+
+        const updatedFirebase = firebaseData.map((item) => {
+            if (item === unsatisfied) return;
         });
         setEvents(updatedData);
         mapUpdate(updatedCoord);
@@ -168,7 +176,7 @@ const Schedule = ({
                     circleColor="black"
                 />
             </View>
-            <TransitRoutes routes={routes} />
+            {/* <TransitRoutes routes={routes} /> */}
             <View style={styles.footer}>{renderProceedButton()}</View>
         </View>
     );
