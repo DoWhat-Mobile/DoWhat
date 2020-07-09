@@ -73,7 +73,7 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
             .once('value')
             .then((snapshot) => {
                 const currBoard = snapshot.val();
-                const finalizedTimeline = board.finalized_timeline;
+                const finalizedTimeline = null// board.finalized_timeline;
                 goToFinalized(currBoard, finalizedTimeline, board)
 
             })
@@ -99,7 +99,7 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
             timeInterval: timeInterval,
             filters: myFilters,
             board: boardFromFirebase, // for Gcal Invite 
-            currentEvents: finalizedTimeline,
+            //currentEvents: finalizedTimeline,
             access: accessRights// 'host' | 'invitee' 
             //userLocation: 
 
@@ -153,9 +153,9 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
             price: topPrice
         };
 
-        const getFinalized = (weather) => genreEventObjectArray(topGenres, allEvents,
-            myFilters, weather) // Finalized timeline
-        storeFinalizedTimelineInFirebase(getFinalized, board);
+        const finalized = genreEventObjectArray(topGenres, allEvents,
+            myFilters) // Finalized timeline
+        storeFinalizedTimelineInFirebase(finalized, board);
     }
 
     const renderCollaborationBoard = (board) => {

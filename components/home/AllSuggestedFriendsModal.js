@@ -6,10 +6,11 @@ import SuggestedFriends from './SuggestedFriends';
  * AllSuggestedFriendsModal uses SuggestedFriends component, friends prop now includes
  * all the DoWhat users instead of only a limited number in SuggestedFriends. 
  */
-const AllSuggestedFriendsModal = ({ friends, closeOverlay }) => {
+const AllSuggestedFriendsModal = ({ friends, closeOverlay, maxNumToRender }) => {
     return (
         <View style={styles.container}>
-            <SuggestedFriends friends={friends} seeMore={closeOverlay} fullView={true} />
+            <SuggestedFriends friends={friends} seeMore={closeOverlay} fullView={true}
+                maxNumToRender={maxNumToRender} />
         </View>
     )
 }

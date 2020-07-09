@@ -18,7 +18,7 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
     const [items, setItems] = useState({});
 
     const loadUserEvents = () => {
-        console.log("User Events passed to child is: ", userEvents); //Sanity check
+        // console.log("User Events passed to child is: ", userEvents); //Sanity check
         if (userEvents == undefined) return;
         var formattedItems = {}; // For use with calendar library
 
@@ -155,10 +155,6 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
 }
 
 const mapStateToProps = (state) => {
-    console.log(
-        "Redux state events is : ",
-        state.add_events.currUserCalendarEvents
-    );
     return {
         userID: state.add_events.userID,
         currUserName: state.add_events.currUserName,

@@ -249,7 +249,7 @@ const AllFriends = ({ userID }) => {
                 height="auto"
                 overlayStyle={{ width: '90%', height: '80%' }}
             >
-                <AllSuggestedFriendsModal friends={allSuggestedFriends} closeOverlay={closeOverlay} />
+                <AllSuggestedFriendsModal friends={allSuggestedFriends} closeOverlay={closeOverlay} maxNumToRender={24} />
             </Overlay>
 
             <View style={styles.header}>
@@ -279,7 +279,7 @@ const AllFriends = ({ userID }) => {
             </View>
 
             <View style={styles.sectionHeader}>
-                <SuggestedFriends friends={suggestedFriends} seeMore={openOverlay} fullView={false} />
+                <SuggestedFriends friends={suggestedFriends} seeMore={openOverlay} fullView={false} maxNumToRender={3} />
             </View>
 
             <View style={styles.body}>
@@ -320,6 +320,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     sectionHeader: {
+        flex: 4,
         borderWidth: 0.1,
         marginTop: 20,
         margin: 5,
