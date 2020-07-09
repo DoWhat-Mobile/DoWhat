@@ -5,18 +5,30 @@ import {
     addEvents, addUID, addCurrUserName,
     addProfilePicture, extractCalendarEvents
 } from "../actions/auth_screen_actions";
+import { setLocation } from '../actions/date_select_action';
 const firebase = require('firebase');
 import * as AppAuth from "expo-app-auth";
 import { onSignIn } from "../reusable-functions/GoogleAuthentication";
 import { OAuthConfig } from '../reusable-functions/OAuthConfig';
 import Icon from "react-native-vector-icons/FontAwesome";
 import { addGcalEventsToRedux } from '../reusable-functions/ExtractCalendarEvents';
+import * as Location from "expo-location";
 
 /**
  * Authentication page for login with Google, loads data to Redux state
  */
 class AuthScreen extends Component {
     componentDidMount() {
+        (async () => {
+            let { status } = await Location.requestPermissionsAsync();
+            if (status !== "granted") {
+                console.log("denied");
+                // setErrorMsg("Permission to access location was denied");
+            }
+
+            let location = await Location.getCurrentPositionAsync({});
+            this.props.setLocation(location);
+        })()
         this.checkIfLoggedIn();
         this.addEventsToState(); // Add events from Firebase DB to Redux state
     }
@@ -132,7 +144,8 @@ class AuthScreen extends Component {
 }
 
 const mapDispatchToProps = {
-    addEvents, addUID, addCurrUserName, addProfilePicture, extractCalendarEvents
+    addEvents, addUID, addCurrUserName, addProfilePicture, extractCalendarEvents,
+    setLocation
 };
 
 const mapStateToProps = (state) => {

@@ -73,7 +73,7 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
             .once('value')
             .then((snapshot) => {
                 const currBoard = snapshot.val();
-                const finalizedTimeline = null// board.finalized_timeline;
+                const finalizedTimeline = board.finalized_timeline;
                 goToFinalized(currBoard, finalizedTimeline, board)
 
             })
@@ -84,7 +84,7 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
 
         const topGenres = getTopVoted(boardFromFirebase.preferences, 3);
         const topCuisines = getTopVoted(boardFromFirebase.food_filters.cuisine, 3);
-        const topArea = getTopVoted(boardFromFirebase.food_filters.area, 2);
+        const topArea = getTopVoted(boardFromFirebase.food_filters.area, 1);
         const topPrice = getTopVoted(boardFromFirebase.food_filters.price, 1)[0];
         const timeInterval = findOverlappingIntervals(boardFromFirebase.availabilities, undefined);
         const myFilters = {
@@ -99,7 +99,8 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
             timeInterval: timeInterval,
             filters: myFilters,
             board: boardFromFirebase, // for Gcal Invite 
-            //currentEvents: finalizedTimeline,
+            boardID: boardFromParent.boardID,
+            currentEvents: finalizedTimeline,
             access: accessRights// 'host' | 'invitee' 
             //userLocation: 
 
@@ -122,40 +123,6 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
         } else {
             return 0;
         }
-    }
-
-    // So that all users of collaboration board gets the same finalized timeline
-    const storeFinalizedTimelineInFirebase = (finalized, board) => {
-        var updates = {}
-        updates['finalized_timeline'] = finalized;
-
-        // Only get finalized timeline ONCE, if timeline alr exists, dont update
-        if (board.hasOwnProperty('finalized_timeline')) {
-            return;
-        }
-
-        firebase.database().
-            ref('collab_boards/' + board.boardID)
-            .update(updates);
-    }
-
-    // Generate finalized timeline only when all invitees have responded, finalizedFraction == 1
-    const generateFinalizedTimeline = (board, isBoardFinalized) => {
-        if (!isBoardFinalized) return;
-
-        const topGenres = getTopVoted(board.preferences, 3);
-        const topCuisines = getTopVoted(board.food_filters.cuisine, 3);
-        const topArea = getTopVoted(board.food_filters.area, 2);
-        const topPrice = getTopVoted(board.food_filters.price, 1)[0];
-        const myFilters = {
-            area: topArea,
-            cuisine: topCuisines,
-            price: topPrice
-        };
-
-        const finalized = genreEventObjectArray(topGenres, allEvents,
-            myFilters) // Finalized timeline
-        storeFinalizedTimelineInFirebase(finalized, board);
     }
 
     const renderCollaborationBoard = (board) => {
@@ -188,7 +155,7 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
                     : { backgroundColor: 'white' };
         }
 
-        generateFinalizedTimeline(board, isBoardFinalized)
+        // generateFinalizedTimeline(board, isBoardFinalized)
         return (
             <TouchableOpacity onPress={() => isBoardFinalized
                 ? handleRouteToFinalized(board)

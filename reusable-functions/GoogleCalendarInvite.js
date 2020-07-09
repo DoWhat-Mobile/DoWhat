@@ -53,11 +53,15 @@ const updateUserPreferences = async (userPreferences, userId, formattedData) => 
         leisure: 0,
         nature: 0,
         nightlife: 0,
-        restaurants: 0
+        restaurants: 0,
     }
     formattedData.forEach(event => {
         const genre = event.eventGenre;
-        finalPreferneces[genre] += 1;
+        if (genre == 'indoors') {
+            finalPreferneces['arts'] += 1;
+        } else {
+            finalPreferneces[genre] += 1;
+        }
     })
 
     if (userPreferences == undefined) { // First time using app, no preference stored yet

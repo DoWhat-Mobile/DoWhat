@@ -61,23 +61,23 @@ const DateSelection = (props) => {
     const [isFinalized, setIsFinalized] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
     //const [location, setLocation] = useState(null);
-    const [isLoading, setLoading] = useState(true);
+    //const [isLoading, setLoading] = useState(true);
 
-    useEffect(() => {
-        (async () => {
-            let { status } = await Location.requestPermissionsAsync();
-            if (status !== "granted") {
-                console.log("denied");
-                // setErrorMsg("Permission to access location was denied");
-            }
+    // useEffect(() => {
+    //     (async () => {
+    //         let { status } = await Location.requestPermissionsAsync();
+    //         if (status !== "granted") {
+    //             console.log("denied");
+    //             // setErrorMsg("Permission to access location was denied");
+    //         }
 
-            let location = await Location.getCurrentPositionAsync({});
-            console.log(location);
+    //         let location = await Location.getCurrentPositionAsync({});
+    //         //console.log(location);
 
-            props.setLocation(location);
-            setLoading(false);
-        })()
-    }, []);
+    //         props.setLocation(location);
+    //         setLoading(false);
+    //     })()
+    // }, []);
 
     let synced = isButtonDisabled ? "synced" : "manual";
 
@@ -166,14 +166,6 @@ const DateSelection = (props) => {
     const onFinalize = () => {
         setIsFinalized(true);
     };
-
-    if (isLoading) {
-        return (
-            <View style={{ flex: 1, justifyContent: "center" }}>
-                <ActivityIndicator size="large" />
-            </View>
-        );
-    }
 
     return (
         <View style={styles.container}>

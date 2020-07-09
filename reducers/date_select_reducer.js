@@ -13,18 +13,14 @@ export default function (state = initState, action) {
         case DATE_SELECT:
             const day_difference =
                 moment(action.payload).date() - moment(state.initDate).date();
-            return {
+            return Object.assign({}, state, {
                 date: action.payload,
                 difference: day_difference,
-
-                //,
-            };
-
+            });
         case USER_LOCATION:
-            return {
-                userLocation: action.payload
-            }
-
+            return Object.assign({}, state, {
+                userLocation: action.payload,
+            });
         default:
             return state;
     }

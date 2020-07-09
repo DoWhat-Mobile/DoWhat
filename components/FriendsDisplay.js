@@ -305,7 +305,7 @@ const mapStateToProps = (state) => {
         currUserName: state.add_events.currUserName,
         currUserPreferenceArr: state.genre.genres[0],
         currUserFoodFilterObj: state.genre.genres[2],
-        currUserProfilePicture: state.add_events.profilePicture
+        currUserProfilePicture: state.add_events.profilePicture,
     };
 };
 

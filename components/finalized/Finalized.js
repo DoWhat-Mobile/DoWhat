@@ -55,13 +55,13 @@ const Finalized = (props) => {
                 style={styles.icon}
             />
         ) : (
-            <MaterialCommunityIcons
-                name="weather-sunny"
-                size={24}
-                color="black"
-                style={styles.icon}
-            />
-        );
+                    <MaterialCommunityIcons
+                        name="weather-sunny"
+                        size={24}
+                        color="black"
+                        style={styles.icon}
+                    />
+                );
     };
 
     React.useEffect(() => {
@@ -138,6 +138,8 @@ const Finalized = (props) => {
                         accessRights={accessRights}
                         userID={props.userID}
                         initRoutes={props.route.params.routeGuide}
+                        route={props.route.params.route}
+                        board={props.route.params.board}
                     />
 
                     <Modal animated visible={visible} animationType="fade">

@@ -5,6 +5,7 @@ import ActionOptions from "./ActionOptions";
 import {
     handleProcess,
     formatEventsData,
+    handleBoardRouteProcess,
 } from "../../reusable-functions/GoogleCalendarInvite";
 import {
     handleRipple,
@@ -24,6 +25,8 @@ const Schedule = ({
     genres,
     accessRights,
     userID,
+    route,
+    board, // For board route, will be undefined for other route
 }) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
@@ -125,8 +128,13 @@ const Schedule = ({
      */
     const sendGcalInviteAndResetAttendeeData = async () => {
         const formattedData = formatEventsData(events); // Formatted data contains event title
-        // handleProcess function and all other logic is in GoogleCalendarInvite.js
-        await handleProcess(formattedData, timingsArray);
+        if (route == 'board') { // collab board route
+            await handleBoardRouteProcess(formattedData, timingsArray,
+                board)
+        } else {
+            // handleProcess function and all other logic is in GoogleCalendarInvite.js
+            await handleProcess(formattedData, timingsArray);
+        }
         let updates = {};
         updates["/users/" + userID + "/busy_periods"] = null;
 

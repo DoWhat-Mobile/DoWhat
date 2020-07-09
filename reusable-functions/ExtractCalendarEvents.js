@@ -80,7 +80,7 @@ const makeGcalAPICall = async (token) => {
             .then((response) => response.json())
             .then((data) => {
                 const allEventsArr = data.items;
-                console.log("Event extraction API call successful: ", allEventsArr);
+                // console.log("Event extraction API call successful: ", allEventsArr);
                 store.dispatch(extractCalendarEvents(data.items)); // Add events to redux state
             });
     } catch (e) {

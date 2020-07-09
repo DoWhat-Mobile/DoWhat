@@ -25,7 +25,7 @@ const Loading = (props) => {
 
     const filters =
         route === "board" ? props.route.params.filters : props.finalGenres[2];
-
+    const accessRights = props.route.params.access
     const timeline =
         route === "board"
             ? props.route.params.timeInterval
@@ -33,6 +33,8 @@ const Loading = (props) => {
                 ? props.route.params.time
                 : props.finalGenres[1];
     const userLocation = props.userLocation;
+
+    //console.log(userLocation)
     React.useEffect(() => {
         const diff = props.difference;
         const userId = firebase.auth().currentUser.uid; //Firebase UID of current user
@@ -72,23 +74,45 @@ const Loading = (props) => {
                 const value = data["daily"][diff]["weather"][0]["main"];
                 setWeather(value);
 
+
                 const currentEvents = genreEventObjectArray(
                     userGenres,
                     props.allEvents,
                     filters,
                     value
-                );
-                const allEvents = data_timeline(
+                )
+
+                const allEvents = props.route.params.currentEvents == undefined ? data_timeline(
                     timeline,
                     userGenres,
                     props.allEvents,
                     currentEvents
-                );
+                ) : props.route.params.currentEvents;
+
+                storeFinalizedEventsInCollabBoard(allEvents);
+
+
                 setData(allEvents);
 
                 setWeatherLoading(false);
             });
     }, []);
+
+    // Add to firebase so all collaboration board invitees see the same finalized timeline
+    const storeFinalizedEventsInCollabBoard = (currentEvents) => {
+        if (route !== 'board') return;
+        var updates = {}
+        updates['finalized_timeline'] = currentEvents;
+
+        // Only get finalized timeline ONCE, if timeline alr exists, dont update
+        if (props.route.params.board.hasOwnProperty('finalized_timeline')) {
+            return;
+        }
+        currentEvents.forEach(event => { console.log("####################### Event name: ", event) })
+        firebase.database().
+            ref('collab_boards/' + props.route.params.boardID) // Board ID passed from ListOfPlans.js
+            .update(updates);
+    }
 
     const onComplete = () => {
         let temp = [];
@@ -99,14 +123,15 @@ const Loading = (props) => {
         let routes = temp.concat(data[3]);
         //console.log(routeGuide);
         props.navigation.navigate("Finalized", {
-            route: route, //set manual for now
-            access: "host", // set host for now
+            route: route, // 'board' | 'manual' 
+            access: accessRights, // 'host' | 'invitee'
             weather: weather,
             synced: synced,
             time: freeTime,
             data: data,
             userGenres: userGenres,
             routeGuide: routes,
+            board: props.route.params.board,
         });
     };
     if (isWeatherLoading || isTimingsLoading) {
