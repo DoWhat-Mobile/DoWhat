@@ -8,6 +8,7 @@ import {
     ActivityIndicator,
     ScrollView,
     Image,
+    Dimensions,
 } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
@@ -88,7 +89,23 @@ const Finalized = (props) => {
     } else {
         return (
             <ScrollView style={styles.container}>
-                <View style={styles.header}>
+                <View style={styles.header}></View>
+                <View style={styles.image}>
+                    <TouchableOpacity
+                        style={{ borderRadius: 20 }}
+                        onPress={() => setVisible(true)}
+                    >
+                        <Image
+                            style={{
+                                height: Dimensions.get("window").height / 4,
+                                width: Dimensions.get("window").width + 30,
+                                borderRadius: 20,
+                            }}
+                            source={require("../../assets/map.png")}
+                        />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.body}>
                     <View
                         style={{
                             marginLeft: 10,
@@ -96,36 +113,23 @@ const Finalized = (props) => {
                             alignItems: "flex-start",
                         }}
                     >
-                        <Text
+                        <Text style={styles.title}>Events</Text>
+
+                        {/* <Text
                             style={{
-                                fontSize: 22,
-                                lineHeight: 23,
-                                marginTop: 15,
-                                marginLeft: 10,
+                                fontSize: 12,
+                                // lineHeight: 23,
+                                marginTop: 20,
+                                // marginLeft: 10,
                                 fontWeight: "bold",
                             }}
                         >
                             Weather on {moment(props.date).date()}
                         </Text>
-                        <Text style={{ fontSize: 11, lineHeight: 20 }}>th</Text>
+                        <Text style={{ fontSize: 11, lineHeight: 20 }}>th</Text> */}
 
                         {weatherIcon(weather)}
                     </View>
-                </View>
-                <View style={styles.image}>
-                    <TouchableOpacity onPress={() => setVisible(true)}>
-                        <Image
-                            style={{
-                                borderRadius: 10,
-                                height: 120,
-                                width: 360,
-                            }}
-                            source={require("../../assets/map.png")}
-                        />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.body}>
-                    <Text style={styles.title}>Events</Text>
                     <Schedule
                         data={allData}
                         navigation={props.navigation}
@@ -148,33 +152,37 @@ const Finalized = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "white",
+        backgroundColor: "#ffebcc",
     },
     header: {
         flex: 0,
+        //backgroundColor: "#cc5327",
         // justifyContent: "center",
         // alignItems: "center",
     },
     body: {
-        //flex: 4,
+        flex: 1,
+        marginTop: 10,
+        //backgroundColor: "#ffcc80",
     },
     image: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        //height: 40,
+        borderRadius: 20,
     },
     icon: {
         fontSize: 35,
-        marginVertical: 10,
-        marginLeft: 170,
+        //marginTop: 10,
+        marginLeft: 10,
     },
     title: {
         marginTop: 10,
-        marginBottom: -25,
-        marginLeft: 20,
+        marginBottom: -35,
+        marginLeft: 10,
         fontSize: 25,
         fontWeight: "bold",
+        zIndex: 1,
     },
 });
 

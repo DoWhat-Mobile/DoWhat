@@ -361,11 +361,11 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                 <Image
                     source={{ uri: rowData.imageUrl }}
                     style={{
-                        width: 240,
+                        width: 230,
                         height: 120,
                         borderRadius: 25,
                         marginTop: 10,
-                        marginLeft: 5,
+                        //marginLeft: 5,
                     }}
                 />
                 <ReadMore

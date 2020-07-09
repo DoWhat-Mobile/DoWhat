@@ -97,7 +97,6 @@ const TransitRoutes = ({ routes }) => {
     };
 
     React.useEffect(() => {
-        console.log(routes);
         routesArray(routes);
     }, [routes]);
     if (isRoutesLoading) {
@@ -122,6 +121,9 @@ const TransitRoutes = ({ routes }) => {
                     flex: 1,
                     marginHorizontal: 20,
                     marginTop: -5,
+                    borderRadius: 30,
+                    backgroundColor: "white",
+                    padding: 20,
                 }}
             >
                 <Text

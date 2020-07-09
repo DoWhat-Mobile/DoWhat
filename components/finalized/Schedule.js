@@ -152,19 +152,20 @@ const Schedule = ({
                     data={events}
                     timeStyle={{
                         textAlign: "center",
-                        backgroundColor: "#ff9797",
+                        backgroundColor: "#cc5327",
                         color: "white",
                         padding: 5,
                         borderRadius: 13,
                     }}
                     detailContainerStyle={{
                         marginBottom: 20,
-                        paddingLeft: 5,
-                        paddingRight: 5,
-                        backgroundColor: "#BBDAFF",
-                        borderRadius: 10,
+                        paddingLeft: 15,
+                        paddingRight: 15,
+                        backgroundColor: "white",
+                        borderRadius: 20,
                     }}
                     renderDetail={renderDetail}
+                    circleColor="black"
                 />
             </View>
             <TransitRoutes routes={routes} />

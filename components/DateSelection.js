@@ -70,6 +70,7 @@ const DateSelection = (props) => {
             let location = await Location.getCurrentPositionAsync({});
             setLocation(location);
             setLoading(false);
+            console.log(location);
         })();
     }, []);
 

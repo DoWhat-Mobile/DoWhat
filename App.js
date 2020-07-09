@@ -54,6 +54,12 @@ const MainNavigator = () => {
                 component={Finalized}
                 options={({ navigation }) => ({
                     title: null,
+                    // headerStyle: {
+                    //     //backgroundColor: "#cc5327",
+                    //     borderBottomWidth: 0,
+                    //     elevation: 0,
+                    //     shadowOpacity: 0,
+                    // },
                     headerLeft: () => (
                         <HeaderBackButton
                             onPress={() => {
