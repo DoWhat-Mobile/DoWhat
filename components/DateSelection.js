@@ -195,14 +195,14 @@ const DateSelection = (props) => {
                 <Text
                     style={[
                         styles.header,
-                        { color: "#F9F0E6", textAlign: "center", marginTop: 5 },
+                        { color: "#F9F0E6", textAlign: "center", marginTop: 10 },
                     ]}
                 >
                     Input your available timings
                 </Text>
                 <View style={{
-                    flex: 0.5, justifyContent: 'space-around', borderBottomWidth: 0.7,
-                    borderColor: '#C0B2B3'
+                    flex: 0.8, justifyContent: 'space-around', borderBottomWidth: 0.5,
+                    borderColor: '#F9F0E6'
                 }}>
                     <View
                         style={{

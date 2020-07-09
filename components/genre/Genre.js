@@ -105,14 +105,15 @@ const Genre = (props) => {
             <TouchableOpacity
                 key={items}
                 onPress={() => handlePress(items)}
-                style={styles.button}
+                style={[styles.button,
+                selected.includes(items) ? { backgroundColor: '#FEF0D5' } : {}]}
             >
                 <Text
                     style={{
                         fontSize: 14,
                         fontFamily: 'serif',
                         fontWeight: '500',
-                        color: selected.includes(items) ? '#E86830' : "white",
+                        color: selected.includes(items) ? '#244749' : "white",
                     }}
                 >
                     {items}
@@ -131,8 +132,12 @@ const Genre = (props) => {
             </Modal>
 
             <View style={styles.textContainer}>
-                <Text style={{ fontFamily: "serif", fontSize: 16, color: 'white' }}>
-                    Choose your favourite genres!
+                <Text style={{
+                    fontWeight: "bold", fontSize: 20,
+                    fontFamily: "serif", color: '#F9F0E6',
+                    textAlign: 'center'
+                }}>
+                    Choose your favourite genres
                 </Text>
             </View>
 
@@ -140,7 +145,9 @@ const Genre = (props) => {
                 {buttons()}
 
                 <TouchableOpacity
-                    style={styles.button}
+                    style={[styles.button, selected.includes("food")
+                        ? { backgroundColor: '#FEF0D5' }
+                        : {}]}
                     onPress={() => handleFoodPress()}
                 >
                     <Text
@@ -149,7 +156,7 @@ const Genre = (props) => {
                             fontWeight: '500',
                             fontFamily: 'serif',
                             color: selected.includes("food")
-                                ? '#E86830'
+                                ? '#244749'
                                 : "white",
                         }}
                     >
@@ -162,6 +169,7 @@ const Genre = (props) => {
                     {preference === {} ? "" : Object.values(preference)}
                 </Text>
             </View>
+
             <View
             // style={{
             //     f
@@ -208,6 +216,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignContent: "center",
         flexWrap: "wrap",
+        borderBottomWidth: 0.5,
+        borderColor: '#F9F0E6'
     },
     button: {
         borderRadius: 10,
@@ -217,7 +227,6 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     textContainer: {
-        alignItems: "flex-start",
     },
     continue: {
         flexDirection: "column",
@@ -225,15 +234,14 @@ const styles = StyleSheet.create({
         alignContent: "stretch",
         marginLeft: "5%",
         marginRight: "5%",
-        marginTop: '10%',
     },
     continueButton: {
         fontSize: 20,
         fontFamily: 'serif',
         textAlign: "center",
         borderRadius: 5,
-        backgroundColor: "#f9f0E6",
-        color: "#3F1D38",
+        backgroundColor: "#244749",
+        color: "#FEF0D5",
     },
 });
 
