@@ -4,9 +4,7 @@
  */
 const firebase = require('firebase');
 import * as AppAuth from "expo-app-auth";
-import {
-    OAuthConfig,
-} from "../reusable-functions/GoogleAuthentication";
+import { OAuthConfig, checkIfTokenExpired } from "../reusable-functions/OAuthConfig";
 import { REACT_APP_GOOGLE_API_KEY } from 'react-native-dotenv';
 import { formatDateToString } from "./GoogleCalendarGetBusyPeriods";
 
@@ -138,10 +136,6 @@ const makeAPICall = async (requestBody, userEmail, accessToken) => {
         console.log(err);
     }
 }
-
-const checkIfTokenExpired = (accessTokenExpirationDate) => {
-    return new Date(accessTokenExpirationDate) < new Date();
-};
 
 // Ensure acess token is not expired 
 const getValidAccessToken = async (token, tokenExpiryDate, refreshToken) => {

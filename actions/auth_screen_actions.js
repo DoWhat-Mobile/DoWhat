@@ -37,6 +37,7 @@ export const addCurrUserName = (values) => dispatch => {
 };
 
 export const extractCalendarEvents = (values) => dispatch => {
+    console.log("Succesfully dispatched to redux")
     const newState = {
         type: EXTRACT_CALENDAR_EVENTS,
         payload: values,

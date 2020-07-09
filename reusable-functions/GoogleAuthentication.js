@@ -1,19 +1,10 @@
 const firebase = require("firebase");
-import {
-    GOOGLE_ANDROID_CLIENT_ID,
-    STANDALONE_GOOGLE_ANDROID_CLIENT_ID,
-} from "react-native-dotenv";
 import store from "../store";
 import { addUID, addCurrUserName, addProfilePicture } from "../actions/auth_screen_actions";
 import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import Constants from "expo-constants";
-
-export const OAuthConfig = {
-    issuer: "https://accounts.google.com",
-    clientId: GOOGLE_ANDROID_CLIENT_ID, // use STANDALONE Client ID if using built expo app
-    scopes: ["https://www.googleapis.com/auth/calendar", "profile", "email"],
-};
+import { addGcalEventsToReduxFirstTimeUser } from './ExtractCalendarEvents';
 
 const isUserEqual = (googleUser, firebaseUser) => {
     if (firebaseUser) {
@@ -51,8 +42,10 @@ export const onSignIn = (googleUser) => {
                 .then(function (result) {
                     // Add to Redux state for first time signed-in users 
                     store.dispatch(addUID(result.user.uid));
-                    store.dispatch(addCurrUserName(user.displayName.replace(/ /g, "_")))
-                    store.dispatch(addProfilePicture(user.photoURL));
+                    store.dispatch(addCurrUserName(result.user.displayName.replace(/ /g, "_")))
+                    store.dispatch(addProfilePicture(result.user.photoURL));
+                    addGcalEventsToReduxFirstTimeUser(googleUser.accessToken,
+                        googleUser.refreshToken, googleUser.accessTokenExpirationDate);
 
                     // Add push token to Firebase for notification sending
                     registerForPushNotificationsAsync(result.user.uid);

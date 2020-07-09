@@ -72,15 +72,12 @@ const Loading = (props) => {
                 const value = data["daily"][diff]["weather"][0]["main"];
                 setWeather(value);
 
-                const currentEvents =
-                    route === "board"
-                        ? props.route.params.currentEvents
-                        : genreEventObjectArray(
-                            userGenres,
-                            props.allEvents,
-                            filters,
-                            value
-                        );
+                const currentEvents = genreEventObjectArray(
+                    userGenres,
+                    props.allEvents,
+                    filters,
+                    value
+                );
                 const allEvents = data_timeline(
                     timeline,
                     userGenres,

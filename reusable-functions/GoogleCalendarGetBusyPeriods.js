@@ -1,4 +1,5 @@
-import { onSignIn, OAuthConfig, } from "./GoogleAuthentication";
+import { onSignIn } from "./GoogleAuthentication";
+import { OAuthConfig, checkIfTokenExpired } from './OAuthConfig';
 import firebase from "../database/firebase";
 import * as AppAuth from "expo-app-auth";
 import { REACT_APP_GOOGLE_API_KEY } from 'react-native-dotenv';
@@ -104,10 +105,6 @@ const getUserEmailThenBusyPeriod = async (token, userID, selectedDate) => {
     } catch (e) {
         console.log(e);
     }
-};
-
-export const checkIfTokenExpired = (accessTokenExpirationDate) => {
-    return new Date(accessTokenExpirationDate) < new Date();
 };
 
 // Extract free/busy timings from the selected date, and the extracted user email

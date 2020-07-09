@@ -94,7 +94,7 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
         };
 
         var navigationProps = {
-            route: "boardFromFirebase",
+            route: "board",
             genres: topGenres,
             timeInterval: timeInterval,
             filters: myFilters,
@@ -153,8 +153,9 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
             price: topPrice
         };
 
-        const finalized = genreEventObjectArray(topGenres, allEvents, myFilters) // Finalized timeline
-        storeFinalizedTimelineInFirebase(finalized, board);
+        const getFinalized = (weather) => genreEventObjectArray(topGenres, allEvents,
+            myFilters, weather) // Finalized timeline
+        storeFinalizedTimelineInFirebase(getFinalized, board);
     }
 
     const renderCollaborationBoard = (board) => {
