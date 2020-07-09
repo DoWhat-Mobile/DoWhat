@@ -5,7 +5,6 @@ import {
     Text,
     StyleSheet,
     Modal,
-    ActivityIndicator,
 } from "react-native";
 import { connect } from "react-redux";
 import { selectDate, setLocation } from "../actions/date_select_action";
@@ -16,9 +15,8 @@ import Genre from "../components/genre/Genre";
 import {
     getBusyPeriodFromGoogleCal,
 } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
-import { AntDesign } from "@expo/vector-icons";
-import * as Location from "expo-location";
 import Calendar from "./Calendar";
+import { Divider } from 'react-native-elements';
 
 export const formatDate = (day, month, date) => {
     const possibleDays = [
@@ -76,19 +74,14 @@ const DateSelection = (props) => {
                         style={[
                             styles.manualInputButton,
                             {
-                                borderRadius: 20,
-                                backgroundColor: "#2a9d8f",
+                                borderRadius: 5,
+                                backgroundColor: "#244749",
                                 borderWidth: 0.2,
                             },
                         ]}
                         disabled={true}
                         onPress={() => finalizeBoard()}
                     >
-                        <AntDesign
-                            name="check"
-                            size={20}
-                            style={{ color: "white" }}
-                        />
                         <Text style={{ color: "white", marginLeft: 5 }}>
                             Availabilities Inputted
                         </Text>
@@ -102,7 +95,7 @@ const DateSelection = (props) => {
                     onPress={() => inputAvailabilities()}
                     disabled={isButtonDisabled}
                 >
-                    <Text style={{ color: 'white' }}>
+                    <Text style={{ color: '#244749' }}>
                         Sync Google Calendar
                         </Text>
                 </TouchableOpacity>
@@ -210,14 +203,18 @@ const DateSelection = (props) => {
                             justifyContent: "space-evenly",
                         }}
                     >
-                        <TouchableOpacity style={styles.manualInputButton}
+                        <TouchableOpacity style={[styles.manualInputButton,
+                        isFinalized ? { backgroundColor: '#244749' } : {}]}
                             onPress={() => setModalVisible(true)}>
-                            <Text style={[styles.inputAvailabilities, { color: "#F9F0E6" }]}>
+                            <Text style={[styles.inputAvailabilities, isFinalized
+                                ? { color: "white" }
+                                : { color: '#244749' }]}>
                                 {isFinalized
-                                    ? "Successfully inputted"
+                                    ? "Successfully Inputted"
                                     : "Manual Input"}
                             </Text>
                         </TouchableOpacity>
+                        <Divider style={{ borderWidth: 0.2, height: '100%', borderColor: '#F9F0E6' }} />
                         {renderSyncCalendarButton()}
                     </View>
                 </View>
@@ -309,12 +306,11 @@ const styles = StyleSheet.create({
         marginTop: 17,
     },
     manualInputButton: {
-        borderWidth: 0.5,
         borderRadius: 5,
         padding: 3,
         paddingLeft: 6,
         paddingRight: 6,
-        backgroundColor: '#244749'
+        backgroundColor: 'white'
 
     },
     emptyDate: {

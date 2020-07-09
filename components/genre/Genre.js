@@ -106,14 +106,16 @@ const Genre = (props) => {
                 key={items}
                 onPress={() => handlePress(items)}
                 style={[styles.button,
-                selected.includes(items) ? { backgroundColor: '#FEF0D5' } : {}]}
+                selected.includes(items) ?
+                    { backgroundColor: '#244749', borderColor: '#244749' }
+                    : { backgroundColor: 'white' }]}
             >
                 <Text
                     style={{
                         fontSize: 14,
                         fontFamily: 'serif',
                         fontWeight: '500',
-                        color: selected.includes(items) ? '#244749' : "white",
+                        color: selected.includes(items) ? 'white' : "#244749",
                     }}
                 >
                     {items}
@@ -146,8 +148,8 @@ const Genre = (props) => {
 
                 <TouchableOpacity
                     style={[styles.button, selected.includes("food")
-                        ? { backgroundColor: '#FEF0D5' }
-                        : {}]}
+                        ? { backgroundColor: '#244749', borderColor: '#244749' }
+                        : { backgroundColor: '#FEF0D5' }]}
                     onPress={() => handleFoodPress()}
                 >
                     <Text
@@ -156,8 +158,8 @@ const Genre = (props) => {
                             fontWeight: '500',
                             fontFamily: 'serif',
                             color: selected.includes("food")
-                                ? '#244749'
-                                : "white",
+                                ? 'white'
+                                : "#244749",
                         }}
                     >
                         FOOD
@@ -220,11 +222,12 @@ const styles = StyleSheet.create({
         borderColor: '#F9F0E6'
     },
     button: {
-        borderRadius: 10,
-        padding: 8,
+        borderRadius: 5,
+        padding: 6,
         borderWidth: StyleSheet.hairlineWidth,
         marginHorizontal: 10,
         marginVertical: 10,
+        borderColor: 'white',
     },
     textContainer: {
     },
@@ -240,8 +243,8 @@ const styles = StyleSheet.create({
         fontFamily: 'serif',
         textAlign: "center",
         borderRadius: 5,
-        backgroundColor: "#244749",
-        color: "#FEF0D5",
+        backgroundColor: "white",
+        color: "#244749",
     },
 });
 
