@@ -9,14 +9,18 @@ import {
 import {
     handleRipple,
     objectFormatter,
+    renderDetail,
 } from "../../reusable-functions/data_timeline";
 import moment from "moment-timezone";
 import firebase from "../../database/firebase";
+import TransitRoutes from "./TransitRoutes";
+
 const Schedule = ({
     navigation,
     data,
     allEvents,
     mapUpdate,
+    initRoutes,
     genres,
     accessRights,
     userID,
@@ -25,6 +29,7 @@ const Schedule = ({
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
     const [timingsArray, setTimingsArray] = React.useState([]);
+    const [routes, setRoutes] = React.useState([]);
 
     React.useEffect(() => {
         let formatData = [];
@@ -35,11 +40,18 @@ const Schedule = ({
             const genre = dataObj.genre;
             formatData.push(objectFormatter(startTime, event, genre));
         }
-
+        setRoutes(initRoutes);
         setEvents(formatData);
         setTimingsArray(data[1]);
     }, []);
 
+    const routeUpdate = (selected, unsatisfied) => {
+        let temp = routes;
+        const result = temp.map((item) => {
+            return item == unsatisfied.location ? selected.location : item;
+        });
+        setRoutes(result);
+    };
     const onReselect = (selected) => {
         const updatedData = events.map((item) => {
             if (item === unsatisfied) return selected;
@@ -51,6 +63,7 @@ const Schedule = ({
         });
         setEvents(updatedData);
         mapUpdate(updatedCoord);
+        routeUpdate(selected, unsatisfied);
     };
 
     const onClose = () => {
@@ -139,13 +152,23 @@ const Schedule = ({
                     data={events}
                     timeStyle={{
                         textAlign: "center",
-                        backgroundColor: "#ff9797",
+                        backgroundColor: "#cc5327",
                         color: "white",
                         padding: 5,
                         borderRadius: 13,
                     }}
+                    detailContainerStyle={{
+                        marginBottom: 20,
+                        paddingLeft: 15,
+                        paddingRight: 15,
+                        backgroundColor: "white",
+                        borderRadius: 20,
+                    }}
+                    renderDetail={renderDetail}
+                    circleColor="black"
                 />
             </View>
+            <TransitRoutes routes={routes} />
             <View style={styles.footer}>{renderProceedButton()}</View>
         </View>
     );
@@ -163,15 +186,20 @@ const styles = StyleSheet.create({
     footer: {
         flex: 1,
         alignItems: "center",
+        marginVertical: 30,
+        marginLeft: 200,
     },
     proceed: {
-        borderWidth: 0.5,
-        marginBottom: "5%",
-        paddingTop: "1%",
-        paddingBottom: "1%",
-        paddingLeft: "20%",
-        paddingRight: "20%",
-        borderRadius: 5,
+        //borderWidth: 0.5,
+        paddingTop: "3%",
+        paddingBottom: "3%",
+        paddingLeft: "15%",
+        paddingRight: "15%",
+        borderRadius: 20,
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#fcf5f2",
+        backgroundColor: "#cc5327",
     },
 });
 

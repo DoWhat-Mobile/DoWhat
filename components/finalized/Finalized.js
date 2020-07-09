@@ -6,33 +6,30 @@ import {
     TouchableOpacity,
     Modal,
     ActivityIndicator,
+    ScrollView,
+    Image,
+    Dimensions,
 } from "react-native";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import Schedule from "./Schedule";
 import Map from "./Map";
-import TransitRoutes from "./TransitRoutes";
-import {
-    data_timeline,
-    genreEventObjectArray,
-} from "../../reusable-functions/data_timeline";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import TransitRoute from "./TransitRoutes";
+import { YellowBox } from "react-native";
+import moment from "moment";
 
 const Finalized = (props) => {
+    YellowBox.ignoreWarnings(["VirtualizedLists should never be nested"]);
     const [isLoading, setIsLoading] = React.useState(true);
     const [visible, setVisible] = React.useState(false);
     const [coord, setCoord] = React.useState([]);
     const [data, setData] = React.useState([]);
-    const [routes, setRoutes] = React.useState([]);
 
     //const route = props.route.params.route;
     const accessRights = props.route.params.access;
     const weather = props.route.params.weather;
-    //const currentEvents = props.route.params.currentEvents;
     const userGenres = props.route.params.userGenres;
     const allData = props.route.params.data;
-    //console.log(props.route.params.routeGuide);
 
     const onClose = () => {
         setVisible(false);
@@ -40,7 +37,6 @@ const Finalized = (props) => {
 
     const mapUpdate = (coord) => {
         setCoord(coord);
-        // setRoutes(routes)
     };
 
     const weatherIcon = (weather) => {
@@ -49,41 +45,29 @@ const Finalized = (props) => {
                 name="weather-pouring"
                 size={24}
                 color="black"
-                style={{ marginLeft: 350 }}
+                style={styles.icon}
             />
         ) : weather === "Clouds" ? (
             <MaterialCommunityIcons
                 name="weather-cloudy"
                 size={24}
                 color="black"
-                style={{ marginLeft: 350 }}
+                style={styles.icon}
             />
         ) : (
             <MaterialCommunityIcons
                 name="weather-sunny"
                 size={24}
                 color="black"
-                style={{ marginLeft: 350 }}
+                style={styles.icon}
             />
         );
     };
 
     React.useEffect(() => {
-        // const locations = data[3];
-        // let routesArray = [];
-        // for (i = 0; i < locations.length - 1; i++) {}
-        // fetch(
-        //     "https://maps.googleapis.com/maps/api/directions/json?origin=OrchardTurn&destination=UpperChangiRoadNorth&key=" +
-        //         GOOGLE_MAPS_API_KEY +
-        //         "&mode=transit&region=sg"
-        // );
-        //console.log(allData);
         const passed = props.route.params.routeGuide;
-        //console.log(passed);
         setData(allData);
         setCoord(allData[2]);
-        setRoutes(props.route.params.routeGuide);
-        //ionsole.log(props.route.params.routeGuide);
         setIsLoading(false);
     }, []);
 
@@ -104,12 +88,48 @@ const Finalized = (props) => {
         );
     } else {
         return (
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    {weatherIcon(weather)}
-                    <TransitRoute routes={routes} />
+            <ScrollView style={styles.container}>
+                <View style={styles.header}></View>
+                <View style={styles.image}>
+                    <TouchableOpacity
+                        style={{ borderRadius: 20 }}
+                        onPress={() => setVisible(true)}
+                    >
+                        <Image
+                            style={{
+                                height: Dimensions.get("window").height / 4,
+                                width: Dimensions.get("window").width + 30,
+                                borderRadius: 20,
+                            }}
+                            source={require("../../assets/map.png")}
+                        />
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.body}>
+                    <View
+                        style={{
+                            marginLeft: 10,
+                            flexDirection: "row",
+                            alignItems: "flex-start",
+                        }}
+                    >
+                        <Text style={styles.title}>Events</Text>
+
+                        {/* <Text
+                            style={{
+                                fontSize: 12,
+                                // lineHeight: 23,
+                                marginTop: 20,
+                                // marginLeft: 10,
+                                fontWeight: "bold",
+                            }}
+                        >
+                            Weather on {moment(props.date).date()}
+                        </Text>
+                        <Text style={{ fontSize: 11, lineHeight: 20 }}>th</Text> */}
+
+                        {weatherIcon(weather)}
+                    </View>
                     <Schedule
                         data={allData}
                         navigation={props.navigation}
@@ -117,20 +137,14 @@ const Finalized = (props) => {
                         genres={userGenres}
                         accessRights={accessRights}
                         userID={props.userID}
+                        initRoutes={props.route.params.routeGuide}
                     />
 
                     <Modal animated visible={visible} animationType="fade">
                         <Map onClose={onClose} coord={coord} />
                     </Modal>
-                    <TouchableOpacity
-                        onPress={() => {
-                            setVisible(true);
-                        }}
-                    >
-                        <Text style={{ fontSize: 20 }}>Open Map View</Text>
-                    </TouchableOpacity>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 };
@@ -138,13 +152,37 @@ const Finalized = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center",
+        backgroundColor: "#ffebcc",
     },
     header: {
-        flex: 1,
+        flex: 0,
+        //backgroundColor: "#cc5327",
+        // justifyContent: "center",
+        // alignItems: "center",
     },
     body: {
-        flex: 4,
+        flex: 1,
+        marginTop: 10,
+        //backgroundColor: "#ffcc80",
+    },
+    image: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 20,
+    },
+    icon: {
+        fontSize: 35,
+        //marginTop: 10,
+        marginLeft: 10,
+    },
+    title: {
+        marginTop: 10,
+        marginBottom: -35,
+        marginLeft: 10,
+        fontSize: 25,
+        fontWeight: "bold",
+        zIndex: 1,
     },
 });
 
@@ -154,6 +192,7 @@ const mapStateToProps = (state) => {
         finalTiming: state.timeline.finalTiming,
         allEvents: state.add_events.events,
         userID: state.add_events.userID,
+        date: state.date_select.date,
     };
 };
 

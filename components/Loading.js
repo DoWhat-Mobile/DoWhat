@@ -8,15 +8,15 @@ import {
     data_timeline,
     genreEventObjectArray,
 } from "../reusable-functions/data_timeline";
-import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
+
 const Loading = (props) => {
     const [freeTime, setFreeTime] = React.useState([]);
     const [data, setData] = React.useState([]);
     const [weather, setWeather] = React.useState("");
     const [isWeatherLoading, setWeatherLoading] = React.useState(true);
     const [isTimingsLoading, setTimingsLoading] = React.useState(true);
-    const [isRoutesLoading, setRoutesLoading] = React.useState(true);
-    const [routeGuide, setRoutes] = React.useState([]);
+    //const [isRoutesLoading, setRoutesLoading] = React.useState(true);
+    //const [routeGuide, setRoutes] = React.useState([]);
 
     const route = props.route.params.route;
     const synced = props.route.params.synced;
@@ -32,127 +32,10 @@ const Loading = (props) => {
             : props.route.params.synced === "synced"
             ? props.route.params.time
             : props.finalGenres[1];
-
-    const routeFormatter = async (obj) => {
-        let format = {
-            distance: "",
-            duration: "",
-            instructions: "",
-            mode: "",
-            start: "",
-        };
-        let instructions = "";
-        if (obj.travel_mode === "TRANSIT") {
-            let arrival_stop = obj.transit_details.arrival_stop.name;
-            let departure_stop = obj.transit_details.departure_stop.name;
-            let name = obj.transit_details.line.name.includes("Line")
-                ? obj.transit_details.line.name
-                : "Bus " + obj.transit_details.line.name;
-            let num_stops = obj.transit_details.num_stops;
-            instructions =
-                "Take " +
-                name +
-                "(" +
-                num_stops +
-                " stops" +
-                ")" +
-                " from " +
-                departure_stop +
-                " to " +
-                arrival_stop;
-        } else {
-            instructions = obj.html_instructions;
-        }
-        let lat = obj.start_location.lat;
-        let long = obj.start_location.lng;
-        let resp = await fetch(
-            "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-                lat +
-                "," +
-                long +
-                "&key=" +
-                GOOGLE_MAPS_API_KEY
-        );
-        let start = (await resp.json()).results[0].formatted_address;
-        //console.log(JSON.stringify(await resp.json()));
-        format.distance = obj.distance.text;
-        format.duration = obj.duration.text;
-        format.instructions = instructions;
-        format.mode = obj.travel_mode;
-        format.start = start;
-
-        return format;
-    };
-
-    const routesArray = async (userLocation, arr) => {
-        let result = [];
-        let temp = [];
-        temp.push(userLocation);
-        const updated = temp.concat(arr);
-        for (let i = 0; i < updated.length - 1; i++) {
-            let obj = [];
-            let origin =
-                typeof updated[i] === "object"
-                    ? updated[i].lat + "," + updated[i].long
-                    : updated[i];
-            let destination = updated[i + 1];
-            try {
-                let resp = await fetch(
-                    "https://maps.googleapis.com/maps/api/directions/json?origin=" +
-                        origin +
-                        "&destination=" +
-                        destination +
-                        "&key=" +
-                        GOOGLE_MAPS_API_KEY +
-                        "&mode=transit&region=sg"
-                );
-                //console.log(JSON.stringify(await resp.json()));
-                let response = (await resp.json())["routes"][0]["legs"][0][
-                    "steps"
-                ];
-                for (let j = 0; j < response.length; j++) {
-                    obj.push(await routeFormatter(await response[j]));
-                }
-                //result.push(routeFormatter(await response[0]));
-
-                //result.push(response);
-            } catch (err) {
-                console.log("hi");
-            }
-            result.push(obj);
-        }
-
-        //}
-        setRoutes(result);
-        setRoutesLoading(false);
-    };
+    const userLocation = props.route.params.userLocation;
     React.useEffect(() => {
         const diff = props.difference;
         const userId = firebase.auth().currentUser.uid; //Firebase UID of current user
-        const userLocation = props.route.params.userLocation;
-        const currentEvents =
-            route === "board"
-                ? props.route.params.currentEvents
-                : genreEventObjectArray(
-                      userGenres,
-                      props.allEvents,
-                      filters,
-                      weather
-                  );
-        const data = data_timeline(
-            timeline,
-            userGenres,
-            props.allEvents,
-            currentEvents
-        );
-        setData(data);
-        routesArray(
-            {
-                lat: userLocation.coords.latitude,
-                long: userLocation.coords.longitude,
-            },
-            data[3]
-        );
 
         firebase
             .database()
@@ -186,12 +69,37 @@ const Loading = (props) => {
         )
             .then((response) => response.json())
             .then((data) => {
-                setWeather(data["daily"][diff]["weather"][0]["main"]);
+                const value = data["daily"][diff]["weather"][0]["main"];
+                setWeather(value);
+
+                const currentEvents =
+                    route === "board"
+                        ? props.route.params.currentEvents
+                        : genreEventObjectArray(
+                              userGenres,
+                              props.allEvents,
+                              filters,
+                              value
+                          );
+                const allEvents = data_timeline(
+                    timeline,
+                    userGenres,
+                    props.allEvents,
+                    currentEvents
+                );
+                setData(allEvents);
+
                 setWeatherLoading(false);
             });
     }, []);
 
     const onComplete = () => {
+        let temp = [];
+        temp.push({
+            lat: userLocation.coords.latitude,
+            long: userLocation.coords.longitude,
+        });
+        let routes = temp.concat(data[3]);
         //console.log(routeGuide);
         props.navigation.navigate("Finalized", {
             route: route, //set manual for now
@@ -201,10 +109,10 @@ const Loading = (props) => {
             time: freeTime,
             data: data,
             userGenres: userGenres,
-            routeGuide: routeGuide,
+            routeGuide: routes,
         });
     };
-    if (isWeatherLoading || isTimingsLoading || isRoutesLoading) {
+    if (isWeatherLoading || isTimingsLoading) {
         return (
             <View
                 style={{
