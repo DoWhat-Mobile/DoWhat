@@ -260,15 +260,13 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
                 </TouchableOpacity>
             )
         }
-
         return (
             <View style={styles.friendCard}>
                 <View style={{ marginLeft: '28%', marginTop: 10 }}>
                     <Avatar
                         rounded
-                        source={{
-                            uri: pictureURL
-                        }}
+                        source={{ uri: pictureURL }}
+                        style={{ width: 50, height: 50 }}
                         size={50}
                     />
                 </View>
@@ -298,7 +296,11 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
 
 // Get previously inputted date from DateSelection for API call
 const mapStateToProps = (state) => {
+
+    console.log(state.timeline.availableTimings[0].startTime.get('hour'))
+    console.log(state.timeline.availableTimings[0].endTime.get('hour'))
     const dateInString = formatDateToString(state.date_select.date);
+
     return {
         selected_date: dateInString,
         userID: state.add_events.userID,

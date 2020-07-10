@@ -93,7 +93,7 @@ const DateSelection = (props) => {
                 <TouchableOpacity
                     style={styles.manualInputButton}
                     onPress={() => inputAvailabilities()}
-                    disabled={isButtonDisabled}
+                    disabled={isButtonDisabled || isFinalized} // Cant sync if manual input
                 >
                     <Text style={{ color: '#244749' }}>
                         Sync Google Calendar
@@ -105,9 +105,7 @@ const DateSelection = (props) => {
 
     // Passed to Calendar.js child component
     const onDateChange = (selectedDate) => {
-        const tail = new Date().toISOString().substring(10);
-        const formattedDateString = selectedDate + tail;
-        const formattedDate = new Date(formattedDateString);
+        const formattedDate = new Date(selectedDate);
         setDate(formattedDate);
         props.selectDate(formattedDate); // Set date in redux state
     };
@@ -203,8 +201,9 @@ const DateSelection = (props) => {
                             justifyContent: "space-evenly",
                         }}
                     >
-                        <TouchableOpacity style={[styles.manualInputButton,
-                        isFinalized ? { backgroundColor: '#244749' } : {}]}
+                        <TouchableOpacity disabled={isButtonDisabled} // If sync google cal, cant manual input 
+                            style={[styles.manualInputButton, isFinalized
+                                ? { backgroundColor: '#244749' } : {}]}
                             onPress={() => setModalVisible(true)}>
                             <Text style={[styles.inputAvailabilities, isFinalized
                                 ? { color: "white" }

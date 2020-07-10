@@ -59,8 +59,8 @@ const AllPlans = ({ navigation, userID, route }) => {
         updates['/collab_boards/' + boardID] = null;
 
         // Add all the invitees to the updates(deletes) to be made
-        for (var name in board.invitees) {
-            const inviteeID = board.invitees[name].firebase_id;
+        for (var firebaseID in board.invitees) {
+            const inviteeID = firebaseID;
             updates['/users/' + inviteeID + '/collab_boards/' + boardID] = null;
         }
 

@@ -43,14 +43,14 @@ const FriendInput = (props) => {
             url +
             "&text=" +
             "\n" +
-            "Here is the link to input your calendar availability!"
+            "Hey! Let's hang out! Use this link to input your availability!"
         );
     };
 
     const shareWithWhatsapp = (url) => {
         Linking.openURL(
             "whatsapp://send?" +
-            "text=Here is the link to input your calendar availability! " +
+            "text=Hey! Let's hang out! Use this link to input your availability!" +
             "\n" +
             url
         ).catch((err) => alert("Please download WhatsApp to use this feature"));
@@ -82,7 +82,7 @@ const FriendInput = (props) => {
                 </Text>
                 </View>
 
-                <View style={{ flex: 5, margin: 10, }}>
+                <View style={{ flex: 5, margin: 10 }}>
                     <FriendsDisplay
                         onClose={closeModal}
                         database={database}
@@ -221,7 +221,7 @@ const FriendInput = (props) => {
                             },
                         ]}
                         onPress={() =>
-                            props.navigation.navigate("Genre", { route: "link" })
+                            props.navigation.navigate("Loading", { route: "link" })
                         }
                     >
                         <Text style={{ fontSize: 16, color: "white" }}>
@@ -294,10 +294,10 @@ const styles = StyleSheet.create({
         width: "100%",
     },
     shareWithButton: {
-        borderRadius: 15,
+        borderRadius: 5,
         borderWidth: 0.5,
         borderColor: "black",
-        padding: 3,
+        padding: 4,
         flexDirection: 'row'
     },
 });

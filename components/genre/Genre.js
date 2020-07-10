@@ -149,7 +149,7 @@ const Genre = (props) => {
                 <TouchableOpacity
                     style={[styles.button, selected.includes("food")
                         ? { backgroundColor: '#244749', borderColor: '#244749' }
-                        : { backgroundColor: '#FEF0D5' }]}
+                        : { backgroundColor: 'white' }]}
                     onPress={() => handleFoodPress()}
                 >
                     <Text

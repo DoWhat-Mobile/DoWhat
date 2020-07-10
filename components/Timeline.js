@@ -33,13 +33,13 @@ const Timeline = (props) => {
 
         if (modifyingStartTime) {
             props.updateCurrFocusTime(props.currFocus, {
-                startTime: currentDate,
+                startTime: moment(currentDate).tz("Asia/Singapore"),
                 endTime: props.currTimeFocus.endTime,
             });
         } else {
             props.updateCurrFocusTime(props.currFocus, {
                 startTime: props.currTimeFocus.startTime,
-                endTime: currentDate,
+                endTime: moment(currentDate).tz("Asia/Singapore"),
             });
         }
     };
