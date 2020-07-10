@@ -209,7 +209,7 @@ const handleAllAttendeesData = (allAttendees) => {
             const endTime = busyPeriodsOfAttendee[timeRange].end;
 
             // Time format in array is the beginning of the hour. EG a '1' at the 13th position in the array means 1300-1400hrs is BUSY.
-            const formattedStartTime = formatTime(startTime) - 1;
+            const formattedStartTime = formatTime(startTime);
             const formattedEndTime = formatTime(endTime) - 1;
 
             currAttendeeAvails.fill(1, formattedStartTime, formattedEndTime);
