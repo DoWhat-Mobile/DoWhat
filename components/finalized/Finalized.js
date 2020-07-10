@@ -23,14 +23,15 @@ const Finalized = (props) => {
     const [isLoading, setIsLoading] = React.useState(true);
     const [visible, setVisible] = React.useState(false);
     const [coord, setCoord] = React.useState([]);
-    const [data, setData] = React.useState([]);
+    const [allData, setData] = React.useState([]);
 
     //const route = props.route.params.route;
+    const data = props.route.params.data;
     const accessRights = props.route.params.access;
     const weather = props.route.params.weather;
     const userGenres = props.route.params.userGenres;
     const currentEvents = props.route.params.data;
-    const timingsArray = props.route.params.timingsArray
+    const timingsArray = props.route.params.timingsArray;
 
     const onClose = () => {
         setVisible(false);
@@ -56,19 +57,20 @@ const Finalized = (props) => {
                 style={styles.icon}
             />
         ) : (
-                    <MaterialCommunityIcons
-                        name="weather-sunny"
-                        size={24}
-                        color="black"
-                        style={styles.icon}
-                    />
-                );
+            <MaterialCommunityIcons
+                name="weather-sunny"
+                size={24}
+                color="black"
+                style={styles.icon}
+            />
+        );
     };
 
     React.useEffect(() => {
+        //const userLocation = props.userLocation;
         const passed = props.route.params.routeGuide;
-
-        setCoord(allData[2]);
+        setData(data);
+        setCoord(data[2]);
         setIsLoading(false);
     }, []);
 
@@ -116,19 +118,6 @@ const Finalized = (props) => {
                     >
                         <Text style={styles.title}>Events</Text>
 
-                        {/* <Text
-                            style={{
-                                fontSize: 12,
-                                // lineHeight: 23,
-                                marginTop: 20,
-                                // marginLeft: 10,
-                                fontWeight: "bold",
-                            }}
-                        >
-                            Weather on {moment(props.date).date()}
-                        </Text>
-                        <Text style={{ fontSize: 11, lineHeight: 20 }}>th</Text> */}
-
                         {weatherIcon(weather)}
                     </View>
                     <Schedule
@@ -138,7 +127,12 @@ const Finalized = (props) => {
                         genres={userGenres}
                         accessRights={accessRights}
                         userID={props.userID}
-                        initRoutes={props.route.params.routeGuide}
+                        initRoutes={[
+                            {
+                                lat: props.userLocation.coords.latitude,
+                                long: props.userLocation.coords.longitude,
+                            },
+                        ].concat(allData[3])}
                     />
 
                     <Modal animated visible={visible} animationType="fade">
@@ -194,6 +188,7 @@ const mapStateToProps = (state) => {
         allEvents: state.add_events.events,
         userID: state.add_events.userID,
         date: state.date_select.date,
+        userLocation: state.date_select.userLocation,
     };
 };
 

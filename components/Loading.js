@@ -25,14 +25,14 @@ const Loading = (props) => {
 
     const filters =
         route === "board" ? props.route.params.filters : props.finalGenres[2];
-    const accessRights = props.route.params.access
+    const accessRights = props.route.params.access;
     const timeline =
         route === "board"
             ? props.route.params.timeInterval
             : props.route.params.synced === "synced"
-                ? props.route.params.time
-                : props.finalGenres[1];
-    const userLocation = props.userLocation;
+            ? props.route.params.time
+            : props.finalGenres[1];
+    //const userLocation = props.userLocation;
 
     //console.log(userLocation)
     React.useEffect(() => {
@@ -67,32 +67,33 @@ const Loading = (props) => {
             });
         fetch(
             "https://api.openweathermap.org/data/2.5/onecall?lat=1.290270&lon=103.851959&%20exclude=hourly,daily&appid=" +
-            WEATHER_API_KEY
+                WEATHER_API_KEY
         )
             .then((response) => response.json())
             .then((data) => {
                 const value = data["daily"][diff]["weather"][0]["main"];
                 setWeather(value);
 
-
                 const currentEvents = genreEventObjectArray(
                     userGenres,
                     props.allEvents,
                     filters,
-                    value
-                )
+                    value,
+                    timeline[1]
+                );
 
-                const allEvents = props.route.params.currentEvents == undefined ? data_timeline(
-                    timeline,
-                    userGenres,
-                    props.allEvents,
-                    currentEvents
-                ) : props.route.params.currentEvents;
+                const allEvents =
+                    props.route.params.currentEvents == undefined
+                        ? data_timeline(
+                              timeline,
+                              props.allEvents,
+                              currentEvents
+                          )
+                        : props.route.params.currentEvents;
 
                 storeFinalizedEventsInCollabBoard(allEvents);
 
-
-                setData(allEvents)
+                setData(allEvents);
 
                 setWeatherLoading(false);
             });
@@ -100,37 +101,39 @@ const Loading = (props) => {
 
     // Add to firebase so all collaboration board invitees see the same finalized timeline
     const storeFinalizedEventsInCollabBoard = (currentEvents) => {
-        if (route !== 'board') return;
-        var updates = {}
-        updates['finalized_timeline'] = currentEvents;
+        if (route !== "board") return;
+        var updates = {};
+        updates["finalized_timeline"] = currentEvents;
 
         // Only get finalized timeline ONCE, if timeline alr exists, dont update
-        if (props.route.params.board.hasOwnProperty('finalized_timeline')) {
+        if (props.route.params.board.hasOwnProperty("finalized_timeline")) {
             return;
         }
-        currentEvents.forEach(event => { console.log("####################### Event name: ", event) })
-        firebase.database().
-            ref('collab_boards/' + props.route.params.boardID) // Board ID passed from ListOfPlans.js
+        currentEvents.forEach((event) => {
+            console.log("####################### Event name: ", event);
+        });
+        firebase
+            .database()
+            .ref("collab_boards/" + props.route.params.boardID) // Board ID passed from ListOfPlans.js
             .update(updates);
-    }
+    };
 
     const onComplete = () => {
-        let temp = [];
-        temp.push({
-            lat: userLocation.coords.latitude,
-            long: userLocation.coords.longitude,
-        });
-        let routes = temp.concat(data[3]);
+        // let temp = [];
+        // temp.push({
+        //     lat: userLocation.coords.latitude,
+        //     long: userLocation.coords.longitude,
+        // });
+        // let routes = temp.concat(data[3]);
         //console.log(routeGuide);
         props.navigation.navigate("Finalized", {
-            route: route, // 'board' | 'manual' 
+            route: route, // 'board' | 'manual'
             access: accessRights, // 'host
             weather: weather,
             synced: synced,
-            time: freeTime,
             data: data,
             userGenres: userGenres,
-            routeGuide: routes,
+            //outeGuide: routes,
         });
     };
     if (isWeatherLoading || isTimingsLoading) {
@@ -167,7 +170,7 @@ const mapStateToProps = (state) => {
         finalTiming: state.timeline.finalTiming,
         allEvents: state.add_events.events,
         difference: state.date_select.difference,
-        userLocation: state.date_select.userLocation
+        //userLocation: state.date_select.userLocation,
     };
 };
 
