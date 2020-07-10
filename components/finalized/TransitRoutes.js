@@ -142,6 +142,7 @@ const TransitRoutes = ({ routes }) => {
                             style={{
                                 borderWidth: 1,
                                 borderRadius: 10,
+                                marginVertical: 10,
                             }}
                         >
                             <Route key={i} item={item} />

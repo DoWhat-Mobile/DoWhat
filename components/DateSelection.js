@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from "react";
-import {
-    TouchableOpacity,
-    View,
-    Text,
-    StyleSheet,
-    Modal,
-} from "react-native";
+import { TouchableOpacity, View, Text, StyleSheet, Modal } from "react-native";
 import { connect } from "react-redux";
 import { selectDate, setLocation } from "../actions/date_select_action";
 import { extractCalendarEvents } from "../actions/auth_screen_actions";
 import AvailabilityInputModal from "./AvailabilityInputModal";
 import firebase from "../database/firebase";
 import Genre from "../components/genre/Genre";
-import {
-    getBusyPeriodFromGoogleCal,
-} from "../reusable-functions/GoogleCalendarGetBusyPeriods";
+import { getBusyPeriodFromGoogleCal } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
 import Calendar from "./Calendar";
-import { Divider } from 'react-native-elements';
+import { Divider } from "react-native-elements";
 
 export const formatDate = (day, month, date) => {
     const possibleDays = [
@@ -72,18 +64,23 @@ const DateSelection = (props) => {
                 <View>
                     <TouchableOpacity
                         style={[
-                            styles.manualInputButton,
+                            styles.syncCalendarButton,
                             {
-                                borderRadius: 5,
-                                backgroundColor: "#244749",
-                                borderWidth: 0.2,
+                                backgroundColor: "#F28333",
                             },
                         ]}
                         disabled={true}
                         onPress={() => finalizeBoard()}
                     >
-                        <Text style={{ color: "white", marginLeft: 5 }}>
-                            Availabilities Inputted
+                        <Text
+                            style={{
+                                color: "#ffe0b3",
+                                marginLeft: 5,
+                                fontWeight: "bold",
+                                fontFamily: "serif",
+                            }}
+                        >
+                            Sync Calendar
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -91,13 +88,19 @@ const DateSelection = (props) => {
         } else {
             return (
                 <TouchableOpacity
-                    style={styles.manualInputButton}
+                    style={styles.syncCalendarButton}
                     onPress={() => inputAvailabilities()}
                     disabled={isButtonDisabled || isFinalized} // Cant sync if manual input
                 >
-                    <Text style={{ color: '#244749' }}>
-                        Sync Google Calendar
-                        </Text>
+                    <Text
+                        style={{
+                            color: "#F28333",
+                            fontWeight: "bold",
+                            fontFamily: "serif",
+                        }}
+                    >
+                        Sync Calendar
+                    </Text>
                 </TouchableOpacity>
             );
         }
@@ -166,7 +169,9 @@ const DateSelection = (props) => {
             </Modal>
             <View style={styles.dateInput}>
                 <View style={{ flexDirection: "row", marginTop: 10 }}>
-                    <Text style={styles.header}>Plan Event On: </Text>
+                    <Text style={[styles.header, { fontSize: 20 }]}>
+                        Plan Event On:{" "}
+                    </Text>
                     <Text style={styles.date}>
                         {formatDate(
                             date.getDay(),
@@ -177,44 +182,64 @@ const DateSelection = (props) => {
                 </View>
             </View>
             <View style={styles.calendar}>
-                <Calendar
-                    currDate={new Date()}
-                    onDateChange={onDateChange}
-                />
+                <Calendar currDate={new Date()} onDateChange={onDateChange} />
             </View>
 
             <View style={styles.availsInput}>
                 <Text
                     style={[
                         styles.header,
-                        { color: "#F9F0E6", textAlign: "center", marginTop: 10 },
+                        {
+                            textAlign: "center",
+                            marginTop: 20,
+                        },
                     ]}
                 >
                     Input your available timings
                 </Text>
-                <View style={{
-                    flex: 0.8, justifyContent: 'space-around', borderBottomWidth: 0.5,
-                    borderColor: '#F9F0E6'
-                }}>
+                <View
+                    style={{
+                        flex: 0.8,
+                        justifyContent: "space-around",
+                        borderBottomWidth: 0.5,
+                        borderColor: "#F9F0E6",
+                    }}
+                >
                     <View
                         style={{
                             flexDirection: "row",
-                            justifyContent: "space-evenly",
+                            justifyContent: "center",
+                            marginTop: 15,
                         }}
                     >
-                        <TouchableOpacity disabled={isButtonDisabled} // If sync google cal, cant manual input 
-                            style={[styles.manualInputButton, isFinalized
-                                ? { backgroundColor: '#244749' } : {}]}
-                            onPress={() => setModalVisible(true)}>
-                            <Text style={[styles.inputAvailabilities, isFinalized
-                                ? { color: "white" }
-                                : { color: '#244749' }]}>
-                                {isFinalized
-                                    ? "Successfully Inputted"
-                                    : "Manual Input"}
+                        <TouchableOpacity
+                            disabled={isButtonDisabled} // If sync google cal, cant manual input
+                            style={[
+                                styles.manualInputButton,
+                                isFinalized
+                                    ? { backgroundColor: "#F28333" }
+                                    : {},
+                            ]}
+                            onPress={() => setModalVisible(true)}
+                        >
+                            <Text
+                                style={[
+                                    { fontWeight: "bold", fontFamily: "serif" },
+                                    isFinalized
+                                        ? { color: "#ffe0b3" }
+                                        : { color: "#F28333" },
+                                ]}
+                            >
+                                Manual Input
                             </Text>
                         </TouchableOpacity>
-                        <Divider style={{ borderWidth: 0.2, height: '100%', borderColor: '#F9F0E6' }} />
+                        <Divider
+                            style={{
+                                borderWidth: 0.2,
+                                height: "100%",
+                                borderColor: "#F9F0E6",
+                            }}
+                        />
                         {renderSyncCalendarButton()}
                     </View>
                 </View>
@@ -238,7 +263,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
     selectDate,
     extractCalendarEvents,
-    setLocation
+    setLocation,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DateSelection);
@@ -249,7 +274,7 @@ const styles = StyleSheet.create({
     },
     header: {
         fontWeight: "bold",
-        fontSize: 20,
+        fontSize: 18,
         fontFamily: "serif",
         borderTopEndRadius: 5,
         paddingRight: 10,
@@ -271,17 +296,19 @@ const styles = StyleSheet.create({
     },
     availsInput: {
         flex: 2,
-        borderRadius: 30,
+        borderRadius: 40,
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,
-        backgroundColor: "#F28333",
+        backgroundColor: "#fff5e6",
+        //"#F28333",
     },
     calendar: {
         flex: 7,
     },
     genreSelection: {
         flex: 5,
-        backgroundColor: "#F28333",
+        backgroundColor: "white",
+        //"#F28333",
     },
     button: {
         fontSize: 20,
@@ -306,12 +333,16 @@ const styles = StyleSheet.create({
         marginTop: 17,
     },
     manualInputButton: {
-        borderRadius: 5,
-        padding: 3,
-        paddingLeft: 6,
-        paddingRight: 6,
-        backgroundColor: 'white'
-
+        borderBottomStartRadius: 20,
+        borderTopStartRadius: 20,
+        padding: 10,
+        backgroundColor: "#ffe0b3",
+    },
+    syncCalendarButton: {
+        borderBottomEndRadius: 20,
+        borderTopEndRadius: 20,
+        padding: 10,
+        backgroundColor: "#ffe0b3",
     },
     emptyDate: {
         height: 15,

@@ -105,17 +105,21 @@ const Genre = (props) => {
             <TouchableOpacity
                 key={items}
                 onPress={() => handlePress(items)}
-                style={[styles.button,
-                selected.includes(items) ?
-                    { backgroundColor: '#244749', borderColor: '#244749' }
-                    : { backgroundColor: 'white' }]}
+                style={[
+                    styles.button,
+                    selected.includes(items)
+                        ? {
+                              backgroundColor: "#F28333",
+                          }
+                        : { backgroundColor: "#ffe0b3" },
+                ]}
             >
                 <Text
                     style={{
                         fontSize: 14,
-                        fontFamily: 'serif',
-                        fontWeight: '500',
-                        color: selected.includes(items) ? 'white' : "#244749",
+                        fontFamily: "serif",
+                        fontWeight: "bold",
+                        color: selected.includes(items) ? "#ffe0b3" : "#F28333",
                     }}
                 >
                     {items}
@@ -124,7 +128,7 @@ const Genre = (props) => {
         ));
 
     return (
-        <View>
+        <View style={{ backgroundColor: "#fff5e6" }}>
             <Modal animated visible={visible} animationType="fade">
                 <FoodFilter
                     onClose={onClose}
@@ -134,11 +138,15 @@ const Genre = (props) => {
             </Modal>
 
             <View style={styles.textContainer}>
-                <Text style={{
-                    fontWeight: "bold", fontSize: 20,
-                    fontFamily: "serif", color: '#F9F0E6',
-                    textAlign: 'center'
-                }}>
+                <Text
+                    style={{
+                        fontWeight: "bold",
+                        fontSize: 18,
+                        fontFamily: "serif",
+                        textAlign: "center",
+                        marginTop: 20,
+                    }}
+                >
                     Choose your favourite genres
                 </Text>
             </View>
@@ -147,19 +155,24 @@ const Genre = (props) => {
                 {buttons()}
 
                 <TouchableOpacity
-                    style={[styles.button, selected.includes("food")
-                        ? { backgroundColor: '#244749', borderColor: '#244749' }
-                        : { backgroundColor: 'white' }]}
+                    style={[
+                        styles.button,
+                        selected.includes("food")
+                            ? {
+                                  backgroundColor: "#F28333",
+                              }
+                            : { backgroundColor: "#ffe0b3" },
+                    ]}
                     onPress={() => handleFoodPress()}
                 >
                     <Text
                         style={{
                             fontSize: 14,
-                            fontWeight: '500',
-                            fontFamily: 'serif',
+                            fontWeight: "bold",
+                            fontFamily: "serif",
                             color: selected.includes("food")
-                                ? 'white'
-                                : "#244749",
+                                ? "#ffe0b3"
+                                : "#F28333",
                         }}
                     >
                         FOOD
@@ -172,37 +185,13 @@ const Genre = (props) => {
                 </Text>
             </View>
 
-            <View
-            // style={{
-            //     f
-            //     justifyContent: "flex-end",
-            //     marginBottom: 36,
-            // }}
-            >
+            <View>
                 <TouchableOpacity
                     style={styles.continue}
                     onPress={() => onComplete()}
                 >
                     <Text style={styles.continueButton}>Continue</Text>
                 </TouchableOpacity>
-                {/* <TouchableOpacity
-                    style={[
-                        styles.button,
-                        {
-                            marginLeft: 287,
-                            marginBottom: 200,
-                            borderWidth: 0,
-                        },
-                    ]}
-                >
-                    <AntDesign
-                        name="arrowright"
-                        size={40}
-                        onPress={() => {
-                            onComplete();
-                        }}
-                    />
-                </TouchableOpacity> */}
             </View>
         </View>
     );
@@ -219,17 +208,19 @@ const styles = StyleSheet.create({
         alignContent: "center",
         flexWrap: "wrap",
         borderBottomWidth: 0.5,
-        borderColor: '#F9F0E6'
+        borderColor: "#F9F0E6",
+        marginLeft: 40,
     },
     button: {
-        borderRadius: 5,
-        padding: 6,
+        borderRadius: 20,
+        padding: 10,
         borderWidth: StyleSheet.hairlineWidth,
         marginHorizontal: 10,
         marginVertical: 10,
-        borderColor: 'white',
+        borderColor: "white",
     },
     textContainer: {
+        backgroundColor: "#fff5e6",
     },
     continue: {
         flexDirection: "column",
@@ -237,14 +228,15 @@ const styles = StyleSheet.create({
         alignContent: "stretch",
         marginLeft: "5%",
         marginRight: "5%",
+        marginTop: 5,
     },
     continueButton: {
         fontSize: 20,
-        fontFamily: 'serif',
+        fontFamily: "serif",
         textAlign: "center",
         borderRadius: 5,
-        backgroundColor: "white",
-        color: "#244749",
+        backgroundColor: "#ffe0b3",
+        color: "#F28333",
     },
 });
 
