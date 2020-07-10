@@ -29,7 +29,7 @@ const Schedule = ({
     board, // For board route, will be undefined for other route
 }) => {
     const [events, setEvents] = React.useState([]);
-    const [eventsInFirebase, setEventsInFirebase] = React.useState([])
+    //const [eventsInFirebase, setEventsInFirebase] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
     const [timingsArray, setTimingsArray] = React.useState([]);
@@ -37,17 +37,17 @@ const Schedule = ({
     const [routes, setRoutes] = React.useState([]);
 
     React.useEffect(() => {
-        let formatData = [];
-        for (i = 0; i < data[0].length; i++) {
-            const dataObj = data[0][i];
-            const startTime = dataObj.startTime;
-            const event = dataObj.event;
-            const genre = dataObj.genre;
-            formatData.push(objectFormatter(startTime, event, genre));
-        }
+        // let formatData = [];
+        // for (i = 0; i < data[0].length; i++) {
+        //     const dataObj = data[0][i];
+        //     const startTime = dataObj.startTime;
+        //     const event = dataObj.event;
+        //     const genre = dataObj.genre;
+        //     formatData.push(objectFormatter(startTime, event, genre));
+        // }
         setRoutes(initRoutes);
-        setEvents(formatData);
-        setEventsInFirebase(data)
+        setEvents(data[0]);
+        //setEventsInFirebase(data);
         setTimingsArray(data[1]);
     }, []);
 
@@ -68,7 +68,7 @@ const Schedule = ({
             return obj;
         });
 
-        const updatedFirebase = eventsInFirebase.map(ite)
+        // const updatedFirebase = eventsInFirebase.map(ite);
         setEvents(updatedData);
         mapUpdate(updatedCoord);
         routeUpdate(selected, unsatisfied);
@@ -133,10 +133,10 @@ const Schedule = ({
      */
     const sendGcalInviteAndResetAttendeeData = async () => {
         const formattedData = formatEventsData(events); // Formatted data contains event title
-        if (route == 'board') { // collab board route
+        if (route == "board") {
+            // collab board route
             // Create calendar event and send calendar invite to invitees
-            await handleBoardRouteProcess(formattedData, timingsArray,
-                board)
+            await handleBoardRouteProcess(formattedData, timingsArray, board);
         } else {
             // handleProcess function and all other logic is in GoogleCalendarInvite.js
             await handleProcess(formattedData, timingsArray);
