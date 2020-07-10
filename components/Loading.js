@@ -11,7 +11,6 @@ import {
 
 const Loading = (props) => {
     const [freeTime, setFreeTime] = React.useState([]);
-    const [data, setData] = React.useState([]);
     const [weather, setWeather] = React.useState("");
     const [isWeatherLoading, setWeatherLoading] = React.useState(true);
     const [isTimingsLoading, setTimingsLoading] = React.useState(true);
@@ -31,11 +30,9 @@ const Loading = (props) => {
         route === "board"
             ? props.route.params.timeInterval // From collab board
             : props.route.params.synced === "synced"
-                ? props.route.params.time
-                : props.finalGenres[1]; // From Redux state
-    //const userLocation = props.userLocation;
+            ? props.route.params.time
+            : props.finalGenres[1]; // From Redux state
 
-    //console.log(userLocation)
     React.useEffect(() => {
         const diff = props.difference;
         const userId = firebase.auth().currentUser.uid; //Firebase UID of current user
@@ -68,38 +65,34 @@ const Loading = (props) => {
             });
         fetch(
             "https://api.openweathermap.org/data/2.5/onecall?lat=1.290270&lon=103.851959&%20exclude=hourly,daily&appid=" +
-            WEATHER_API_KEY
+                WEATHER_API_KEY
         )
             .then((response) => response.json())
             .then((data) => {
                 const value = data["daily"][diff]["weather"][0]["main"];
                 setWeather(value);
-
-                const currentEvents = genreEventObjectArray(
-                    userGenres,
-                    props.allEvents,
-                    filters,
-                    value,
-                    timeline[1]
-                );
-
-                const allEvents =
-                    props.route.params.currentEvents == undefined
-                        ? data_timeline(
-                            timeline,
-                            props.allEvents,
-                            currentEvents
-                        )
-                        : props.route.params.currentEvents;
-
-                storeFinalizedEventsInCollabBoard(allEvents);
-
-                setData(allEvents);
-
-                console.log("All Events are : ", allEvents)
                 setWeatherLoading(false);
             });
     }, []);
+
+    const allData = () => {
+        const time = route === "link" ? freeTime : timeline;
+        const currentEvents = genreEventObjectArray(
+            userGenres,
+            props.allEvents,
+            filters,
+            weather,
+            time[1]
+        );
+
+        const allEvents =
+            props.route.params.currentEvents == undefined
+                ? data_timeline(time, props.allEvents, currentEvents)
+                : props.route.params.currentEvents;
+
+        storeFinalizedEventsInCollabBoard(allEvents);
+        return allEvents;
+    };
 
     // Add to firebase so all collaboration board invitees see the same finalized timeline
     const storeFinalizedEventsInCollabBoard = (currentEvents) => {
@@ -131,7 +124,7 @@ const Loading = (props) => {
             access: accessRights, // 'host
             weather: weather,
             synced: synced,
-            data: data,
+            data: allData(),
             userGenres: userGenres,
             //outeGuide: routes,
         });

@@ -139,7 +139,7 @@ export const data_timeline = (timeline, events, currentEvents) => {
                 [i].toLowerCase();
             const event = currentEvents[i][genre];
             if (events[genre].slots.includes(startTime)) {
-                if (startTime + events[genre]["duration"] >= timeline[1]) {
+                if (startTime + events[genre]["duration"] > timeline[1]) {
                     break;
                 }
                 let intervalObject = { start: "", end: "" };
