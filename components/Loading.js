@@ -26,6 +26,7 @@ const Loading = (props) => {
     const filters =
         route === "board" ? props.route.params.filters : props.finalGenres[2];
     const accessRights = props.route.params.access;
+    // Finalized time availability array to schedule events
     const timeline =
         route === "board"
             ? props.route.params.timeInterval // From collab board

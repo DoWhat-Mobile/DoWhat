@@ -7,13 +7,15 @@ import { connect } from 'react-redux';
 import firebase from '../database/firebase';
 import { Avatar } from 'react-native-elements';
 import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyPeriods';
+import { selectDate } from "../actions/date_select_action";
 
 /**
  * Child component of FriendInput, displays the friends that can be invited, and holds
  * the logic of inviting friends for collaboration. 
  */
 const FriendsDisplay = ({ userID, currUserName, selected_date, database,
-    currUserPreferenceArr, currUserFoodFilterObj, currUserProfilePicture }) => {
+    currUserPreferenceArr, currUserFoodFilterObj, currUserProfilePicture,
+    startTime, endTime }) => {
     useEffect(() => {
         showAllMyFriends(); // All accepted friends
     }, []);
@@ -69,6 +71,41 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
         setAllAcceptedFriends(friends);
     }
 
+    /**
+     * Convert time and date to Javascript date object format
+     * @param {*} time is a string 'HH:mm' 
+     */
+    const formatTime = (time, selectedDate) => {
+        return selectedDate + 'T' + time + ':00+08:00';
+    }
+
+    /**
+     * Convert start and end time which gives the range of availabilities
+     * to busy periods. This is for compatibility with the algo in the DoWhat
+     * (The DoWhat mobile app works with busy period) 
+     * @param {*} startTime is a string 'HH:mm' 
+     * @param {*} endTime is a string 'HH:mm'
+     */
+    const getBusyPeriods = (startTime, endTime, selectedDate) => {
+        // There will only be two blocks of busy periods, 1 before start and 1 after end
+        const busyBlockOneStart = formatTime('08:00', selectedDate);
+        const busyBlockOneEnd = formatTime(startTime, selectedDate)
+
+        const busyBlockTwoStart = formatTime(endTime, selectedDate)
+        const busyBlockTwoEnd = formatTime('23:59', selectedDate);
+        // Hardcoded to match format of using Google API Free/busy period call
+        return {
+            0: {
+                start: busyBlockOneStart,
+                end: busyBlockOneEnd
+            },
+            1: {
+                start: busyBlockTwoStart,
+                end: busyBlockTwoEnd
+            }
+        }
+    }
+
     const createUniqueBoardID = (currUser, currUserID) => {
         const id = currUserID + '_' + selected_date;
         return id;
@@ -102,6 +139,20 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
         return updates;
     }
 
+    // Prioritize adding synced Gcal busy periods, if that doesnt exist, use manual inputted time
+    const addCurrUserBusyPeriods = (busyPeriods) => {
+        if (Object.keys(busyPeriods).length == 0) { // No busy periods synced with Firebase
+            if (startTime == endTime) {
+                // If no manual input and no synced, set whole day avalable
+                return getBusyPeriods('08:00', '23:59', selected_date);
+            }
+            return getBusyPeriods(startTime, endTime, selected_date)
+
+        } else {
+            return busyPeriods;
+        }
+    }
+
     /**
      * Update process:
      * 1) Get information from Firebase, and create a board with a unique board ID
@@ -133,7 +184,7 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
             name: inviteeName,
             gmail: inviteeGmail
         }; // Add to list of invitees
-        updates['/availabilities/' + formattedUserEmail] = currUserBusyPeriods;
+        updates['/availabilities/' + formattedUserEmail] = addCurrUserBusyPeriods(currUserBusyPeriods); // currUserBusyPeriods;
         updates['host'] = currUserName;
         updates['finalized/' + currUserName] = userID; // Host finalized selection already
         updates['/isNewlyAddedBoard'] = true;
@@ -296,9 +347,10 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
 
 // Get previously inputted date from DateSelection for API call
 const mapStateToProps = (state) => {
-
-    console.log(state.timeline.availableTimings[0].startTime.get('hour'))
-    console.log(state.timeline.availableTimings[0].endTime.get('hour'))
+    const startTime = state.timeline.availableTimings[0].startTime.get('hour') + ':' +
+        state.timeline.availableTimings[0].startTime.get('minute')
+    const endTime = state.timeline.availableTimings[0].endTime.get('hour') + ':' +
+        state.timeline.availableTimings[0].endTime.get('minute')
     const dateInString = formatDateToString(state.date_select.date);
 
     return {
@@ -308,6 +360,8 @@ const mapStateToProps = (state) => {
         currUserPreferenceArr: state.genre.genres[0],
         currUserFoodFilterObj: state.genre.genres[2],
         currUserProfilePicture: state.add_events.profilePicture,
+        startTime: startTime,
+        endTime: endTime,
     };
 };
 
