@@ -146,6 +146,7 @@ const Schedule = ({
 
         firebase.database().ref().update(updates);
         navigation.navigate("Home"); // navigate back once done
+        alert("A calendar event has been created for you, and calendar invite sent to your friends.")
     };
 
     return (

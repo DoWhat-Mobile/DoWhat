@@ -112,42 +112,6 @@ const FriendInput = (props) => {
             </View>
         );
 
-    } else if (props.route.params.route == 'manual') {
-        return (
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <Text style={styles.titleText}>Invite your friends</Text>
-                </View>
-                <View style={styles.body}>
-                    <Image
-                        style={styles.image}
-                        source={require("../assets/FriendsHangout.png")}
-                    />
-                    <Text style={styles.subtitleText}>
-                        You have chosen your date and inputted your availabilities,
-                        now input your friends' availabilities
-                </Text>
-                </View>
-                <View style={styles.footer}>
-                    <TouchableOpacity
-                        style={[
-                            styles.shareWithButton,
-                            {
-                                backgroundColor: "grey",
-                                padding: 3,
-                                paddingLeft: 10,
-                                paddingRight: 10,
-                            },
-                        ]}
-                        onPress={() =>
-                            props.navigation.navigate("Genre", { route: "link" })
-                        }
-                    >
-                        <Text style={{ fontSize: 11, color: "white" }}>Done</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        );
     } else { // Invite friends without DoWhat app
         return (
             <View style={styles.container}>
@@ -221,7 +185,7 @@ const FriendInput = (props) => {
                             },
                         ]}
                         onPress={() =>
-                            props.navigation.navigate("Loading", { route: "link" })
+                            props.navigation.navigate("Loading", { route: "link", access: 'host' })
                         }
                     >
                         <Text style={{ fontSize: 16, color: "white" }}>
