@@ -26,7 +26,7 @@ class AuthScreen extends Component {
                 // setErrorMsg("Permission to access location was denied");
             }
 
-            let location = await Location.getCurrentPositionAsync({});
+            let location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
             this.props.setLocation(location);
         })()
         this.checkIfLoggedIn();

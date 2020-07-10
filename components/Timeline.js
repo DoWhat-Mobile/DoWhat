@@ -4,7 +4,6 @@ import {
     updateCurrFocusTime,
     goForward,
     goBack,
-    finalizeTimeline,
 } from "../actions/timeline_actions";
 import { StyleSheet, View, Text, Button, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
@@ -53,45 +52,6 @@ const Timeline = (props) => {
         showMode("time");
     };
 
-    // const setfinalTime = () => {
-    //     let finalTiming = [0, 24];
-    //     for (i = 0; i < props.allTimings.length; i++) {
-    //         let startState = props.allTimings[i].startTime;
-    //         let start = parseInt(
-    //             moment(startState)
-    //                 .tz("Asia/Singapore")
-    //                 .format("HH:mm")
-    //                 .substring(0, 2)
-    //         );
-    //         if (finalTiming[0] < start) {
-    //             finalTiming[0] = start;
-    //         }
-    //     }
-    //     for (i = 0; i < props.allTimings.length; i++) {
-    //         let endState = props.allTimings[i].endTime;
-    //         let val = parseInt(
-    //             moment(endState)
-    //                 .tz("Asia/Singapore")
-    //                 .format("HH:mm")
-    //                 .substring(0, 2)
-    //         );
-    //         end = val === 0 ? 24 : val;
-    //         if (finalTiming[1] > end) {
-    //             finalTiming[1] = end;
-    //         }
-    //     }
-    //     props.finalizeTimings(finalTiming); // Setting state in FriendInputModal.js which is parent component
-    //     console.log(finalTiming);
-    // };
-
-    // const finalize = (values) => {
-    //     setfinalTime();
-    //     props.navigation.navigate("Genre", {
-    //         route: "manual",
-    //         weather: weather,
-    //     });
-    // };
-
     const modifyStartTime = () => {
         setModifyingStartTime(true);
         showTimepicker();
@@ -136,18 +96,18 @@ const Timeline = (props) => {
                         </Text>
                     </TouchableOpacity>
                 </View>
-                {/*
-                <TouchableOpacity
-                    style={styles.addFriendButton}
-                    onPress={addFriend}
-                >
-                    <MaterialCommunityIcons
-                        name="account-plus"
-                        color={"black"}
-                        size={20}
-                    />
-                </TouchableOpacity>
-                */}
+                {props.route == 'manual'
+                    ? <TouchableOpacity
+                        style={styles.addFriendButton}
+                        onPress={addFriend}
+                    >
+                        <MaterialCommunityIcons
+                            name="account-plus"
+                            color={"black"}
+                            size={20}
+                        />
+                    </TouchableOpacity>
+                    : null}
             </View>
 
             <View style={styles.timeSelection}>
@@ -167,19 +127,22 @@ const Timeline = (props) => {
             </View>
 
             <View style={styles.footer}>
-                {/*
-                <TouchableOpacity onPress={previousFriend}>
-                    <FontAwesomeIcon icon={faArrowLeft} size={25} />
-                </TouchableOpacity>
-                <View>
-                    <Text>
-                        You are adding for friend number {props.currFocus + 1}
-                    </Text>
-                </View>
-                <TouchableOpacity onPress={nextFriend}>
-                    <FontAwesomeIcon icon={faArrowRight} size={25} />
-                </TouchableOpacity>
-                */}
+                {props.route == 'manual'
+                    ?
+                    <View>
+                        <TouchableOpacity onPress={previousFriend}>
+                            <FontAwesomeIcon icon={faArrowLeft} size={25} />
+                        </TouchableOpacity>
+                        <View>
+                            <Text>
+                                You are adding for friend number {props.currFocus + 1}
+                            </Text>
+                        </View>
+                        <TouchableOpacity onPress={nextFriend}>
+                            <FontAwesomeIcon icon={faArrowRight} size={25} />
+                        </TouchableOpacity>
+                    </View>
+                    : null}
             </View>
 
             {show && (
@@ -234,7 +197,6 @@ const mapDispatchToProps = {
     goForward,
     goBack,
     updateCurrFocusTime,
-    finalizeTimeline,
 };
 
 const mapStateToProps = (state) => {

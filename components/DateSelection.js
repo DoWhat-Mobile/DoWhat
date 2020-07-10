@@ -154,6 +154,7 @@ const DateSelection = (props) => {
             >
                 <AvailabilityInputModal
                     onClose={closeModal}
+                    route={props.route.params.route}
                     date={date}
                     onFinalize={onFinalize}
                     styledDate={formatDate(

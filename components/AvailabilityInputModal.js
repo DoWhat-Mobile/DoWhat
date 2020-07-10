@@ -22,9 +22,48 @@ const AvailabilityInputModal = ({
     onFinalize,
     finalizeTimeline,
     allTimings,
+    route
 }) => {
     const [boardIsFinalized, setBoardIsFinalized] = useState(false);
 
+    const setfinalTime = () => {
+        if (route !== 'manual') {
+            return finalizeBoard();
+        } else { // If manual route, account for all additions
+            let finalTiming = [0, 24];
+            for (i = 0; i < allTimings.length; i++) {
+                let startState = allTimings[i].startTime;
+                let start = parseInt(
+                    moment(startState)
+                        .tz("Asia/Singapore")
+                        .format("HH:mm")
+                        .substring(0, 2)
+                );
+                if (finalTiming[0] < start) {
+                    finalTiming[0] = start;
+                }
+            }
+            for (i = 0; i < allTimings.length; i++) {
+                let endState = allTimings[i].endTime;
+                let val = parseInt(
+                    moment(endState)
+                        .tz("Asia/Singapore")
+                        .format("HH:mm")
+                        .substring(0, 2)
+                );
+                let end = val === 0 ? 24 : val;
+                if (finalTiming[1] > end) {
+                    finalTiming[1] = end;
+                }
+            }
+            console.log("Final manual input timing is : ", finalTiming);
+            finalizeTimeline(finalTiming); // Set Redux state 
+            onFinalize();
+            onClose();
+        }
+    };
+
+    // For non-manual route calculation of manual input
     const finalizeBoard = () => {
         let finalTiming = [0, 24];
         let startState = allTimings[0].startTime;
@@ -44,7 +83,7 @@ const AvailabilityInputModal = ({
         );
         let end = val === 0 ? 24 : val;
         finalTiming[1] = end;
-        console.log(finalTiming);
+        console.log("Final timing is: ", finalTiming);
         finalizeTimeline(finalTiming);
         onFinalize();
         onClose();
@@ -63,7 +102,7 @@ const AvailabilityInputModal = ({
                         },
                     ]}
                     disabled={true}
-                    onPress={() => finalizeBoard()}
+                    onPress={() => setfinalTime()}
                 >
                     <AntDesign
                         name="check"
@@ -76,7 +115,7 @@ const AvailabilityInputModal = ({
         return (
             <TouchableOpacity
                 style={styles.finalizeButton}
-                onPress={() => finalizeBoard()}
+                onPress={() => setfinalTime()}
             >
                 <Text>Done</Text>
             </TouchableOpacity>
@@ -96,7 +135,7 @@ const AvailabilityInputModal = ({
             />
 
             <View style={styles.body}>
-                <Timeline />
+                <Timeline route={route} />
             </View>
 
             <View style={styles.buttonGroup}>

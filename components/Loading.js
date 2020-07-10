@@ -28,10 +28,10 @@ const Loading = (props) => {
     const accessRights = props.route.params.access;
     const timeline =
         route === "board"
-            ? props.route.params.timeInterval
+            ? props.route.params.timeInterval // From collab board
             : props.route.params.synced === "synced"
-            ? props.route.params.time
-            : props.finalGenres[1];
+                ? props.route.params.time
+                : props.finalGenres[1]; // From Redux state
     //const userLocation = props.userLocation;
 
     //console.log(userLocation)
@@ -67,7 +67,7 @@ const Loading = (props) => {
             });
         fetch(
             "https://api.openweathermap.org/data/2.5/onecall?lat=1.290270&lon=103.851959&%20exclude=hourly,daily&appid=" +
-                WEATHER_API_KEY
+            WEATHER_API_KEY
         )
             .then((response) => response.json())
             .then((data) => {
@@ -85,16 +85,17 @@ const Loading = (props) => {
                 const allEvents =
                     props.route.params.currentEvents == undefined
                         ? data_timeline(
-                              timeline,
-                              props.allEvents,
-                              currentEvents
-                          )
+                            timeline,
+                            props.allEvents,
+                            currentEvents
+                        )
                         : props.route.params.currentEvents;
 
                 storeFinalizedEventsInCollabBoard(allEvents);
 
                 setData(allEvents);
 
+                console.log("All Events are : ", allEvents)
                 setWeatherLoading(false);
             });
     }, []);
@@ -109,9 +110,7 @@ const Loading = (props) => {
         if (props.route.params.board.hasOwnProperty("finalized_timeline")) {
             return;
         }
-        currentEvents.forEach((event) => {
-            console.log("####################### Event name: ", event);
-        });
+
         firebase
             .database()
             .ref("collab_boards/" + props.route.params.boardID) // Board ID passed from ListOfPlans.js
