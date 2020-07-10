@@ -10,7 +10,7 @@ import { View, StyleSheet, FlatList, Text, Image, TouchableOpacity } from 'react
  * The toggling is controlled by the boolean flag "fullView" props 
  */
 const SuggestedFriends = ({ friends, seeMore, fullView, currUserName,
-    userID, currUserProfilePicture, maxNumToRender }) => {
+    userID, currUserProfilePicture }) => {
     useEffect(() => {
         setAllFriends(friends);
     }, [])
@@ -64,7 +64,6 @@ const SuggestedFriends = ({ friends, seeMore, fullView, currUserName,
         const currFriends = [...allFriends];
         // Find the friend from all friends in component state
         for (var i = 0; i < allFriends.length; i++) {
-            if (i == maxNumToRender) break;
             if (allFriends[i][1] == friendID) {
                 currFriends[i][2] = true; //Mark as requested 
             }

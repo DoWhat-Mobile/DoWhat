@@ -141,7 +141,7 @@ const AllFriends = ({ userID }) => {
         if (moreUsers.length == 0) { // no more friends found
             return;
         }
-        setSuggestedFriends([...moreUsers.slice(0, 4)]) // Limited friends shown
+        setSuggestedFriends([...moreUsers.slice(0, 3)]) // Limited friends shown
         setAllSuggestedFriends([...moreUsers]);
         setIsLoading(false); // Render screen once data loads
     }
@@ -249,7 +249,7 @@ const AllFriends = ({ userID }) => {
                 height="auto"
                 overlayStyle={{ width: '90%', height: '80%' }}
             >
-                <AllSuggestedFriendsModal friends={allSuggestedFriends} closeOverlay={closeOverlay} maxNumToRender={24} />
+                <AllSuggestedFriendsModal friends={allSuggestedFriends} closeOverlay={closeOverlay} />
             </Overlay>
 
             <View style={styles.header}>
@@ -279,7 +279,7 @@ const AllFriends = ({ userID }) => {
             </View>
 
             <View style={styles.sectionHeader}>
-                <SuggestedFriends friends={suggestedFriends} seeMore={openOverlay} fullView={false} maxNumToRender={3} />
+                <SuggestedFriends friends={suggestedFriends} seeMore={openOverlay} fullView={false} />
             </View>
 
             <View style={styles.body}>
