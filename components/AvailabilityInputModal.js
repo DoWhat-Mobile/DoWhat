@@ -22,16 +22,17 @@ const AvailabilityInputModal = ({
     onFinalize,
     finalizeTimeline,
     allTimings,
-    route
+    route,
 }) => {
     const [boardIsFinalized, setBoardIsFinalized] = useState(false);
 
     const setfinalTime = () => {
-        if (route !== 'manual') {
+        if (route !== "manual") {
             return finalizeBoard();
-        } else { // If manual route, account for all additions
+        } else {
+            // If manual route, account for all additions
             let finalTiming = [0, 24];
-            for (i = 0; i < allTimings.length; i++) {
+            for (let i = 0; i < allTimings.length; i++) {
                 let startState = allTimings[i].startTime;
                 let start = parseInt(
                     moment(startState)
@@ -43,7 +44,7 @@ const AvailabilityInputModal = ({
                     finalTiming[0] = start;
                 }
             }
-            for (i = 0; i < allTimings.length; i++) {
+            for (let i = 0; i < allTimings.length; i++) {
                 let endState = allTimings[i].endTime;
                 let val = parseInt(
                     moment(endState)
@@ -57,7 +58,7 @@ const AvailabilityInputModal = ({
                 }
             }
             console.log("Final manual input timing is : ", finalTiming);
-            finalizeTimeline(finalTiming); // Set Redux state 
+            finalizeTimeline(finalTiming); // Set Redux state
             onFinalize();
             onClose();
         }

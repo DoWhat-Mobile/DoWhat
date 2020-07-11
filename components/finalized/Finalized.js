@@ -14,9 +14,9 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import Schedule from "./Schedule";
 import Map from "./Map";
+import Minimap from "./Minimap";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { YellowBox } from "react-native";
-import moment from "moment";
 
 const Finalized = (props) => {
     YellowBox.ignoreWarnings(["VirtualizedLists should never be nested"]);
@@ -30,8 +30,6 @@ const Finalized = (props) => {
     const accessRights = props.route.params.access;
     const weather = props.route.params.weather;
     const userGenres = props.route.params.userGenres;
-    const currentEvents = props.route.params.data;
-    const timingsArray = props.route.params.timingsArray;
 
     const onClose = () => {
         setVisible(false);
@@ -93,19 +91,17 @@ const Finalized = (props) => {
         return (
             <ScrollView style={styles.container}>
                 <View style={styles.header}></View>
-                <View style={styles.image}>
+                <View
+                    style={{
+                        height: Dimensions.get("window").height / 4,
+                        width: Dimensions.get("window").width + 30,
+                    }}
+                >
                     <TouchableOpacity
-                        style={{ borderRadius: 20 }}
+                        style={StyleSheet.absoluteFillObject}
                         onPress={() => setVisible(true)}
                     >
-                        <Image
-                            style={{
-                                height: Dimensions.get("window").height / 4,
-                                width: Dimensions.get("window").width + 30,
-                                borderRadius: 20,
-                            }}
-                            source={require("../../assets/map.png")}
-                        />
+                        <Minimap coord={coord} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.body}>
