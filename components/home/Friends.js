@@ -17,7 +17,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 const AllFriends = ({ userID }) => {
     useFocusEffect(
         useCallback(() => {
-            showAllMyFriends(); // All accepted friends
             findFriendsFromFirebase();
             return () => firebase.database().ref('users').off();
         }, [])
@@ -38,6 +37,7 @@ const AllFriends = ({ userID }) => {
             .on("value", (snapshot) => {
                 const allAppUsers = snapshot.val();
                 const currUserDetails = allAppUsers[userID]
+                showAllMyFriends(currUserDetails); // All accepted friends
                 getSuggestedFriends(allAppUsers, currUserDetails);
             });
     }
@@ -50,7 +50,7 @@ const AllFriends = ({ userID }) => {
                 const allFriendRequests = user.friends.requests;
 
                 for (var requestee in allFriendRequests) {
-                    if (userID == allFriendRequests[requestee]) {
+                    if (userID == allFriendRequests[requestee].firebase_id) {
                         return true;
                     }
                 }
@@ -114,10 +114,15 @@ const AllFriends = ({ userID }) => {
                     }
                 }
                 return false;
+
+            } else { // No pending friend requests
+                setNoOfFriendRequests(0);
+                return false;
             }
+        } else {
+            setNoOfFriendRequests(0);
             return false;
         }
-        return false;
     }
 
     // Filter out suggested friends from all DoWhat users in Firebase
@@ -128,14 +133,15 @@ const AllFriends = ({ userID }) => {
 
             if (userID == id) continue; // Dont display yourself as a friend to be added
 
-            if (friendRequestAlreadySent(user) ||
-                friendRequestAlreadyRejected(user) ||
+            if (friendRequestAlreadyRejected(user) ||
                 friendRequestAlreadyAccepted(user) ||
                 hasPendingFriendRequest(id, currUserDetails)) continue;
 
-            const formattedUser = [user, id, false]; // Last boolean flag is to see if friend request is already sent
-            moreUsers.push(formattedUser);
-
+            if (friendRequestAlreadySent(user)) {
+                moreUsers.push([user, id, true]); // Show an already requested friend
+            } else {
+                moreUsers.push([user, id, false]); // Last boolean flag is to see if friend request is already sent
+            }
         }
 
         if (moreUsers.length == 0) { // no more friends found
@@ -147,19 +153,15 @@ const AllFriends = ({ userID }) => {
     }
 
     // Render all the friends that this current user has (accepted)
-    const showAllMyFriends = () => {
-        firebase.database()
-            .ref("users/" + userID)
-            .once("value")
-            .then((snapshot) => {
-                const user = snapshot.val();
-                if (user.hasOwnProperty('friends')) {
-                    if (user.friends.hasOwnProperty('accepted')) {
-                        const allAcceptedFriends = user.friends.accepted;
-                        addToState(allAcceptedFriends);
-                    }
-                }
-            })
+    const showAllMyFriends = (user) => {
+        if (user.hasOwnProperty('friends')) {
+            if (user.friends.hasOwnProperty('accepted')) {
+                const allAcceptedFriends = user.friends.accepted;
+                addToState(allAcceptedFriends);
+            }
+        } else {
+            return;
+        }
     }
 
     const addToState = (allFriends) => {
