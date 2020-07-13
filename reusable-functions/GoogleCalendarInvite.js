@@ -246,7 +246,7 @@ const formatAttendeeFromCollabBoard = (attendees, userId) => {
     for (var user in attendees) {
         const inviteeFirebaseID = user;
         if (inviteeFirebaseID == userId) continue; // Don't invite yourself, since you are the host
-        const modifiedEmail = attendees[user].gmail.replace(/\@/g, '.') + '@gmail.com';
+        const modifiedEmail = attendees[user].gmail;
         const formattedEmail = { 'email': modifiedEmail };
         allFormattedEmails.push(formattedEmail);
     }

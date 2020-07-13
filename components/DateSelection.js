@@ -8,7 +8,7 @@ import firebase from "../database/firebase";
 import Genre from "../components/genre/Genre";
 import { getBusyPeriodFromGoogleCal } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
 import Calendar from "./Calendar";
-import { Divider } from "react-native-elements";
+import { Divider, Overlay } from "react-native-elements";
 
 export const formatDate = (day, month, date) => {
     const possibleDays = [
@@ -147,13 +147,11 @@ const DateSelection = (props) => {
 
     return (
         <View style={styles.container}>
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                    closeModal();
-                }}
+            <Overlay
+                isVisible={modalVisible}
+                width="auto"
+                height="auto"
+                overlayStyle={{ width: '95%', height: '32%', borderRadius: 20 }}
             >
                 <AvailabilityInputModal
                     onClose={closeModal}
@@ -166,7 +164,8 @@ const DateSelection = (props) => {
                         date.getDate()
                     )}
                 />
-            </Modal>
+            </Overlay>
+
             <View style={styles.dateInput}>
                 <View style={{ flexDirection: "row", marginTop: 10 }}>
                     <Text style={[styles.header, { fontSize: 20 }]}>
@@ -235,7 +234,7 @@ const DateSelection = (props) => {
                         </TouchableOpacity>
                         <Divider
                             style={{
-                                borderWidth: 0.2,
+                                borderWidth: 0.3,
                                 height: "100%",
                                 borderColor: "#F9F0E6",
                             }}

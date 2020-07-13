@@ -24,9 +24,21 @@ const AvailabilityInputModal = ({
     allTimings,
     route,
 }) => {
-    const [boardIsFinalized, setBoardIsFinalized] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const setfinalTime = () => {
+        // Check if input is valid
+        for (let i = 0; i < allTimings.length; i++) {
+            const endTime = moment(allTimings[i].endTime);
+            const startTime = moment(allTimings[i].startTime);
+
+            if (startTime.isBefore(endTime)) continue; // Valid
+            setErrorMessage(
+                "Please input a start time that is earlier than the end time"
+            );
+            return;
+        }
+
         if (route !== "manual") {
             return finalizeBoard();
         } else {
@@ -90,58 +102,48 @@ const AvailabilityInputModal = ({
         onClose();
     };
 
-    const renderDoneButton = () => {
-        if (boardIsFinalized) {
-            return (
-                <TouchableOpacity
-                    style={[
-                        styles.finalizeButton,
-                        {
-                            borderRadius: 20,
-                            backgroundColor: "#e63946",
-                            borderWidth: 0.2,
-                        },
-                    ]}
-                    disabled={true}
-                    onPress={() => setfinalTime()}
-                >
-                    <AntDesign
-                        name="check"
-                        size={20}
-                        style={{ color: "white" }}
-                    />
-                </TouchableOpacity>
-            );
-        }
-        return (
-            <TouchableOpacity
-                style={styles.finalizeButton}
-                onPress={() => setfinalTime()}
-            >
-                <Text>Done</Text>
-            </TouchableOpacity>
-        );
-    };
-
     return (
         <View style={styles.modal}>
-            <Text style={styles.headerText}>
-                Availabilities input for {styledDate}
+            <View style={styles.header}>
+                <Text style={styles.headerText}>
+                    Availabilities Input for {styledDate}
+                </Text>
+                <AntDesign
+                    name="close"
+                    size={20}
+                    onPress={() => onClose()}
+                    style={styles.close}
+                />
+            </View>
+            <Text style={styles.subHeaderText}>
+                {route == "manual"
+                    ? "Please indicate the start and end time of you and your friends' availability on this day."
+                    : "Please indicate the start and end time of your availability on this day."}
             </Text>
-            <AntDesign
-                name="close"
-                size={24}
-                onPress={() => onClose()}
-                style={styles.close}
-            />
 
             <View style={styles.body}>
                 <Timeline route={route} />
             </View>
 
-            <View style={styles.buttonGroup}>
-                {/* {renderInputAvailabilitiesButton()} */}
-                {renderDoneButton()}
+            <Text
+                style={{
+                    color: "red",
+                    fontSize: 12,
+                    fontWeight: "100",
+                    marginTop: "1.5%",
+                    textAlign: "center",
+                }}
+            >
+                {errorMessage}
+            </Text>
+
+            <View>
+                <TouchableOpacity
+                    style={styles.doneButton}
+                    onPress={() => setfinalTime()}
+                >
+                    <Text style={styles.doneButtonText}>DONE</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -168,34 +170,28 @@ export default connect(
 const styles = StyleSheet.create({
     modal: {
         flex: 1,
-        marginBottom: "20%",
-        marginTop: "10%",
-        marginLeft: "5%",
-        marginRight: "5%",
-        backgroundColor: "white",
-        borderRadius: 20,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 10,
-            height: 20,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 10,
     },
     header: {
         flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-between",
     },
     headerText: {
-        fontWeight: "800",
-        fontSize: 17,
-        marginTop: "15%",
-        marginLeft: "4%",
+        fontWeight: "bold",
+        fontSize: 16,
         fontFamily: "serif",
     },
+    subHeaderText: {
+        fontWeight: "500",
+        fontSize: 12,
+        fontFamily: "serif",
+        color: "grey",
+        width: "90%",
+    },
     body: {
-        flex: 9,
-        margin: 10,
+        flex: 6,
+        borderTopWidth: 0.4,
+        borderColor: "grey",
     },
     footer: {
         flex: 1,
@@ -203,25 +199,20 @@ const styles = StyleSheet.create({
         marginTop: 0,
         borderWidth: 1,
     },
-    buttonGroup: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-    },
-    finalizeButton: {
-        borderWidth: 1,
-        borderRadius: 10,
-        justifyContent: "center",
+    doneButton: {
         flexDirection: "row",
         alignSelf: "flex-end",
-        padding: 5,
         marginRight: 10,
-        marginLeft: 10,
+    },
+    doneButtonText: {
+        fontFamily: "serif",
+        color: "#E86830",
+        fontWeight: "bold",
+        fontSize: 14,
     },
     close: {
-        position: "absolute",
-        left: 330,
-        right: 0,
-        top: 25,
-        bottom: 0,
+        position: "relative",
+        marginRight: "1%",
+        marginTop: "0.5%",
     },
 });
