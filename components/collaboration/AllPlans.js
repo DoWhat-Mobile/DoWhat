@@ -147,7 +147,9 @@ const AllPlans = ({ navigation, userID, route }) => {
                         disabled={route.params.addingFavourite}
                         onPress={() => setModalVisibility(true)}>
                         <Text style={[styles.buttonText,
-                        route.params.addingFavourite ? { backgroundColor: '#72706E' } : {}]}>
+                        route.params.addingFavourite
+                            ? { backgroundColor: '#72706E', color: '#ABAAAA' } // Disabled button visual
+                            : {}]}>
                             Plan activities for me
                         </Text>
                     </TouchableOpacity>

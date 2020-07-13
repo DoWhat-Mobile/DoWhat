@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { View, StyleSheet, Text, TouchableOpacity, SectionList, Modal } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, SectionList, Modal, Alert } from 'react-native';
 import IndividualPlanModal from './IndividualPlanModal';
 import ChatRoomModal from './ChatRoomModal';
 import firebase from '../../database/firebase';
@@ -14,7 +14,7 @@ import { formatDate } from '../DateSelection';
  * The <SectionList> Component within the AllPlans component. This is the component
  * which shows all the plans that the user is part of.
  */
-const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
+const ListOfPlans = ({ plans, navigation, userID, allEvents, addingFavourite, event }) => {
     const [boardModalVisibility, setBoardModalVisibility] = useState(false);
     const [boardDetails, setBoardDetails] = useState({})
     const [boardChatRoomVisibility, setBoardChatRoomVisibility] = useState(false);
@@ -125,6 +125,40 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
         }
     }
 
+    const addFavouriteToCollab = (event, boardID) => {
+        var updates = {};
+        var cleanedEvent = event[0];
+        delete cleanedEvent.favourited;
+        delete cleanedEvent.selected;
+
+        var formattedEvent = {};
+        formattedEvent[cleanedEvent.id] = cleanedEvent;
+
+        updates['/favourites'] = formattedEvent;
+
+        firebase.database().ref('collab_boards')
+            .child(boardID)
+            .update(updates)
+
+        navigation.navigate("Plan", { addingFavourite: false }) //Done adding
+    }
+
+    const handleAddFavourite = (event, boardID) => {
+        Alert.alert(
+            'Add to collaboration',
+            'Would you like to add this favourite event as a suggestion in this collaboration?',
+            [
+                {
+                    text: 'No',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel'
+                },
+                { text: 'Yes', onPress: () => addFavouriteToCollab(event, boardID) }
+            ],
+            { cancelable: true }
+        )
+    }
+
     const renderCollaborationBoard = (board) => {
         const isBoardFinalized = getFinalizedFraction(board) == 1;
         const selectedDate = new Date(board.selected_date);
@@ -157,9 +191,12 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents }) => {
 
         // generateFinalizedTimeline(board, isBoardFinalized)
         return (
-            <TouchableOpacity onPress={() => isBoardFinalized
-                ? handleRouteToFinalized(board)
-                : viewMoreDetails(board)}>
+            <TouchableOpacity onPress={() =>
+                addingFavourite
+                    ? handleAddFavourite(event, board.boardID) // Event comes from home feed favourite event 
+                    : isBoardFinalized
+                        ? handleRouteToFinalized(board)
+                        : viewMoreDetails(board)}>
                 <View style={[styles.individualPlan, cardColorStyle()]}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View>
