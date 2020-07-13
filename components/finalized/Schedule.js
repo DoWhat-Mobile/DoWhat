@@ -26,18 +26,17 @@ import {
     renderDetail,
 } from "../../reusable-functions/data_timeline";
 
-const Schedule = ({
-    navigation,
-    data,
-    allEvents,
-    mapUpdate,
-    initRoutes,
-    genres,
-    accessRights,
-    userID,
-    route,
-    board, // For board route, will be undefined for other route
-}) => {
+//  navigation,
+//     data,
+//     allEvents,
+//     mapUpdate,
+//     initRoutes,
+//     genres,
+//     accessRights,
+//     userID,
+//     route,
+//     board,   For board route, will be undefined for other route
+const Schedule = (props) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
@@ -46,11 +45,12 @@ const Schedule = ({
     const [isLoading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
-        //setRoutes(initRoutes);
-        routesArray(initRoutes);
-        setEvents(data[0]);
-        setTimingsArray(data[1]);
+        setEvents(props.data[0]);
+        setTimingsArray(props.data[1]);
     }, []);
+    React.useEffect(() => {
+        routesArray(props.initRoutes);
+    }, [props.initRoutes]);
 
     const onReselect = (selected) => {
         const updatedData = events.map((item) => {
@@ -62,10 +62,9 @@ const Schedule = ({
             return obj;
         });
 
-        // const updatedFirebase = eventsInFirebase.map(ite);
         setEvents(updatedData);
-        mapUpdate(updatedCoord);
-        routeUpdate(selected, unsatisfied);
+        props.mapUpdate(updatedCoord);
+        props.routeUpdate(selected, unsatisfied);
     };
 
     const onClose = () => {
@@ -73,7 +72,7 @@ const Schedule = ({
     };
 
     const onEventPress = (event) => {
-        if (accessRights === "host" && event.genre !== "direction") {
+        if (props.accessRights === "host" && event.genre !== "direction") {
             setUnsatisfied(event);
             setVisible(true);
         } else {
@@ -109,7 +108,7 @@ const Schedule = ({
     };
 
     const renderProceedButton = () => {
-        if (accessRights != "host") {
+        if (props.accessRights != "host") {
             return;
         } else {
             return (
@@ -127,19 +126,23 @@ const Schedule = ({
      */
     const sendGcalInviteAndResetAttendeeData = async () => {
         const formattedData = formatEventsData(events); // Formatted data contains event title
-        if (route == "board") {
+        if (props.route == "board") {
             // collab board route
             // Create calendar event and send calendar invite to invitees
-            await handleBoardRouteProcess(formattedData, timingsArray, board);
+            await handleBoardRouteProcess(
+                formattedData,
+                timingsArray,
+                props.board
+            );
         } else {
             // handleProcess function and all other logic is in GoogleCalendarInvite.js
             await handleProcess(formattedData, timingsArray);
         }
         let updates = {};
-        updates["/users/" + userID + "/busy_periods"] = null;
+        updates["/users/" + props.userID + "/busy_periods"] = null;
 
         firebase.database().ref().update(updates);
-        navigation.navigate("Home"); // navigate back once done
+        props.navigation.navigate("Home"); // navigate back once done
         alert(
             "A calendar event has been created for you, and calendar invite sent to your friends."
         );
@@ -205,8 +208,8 @@ const Schedule = ({
                             onReselect={onReselect}
                             onClose={onClose}
                             unsatisfied={unsatisfied}
-                            events={allEvents}
-                            genres={genres}
+                            events={props.allEvents}
+                            genres={props.genres}
                             newTimeChange={newTimeChange}
                         />
                     </Modal>
