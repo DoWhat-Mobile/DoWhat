@@ -31,6 +31,7 @@ const Feed = (props) => {
     const [somethingNewData, setSomethingNewData] = useState([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [favourites, setFavourites] = useState({});
+    const [viewFavourites, setViewFavourites] = useState(false);
 
     const getDataFromFirebase = async () => {
         try {
@@ -69,10 +70,17 @@ const Feed = (props) => {
     // Add entire event into user's firebase node under favourites
     const handleAddToFavourites = (event, sectionTitle, index, foodIndex) => {
         var updates = {}
-        updates['/favourites/' + event[0].id] = event[0];
+        var eventWithRating = event[0];
+        eventWithRating.rating = event[1]
+        updates['/favourites/' + event[0].id] = eventWithRating;
 
         firebase.database().ref('/users/' + props.userID)
             .update(updates);
+
+        // Add to component state, so no need to pull data from Firebase
+        var additionalEvent = {};
+        additionalEvent[event[0].id] = eventWithRating;
+        setFavourites(Object.assign({}, favourites, additionalEvent))
 
         // Visual cue to users, add heart to card
         if (sectionTitle == 'Hungry?') {
@@ -251,6 +259,74 @@ const Feed = (props) => {
         )
     }
 
+    if (viewFavourites) {
+        var favouritesArr = [];
+        for (var event in favourites) {
+            const formattedData = [favourites[event], favourites[event].rating]
+            favouritesArr.push(formattedData)
+        }
+
+        return (
+            < View style={styles.container} >
+                <SectionList
+                    onRefresh={() => refreshPage()}
+                    ref={ref => (sectionListRef = ref)}
+                    ListHeaderComponent={() => {
+                        return (
+                            <View style={styles.header}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <Text style={styles.headerText}>Check these categories out!</Text>
+                                    <TouchableOpacity onPress={signOut}>
+                                        <Text style={{
+                                            color: "grey", textDecorationLine: 'underline',
+                                            marginRight: 5, marginTop: 2
+                                        }}>
+                                            Sign out
+                                    </Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', marginTop: 5, }}>
+                                    <View style={{ flex: 2.5, flexDirection: 'row', justifyContent: 'space-around' }}>
+                                        <View>
+                                            <TouchableOpacity onPress={() => setViewFavourites(false)}
+                                                style={styles.headerCategory}>
+                                                <MaterialCommunityIcons name="cards-heart" color={'#d00000'} size={30} />
+                                            </TouchableOpacity>
+                                            <CategoryTitleText text='See all events' />
+                                        </View>
+                                    </View>
+                                    <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
+                                        <TouchableOpacity onPress={() => props.navigation.navigate("Plan")}
+                                            style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
+                                            <MaterialCommunityIcons name="feature-search" color={'white'} size={30} />
+                                        </TouchableOpacity>
+                                        <CategoryTitleText text='Plan with Friends' />
+                                    </View>
+                                </View>
+                            </View>
+                        )
+                    }}
+                    progressViewOffset={100}
+                    refreshing={isRefreshing}
+                    sections={[
+                        { title: "My favourites", data: favouritesArr }
+                    ]}
+                    renderItem={({ item, section, index }) => renderEventCard(item, false, 'favourites', 0, 0)}
+                    renderSectionHeader={({ section }) =>
+                        <View style={styles.sectionHeader}>
+                            <TouchableOpacity
+                                onPress={() => handleTitlePress(section.title)}>
+                                <Text style={styles.sectionHeaderText}>{section.title}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
+                    keyExtractor={(item, index) => index}
+                />
+            </View >
+        )
+    }
+
     return (
         <View style={styles.container}>
             <SectionList
@@ -272,11 +348,18 @@ const Feed = (props) => {
                             </View>
 
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', marginTop: 5, }}>
-                                <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-around' }}>
+                                <View style={{ flex: 2.5, flexDirection: 'row', justifyContent: 'space-around' }}>
+                                    <View>
+                                        <TouchableOpacity onPress={() => setViewFavourites(true)}
+                                            style={styles.headerCategory}>
+                                            <MaterialCommunityIcons name="cards-heart" color={'#d00000'} size={30} />
+                                        </TouchableOpacity>
+                                        <CategoryTitleText text='Favourites' />
+                                    </View>
                                     <View>
                                         <TouchableOpacity onPress={() => scroll(0, 0)}
                                             style={styles.headerCategory}>
-                                            <MaterialCommunityIcons name="cards-heart" color={'#d00000'} size={30} />
+                                            <MaterialCommunityIcons name="star" color={'#CCCC00'} size={30} />
                                         </TouchableOpacity>
                                         <CategoryTitleText text='Popular' />
                                     </View>
