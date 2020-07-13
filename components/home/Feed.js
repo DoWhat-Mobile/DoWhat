@@ -76,13 +76,25 @@ const Feed = (props) => {
 
         // Visual cue to users, add heart to card
         if (sectionTitle == 'Hungry?') {
-            console.log(hungryData[index][foodIndex])
+            var newData = hungryData[index][foodIndex]
+            newData[0].favourited = true; // Mark as favourited 
+            var finalData = [...hungryData[index]]
+            finalData[foodIndex] = newData
+            setHungryData([[...finalData]]);
+
         } else if (sectionTitle == 'Find something new') {
-            console.log(somethingNewData[index])
+            var newData = somethingNewData[index]
+            newData[0].favourited = true; // Mark as favourited 
+            var finalData = [...somethingNewData]
+            finalData[index] = newData
+            setSomethingNewData([...finalData]);
 
         } else { // What is popular
-            console.log(whatsPopularData[index])
-
+            var newData = whatsPopularData[index]
+            newData[0].favourited = true; // Mark as favourited 
+            var finalData = [...whatsPopularData]
+            finalData[index] = newData
+            setWhatsPopularData([...finalData]);
         }
     }
 
@@ -116,9 +128,10 @@ const Feed = (props) => {
     // Takes in indivdual event array and inject it to <Card>, for vertical views 
     const renderEventCard = (event, isEventFood, sectionTitle, index, foodIndex) => {
         var isEventFavourited = false;
-        if (favourites.hasOwnProperty(event[0].id)) {
+        if (favourites.hasOwnProperty(event[0].id) || event[0].favourited) {
             isEventFavourited = true;
         }
+
 
         const renderTruncatedFooter = (handlePress) => {
             return (

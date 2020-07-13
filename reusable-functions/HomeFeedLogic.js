@@ -26,6 +26,7 @@ const sortEventsByRatings = (allEventsObject) => {
             id: currEvent.id,
             tags: currEvent.tags,
             selected: false, // To prevent duplicates when selecting 
+            favourited: false,
         }, currEvent.rating])
         count++;
     }
