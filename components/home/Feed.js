@@ -139,6 +139,18 @@ const Feed = (props) => {
         )
     }
 
+    const handleRemoveFavourites = (event) => {
+        // Remove from Firebase
+        firebase.database()
+            .ref('/users/' + props.userID + '/favourites/' + event[0].id)
+            .remove();
+
+        // Remove from component state
+        var newFavourites = Object.assign({}, favourites);
+        delete newFavourites[event[0].id];
+        setFavourites(newFavourites);
+    }
+
     const handleTitlePress = (title) => {
         if (title == 'What is currently popular') {
             alert("Future enhancements")
@@ -228,7 +240,8 @@ const Feed = (props) => {
                                 flexDirection: 'row', justifyContent: 'space-between',
                                 marginTop: 5,
                             }}>
-                                <TouchableOpacity style={styles.favouritesButton}>
+                                <TouchableOpacity style={styles.favouritesButton}
+                                    onPress={() => handleRemoveFavourites(event)}>
                                     <Text style={styles.favouritesButtonText}>
                                         REMOVE FROM FAVOURITES
                                         </Text>
@@ -326,7 +339,7 @@ const Feed = (props) => {
                                         <View>
                                             <TouchableOpacity onPress={() => setViewFavourites(false)}
                                                 style={styles.headerCategory}>
-                                                <MaterialCommunityIcons name="cards-heart" color={'#d00000'} size={30} />
+                                                <MaterialCommunityIcons name="reorder-horizontal" color={'black'} size={30} />
                                             </TouchableOpacity>
                                             <CategoryTitleText text='See all Events' />
                                         </View>
