@@ -122,6 +122,7 @@ const Feed = (props) => {
             { cancelable: false }
         )
     }
+
     const handleFavouriteEventPress = (event) => {
         Alert.alert(
             'Add to plan',
@@ -132,11 +133,19 @@ const Feed = (props) => {
                     onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel'
                 },
-                { text: 'Collaboration', onPress: () => console.log("Collab") },
-                { text: 'Personal', onPress: () => console.log("Personal") }
+                { text: 'Collaboration', onPress: () => handleAddFavouriteToCollab(event) },
+                { text: 'Personal', onPress: () => handleAddFavouriteToPersonal(event) }
             ],
             { cancelable: true }
         )
+    }
+
+    const handleAddFavouriteToCollab = (event) => {
+        props.navigation.navigate("Plan", { event: event, addingFavourite: true })
+    }
+
+    const handleAddFavouriteToPersonal = (event) => {
+
     }
 
     const handleRemoveFavourites = (event) => {
@@ -164,10 +173,11 @@ const Feed = (props) => {
     // Takes in indivdual event array and inject it to <Card>, for vertical views 
     const renderEventCard = (event, isEventFood, sectionTitle, index, foodIndex) => {
         var isEventFavourited = false;
+        // Two checks for event favourited, so we don't have to subscribe to Firebase changes.
+        // (Firebase changes causes frequent and unecessary re-render of home feed events)
         if (favourites.hasOwnProperty(event[0].id) || event[0].favourited) {
             isEventFavourited = true;
         }
-
 
         const renderTruncatedFooter = (handlePress) => {
             return (
@@ -201,7 +211,8 @@ const Feed = (props) => {
         }
 
         return (
-            <TouchableOpacity onPress={() => handleEventPress(event, sectionTitle, index, foodIndex)}>
+            <TouchableOpacity disabled={sectionTitle == 'favourites'}
+                onPress={() => handleEventPress(event, sectionTitle, index, foodIndex)}>
                 <View style={{ width: Dimensions.get('window').width }}>
                     <Card
                         style={{ height: (Dimensions.get('window').height / 2) }}
@@ -345,7 +356,8 @@ const Feed = (props) => {
                                         </View>
                                     </View>
                                     <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
-                                        <TouchableOpacity onPress={() => props.navigation.navigate("Plan")}
+                                        <TouchableOpacity
+                                            onPress={() => props.navigation.navigate("Plan", { addingFavourite: false })}
                                             style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
                                             <MaterialCommunityIcons name="feature-search" color={'white'} size={30} />
                                         </TouchableOpacity>
@@ -428,7 +440,8 @@ const Feed = (props) => {
                                     </View>
                                 </View>
                                 <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
-                                    <TouchableOpacity onPress={() => props.navigation.navigate("Plan")}
+                                    <TouchableOpacity
+                                        onPress={() => props.navigation.navigate("Plan", { addingFavourite: false })}
                                         style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
                                         <MaterialCommunityIcons name="feature-search" color={'white'} size={30} />
                                     </TouchableOpacity>

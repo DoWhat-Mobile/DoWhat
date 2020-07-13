@@ -77,6 +77,7 @@ const AllPlans = ({ navigation, userID, route }) => {
     }
 
     const renderAppropriateScreen = () => {
+        console.log("Route parameters: ", route.params)
         if (allBoards.length == 0) { // Empty state
             return (
                 <View style={styles.container}>
@@ -120,7 +121,8 @@ const AllPlans = ({ navigation, userID, route }) => {
             )
         }
         return (
-            <View style={styles.container}>
+            <View style={[styles.container,
+            route.params.addingFavourite ? { backgroundColor: 'grey' } : {}]}>
                 <Modal
                     animationType="fade"
                     transparent={true}
@@ -137,11 +139,17 @@ const AllPlans = ({ navigation, userID, route }) => {
                 </View>
                 <View style={styles.body}>
                     <ListOfPlans plans={allBoards} refreshList={getUpcomingCollaborationsFromFirebase}
-                        navigation={navigation} userID={userID} />
+                        navigation={navigation} userID={userID} addingFavourite={route.params.addingFavourite}
+                        event={route.params.event} />
                 </View>
                 <View style={styles.footer}>
-                    <TouchableOpacity style={styles.planForMe} onPress={() => setModalVisibility(true)}>
-                        <Text style={styles.buttonText}>Plan activities for me</Text>
+                    <TouchableOpacity style={styles.planForMe}
+                        disabled={route.params.addingFavourite}
+                        onPress={() => setModalVisibility(true)}>
+                        <Text style={[styles.buttonText,
+                        route.params.addingFavourite ? { backgroundColor: '#72706E' } : {}]}>
+                            Plan activities for me
+                        </Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -218,10 +226,12 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 20,
+        fontWeight: 'bold',
         textAlign: "center",
-        borderRadius: 10,
+        borderRadius: 5,
         backgroundColor: "#cc5327",
         color: "#fcf5f2",
+        fontFamily: 'serif'
     },
     footer: {
         flex: 1,
