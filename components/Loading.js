@@ -30,8 +30,8 @@ const Loading = (props) => {
         route === "board"
             ? props.route.params.timeInterval // From collab board
             : props.route.params.synced === "synced"
-                ? props.route.params.time
-                : props.finalGenres[1]; // From Redux state
+            ? props.route.params.time
+            : props.finalGenres[1]; // From Redux state
 
     React.useEffect(() => {
         const diff = props.difference;
@@ -44,8 +44,10 @@ const Loading = (props) => {
             .then((snapshot) => {
                 const userData = snapshot.val();
                 const allAttendees = userData.all_attendees; // Undefined if no friends synced their Gcal
-                const mainUserBusyPeriod = userData.busy_periods == undefined
-                    ? props.finalTiming : userData.busy_periods;
+                const mainUserBusyPeriod =
+                    userData.busy_periods == undefined
+                        ? props.finalTiming
+                        : userData.busy_periods;
                 const finalizedTimeRange = findOverlappingIntervals(
                     allAttendees,
                     mainUserBusyPeriod
@@ -66,7 +68,7 @@ const Loading = (props) => {
             });
         fetch(
             "https://api.openweathermap.org/data/2.5/onecall?lat=1.290270&lon=103.851959&%20exclude=hourly,daily&appid=" +
-            WEATHER_API_KEY
+                WEATHER_API_KEY
         )
             .then((response) => response.json())
             .then((data) => {
@@ -78,7 +80,6 @@ const Loading = (props) => {
 
     const allData = () => {
         const time = route === "link" ? freeTime : timeline;
-        console.log("Time is : ", time)
         const currentEvents = genreEventObjectArray(
             userGenres,
             props.allEvents,

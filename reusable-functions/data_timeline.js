@@ -94,7 +94,6 @@ export const genreEventObjectArray = (
         for (let i = 0; i < userGenres.length; i++) {
             const genre = userGenres[i] === "food" ? "food" : "indoors";
             if (genre === "indoors") {
-                console.log(genre);
                 const eventObject = events[genre]["list"];
                 const rand = Math.floor(Math.random() * eventObject.length);
                 const event = events[genre]["list"][rand];
@@ -168,7 +167,6 @@ export const data_timeline = (timeline, events, currentEvents) => {
         }
         if (startTime >= timeline[1]) break;
     }
-    console.log(timingsArray);
     return [data, timingsArray, locationArray, busRoutes];
 };
 
@@ -360,7 +358,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
         </Text>
     );
     let desc = null;
-    if (rowData.description && rowData.imageUrl)
+    if (rowData.description && rowData.imageUrl) {
         desc = (
             <View
                 style={{
@@ -393,7 +391,30 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                 </ReadMore>
             </View>
         );
-
+    } else if (rowData.description) {
+        desc = (
+            <View
+                style={{
+                    paddingRight: 50,
+                }}
+            >
+                {title}
+                <ReadMore
+                    numberOfLines={1}
+                    renderTruncatedFooter={renderTruncatedFooter}
+                    renderRevealedFooter={renderRevealedFooter}
+                >
+                    <Text
+                        style={{
+                            flex: 1,
+                        }}
+                    >
+                        {rowData.description}
+                    </Text>
+                </ReadMore>
+            </View>
+        );
+    }
     return (
         <View
             style={{
@@ -520,4 +541,28 @@ export const merge = (timings, direction) => {
         }
     }
     return temp;
+};
+
+export const eventsWithDirections = (timingsArray, events, directions) => {
+    let result = [];
+    for (let i = 0; i < timingsArray.length; i++) {
+        let j = i % 2 == 0 ? i / 2 : (i - 1) / 2;
+        if (timingsArray[i].start == events[j].time) {
+            result.push(events[j]);
+        } else {
+            let obj = {
+                title: "Directions",
+                time: "",
+                lineColor: "black",
+                description: "",
+            };
+
+            obj.time = timingsArray[i].start;
+            obj.description = directions[j].distance;
+
+            result.push(obj);
+        }
+    }
+    console.log(result);
+    return result;
 };

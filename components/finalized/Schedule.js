@@ -4,7 +4,6 @@ import Timeline from "react-native-timeline-flatlist";
 import moment from "moment-timezone";
 import firebase from "../../database/firebase";
 import TransitRoutes from "./TransitRoutes";
-import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 
 import {
     Text,
@@ -25,6 +24,7 @@ import {
     routeFormatter,
     renderDetail,
     merge,
+    eventsWithDirections,
 } from "../../reusable-functions/data_timeline";
 import { timing } from "react-native-reanimated";
 
@@ -43,15 +43,23 @@ const Schedule = (props) => {
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
     const [timingsArray, setTimingsArray] = React.useState([]);
-    const [directions, setDirections] = React.useState([]);
     const [isLoading, setLoading] = React.useState(true);
 
+    // React.useEffect(() => {
+    //     setEvents(props.data[0]);
+    //     setTimingsArray(props.data[1]);
+    // }, []);
     React.useEffect(() => {
-        setEvents(props.data[0]);
-        setTimingsArray(props.data[1]);
-    }, []);
-    React.useEffect(() => {
-        routesArray(props.initRoutes);
+        console.log(props.initRoutes);
+        let updatedTimings = merge(props.data[1], props.initRoutes);
+        let combinedData = eventsWithDirections(
+            updatedTimings,
+            props.data[0],
+            props.initRoutes
+        );
+        setTimingsArray(updatedTimings);
+        setEvents(combinedData);
+        setLoading(false);
     }, [props.initRoutes]);
 
     const onReselect = (selected) => {
@@ -59,9 +67,11 @@ const Schedule = (props) => {
             if (item === unsatisfied) return selected;
             return item;
         });
-        const updatedCoord = updatedData.map((item) => {
-            const obj = { coord: item.coord, name: item.title };
-            return obj;
+        const updatedCoord = updatedData.map((item, index) => {
+            if (index % 2 != 0) {
+                const obj = { coord: item.coord, name: item.title };
+                return obj;
+            }
         });
 
         setEvents(updatedData);
@@ -150,50 +160,6 @@ const Schedule = (props) => {
         );
     };
 
-    const routesArray = async (allRoutes) => {
-        let result = [];
-
-        for (let i = 0; i < allRoutes.length - 1; i++) {
-            let obj = { distance: "", duration: "", steps: [] };
-            let steps = [];
-            let distance = "";
-            let duration = "";
-            let origin =
-                typeof allRoutes[i] === "object"
-                    ? allRoutes[i].lat + "," + allRoutes[i].long
-                    : allRoutes[i];
-            let destination = allRoutes[i + 1];
-            try {
-                let resp = await fetch(
-                    "https://maps.googleapis.com/maps/api/directions/json?origin=" +
-                        origin +
-                        "&destination=" +
-                        destination +
-                        "&key=" +
-                        GOOGLE_MAPS_API_KEY +
-                        "&mode=transit&region=sg"
-                );
-                //console.log(JSON.stringify(await resp.json()));
-                let data = (await resp.json())["routes"][0]["legs"][0];
-                let response = data["steps"];
-                distance = data["distance"]["text"];
-                duration = data["duration"]["text"];
-
-                for (let j = 0; j < response.length; j++) {
-                    steps.push(await routeFormatter(await response[j]));
-                }
-            } catch (err) {
-                console.log(err);
-            }
-            obj.steps = steps;
-            obj.distance = distance;
-            obj.duration = duration;
-            result.push(obj);
-        }
-        //}
-        setDirections(result);
-        setLoading(false);
-    };
     if (isLoading) {
         return (
             <View
@@ -210,7 +176,6 @@ const Schedule = (props) => {
             </View>
         );
     } else {
-        console.log(merge(timingsArray, directions));
         return (
             <View style={styles.container}>
                 <View style={styles.body}>

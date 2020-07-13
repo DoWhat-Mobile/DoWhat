@@ -37,7 +37,6 @@ const Route = ({ item }) => {
     return (
         <FlatList
             data={item}
-            horizontal={true}
             keyExtractor={(item) => item.key}
             renderItem={({ item }) => block(item)}
         />

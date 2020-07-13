@@ -10,6 +10,7 @@ import {
     Image,
     Dimensions,
 } from "react-native";
+import { routeFormatter } from "../../reusable-functions/data_timeline";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import Schedule from "./Schedule";
@@ -17,20 +18,77 @@ import Map from "./Map";
 import Minimap from "./Minimap";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { YellowBox } from "react-native";
+import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 
 const Finalized = (props) => {
     YellowBox.ignoreWarnings(["VirtualizedLists should never be nested"]);
     const [isLoading, setIsLoading] = React.useState(true);
     const [visible, setVisible] = React.useState(false);
     const [coord, setCoord] = React.useState([]);
-    const [routes, setRoutes] = React.useState([]);
+    //const [routes, setRoutes] = React.useState([]);
     const [allData, setData] = React.useState([]);
+    const [directions, setDirections] = React.useState([]);
 
-    //const route = props.route.params.route;
     const data = props.route.params.data;
     const accessRights = props.route.params.access;
     const weather = props.route.params.weather;
     const userGenres = props.route.params.userGenres;
+
+    React.useEffect(() => {
+        const initRoutes = [
+            {
+                lat: props.userLocation.coords.latitude,
+                long: props.userLocation.coords.longitude,
+            },
+        ].concat(data[3]);
+        console.log(initRoutes);
+        setData(data);
+        setCoord(data[2]);
+        routesArray(initRoutes);
+    }, []);
+    const routesArray = async (allRoutes) => {
+        let result = [];
+
+        for (let i = 0; i < allRoutes.length - 1; i++) {
+            let obj = { distance: "", duration: "", steps: [] };
+            let steps = [];
+            let distance = "";
+            let duration = "";
+            let origin =
+                typeof allRoutes[i] === "object"
+                    ? allRoutes[i].lat + "," + allRoutes[i].long
+                    : allRoutes[i];
+            let destination = allRoutes[i + 1];
+            try {
+                let resp = await fetch(
+                    "https://maps.googleapis.com/maps/api/directions/json?origin=" +
+                        origin +
+                        "&destination=" +
+                        destination +
+                        "&key=" +
+                        GOOGLE_MAPS_API_KEY +
+                        "&mode=transit&region=sg"
+                );
+                //console.log(JSON.stringify(await resp.json()));
+                let data = (await resp.json())["routes"][0]["legs"][0];
+                let response = data["steps"];
+                distance = data["distance"]["text"];
+                duration = data["duration"]["text"];
+
+                for (let j = 0; j < response.length; j++) {
+                    steps.push(await routeFormatter(await response[j]));
+                }
+            } catch (err) {
+                console.log(err);
+            }
+            obj.steps = steps;
+            obj.distance = distance;
+            obj.duration = duration;
+            result.push(obj);
+        }
+        setDirections(result);
+        setIsLoading(false);
+    };
 
     const onClose = () => {
         setVisible(false);
@@ -72,21 +130,6 @@ const Finalized = (props) => {
             />
         );
     };
-
-    React.useEffect(() => {
-        //const userLocation = props.userLocation;
-        const passed = props.route.params.routeGuide;
-        const initRoutes = [
-            {
-                lat: props.userLocation.coords.latitude,
-                long: props.userLocation.coords.longitude,
-            },
-        ].concat(data[3]);
-        setData(data);
-        setCoord(data[2]);
-        setIsLoading(false);
-        setRoutes(initRoutes);
-    }, []);
 
     if (isLoading) {
         return (
@@ -140,7 +183,7 @@ const Finalized = (props) => {
                         accessRights={accessRights}
                         userID={props.userID}
                         routeUpdate={routeUpdate}
-                        initRoutes={routes}
+                        initRoutes={directions}
                     />
 
                     <Modal animated visible={visible} animationType="fade">
