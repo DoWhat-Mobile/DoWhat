@@ -463,3 +463,61 @@ export const routeFormatter = async (obj) => {
 
     return format;
 };
+
+const timeConvert = (n) => {
+    let num = n;
+    let hours = num / 60;
+    let rhours =
+        Math.floor(hours) < 10 ? "0" + Math.floor(hours) : Math.floor(hours);
+    let minutes = (hours - rhours) * 60;
+    let rminutes =
+        Math.round(minutes) < 10
+            ? "0" + Math.round(minutes)
+            : Math.round(minutes);
+    return rhours + ":" + rminutes;
+};
+
+const parseTime = (colon, hr, minus) => {
+    let hour = parseInt(hr.substring(0, 1));
+    let minute = parseInt(hr.substring(6, 9));
+    let minuteDifference =
+        hr.length > 8 ? hour * 60 + minute : parseInt(hr.substring(0, 2));
+    let c = colon.split(":");
+    let t = parseInt(c[0]) * 60 + parseInt(c[1]);
+    let final = minus !== "minus" ? t + minuteDifference : t - minuteDifference;
+    return timeConvert(final);
+};
+
+export const merge = (timings, direction) => {
+    let temp = [];
+
+    for (let i = 0; i < timings.length; i++) {
+        if (i == 0) {
+            let newStart = parseTime(
+                timings[i].start,
+                direction[i].duration,
+                "minus"
+            );
+            temp.push({ start: newStart, end: timings[i].start });
+        }
+        if (i == timings.length - 1) {
+            temp.push(timings[i]);
+        } else {
+            let first = { start: "", end: "" };
+            let second = { start: "", end: "" };
+
+            let mid = parseTime(
+                timings[i].end,
+                direction[i + 1].duration,
+                "minus"
+            );
+            first.start = timings[i].start;
+            first.end = mid;
+            second.start = mid;
+            second.end = timings[i].end;
+            temp.push(first);
+            temp.push(second);
+        }
+    }
+    return temp;
+};

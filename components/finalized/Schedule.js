@@ -24,7 +24,9 @@ import {
     handleRipple,
     routeFormatter,
     renderDetail,
+    merge,
 } from "../../reusable-functions/data_timeline";
+import { timing } from "react-native-reanimated";
 
 //  navigation,
 //     data,
@@ -150,8 +152,12 @@ const Schedule = (props) => {
 
     const routesArray = async (allRoutes) => {
         let result = [];
+
         for (let i = 0; i < allRoutes.length - 1; i++) {
-            let obj = [];
+            let obj = { distance: "", duration: "", steps: [] };
+            let steps = [];
+            let distance = "";
+            let duration = "";
             let origin =
                 typeof allRoutes[i] === "object"
                     ? allRoutes[i].lat + "," + allRoutes[i].long
@@ -168,15 +174,20 @@ const Schedule = (props) => {
                         "&mode=transit&region=sg"
                 );
                 //console.log(JSON.stringify(await resp.json()));
-                let response = (await resp.json())["routes"][0]["legs"][0][
-                    "steps"
-                ];
+                let data = (await resp.json())["routes"][0]["legs"][0];
+                let response = data["steps"];
+                distance = data["distance"]["text"];
+                duration = data["duration"]["text"];
+
                 for (let j = 0; j < response.length; j++) {
-                    obj.push(await routeFormatter(await response[j]));
+                    steps.push(await routeFormatter(await response[j]));
                 }
             } catch (err) {
                 console.log(err);
             }
+            obj.steps = steps;
+            obj.distance = distance;
+            obj.duration = duration;
             result.push(obj);
         }
         //}
@@ -199,7 +210,7 @@ const Schedule = (props) => {
             </View>
         );
     } else {
-        console.log(directions);
+        console.log(merge(timingsArray, directions));
         return (
             <View style={styles.container}>
                 <View style={styles.body}>
