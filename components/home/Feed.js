@@ -20,24 +20,29 @@ import ReadMore from 'react-native-read-more-text';
 const Feed = (props) => {
     useFocusEffect(
         useCallback(() => {
-            getDataFromFirebase();
-            return () => null;
+            getDataFromFirebase(); // Subscribe to changes
+            return () => firebase.database().ref("users/" + props.userID).off();
         }, [props.allEvents])
     )
 
     const [isLoading, setIsLoading] = useState(true);
     const [eventData, setEventData] = useState([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [favourites, setFavourites] = useState({});
 
     const getDataFromFirebase = async () => {
         try {
             const database = firebase.database();
             const userId = firebase.auth().currentUser.uid;
             database.ref("users/" + userId)
-                .once("value")
-                .then((snapshot) => {
+                .on("value", (snapshot) => {
                     const userData = snapshot.val();
                     const allCategories = props.allEvents; // Get all events from redux state 
+
+                    if (userData.hasOwnProperty("favourites")) {
+                        const userFavourites = userData.favourites;
+                        setFavourites(userFavourites)
+                    }
 
                     if (Object.keys(allCategories).length !== 0) { // Check that event has already been loaded from redux state
                         const data = handleEventsOf(allCategories, userData.preferences);
@@ -56,18 +61,27 @@ const Feed = (props) => {
         setIsRefreshing(false);
     }
 
+    // Add entire event into user's firebase node under favourites
+    const handleAddToFavourites = (event) => {
+        var updates = {}
+        updates['/favourites/' + event[0].id] = event[0];
+
+        firebase.database().ref('/users/' + props.userID)
+            .update(updates);
+    }
+
+    // Event represents an event node in the database of events
     const handleEventPress = (event) => {
-        console.log(event)
         Alert.alert(
-            'Opt Out',
-            'Are you sure you want to opt out of this collaboration?',
+            'Add to favourites',
+            'Do you want to add this event to your favourites?',
             [
                 {
                     text: 'No',
                     onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel'
                 },
-                { text: 'Yes', onPress: () => console.log("Yes") }
+                { text: 'Yes', onPress: () => handleAddToFavourites(event) }
             ],
             { cancelable: false }
         )
@@ -93,14 +107,19 @@ const Feed = (props) => {
     const injectReactToAll = (event, injectReactToEach) => {
         var eventsInReactElement = [];
         for (var i = 0; i < event.length; i++) {
-            eventsInReactElement.push(injectReactToEach(event[i]));
+            eventsInReactElement.push(injectReactToEach(event[i], true)); // Event is food
         }
         // Returns an ARRAY of styled elements
         return eventsInReactElement;
     }
 
     // Takes in indivdual event array and inject it to <Card>, for vertical views 
-    const renderWhatsPopular = (event) => {
+    const renderEventCard = (event, isEventFood) => {
+        var isEventFavourited = false;
+        if (favourites.hasOwnProperty(event[0].id)) {
+            isEventFavourited = true;
+        }
+
         const renderTruncatedFooter = (handlePress) => {
             return (
                 <Text
@@ -141,12 +160,21 @@ const Feed = (props) => {
                     >
                         <Image
                             source={{ uri: imageURI }}
-                            style={{ height: 100, width: '100%' }}
+                            style={isEventFood
+                                ? { height: 100, width: '100%' }
+                                : { height: 100, width: Dimensions.get('window').width * 0.85 }}
                         />
-                        <View style={{ flexDirection: 'row' }}>
-                            <MaterialCommunityIcons name="star" color={'#1d3557'} size={18} />
-                            <Text style={{ fontSize: 12, color: '#1d3557', marginTop: 2, }}> {eventRatings}</Text>
+
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <View style={{ flexDirection: 'row' }}>
+                                <MaterialCommunityIcons name="star" color={'#1d3557'} size={18} />
+                                <Text style={{ fontSize: 12, color: '#1d3557', marginTop: 2, }}> {eventRatings}</Text>
+                            </View>
+                            {isEventFavourited
+                                ? <MaterialCommunityIcons name="google-fit" color={'#e63946'} size={18} />
+                                : null}
                         </View>
+
                         <ReadMore
                             numberOfLines={4}
                             renderTruncatedFooter={renderTruncatedFooter}
@@ -165,6 +193,11 @@ const Feed = (props) => {
 
     // Styling to be rendered for food selection in Home screen feed
     const renderFoodChoices = (event) => {
+        var isEventFavourited = false;
+        if (favourites.hasOwnProperty(event[0].id)) {
+            isEventFavourited = true;
+        }
+
         const renderTruncatedFooter = (handlePress) => {
             return (
                 <Text
@@ -207,9 +240,14 @@ const Feed = (props) => {
                             source={{ uri: imageURI }}
                             style={{ height: 100, width: Dimensions.get('window').width * 0.85 }}
                         />
-                        <View style={{ flexDirection: 'row' }}>
-                            <MaterialCommunityIcons name="star" color={'#1d3557'} size={18} />
-                            <Text style={{ fontSize: 12, color: '#1d3557', marginTop: 2, }}> {eventRatings}</Text>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <View style={{ flexDirection: 'row' }}>
+                                <MaterialCommunityIcons name="star" color={'#1d3557'} size={18} />
+                                <Text style={{ fontSize: 12, color: '#1d3557', marginTop: 2, }}> {eventRatings}</Text>
+                            </View>
+                            {isEventFavourited
+                                ? <MaterialCommunityIcons name="google-fit" color={'#e63946'} size={18} />
+                                : null}
                         </View>
                         <ReadMore
                             numberOfLines={4}
@@ -234,7 +272,7 @@ const Feed = (props) => {
     const formatFoodArray = (event) => {
         return (
             <FlatList
-                data={injectReactToAll(event, renderFoodChoices)}
+                data={injectReactToAll(event, renderEventCard)}
                 horizontal={true}
                 renderItem={({ item }) => (
                     item
@@ -248,9 +286,8 @@ const Feed = (props) => {
         if (section.title == 'Hungry?') { // Render eateries
             return formatFoodArray(item);
         }
-        return renderWhatsPopular(item);
+        return renderEventCard(item, false); // not food
     }
-
 
     const scroll = (sectionIndex, itemIndex) => {
         sectionListRef.scrollToLocation({ sectionIndex: sectionIndex, itemIndex: itemIndex, viewPosition: 0, viewOffSet: 10 })
@@ -380,7 +417,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         elevation: 0.01,
         alignSelf: 'center',
-
     },
     header: {
         backgroundColor: '#f0efeb',
@@ -406,7 +442,6 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: 'black',
         backgroundColor: '#e63946',
-
     },
     cardButton: {
         borderRadius: 5,
@@ -421,6 +456,5 @@ const styles = StyleSheet.create({
         fontWeight: '300',
         fontFamily: 'serif',
         textAlign: "center",
-
     }
 });
