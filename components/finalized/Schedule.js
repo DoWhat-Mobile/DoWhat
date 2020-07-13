@@ -1,7 +1,20 @@
 import React from "react";
-import Timeline from "react-native-timeline-flatlist";
-import { Text, Modal, View, StyleSheet, TouchableOpacity } from "react-native";
 import ActionOptions from "./ActionOptions";
+import Timeline from "react-native-timeline-flatlist";
+import moment from "moment-timezone";
+import firebase from "../../database/firebase";
+import TransitRoutes from "./TransitRoutes";
+import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
+
+import {
+    Text,
+    Modal,
+    View,
+    StyleSheet,
+    TouchableOpacity,
+    ActivityIndicator,
+} from "react-native";
+
 import {
     handleProcess,
     formatEventsData,
@@ -9,12 +22,9 @@ import {
 } from "../../reusable-functions/GoogleCalendarInvite";
 import {
     handleRipple,
-    objectFormatter,
+    routeFormatter,
     renderDetail,
 } from "../../reusable-functions/data_timeline";
-import moment from "moment-timezone";
-import firebase from "../../database/firebase";
-import TransitRoutes from "./TransitRoutes";
 
 const Schedule = ({
     navigation,
@@ -29,35 +39,19 @@ const Schedule = ({
     board, // For board route, will be undefined for other route
 }) => {
     const [events, setEvents] = React.useState([]);
-    //const [eventsInFirebase, setEventsInFirebase] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
     const [timingsArray, setTimingsArray] = React.useState([]);
-
-    const [routes, setRoutes] = React.useState([]);
+    const [directions, setDirections] = React.useState([]);
+    const [isLoading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
-        // let formatData = [];
-        // for (i = 0; i < data[0].length; i++) {
-        //     const dataObj = data[0][i];
-        //     const startTime = dataObj.startTime;
-        //     const event = dataObj.event;
-        //     const genre = dataObj.genre;
-        //     formatData.push(objectFormatter(startTime, event, genre));
-        // }
-        setRoutes(initRoutes);
+        //setRoutes(initRoutes);
+        routesArray(initRoutes);
         setEvents(data[0]);
-        //setEventsInFirebase(data);
         setTimingsArray(data[1]);
     }, []);
 
-    const routeUpdate = (selected, unsatisfied) => {
-        let temp = routes;
-        const result = temp.map((item) => {
-            return item == unsatisfied.location ? selected.location : item;
-        });
-        setRoutes(result);
-    };
     const onReselect = (selected) => {
         const updatedData = events.map((item) => {
             if (item === unsatisfied) return selected;
@@ -79,7 +73,7 @@ const Schedule = ({
     };
 
     const onEventPress = (event) => {
-        if (accessRights === "host") {
+        if (accessRights === "host" && event.genre !== "direction") {
             setUnsatisfied(event);
             setVisible(true);
         } else {
@@ -146,47 +140,102 @@ const Schedule = ({
 
         firebase.database().ref().update(updates);
         navigation.navigate("Home"); // navigate back once done
-        alert("A calendar event has been created for you, and calendar invite sent to your friends.")
+        alert(
+            "A calendar event has been created for you, and calendar invite sent to your friends."
+        );
     };
 
-    return (
-        <View style={styles.container}>
-            <View style={styles.body}>
-                <Modal animated visible={visible} animationType="fade">
-                    <ActionOptions
-                        onReselect={onReselect}
-                        onClose={onClose}
-                        unsatisfied={unsatisfied}
-                        events={allEvents}
-                        genres={genres}
-                        newTimeChange={newTimeChange}
-                    />
-                </Modal>
-                <Timeline
-                    onEventPress={(event) => onEventPress(event)}
-                    data={events}
-                    timeStyle={{
-                        textAlign: "center",
-                        backgroundColor: "#cc5327",
-                        color: "white",
-                        padding: 5,
-                        borderRadius: 13,
-                    }}
-                    detailContainerStyle={{
-                        marginBottom: 20,
-                        paddingLeft: 15,
-                        paddingRight: 15,
-                        backgroundColor: "white",
-                        borderRadius: 20,
-                    }}
-                    renderDetail={renderDetail}
-                    circleColor="black"
+    const routesArray = async (allRoutes) => {
+        let result = [];
+        for (let i = 0; i < allRoutes.length - 1; i++) {
+            let obj = [];
+            let origin =
+                typeof allRoutes[i] === "object"
+                    ? allRoutes[i].lat + "," + allRoutes[i].long
+                    : allRoutes[i];
+            let destination = allRoutes[i + 1];
+            try {
+                let resp = await fetch(
+                    "https://maps.googleapis.com/maps/api/directions/json?origin=" +
+                        origin +
+                        "&destination=" +
+                        destination +
+                        "&key=" +
+                        GOOGLE_MAPS_API_KEY +
+                        "&mode=transit&region=sg"
+                );
+                //console.log(JSON.stringify(await resp.json()));
+                let response = (await resp.json())["routes"][0]["legs"][0][
+                    "steps"
+                ];
+                for (let j = 0; j < response.length; j++) {
+                    obj.push(await routeFormatter(await response[j]));
+                }
+            } catch (err) {
+                console.log(err);
+            }
+            result.push(obj);
+        }
+        //}
+        setDirections(result);
+        setLoading(false);
+    };
+    if (isLoading) {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    alignContent: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <ActivityIndicator
+                    style={{ alignSelf: "center" }}
+                    size="large"
                 />
             </View>
-            <TransitRoutes routes={routes} />
-            <View style={styles.footer}>{renderProceedButton()}</View>
-        </View>
-    );
+        );
+    } else {
+        console.log(directions);
+        return (
+            <View style={styles.container}>
+                <View style={styles.body}>
+                    <Modal animated visible={visible} animationType="fade">
+                        <ActionOptions
+                            onReselect={onReselect}
+                            onClose={onClose}
+                            unsatisfied={unsatisfied}
+                            events={allEvents}
+                            genres={genres}
+                            newTimeChange={newTimeChange}
+                        />
+                    </Modal>
+                    <Timeline
+                        onEventPress={(event) => onEventPress(event)}
+                        data={events}
+                        timeStyle={{
+                            textAlign: "center",
+                            backgroundColor: "#cc5327",
+                            color: "white",
+                            padding: 5,
+                            borderRadius: 13,
+                        }}
+                        // detailContainerStyle={{
+                        //     marginBottom: 20,
+                        //     paddingLeft: 15,
+                        //     paddingRight: 15,
+                        //     backgroundColor: "white",
+                        //     borderRadius: 20,
+                        // }}
+                        renderDetail={renderDetail}
+                        circleColor="black"
+                    />
+                </View>
+                {/* <TransitRoutes routes={routes} /> */}
+                <View style={styles.footer}>{renderProceedButton()}</View>
+            </View>
+        );
+    }
 };
 
 const styles = StyleSheet.create({

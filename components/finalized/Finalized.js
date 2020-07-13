@@ -23,6 +23,7 @@ const Finalized = (props) => {
     const [isLoading, setIsLoading] = React.useState(true);
     const [visible, setVisible] = React.useState(false);
     const [coord, setCoord] = React.useState([]);
+    const [routes, setRoutes] = React.useState([]);
     const [allData, setData] = React.useState([]);
 
     //const route = props.route.params.route;
@@ -37,6 +38,14 @@ const Finalized = (props) => {
 
     const mapUpdate = (coord) => {
         setCoord(coord);
+    };
+
+    const routeUpdate = (selected, unsatisfied) => {
+        let temp = routes;
+        const result = temp.map((item) => {
+            return item == unsatisfied.location ? selected.location : item;
+        });
+        setRoutes(result);
     };
 
     const weatherIcon = (weather) => {
@@ -67,9 +76,16 @@ const Finalized = (props) => {
     React.useEffect(() => {
         //const userLocation = props.userLocation;
         const passed = props.route.params.routeGuide;
+        const initRoutes = [
+            {
+                lat: props.userLocation.coords.latitude,
+                long: props.userLocation.coords.longitude,
+            },
+        ].concat(data[3]);
         setData(data);
         setCoord(data[2]);
         setIsLoading(false);
+        setRoutes(initRoutes);
     }, []);
 
     if (isLoading) {
@@ -123,12 +139,8 @@ const Finalized = (props) => {
                         genres={userGenres}
                         accessRights={accessRights}
                         userID={props.userID}
-                        initRoutes={[
-                            {
-                                lat: props.userLocation.coords.latitude,
-                                long: props.userLocation.coords.longitude,
-                            },
-                        ].concat(allData[3])}
+                        routeUpdate={routeUpdate}
+                        initRoutes={routes}
                     />
 
                     <Modal animated visible={visible} animationType="fade">

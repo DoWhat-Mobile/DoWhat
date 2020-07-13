@@ -3,6 +3,7 @@ import { Text, View, Image } from "react-native";
 import ReadMore from "react-native-read-more-text";
 import { parse } from "expo-linking";
 import { TIH_API_KEY } from "react-native-dotenv";
+import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 
 /**
  * handles filter for food to be added in data array. Returns array of data that is formatted to be passed as props into
@@ -20,7 +21,7 @@ export const filterHelper = (filters, events) => {
     const eventList = events[genre]["list"];
     // so there will be a variety of places to choose from
     let temp = [];
-    for (i = 0; i < eventList.length; i++) {
+    for (let i = 0; i < eventList.length; i++) {
         const event = eventList[i];
         const cuisineFilter = (element) =>
             event.cuisine.toString().includes(element);
@@ -43,7 +44,7 @@ export const filterHelper = (filters, events) => {
         }
     }
     if (temp.length == 0) {
-        for (i = 0; i < eventList.length; i++) {
+        for (let i = 0; i < eventList.length; i++) {
             const event = eventList[i];
             const cuisineFilter = (element) =>
                 event.cuisine.toString().includes(element);
@@ -133,7 +134,7 @@ export const data_timeline = (timeline, events, currentEvents) => {
 
     // formats data array to be passed into Timeline library
     while (currentEvents.length !== 0) {
-        for (i = 0; i < currentEvents.length; i++) {
+        for (let i = 0; i < currentEvents.length; i++) {
             const genre = currentEvents
                 .map((x) => Object.keys(x)[0])
                 [i].toLowerCase();
@@ -181,7 +182,7 @@ export const data_timeline = (timeline, events, currentEvents) => {
 export const data_shuffle = (events, genres, time, unsatisfied) => {
     let data = [];
     let selectable = [];
-    for (i = 0; i < genres.length; i++) {
+    for (let i = 0; i < genres.length; i++) {
         let type = genres[i].toString().toLowerCase();
         if (type === "food") {
             Array.prototype.push.apply(selectable, events["hawker"]["list"]);
@@ -194,7 +195,7 @@ export const data_shuffle = (events, genres, time, unsatisfied) => {
             Array.prototype.push.apply(selectable, events[type]["list"]);
         }
     }
-    for (i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
         let randomNumber = Math.floor(Math.random() * selectable.length);
         let event = selectable[randomNumber];
 
@@ -274,7 +275,7 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
         parseInt(newStartTime.substring(0, 2)) >=
             parseInt(newTimingsArray[index].end.substring(0, 2))
     ) {
-        for (i = index; i < newTimingsArray.length; i++) {
+        for (let i = index; i < newTimingsArray.length; i++) {
             newTimingsArray[i] = startEndChange(
                 newTimingsArray[i],
                 hourDifference,
@@ -310,7 +311,7 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
         parseInt(newStartTime.substring(0, 2)) <=
             parseInt(newTimingsArray[index - 1].start.substring(0, 2))
     ) {
-        for (i = index; i >= 0; i--) {
+        for (let i = index; i >= 0; i--) {
             newTimingsArray[i] = startEndChange(
                 newTimingsArray[i],
                 hourDifference,
@@ -393,5 +394,72 @@ export const renderDetail = (rowData, sectionID, rowID) => {
             </View>
         );
 
-    return <View style={{ flex: 1 }}>{desc}</View>;
+    return (
+        <View
+            style={{
+                flex: 1,
+                paddingTop: 10,
+                marginBottom: 10,
+                paddingLeft: 15,
+                paddingRight: 15,
+                backgroundColor: "white",
+                borderRadius: 20,
+            }}
+        >
+            {desc}
+        </View>
+    );
+};
+
+export const routeFormatter = async (obj) => {
+    let format = {
+        key: "",
+        distance: "",
+        duration: "",
+        instructions: "",
+        mode: "",
+        start: "",
+    };
+    let instructions = "";
+    if (obj.travel_mode === "TRANSIT") {
+        let arrival_stop = obj.transit_details.arrival_stop.name;
+        let departure_stop = obj.transit_details.departure_stop.name;
+        let name = obj.transit_details.line.name.includes("Line")
+            ? obj.transit_details.line.name
+            : "Bus " + obj.transit_details.line.name;
+        let num_stops = obj.transit_details.num_stops;
+        instructions =
+            "Take " +
+            name +
+            " (" +
+            num_stops +
+            " stops" +
+            ")" +
+            " from " +
+            departure_stop +
+            " to " +
+            arrival_stop;
+    } else {
+        instructions = obj.html_instructions;
+    }
+    let lat = obj.start_location.lat;
+    let long = obj.start_location.lng;
+    let resp = await fetch(
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+            lat +
+            "," +
+            long +
+            "&key=" +
+            GOOGLE_MAPS_API_KEY
+    );
+    let start = (await resp.json()).results[0].formatted_address;
+    //console.log(JSON.stringify(await resp.json()));
+    format.distance = obj.distance.text;
+    format.duration = obj.duration.text;
+    format.instructions = instructions;
+    format.mode = obj.travel_mode;
+    format.start = start;
+    format.key = instructions;
+
+    return format;
 };
