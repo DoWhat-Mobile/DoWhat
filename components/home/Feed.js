@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import {
     View, Text, StyleSheet, SectionList, ActivityIndicator,
-    Image, FlatList, TouchableOpacity, Dimensions
+    Image, FlatList, TouchableOpacity, Dimensions, Alert
 } from "react-native";
 import { useFocusEffect } from '@react-navigation/native'
 import { Card } from 'react-native-elements';
@@ -54,6 +54,23 @@ const Feed = (props) => {
         setIsRefreshing(true);
         getDataFromFirebase();
         setIsRefreshing(false);
+    }
+
+    const handleEventPress = (event) => {
+        console.log(event)
+        Alert.alert(
+            'Opt Out',
+            'Are you sure you want to opt out of this collaboration?',
+            [
+                {
+                    text: 'No',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel'
+                },
+                { text: 'Yes', onPress: () => console.log("Yes") }
+            ],
+            { cancelable: false }
+        )
     }
 
     const handleTitlePress = (title) => {
@@ -116,7 +133,7 @@ const Feed = (props) => {
         }
 
         return (
-            <TouchableOpacity onPress={() => alert("More details as future enhancement")}>
+            <TouchableOpacity onPress={() => handleEventPress(event)}>
                 <View style={{ width: Dimensions.get('window').width }}>
                     <Card
                         style={{ height: (Dimensions.get('window').height / 2) }}
@@ -180,7 +197,7 @@ const Feed = (props) => {
         }
 
         return (
-            <TouchableOpacity onPress={() => alert("More details as future enhancement")}>
+            <TouchableOpacity onPress={() => handleEventPress(event)}>
                 <View style={{ width: Dimensions.get('window').width }}>
                     <Card
                         style={{ height: (Dimensions.get('window').height / 2) }}
