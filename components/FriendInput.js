@@ -102,7 +102,7 @@ const FriendInput = (props) => {
                                 paddingRight: 25,
                             },
                         ]}
-                        onPress={() => props.navigation.navigate('Plan')}
+                        onPress={() => props.navigation.navigate('Plan', { addingFavourite: false })}
                     >
                         <Text style={{ fontSize: 16, color: "white" }}>
                             DONE

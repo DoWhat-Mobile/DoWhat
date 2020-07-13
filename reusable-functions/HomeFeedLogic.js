@@ -18,10 +18,15 @@ const sortEventsByRatings = (allEventsObject) => {
 
         const currEvent = eventsList[prop];
         sortable.push([{
+            coord: currEvent.coord,
             title: currEvent.name,
             description: currEvent.description,
-            imageURL: currEvent.image, location: currEvent.location,
+            imageURL: currEvent.image,
+            location: currEvent.location,
+            id: currEvent.id,
+            tags: currEvent.tags,
             selected: false, // To prevent duplicates when selecting 
+            favourited: false,
         }, currEvent.rating])
         count++;
     }

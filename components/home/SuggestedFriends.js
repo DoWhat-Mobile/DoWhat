@@ -108,7 +108,7 @@ const SuggestedFriends = ({ friends, seeMore, fullView, currUserName,
         const push_token = friend[0].push_token;
         const friendFirebaseUID = friend[1];
         return (
-            <View style={styles.friendCard}>
+            <View style={[styles.friendCard, fullView ? { width: '32%' } : {}]}>
                 <View style={{
                     borderTopWidth: 40, position: 'absolute', borderTopColor: '#b7b7a4',
                     alignSelf: 'stretch'
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
         flexShrink: 1,
         borderRadius: 5,
         height: 150,
-        width: 120,
+        width: '35%',
     },
     nameStyle: {
         flexWrap: 'wrap',

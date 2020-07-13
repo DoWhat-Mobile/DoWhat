@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import {
     View, Text, StyleSheet, SectionList, ActivityIndicator,
-    Image, FlatList, TouchableOpacity, Dimensions
+    Image, FlatList, TouchableOpacity, Dimensions, Alert
 } from "react-native";
 import { useFocusEffect } from '@react-navigation/native'
 import { Card } from 'react-native-elements';
@@ -20,14 +20,18 @@ import ReadMore from 'react-native-read-more-text';
 const Feed = (props) => {
     useFocusEffect(
         useCallback(() => {
-            getDataFromFirebase();
+            getDataFromFirebase(); // Subscribe to changes
             return () => null;
         }, [props.allEvents])
     )
 
     const [isLoading, setIsLoading] = useState(true);
-    const [eventData, setEventData] = useState([]);
+    const [whatsPopularData, setWhatsPopularData] = useState([])
+    const [hungryData, setHungryData] = useState([]);
+    const [somethingNewData, setSomethingNewData] = useState([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [favourites, setFavourites] = useState({});
+    const [viewFavourites, setViewFavourites] = useState(false);
 
     const getDataFromFirebase = async () => {
         try {
@@ -39,9 +43,16 @@ const Feed = (props) => {
                     const userData = snapshot.val();
                     const allCategories = props.allEvents; // Get all events from redux state 
 
+                    if (userData.hasOwnProperty("favourites")) {
+                        const userFavourites = userData.favourites;
+                        setFavourites(userFavourites)
+                    }
+
                     if (Object.keys(allCategories).length !== 0) { // Check that event has already been loaded from redux state
                         const data = handleEventsOf(allCategories, userData.preferences);
-                        setEventData(data)
+                        setWhatsPopularData(data[0])
+                        setHungryData(data[1])
+                        setSomethingNewData(data[2])
                         setIsLoading(false)
                     }
                 })
@@ -56,6 +67,99 @@ const Feed = (props) => {
         setIsRefreshing(false);
     }
 
+    // Add entire event into user's firebase node under favourites
+    const handleAddToFavourites = (event, sectionTitle, index, foodIndex) => {
+        var updates = {}
+        var eventWithRating = event[0];
+        eventWithRating.rating = event[1]
+        updates['/favourites/' + event[0].id] = eventWithRating;
+
+        firebase.database().ref('/users/' + props.userID)
+            .update(updates);
+
+        // Add to component state, so no need to pull data from Firebase
+        var additionalEvent = {};
+        additionalEvent[event[0].id] = eventWithRating;
+        setFavourites(Object.assign({}, favourites, additionalEvent))
+
+        // Visual cue to users, add heart to card
+        if (sectionTitle == 'Hungry?') {
+            var newData = hungryData[index][foodIndex]
+            newData[0].favourited = true; // Mark as favourited 
+            var finalData = [...hungryData[index]]
+            finalData[foodIndex] = newData
+            setHungryData([[...finalData]]);
+
+        } else if (sectionTitle == 'Find something new') {
+            var newData = somethingNewData[index]
+            newData[0].favourited = true; // Mark as favourited 
+            var finalData = [...somethingNewData]
+            finalData[index] = newData
+            setSomethingNewData([...finalData]);
+
+        } else { // What is popular
+            var newData = whatsPopularData[index]
+            newData[0].favourited = true; // Mark as favourited 
+            var finalData = [...whatsPopularData]
+            finalData[index] = newData
+            setWhatsPopularData([...finalData]);
+        }
+    }
+
+    // Event represents an event node in the database of events
+    const handleEventPress = (event, sectionTitle, index, foodIndex) => {
+        Alert.alert(
+            'Add to favourites',
+            'Do you want to add this event to your favourites?',
+            [
+                {
+                    text: 'No',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel'
+                },
+                { text: 'Yes', onPress: () => handleAddToFavourites(event, sectionTitle, index, foodIndex) }
+            ],
+            { cancelable: false }
+        )
+    }
+
+    const handleFavouriteEventPress = (event) => {
+        Alert.alert(
+            'Add to plan',
+            'Where would you like to include this favourite event?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel'
+                },
+                { text: 'Collaboration', onPress: () => handleAddFavouriteToCollab(event) },
+                { text: 'Personal', onPress: () => handleAddFavouriteToPersonal(event) }
+            ],
+            { cancelable: true }
+        )
+    }
+
+    const handleAddFavouriteToCollab = (event) => {
+        props.navigation.navigate("Plan", { event: event, addingFavourite: true })
+    }
+
+    const handleAddFavouriteToPersonal = (event) => {
+
+    }
+
+    const handleRemoveFavourites = (event) => {
+        // Remove from Firebase
+        firebase.database()
+            .ref('/users/' + props.userID + '/favourites/' + event[0].id)
+            .remove();
+
+        // Remove from component state
+        var newFavourites = Object.assign({}, favourites);
+        delete newFavourites[event[0].id];
+        setFavourites(newFavourites);
+    }
+
     const handleTitlePress = (title) => {
         if (title == 'What is currently popular') {
             alert("Future enhancements")
@@ -66,24 +170,15 @@ const Feed = (props) => {
         }
     }
 
-    /**
-     * Run through entire array and returns another array of the data 
-     * injected with React elements. 
-     * @param {*} event is an ARRAY of [{}, rating] 
-     * @param {*} injectReactToEach is a function specifying how each element in the list view
-     *  will be styled.
-     */
-    const injectReactToAll = (event, injectReactToEach) => {
-        var eventsInReactElement = [];
-        for (var i = 0; i < event.length; i++) {
-            eventsInReactElement.push(injectReactToEach(event[i]));
-        }
-        // Returns an ARRAY of styled elements
-        return eventsInReactElement;
-    }
-
     // Takes in indivdual event array and inject it to <Card>, for vertical views 
-    const renderWhatsPopular = (event) => {
+    const renderEventCard = (event, isEventFood, sectionTitle, index, foodIndex) => {
+        var isEventFavourited = false;
+        // Two checks for event favourited, so we don't have to subscribe to Firebase changes.
+        // (Firebase changes causes frequent and unecessary re-render of home feed events)
+        if (favourites.hasOwnProperty(event[0].id) || event[0].favourited) {
+            isEventFavourited = true;
+        }
+
         const renderTruncatedFooter = (handlePress) => {
             return (
                 <Text
@@ -116,7 +211,8 @@ const Feed = (props) => {
         }
 
         return (
-            <TouchableOpacity onPress={() => alert("More details as future enhancement")}>
+            <TouchableOpacity disabled={sectionTitle == 'favourites'}
+                onPress={() => handleEventPress(event, sectionTitle, index, foodIndex)}>
                 <View style={{ width: Dimensions.get('window').width }}>
                     <Card
                         style={{ height: (Dimensions.get('window').height / 2) }}
@@ -124,12 +220,21 @@ const Feed = (props) => {
                     >
                         <Image
                             source={{ uri: imageURI }}
-                            style={{ height: 100, width: '100%' }}
+                            style={isEventFood
+                                ? { height: 100, width: '100%' }
+                                : { height: 100, width: Dimensions.get('window').width * 0.85 }}
                         />
-                        <View style={{ flexDirection: 'row' }}>
-                            <MaterialCommunityIcons name="star" color={'#1d3557'} size={18} />
-                            <Text style={{ fontSize: 12, color: '#1d3557', marginTop: 2, }}> {eventRatings}</Text>
+
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <View style={{ flexDirection: 'row' }}>
+                                <MaterialCommunityIcons name="star" color={'#1d3557'} size={18} />
+                                <Text style={{ fontSize: 12, color: '#1d3557', marginTop: 2, }}> {eventRatings}</Text>
+                            </View>
+                            {isEventFavourited
+                                ? <MaterialCommunityIcons name="google-fit" color={'#e63946'} size={18} />
+                                : null}
                         </View>
+
                         <ReadMore
                             numberOfLines={4}
                             renderTruncatedFooter={renderTruncatedFooter}
@@ -140,73 +245,29 @@ const Feed = (props) => {
                                 {event[0].description}
                             </Text>
                         </ReadMore>
+
+                        {sectionTitle == 'favourites'
+                            ? <View style={{
+                                flexDirection: 'row', justifyContent: 'space-between',
+                                marginTop: 5,
+                            }}>
+                                <TouchableOpacity style={styles.favouritesButton}
+                                    onPress={() => handleRemoveFavourites(event)}>
+                                    <Text style={styles.favouritesButtonText}>
+                                        REMOVE FROM FAVOURITES
+                                        </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.favouritesButton}
+                                    onPress={() => handleFavouriteEventPress(event)}>
+                                    <Text style={styles.favouritesButtonText}>ADD TO PLAN</Text>
+                                </TouchableOpacity>
+                            </View>
+                            : null}
+
                     </Card>
                 </View>
-            </TouchableOpacity>
-        );
-    }
-
-    // Styling to be rendered for food selection in Home screen feed
-    const renderFoodChoices = (event) => {
-        const renderTruncatedFooter = (handlePress) => {
-            return (
-                <Text
-                    style={{ color: "#595959", marginTop: 5 }}
-                    onPress={handlePress}
-                >
-                    Read more
-                </Text>
-            );
-        };
-
-        const renderRevealedFooter = (handlePress) => {
-            return (
-                <Text
-                    style={{ color: "#595959", marginTop: 5 }}
-                    onPress={handlePress}
-                >
-                    Show less
-                </Text>
-            );
-        };
-
-        var imageURI = event[0].imageURL;
-        const eventRatings = event[1] + '/5'
-
-        // If imageURI is a code, convert it to URI using TIH API
-        if (imageURI.substring(0, 5) != 'https') {
-            imageURI = 'https://tih-api.stb.gov.sg/media/v1/download/uuid/' +
-                imageURI + '?apikey=' + TIH_API_KEY;
-        }
-
-        return (
-            <TouchableOpacity onPress={() => alert("More details as future enhancement")}>
-                <View style={{ width: Dimensions.get('window').width }}>
-                    <Card
-                        style={{ height: (Dimensions.get('window').height / 2) }}
-                        title={event[0].title}
-                    >
-                        <Image
-                            source={{ uri: imageURI }}
-                            style={{ height: 100, width: Dimensions.get('window').width * 0.85 }}
-                        />
-                        <View style={{ flexDirection: 'row' }}>
-                            <MaterialCommunityIcons name="star" color={'#1d3557'} size={18} />
-                            <Text style={{ fontSize: 12, color: '#1d3557', marginTop: 2, }}> {eventRatings}</Text>
-                        </View>
-                        <ReadMore
-                            numberOfLines={4}
-                            renderTruncatedFooter={renderTruncatedFooter}
-                            renderRevealedFooter={renderRevealedFooter}
-                        >
-                            <Text>
-                                {"\n"}
-                                {event[0].description}
-                            </Text>
-                        </ReadMore>
-                    </Card>
-                </View>
-            </TouchableOpacity>
+            </TouchableOpacity >
         );
     }
 
@@ -214,26 +275,25 @@ const Feed = (props) => {
      * Horizontal <FlatList> for food choices
      * @param {*} event is a 2D array of [[{eventDetails}, ratings], ...] 
      */
-    const formatFoodArray = (event) => {
+    const formatFoodArray = (allEvents, sectionTitle, sectionIndex) => {
         return (
             <FlatList
-                data={injectReactToAll(event, renderFoodChoices)}
+                data={allEvents}
                 horizontal={true}
-                renderItem={({ item }) => (
-                    item
+                renderItem={({ item, index }) => (
+                    renderEventCard(item, true, sectionTitle, sectionIndex, index) // Food index is the inner flatlist index for food list 
                 )}
                 keyExtractor={(item, index) => item + index}
             />
         )
     }
 
-    const renderFeed = (item, section) => {
+    const renderFeed = (item, section, index) => {
         if (section.title == 'Hungry?') { // Render eateries
-            return formatFoodArray(item);
+            return formatFoodArray(item, section.title, index);
         }
-        return renderWhatsPopular(item);
+        return renderEventCard(item, false, section.title, index); // not food
     }
-
 
     const scroll = (sectionIndex, itemIndex) => {
         sectionListRef.scrollToLocation({ sectionIndex: sectionIndex, itemIndex: itemIndex, viewPosition: 0, viewOffSet: 10 })
@@ -258,6 +318,76 @@ const Feed = (props) => {
         )
     }
 
+    if (viewFavourites) {
+        var favouritesArr = [];
+        for (var event in favourites) {
+            const formattedData = [favourites[event], favourites[event].rating]
+            favouritesArr.push(formattedData)
+        }
+        // Favourites view
+        return (
+            < View style={styles.container} >
+                <SectionList
+                    onRefresh={() => refreshPage()}
+                    ref={ref => (sectionListRef = ref)}
+                    ListHeaderComponent={() => {
+                        return (
+                            <View style={styles.header}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <Text style={styles.headerText}>Check these categories out!</Text>
+                                    <TouchableOpacity onPress={signOut}>
+                                        <Text style={{
+                                            color: "grey", textDecorationLine: 'underline',
+                                            marginRight: 5, marginTop: 2
+                                        }}>
+                                            Sign out
+                                    </Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', marginTop: 5, }}>
+                                    <View style={{ flex: 2.5, flexDirection: 'row', justifyContent: 'space-around' }}>
+                                        <View>
+                                            <TouchableOpacity onPress={() => setViewFavourites(false)}
+                                                style={styles.headerCategory}>
+                                                <MaterialCommunityIcons name="reorder-horizontal" color={'black'} size={30} />
+                                            </TouchableOpacity>
+                                            <CategoryTitleText text='See all Events' />
+                                        </View>
+                                    </View>
+                                    <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
+                                        <TouchableOpacity
+                                            onPress={() => props.navigation.navigate("Plan", { addingFavourite: false })}
+                                            style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
+                                            <MaterialCommunityIcons name="feature-search" color={'white'} size={30} />
+                                        </TouchableOpacity>
+                                        <CategoryTitleText text='Plan with Friends' />
+                                    </View>
+                                </View>
+                            </View>
+                        )
+                    }}
+                    progressViewOffset={100}
+                    refreshing={isRefreshing}
+                    sections={[
+                        { title: "My favourites", data: favouritesArr }
+                    ]}
+                    renderItem={({ item, section, index }) => renderEventCard(item, false, 'favourites', 0, 0)}
+                    renderSectionHeader={({ section }) =>
+                        <View style={styles.sectionHeader}>
+                            <TouchableOpacity
+                                onPress={() => handleTitlePress(section.title)}>
+                                <Text style={styles.sectionHeaderText}>{section.title}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
+                    keyExtractor={(item, index) => index}
+                />
+            </View >
+        )
+    }
+
+    // Normal view
     return (
         <View style={styles.container}>
             <SectionList
@@ -279,11 +409,18 @@ const Feed = (props) => {
                             </View>
 
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', marginTop: 5, }}>
-                                <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-around' }}>
+                                <View style={{ flex: 2.5, flexDirection: 'row', justifyContent: 'space-around' }}>
+                                    <View>
+                                        <TouchableOpacity onPress={() => setViewFavourites(true)}
+                                            style={styles.headerCategory}>
+                                            <MaterialCommunityIcons name="cards-heart" color={'#d00000'} size={30} />
+                                        </TouchableOpacity>
+                                        <CategoryTitleText text='Favourites' />
+                                    </View>
                                     <View>
                                         <TouchableOpacity onPress={() => scroll(0, 0)}
                                             style={styles.headerCategory}>
-                                            <MaterialCommunityIcons name="cards-heart" color={'#d00000'} size={30} />
+                                            <MaterialCommunityIcons name="star" color={'#CCCC00'} size={30} />
                                         </TouchableOpacity>
                                         <CategoryTitleText text='Popular' />
                                     </View>
@@ -303,7 +440,8 @@ const Feed = (props) => {
                                     </View>
                                 </View>
                                 <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
-                                    <TouchableOpacity onPress={() => props.navigation.navigate("Plan")}
+                                    <TouchableOpacity
+                                        onPress={() => props.navigation.navigate("Plan", { addingFavourite: false })}
                                         style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
                                         <MaterialCommunityIcons name="feature-search" color={'white'} size={30} />
                                     </TouchableOpacity>
@@ -316,11 +454,11 @@ const Feed = (props) => {
                 progressViewOffset={100}
                 refreshing={isRefreshing}
                 sections={[
-                    { title: "What is currently popular", data: eventData[0] }, // eventData[0] is an array of data items
-                    { title: "Hungry?", data: eventData[1] }, // eventData[1] is an array of one element: [data]
-                    { title: "Find something new", data: eventData[2] } // eventData[2] is an array data items 
+                    { title: "What is currently popular", data: whatsPopularData }, // eventData[0] is an array of data items
+                    { title: "Hungry?", data: hungryData }, // eventData[1] is an array of one element: [data]
+                    { title: "Find something new", data: somethingNewData } // eventData[2] is an array data items 
                 ]}
-                renderItem={({ item, section }) => renderFeed(item, section)}
+                renderItem={({ item, section, index }) => renderFeed(item, section, index)}
                 renderSectionHeader={({ section }) =>
                     <View style={styles.sectionHeader}>
                         <TouchableOpacity
@@ -363,7 +501,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         elevation: 0.01,
         alignSelf: 'center',
-
     },
     header: {
         backgroundColor: '#f0efeb',
@@ -389,7 +526,6 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: 'black',
         backgroundColor: '#e63946',
-
     },
     cardButton: {
         borderRadius: 5,
@@ -404,6 +540,17 @@ const styles = StyleSheet.create({
         fontWeight: '300',
         fontFamily: 'serif',
         textAlign: "center",
-
+    },
+    favouritesButton: {
+        borderWidth: 0.1,
+        padding: 5,
+        borderRadius: 5,
+        backgroundColor: '#e63946',
+    },
+    favouritesButtonText: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: 'white'
     }
 });
