@@ -122,6 +122,22 @@ const Feed = (props) => {
             { cancelable: false }
         )
     }
+    const handleFavouriteEventPress = (event) => {
+        Alert.alert(
+            'Add to plan',
+            'Where would you like to include this favourite event?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel'
+                },
+                { text: 'Collaboration', onPress: () => console.log("Collab") },
+                { text: 'Personal', onPress: () => console.log("Personal") }
+            ],
+            { cancelable: true }
+        )
+    }
 
     const handleTitlePress = (title) => {
         if (title == 'What is currently popular') {
@@ -206,9 +222,28 @@ const Feed = (props) => {
                                 {event[0].description}
                             </Text>
                         </ReadMore>
+
+                        {sectionTitle == 'favourites'
+                            ? <View style={{
+                                flexDirection: 'row', justifyContent: 'space-between',
+                                marginTop: 5,
+                            }}>
+                                <TouchableOpacity style={styles.favouritesButton}>
+                                    <Text style={styles.favouritesButtonText}>
+                                        REMOVE FROM FAVOURITES
+                                        </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.favouritesButton}
+                                    onPress={() => handleFavouriteEventPress(event)}>
+                                    <Text style={styles.favouritesButtonText}>ADD TO PLAN</Text>
+                                </TouchableOpacity>
+                            </View>
+                            : null}
+
                     </Card>
                 </View>
-            </TouchableOpacity>
+            </TouchableOpacity >
         );
     }
 
@@ -265,7 +300,7 @@ const Feed = (props) => {
             const formattedData = [favourites[event], favourites[event].rating]
             favouritesArr.push(formattedData)
         }
-
+        // Favourites view
         return (
             < View style={styles.container} >
                 <SectionList
@@ -293,7 +328,7 @@ const Feed = (props) => {
                                                 style={styles.headerCategory}>
                                                 <MaterialCommunityIcons name="cards-heart" color={'#d00000'} size={30} />
                                             </TouchableOpacity>
-                                            <CategoryTitleText text='See all events' />
+                                            <CategoryTitleText text='See all Events' />
                                         </View>
                                     </View>
                                     <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
@@ -327,6 +362,7 @@ const Feed = (props) => {
         )
     }
 
+    // Normal view
     return (
         <View style={styles.container}>
             <SectionList
@@ -478,5 +514,17 @@ const styles = StyleSheet.create({
         fontWeight: '300',
         fontFamily: 'serif',
         textAlign: "center",
+    },
+    favouritesButton: {
+        borderWidth: 0.1,
+        padding: 5,
+        borderRadius: 5,
+        backgroundColor: '#e63946',
+    },
+    favouritesButtonText: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: 'white'
     }
 });
