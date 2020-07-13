@@ -21,12 +21,14 @@ const Feed = (props) => {
     useFocusEffect(
         useCallback(() => {
             getDataFromFirebase(); // Subscribe to changes
-            return () => firebase.database().ref("users/" + props.userID).off();
+            return () => null;
         }, [props.allEvents])
     )
 
     const [isLoading, setIsLoading] = useState(true);
-    const [eventData, setEventData] = useState([]);
+    const [whatsPopularData, setWhatsPopularData] = useState([])
+    const [hungryData, setHungryData] = useState([]);
+    const [somethingNewData, setSomethingNewData] = useState([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [favourites, setFavourites] = useState({});
 
@@ -35,7 +37,8 @@ const Feed = (props) => {
             const database = firebase.database();
             const userId = firebase.auth().currentUser.uid;
             database.ref("users/" + userId)
-                .on("value", (snapshot) => {
+                .once("value")
+                .then((snapshot) => {
                     const userData = snapshot.val();
                     const allCategories = props.allEvents; // Get all events from redux state 
 
@@ -46,7 +49,9 @@ const Feed = (props) => {
 
                     if (Object.keys(allCategories).length !== 0) { // Check that event has already been loaded from redux state
                         const data = handleEventsOf(allCategories, userData.preferences);
-                        setEventData(data)
+                        setWhatsPopularData(data[0])
+                        setHungryData(data[1])
+                        setSomethingNewData(data[2])
                         setIsLoading(false)
                     }
                 })
@@ -62,16 +67,27 @@ const Feed = (props) => {
     }
 
     // Add entire event into user's firebase node under favourites
-    const handleAddToFavourites = (event) => {
+    const handleAddToFavourites = (event, sectionTitle, index, foodIndex) => {
         var updates = {}
         updates['/favourites/' + event[0].id] = event[0];
 
         firebase.database().ref('/users/' + props.userID)
             .update(updates);
+
+        // Visual cue to users, add heart to card
+        if (sectionTitle == 'Hungry?') {
+            console.log(hungryData[index][foodIndex])
+        } else if (sectionTitle == 'Find something new') {
+            console.log(somethingNewData[index])
+
+        } else { // What is popular
+            console.log(whatsPopularData[index])
+
+        }
     }
 
     // Event represents an event node in the database of events
-    const handleEventPress = (event) => {
+    const handleEventPress = (event, sectionTitle, index, foodIndex) => {
         Alert.alert(
             'Add to favourites',
             'Do you want to add this event to your favourites?',
@@ -81,7 +97,7 @@ const Feed = (props) => {
                     onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel'
                 },
-                { text: 'Yes', onPress: () => handleAddToFavourites(event) }
+                { text: 'Yes', onPress: () => handleAddToFavourites(event, sectionTitle, index, foodIndex) }
             ],
             { cancelable: false }
         )
@@ -97,24 +113,8 @@ const Feed = (props) => {
         }
     }
 
-    /**
-     * Run through entire array and returns another array of the data 
-     * injected with React elements. 
-     * @param {*} event is an ARRAY of [{}, rating] 
-     * @param {*} injectReactToEach is a function specifying how each element in the list view
-     *  will be styled.
-     */
-    const injectReactToAll = (event, injectReactToEach) => {
-        var eventsInReactElement = [];
-        for (var i = 0; i < event.length; i++) {
-            eventsInReactElement.push(injectReactToEach(event[i], true)); // Event is food
-        }
-        // Returns an ARRAY of styled elements
-        return eventsInReactElement;
-    }
-
     // Takes in indivdual event array and inject it to <Card>, for vertical views 
-    const renderEventCard = (event, isEventFood) => {
+    const renderEventCard = (event, isEventFood, sectionTitle, index, foodIndex) => {
         var isEventFavourited = false;
         if (favourites.hasOwnProperty(event[0].id)) {
             isEventFavourited = true;
@@ -152,7 +152,7 @@ const Feed = (props) => {
         }
 
         return (
-            <TouchableOpacity onPress={() => handleEventPress(event)}>
+            <TouchableOpacity onPress={() => handleEventPress(event, sectionTitle, index, foodIndex)}>
                 <View style={{ width: Dimensions.get('window').width }}>
                     <Card
                         style={{ height: (Dimensions.get('window').height / 2) }}
@@ -191,102 +191,28 @@ const Feed = (props) => {
         );
     }
 
-    // Styling to be rendered for food selection in Home screen feed
-    const renderFoodChoices = (event) => {
-        var isEventFavourited = false;
-        if (favourites.hasOwnProperty(event[0].id)) {
-            isEventFavourited = true;
-        }
-
-        const renderTruncatedFooter = (handlePress) => {
-            return (
-                <Text
-                    style={{ color: "#595959", marginTop: 5 }}
-                    onPress={handlePress}
-                >
-                    Read more
-                </Text>
-            );
-        };
-
-        const renderRevealedFooter = (handlePress) => {
-            return (
-                <Text
-                    style={{ color: "#595959", marginTop: 5 }}
-                    onPress={handlePress}
-                >
-                    Show less
-                </Text>
-            );
-        };
-
-        var imageURI = event[0].imageURL;
-        const eventRatings = event[1] + '/5'
-
-        // If imageURI is a code, convert it to URI using TIH API
-        if (imageURI.substring(0, 5) != 'https') {
-            imageURI = 'https://tih-api.stb.gov.sg/media/v1/download/uuid/' +
-                imageURI + '?apikey=' + TIH_API_KEY;
-        }
-
-        return (
-            <TouchableOpacity onPress={() => handleEventPress(event)}>
-                <View style={{ width: Dimensions.get('window').width }}>
-                    <Card
-                        style={{ height: (Dimensions.get('window').height / 2) }}
-                        title={event[0].title}
-                    >
-                        <Image
-                            source={{ uri: imageURI }}
-                            style={{ height: 100, width: Dimensions.get('window').width * 0.85 }}
-                        />
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <View style={{ flexDirection: 'row' }}>
-                                <MaterialCommunityIcons name="star" color={'#1d3557'} size={18} />
-                                <Text style={{ fontSize: 12, color: '#1d3557', marginTop: 2, }}> {eventRatings}</Text>
-                            </View>
-                            {isEventFavourited
-                                ? <MaterialCommunityIcons name="google-fit" color={'#e63946'} size={18} />
-                                : null}
-                        </View>
-                        <ReadMore
-                            numberOfLines={4}
-                            renderTruncatedFooter={renderTruncatedFooter}
-                            renderRevealedFooter={renderRevealedFooter}
-                        >
-                            <Text>
-                                {"\n"}
-                                {event[0].description}
-                            </Text>
-                        </ReadMore>
-                    </Card>
-                </View>
-            </TouchableOpacity>
-        );
-    }
-
     /**
      * Horizontal <FlatList> for food choices
      * @param {*} event is a 2D array of [[{eventDetails}, ratings], ...] 
      */
-    const formatFoodArray = (event) => {
+    const formatFoodArray = (allEvents, sectionTitle, sectionIndex) => {
         return (
             <FlatList
-                data={injectReactToAll(event, renderEventCard)}
+                data={allEvents}
                 horizontal={true}
-                renderItem={({ item }) => (
-                    item
+                renderItem={({ item, index }) => (
+                    renderEventCard(item, true, sectionTitle, sectionIndex, index) // Food index is the inner flatlist index for food list 
                 )}
                 keyExtractor={(item, index) => item + index}
             />
         )
     }
 
-    const renderFeed = (item, section) => {
+    const renderFeed = (item, section, index) => {
         if (section.title == 'Hungry?') { // Render eateries
-            return formatFoodArray(item);
+            return formatFoodArray(item, section.title, index);
         }
-        return renderEventCard(item, false); // not food
+        return renderEventCard(item, false, section.title, index); // not food
     }
 
     const scroll = (sectionIndex, itemIndex) => {
@@ -370,11 +296,11 @@ const Feed = (props) => {
                 progressViewOffset={100}
                 refreshing={isRefreshing}
                 sections={[
-                    { title: "What is currently popular", data: eventData[0] }, // eventData[0] is an array of data items
-                    { title: "Hungry?", data: eventData[1] }, // eventData[1] is an array of one element: [data]
-                    { title: "Find something new", data: eventData[2] } // eventData[2] is an array data items 
+                    { title: "What is currently popular", data: whatsPopularData }, // eventData[0] is an array of data items
+                    { title: "Hungry?", data: hungryData }, // eventData[1] is an array of one element: [data]
+                    { title: "Find something new", data: somethingNewData } // eventData[2] is an array data items 
                 ]}
-                renderItem={({ item, section }) => renderFeed(item, section)}
+                renderItem={({ item, section, index }) => renderFeed(item, section, index)}
                 renderSectionHeader={({ section }) =>
                     <View style={styles.sectionHeader}>
                         <TouchableOpacity
