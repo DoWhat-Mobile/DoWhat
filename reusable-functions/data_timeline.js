@@ -1,9 +1,10 @@
 import React from "react";
-import { Text, View, Image } from "react-native";
+import { Text, View, Image, ScrollView } from "react-native";
 import ReadMore from "react-native-read-more-text";
 import { parse } from "expo-linking";
 import { TIH_API_KEY } from "react-native-dotenv";
 import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
+import Route from "../components/finalized/Route";
 
 /**
  * handles filter for food to be added in data array. Returns array of data that is formatted to be passed as props into
@@ -327,10 +328,7 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
 export const renderDetail = (rowData, sectionID, rowID) => {
     const renderTruncatedFooter = (handlePress) => {
         return (
-            <Text
-                style={{ color: "#595959", marginTop: 5, marginLeft: 5 }}
-                onPress={handlePress}
-            >
+            <Text style={{ color: "#595959" }} onPress={handlePress}>
                 Read more
             </Text>
         );
@@ -338,10 +336,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
 
     const renderRevealedFooter = (handlePress) => {
         return (
-            <Text
-                style={{ color: "#595959", marginTop: 5, marginLeft: 5 }}
-                onPress={handlePress}
-            >
+            <Text style={{ color: "#595959" }} onPress={handlePress}>
                 Show less
             </Text>
         );
@@ -351,7 +346,6 @@ export const renderDetail = (rowData, sectionID, rowID) => {
             style={{
                 fontSize: 16,
                 fontWeight: "bold",
-                marginLeft: 5,
             }}
         >
             {rowData.title}
@@ -360,11 +354,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
     let desc = null;
     if (rowData.description && rowData.imageUrl) {
         desc = (
-            <View
-                style={{
-                    paddingRight: 50,
-                }}
-            >
+            <View style={{ padding: 5 }}>
                 {title}
                 <Image
                     source={{ uri: rowData.imageUrl }}
@@ -395,23 +385,12 @@ export const renderDetail = (rowData, sectionID, rowID) => {
         desc = (
             <View
                 style={{
-                    paddingRight: 50,
+                    flex: 1,
+                    padding: 5,
                 }}
             >
                 {title}
-                <ReadMore
-                    numberOfLines={1}
-                    renderTruncatedFooter={renderTruncatedFooter}
-                    renderRevealedFooter={renderRevealedFooter}
-                >
-                    <Text
-                        style={{
-                            flex: 1,
-                        }}
-                    >
-                        {rowData.description}
-                    </Text>
-                </ReadMore>
+                <Route item={rowData.description} />
             </View>
         );
     }
@@ -558,11 +537,10 @@ export const eventsWithDirections = (timingsArray, events, directions) => {
             };
 
             obj.time = timingsArray[i].start;
-            obj.description = directions[j].distance;
+            obj.description = directions[j].steps;
 
             result.push(obj);
         }
     }
-    console.log(result);
     return result;
 };

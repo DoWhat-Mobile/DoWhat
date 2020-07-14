@@ -1,45 +1,48 @@
 import React from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import ReadMore from "react-native-read-more-text";
 
 const Route = ({ item }) => {
-    const block = (item) => {
+    const renderTruncatedFooter = (handlePress) => {
         return (
-            <View
-                style={{
-                    marginVertical: 10,
-                    marginHorizontal: 10,
-                }}
-            >
-                {item.mode === "WALKING" ? (
-                    <FontAwesome5 name="walking" size={24} color="black" />
-                ) : item.instructions.includes("Bus") ? (
-                    <FontAwesome5 name="bus-alt" size={24} color="black" />
-                ) : (
-                    <FontAwesome5 name="train" size={24} color="black" />
-                )}
-                <View style={{ width: 200 }}>
-                    <Text style={{ fontSize: 13 }}>
-                        {item.distance} {item.duration} {"\n"}
-                    </Text>
-                    <View
-                        style={{
-                            borderBottomColor: "black",
-                            borderBottomWidth: StyleSheet.hairlineWidth,
-                            width: 300,
-                        }}
-                    />
-                    <Text style={{ fontSize: 14 }}>{item.instructions}</Text>
-                </View>
-            </View>
+            <Text style={{ color: "#595959" }} onPress={handlePress}>
+                Read more
+            </Text>
         );
     };
+
+    const renderRevealedFooter = (handlePress) => {
+        return (
+            <Text style={{ color: "#595959" }} onPress={handlePress}>
+                Show less
+            </Text>
+        );
+    };
+
+    const block = (item) => {
+        let str = "";
+        for (let i = 0; i < item.length; i++) {
+            let block =
+                item[i].distance +
+                " " +
+                item[i].duration +
+                "\n" +
+                item[i].instructions +
+                "\n\n";
+            str += block;
+        }
+        return str;
+    };
+
     return (
-        <FlatList
-            data={item}
-            keyExtractor={(item) => item.key}
-            renderItem={({ item }) => block(item)}
-        />
+        <ReadMore
+            numberOfLines={1}
+            renderTruncatedFooter={renderTruncatedFooter}
+            renderRevealedFooter={renderRevealedFooter}
+        >
+            <Text style={{ marginLeft: 5 }}>{block(item)}</Text>
+        </ReadMore>
     );
 };
 
