@@ -50,13 +50,13 @@ const Schedule = (props) => {
     //     setTimingsArray(props.data[1]);
     // }, []);
     React.useEffect(() => {
-        console.log(props.initRoutes);
-        let updatedTimings = merge(props.data[1], props.initRoutes);
+        let updatedTimings = merge(props.timings, props.initRoutes);
         let combinedData = eventsWithDirections(
             updatedTimings,
-            props.data[0],
+            props.data,
             props.initRoutes
         );
+        console.log("Updated Timings are ", updatedTimings);
         setTimingsArray(updatedTimings);
         setEvents(combinedData);
         setLoading(false);
@@ -64,17 +64,23 @@ const Schedule = (props) => {
 
     const onReselect = (selected) => {
         const updatedData = events.map((item) => {
-            if (item === unsatisfied) return selected;
-            return item;
-        });
-        const updatedCoord = updatedData.map((item, index) => {
-            if (index % 2 != 0) {
-                const obj = { coord: item.coord, name: item.title };
-                return obj;
+            if (item === unsatisfied) {
+                return selected;
+            } else {
+                return item;
             }
         });
+        const filteredData = updatedData.filter(
+            (item) => item.genre !== "directions"
+        );
+        const updatedCoord = updatedData.reduce((acc, item) => {
+            if (item.genre !== "directions") {
+                acc.push({ coord: item.coord, name: item.title });
+            }
+            return acc;
+        }, []);
 
-        setEvents(updatedData);
+        props.eventsUpdate(filteredData);
         props.mapUpdate(updatedCoord);
         props.routeUpdate(selected, unsatisfied);
     };
@@ -84,13 +90,17 @@ const Schedule = (props) => {
     };
 
     const onEventPress = (event) => {
-        if (props.accessRights === "host" && event.genre !== "direction") {
+        if (event.genre == "directions") {
+            return;
+        }
+        if (props.accessRights === "host" && event.genre !== "directions") {
             setUnsatisfied(event);
             setVisible(true);
         } else {
             alert("Only the host can edit events");
         }
     };
+
     const newTimeChange = (selectedDate) => {
         const currentDate = selectedDate || newTime;
         let newStartTime = moment(currentDate)

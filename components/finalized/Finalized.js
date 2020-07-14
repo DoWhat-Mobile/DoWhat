@@ -25,9 +25,10 @@ const Finalized = (props) => {
     const [isLoading, setIsLoading] = React.useState(true);
     const [visible, setVisible] = React.useState(false);
     const [coord, setCoord] = React.useState([]);
-    //const [routes, setRoutes] = React.useState([]);
+    const [routes, setRoutes] = React.useState([]);
     const [allData, setData] = React.useState([]);
     const [directions, setDirections] = React.useState([]);
+    const [timings, setTimings] = React.useState([]);
 
     const data = props.route.params.data;
     const accessRights = props.route.params.access;
@@ -41,12 +42,14 @@ const Finalized = (props) => {
                 long: props.userLocation.coords.longitude,
             },
         ].concat(data[3]);
-        console.log(initRoutes);
-        setData(data);
+        // console.log(initRoutes);
+        setRoutes(initRoutes);
+        setData(data[0]);
+        setTimings(data[1]);
         setCoord(data[2]);
-        routesArray(initRoutes);
+        directionsArray(initRoutes);
     }, []);
-    const routesArray = async (allRoutes) => {
+    const directionsArray = async (allRoutes) => {
         let result = [];
 
         for (let i = 0; i < allRoutes.length - 1; i++) {
@@ -98,12 +101,17 @@ const Finalized = (props) => {
         setCoord(coord);
     };
 
+    const eventsUpdate = (events) => {
+        setData(events);
+    };
+
     const routeUpdate = (selected, unsatisfied) => {
         let temp = routes;
         const result = temp.map((item) => {
             return item == unsatisfied.location ? selected.location : item;
         });
         setRoutes(result);
+        directionsArray(result);
     };
 
     const weatherIcon = (weather) => {
@@ -178,12 +186,14 @@ const Finalized = (props) => {
                     <Schedule
                         data={allData}
                         navigation={props.navigation}
-                        mapUpdate={mapUpdate}
+                        initRoutes={directions}
                         genres={userGenres}
                         accessRights={accessRights}
                         userID={props.userID}
                         routeUpdate={routeUpdate}
-                        initRoutes={directions}
+                        eventsUpdate={eventsUpdate}
+                        mapUpdate={mapUpdate}
+                        timings={timings}
                     />
 
                     <Modal animated visible={visible} animationType="fade">

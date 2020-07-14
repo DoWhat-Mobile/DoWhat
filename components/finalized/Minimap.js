@@ -3,9 +3,11 @@ import MapView, { Marker, Callout } from "react-native-maps";
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 
 const Minimap = ({ coord }) => {
+    const [coords, setCoords] = React.useState([]);
     const [region, setRegion] = React.useState({});
     const [isLoading, setLoading] = React.useState(true);
     React.useEffect(() => {
+        //console.log(coord);
         const newRegion = {
             latitude: coord.length == 0 ? 1.3521 : coord[0].coord.latitude,
             longitude:
@@ -13,6 +15,7 @@ const Minimap = ({ coord }) => {
             latitudeDelta: 0.05,
             longitudeDelta: 0.05,
         };
+        setCoords(coord);
         setRegion(newRegion);
         setLoading(false);
     }, [coord]);
@@ -49,9 +52,9 @@ const Minimap = ({ coord }) => {
                 >
                     <Marker
                         ref={startRef}
-                        key={coord[0].name}
-                        coordinate={coord[0].coord}
-                        title={coord[0].name}
+                        key={coords[0].name}
+                        coordinate={coords[0].coord}
+                        title={coords[0].name}
                     >
                         <Callout>
                             <View>
@@ -59,7 +62,7 @@ const Minimap = ({ coord }) => {
                             </View>
                         </Callout>
                     </Marker>
-                    {coord.map((marker, index) => {
+                    {coords.map((marker, index) => {
                         if (index !== 0) {
                             return (
                                 <Marker

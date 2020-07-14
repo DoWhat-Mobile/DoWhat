@@ -7,7 +7,7 @@ const FoodPrice = ({ handlePricePress }) => {
 
     const handlePress = (price) => {
         let arr = [];
-        for (i = 1; i <= price; i++) {
+        for (let i = 1; i <= price; i++) {
             arr.push(i);
         }
         setSelected(arr);
@@ -44,13 +44,13 @@ const FoodPrice = ({ handlePricePress }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'row',
+        flexDirection: "row",
         marginTop: 10,
     },
     genreSelectionText: {
-        fontFamily: 'serif',
+        fontFamily: "serif",
         fontSize: 15,
-        fontWeight: '800'
+        fontWeight: "800",
     },
     button: {
         marginHorizontal: 1,
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
         marginLeft: 10,
-    }
+    },
 });
 
 export default FoodPrice;

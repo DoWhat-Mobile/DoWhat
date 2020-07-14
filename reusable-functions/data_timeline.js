@@ -534,6 +534,7 @@ export const eventsWithDirections = (timingsArray, events, directions) => {
                 time: "",
                 lineColor: "black",
                 description: "",
+                genre: "directions",
             };
 
             obj.time = timingsArray[i].start;

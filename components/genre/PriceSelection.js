@@ -7,7 +7,7 @@ const PriceSelection = ({ handlePricePress }) => {
 
     const handlePress = (price) => {
         let arr = [];
-        for (i = 1; i <= price; i++) {
+        for (let i = 1; i <= price; i++) {
             arr.push(i);
         }
         setSelected(arr);
