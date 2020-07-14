@@ -131,10 +131,7 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, addingFavourite, ev
         delete cleanedEvent.favourited;
         delete cleanedEvent.selected;
 
-        var formattedEvent = {};
-        formattedEvent[cleanedEvent.id] = cleanedEvent;
-
-        updates['/favourites'] = formattedEvent;
+        updates['/favourites/' + cleanedEvent.id] = cleanedEvent;
 
         firebase.database().ref('collab_boards')
             .child(boardID)
@@ -150,7 +147,7 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, addingFavourite, ev
             [
                 {
                     text: 'No',
-                    onPress: () => console.log('Cancel Pressed'),
+                    onPress: () => navigation.navigate("Plan", { addingFavourite: false }),
                     style: 'cancel'
                 },
                 { text: 'Yes', onPress: () => addFavouriteToCollab(event, boardID) }

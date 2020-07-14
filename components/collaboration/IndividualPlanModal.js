@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from "react-native";
+import {
+    View, Text, StyleSheet, TouchableOpacity, FlatList, Alert,
+    ScrollView
+} from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
 import { formatDate } from '../DateSelection';
@@ -11,6 +14,7 @@ import firebase from '../../database/firebase'
 import { inputBusyPeriodFromGcal } from '../../reusable-functions/GoogleCalendarGetBusyPeriods';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Avatar, Badge } from 'react-native-elements'
+import SuggestedFavouriteActivities from './SuggestedFavouriteActivities'
 
 /**
  * The modal that shows when user selects each of the individual upcoming plans
@@ -39,6 +43,29 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     ['CAFE', false], ['HAWKER', false],]);
 
     const [budget, setBudget] = useState(0);
+    const [favourites, setFavourites] = useState(() => {
+        let object = board.favourites;
+        if (object == undefined) return []; // No favourites
+
+        var finalFavouritesArray = [];
+        for (var key in object) {
+            const arr = [object[key], false]
+            finalFavouritesArray.push(arr);
+        }
+        return finalFavouritesArray
+    })
+
+    const setAllFavouritesInArray = (object) => {
+        if (object == undefined) return []; // No favourites
+
+        var finalFavouritesArray = [];
+        for (var key in object) {
+            const arr = [object[key], false]
+            finalFavouritesArray.push(arr);
+        }
+        setFavourites(finalFavouritesArray)
+    }
+
 
     // Subscribe to changes in Firebase
     const listenToGenreChanges = () => {
@@ -68,6 +95,12 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         return newState;
     }
 
+    const handleFavouritesSelect = (index) => {
+        var newState = [...favourites];
+        newState[index][1] = !newState[index][1]; // Toggle between true/false
+        setFavourites([...newState]);
+
+    }
 
     const handleGenreSelect = (index) => {
         var newState = [...allGenres];
@@ -199,13 +232,30 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         return newState;
     }
 
+    // Increment votes accordingly
+    const updateFavouritesVotes = (prevState, currState) => {
+        if (board.favourites == undefined) return null; //No favourites to begin with
+
+        var newState = JSON.parse(JSON.stringify(prevState)); // Deep copy to not mutate component's board state
+        currState.forEach(x => {
+            const eventID = x[0].id;
+            const selected = x[1];
+            if (selected) {
+                newState[eventID].votes += 1;
+            }
+        })
+        return newState;
+    }
+
     // Finalize updates firebase with the user's inputted preference votes
     const finalizeBoard = () => {
         var updates = {}
         const updatedPreference = updateGenres(board.preferences, allGenres)
         const updatedFoodFilters = updateFoodFilters(board.food_filters, location, cuisine, budget)
+        const updatedFavourites = updateFavouritesVotes(board.favourites, favourites);
         updates['preferences'] = updatedPreference;
         updates['food_filters'] = updatedFoodFilters;
+        updates['favourites'] = updatedFavourites;
 
         //  var addFinalizedUser = {};
         //  addFinalizedUser[currUserName] = userID;
@@ -251,15 +301,17 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     const renderTopPortion = (isUserHost) => {
         return (
             <View>
+                <View style={{ height: 300, backgroundColor: '#e86830', position: 'absolute' }}>
+                </View>
                 <LinearGradient
                     colors={['#e86830', '#e86838']}
                     start={[0.1, 0.1]}
                     end={[0.9, 0.9]}
                     style={{
                         position: 'absolute',
-                        left: -10,
-                        right: -10,
-                        top: -10,
+                        left: 0,
+                        right: 0,
+                        top: 0,
                         height: 120,
                         borderTopLeftRadius: 10,
                         borderTopRightRadius: 10,
@@ -335,7 +387,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
     }
 
     return (
-        <View style={styles.modal}>
+        <ScrollView style={styles.modal}>
             {renderTopPortion(board.isUserHost)}
 
             <View style={styles.invitedPeople}>
@@ -371,14 +423,25 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                 {renderFoodFilter(allGenres[5][1])}
             </View>
 
+            <View style={{
+                flexDirection: 'column', height: 170,
+                borderColor: 'grey', borderBottomWidth: 0.2, marginBottom: 10,
+            }}>
+                <SuggestedFavouriteActivities
+                    handleFavouritesSelect={handleFavouritesSelect}
+                    activities={favourites} />
+            </View>
+
             <View style={styles.footer}>
-                <View style={{ flexDirection: 'column' }}>
-                    <Text style={styles.sectionHeaderText}>Possible Timings</Text>
-                    <Text style={styles.sectionSubHeaderText}>
-                        Input your available timings
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <View style={{ flexDirection: 'column' }}>
+                        <Text style={styles.sectionHeaderText}>Possible Timings</Text>
+                        <Text style={styles.sectionSubHeaderText}>
+                            Input your available timings
                  </Text>
+                    </View>
+                    {renderInputAvailabilitiesButton()}
                 </View>
-                {renderInputAvailabilitiesButton()}
             </View>
 
             <View style={styles.buttonGroup}>
@@ -407,7 +470,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                     }}>Opt Out</Text>
                 </TouchableOpacity>
             </View>
-        </View >
+        </ScrollView >
     );
 }
 
@@ -438,7 +501,7 @@ const styles = StyleSheet.create({
     },
     invitedPeople: {
         position: 'absolute',
-        top: '10%',
+        top: '8%',
         left: '5%',
         borderWidth: 0.5,
         height: '20%',
@@ -451,7 +514,7 @@ const styles = StyleSheet.create({
     },
     body: {
         flex: 4,
-        marginTop: '60%',
+        marginTop: '50%',
     },
     genreSelection: {
         borderBottomWidth: 1.5,
@@ -479,7 +542,7 @@ const styles = StyleSheet.create({
     },
     footer: {
         flex: 1.6,
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'space-between'
     },
     buttonGroup: {

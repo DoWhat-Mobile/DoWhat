@@ -30,6 +30,7 @@ const MyTabs = (props) => {
             <Tab.Screen
                 name="Plan"
                 component={Plan}
+                params={{ addingFavourite: false }}
                 style={{ borderWidth: 1, backgroundColor: 'blue' }}
                 options={{
                     tabBarLabel: 'Plan',

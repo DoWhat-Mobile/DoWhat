@@ -72,6 +72,7 @@ const Feed = (props) => {
         var updates = {}
         var eventWithRating = event[0];
         eventWithRating.rating = event[1]
+        eventWithRating.votes = 0; // For use in collaboration board
         updates['/favourites/' + event[0].id] = eventWithRating;
 
         firebase.database().ref('/users/' + props.userID)
@@ -372,7 +373,9 @@ const Feed = (props) => {
                     sections={[
                         { title: "My favourites", data: favouritesArr }
                     ]}
-                    renderItem={({ item, section, index }) => renderEventCard(item, false, 'favourites', 0, 0)}
+                    renderItem={({ item, section, index }) =>
+                        renderEventCard(item, false, 'favourites', 0, 0)
+                    }
                     renderSectionHeader={({ section }) =>
                         <View style={styles.sectionHeader}>
                             <TouchableOpacity
@@ -383,6 +386,20 @@ const Feed = (props) => {
                     }
                     keyExtractor={(item, index) => index}
                 />
+                { // Render empty state favourites screen
+                    favouritesArr.length == 0
+                        ? <View style={{ flex: 20, justifyContent: 'center' }}>
+                            <Text style={{
+                                fontSize: 20, fontWeight: 'bold', textAlign: "center",
+                                fontFamily: 'serif'
+                            }}>No favourites added yet.</Text>
+                            <Text style={{
+                                margin: 5, fontSize: 14, color: 'grey', textAlign: "center",
+                                fontFamily: 'serif'
+                            }}>Add an event to favourites by clicking on the event in the home feed.</Text>
+                        </View>
+                        : null
+                }
             </View >
         )
     }

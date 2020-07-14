@@ -77,6 +77,8 @@ const AllPlans = ({ navigation, userID, route }) => {
     }
 
     const renderAppropriateScreen = () => {
+        var isAddingFavourite = route.params == undefined
+            ? false : route.params.addingFavourite; // Undefined if come from Feed using bottom tab nav
         console.log("Route parameters: ", route.params)
         if (allBoards.length == 0) { // Empty state
             return (
@@ -122,7 +124,7 @@ const AllPlans = ({ navigation, userID, route }) => {
         }
         return (
             <View style={[styles.container,
-            route.params.addingFavourite ? { backgroundColor: 'grey' } : {}]}>
+            isAddingFavourite ? { backgroundColor: 'grey' } : {}]}>
                 <Modal
                     animationType="fade"
                     transparent={true}
@@ -139,15 +141,15 @@ const AllPlans = ({ navigation, userID, route }) => {
                 </View>
                 <View style={styles.body}>
                     <ListOfPlans plans={allBoards} refreshList={getUpcomingCollaborationsFromFirebase}
-                        navigation={navigation} userID={userID} addingFavourite={route.params.addingFavourite}
-                        event={route.params.event} />
+                        navigation={navigation} userID={userID} addingFavourite={isAddingFavourite}
+                        event={isAddingFavourite ? route.params.event : null} />
                 </View>
                 <View style={styles.footer}>
                     <TouchableOpacity style={styles.planForMe}
-                        disabled={route.params.addingFavourite}
+                        disabled={isAddingFavourite}
                         onPress={() => setModalVisibility(true)}>
                         <Text style={[styles.buttonText,
-                        route.params.addingFavourite
+                        isAddingFavourite
                             ? { backgroundColor: '#72706E', color: '#ABAAAA' } // Disabled button visual
                             : {}]}>
                             Plan activities for me
