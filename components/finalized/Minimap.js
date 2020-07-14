@@ -7,7 +7,6 @@ const Minimap = ({ coord }) => {
     const [region, setRegion] = React.useState({});
     const [isLoading, setLoading] = React.useState(true);
     React.useEffect(() => {
-        //console.log(coord);
         const newRegion = {
             latitude: coord.length == 0 ? 1.3521 : coord[0].coord.latitude,
             longitude:
@@ -19,13 +18,6 @@ const Minimap = ({ coord }) => {
         setRegion(newRegion);
         setLoading(false);
     }, [coord]);
-
-    const startRef = React.useRef(null);
-    const onRegionChangeComplete = () => {
-        if (startRef && startRef.current && startRef.current.showCallout) {
-            startRef.current.showCallout();
-        }
-    };
 
     if (isLoading) {
         return (
@@ -45,33 +37,15 @@ const Minimap = ({ coord }) => {
     } else {
         return (
             <View style={StyleSheet.absoluteFillObject}>
-                <MapView
-                    style={StyleSheet.absoluteFillObject}
-                    initialRegion={region}
-                    onRegionChangeComplete={onRegionChangeComplete}
-                >
-                    <Marker
-                        ref={startRef}
-                        key={coords[0].name}
-                        coordinate={coords[0].coord}
-                        title={coords[0].name}
-                    >
-                        <Callout>
-                            <View>
-                                <Text>Start</Text>
-                            </View>
-                        </Callout>
-                    </Marker>
+                <MapView style={StyleSheet.absoluteFillObject} region={region}>
                     {coords.map((marker, index) => {
-                        if (index !== 0) {
-                            return (
-                                <Marker
-                                    key={marker.name}
-                                    coordinate={marker.coord}
-                                    title={marker.name}
-                                />
-                            );
-                        }
+                        return (
+                            <Marker
+                                key={marker.name}
+                                coordinate={marker.coord}
+                                title={marker.name}
+                            />
+                        );
                     })}
                 </MapView>
             </View>

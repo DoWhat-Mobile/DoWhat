@@ -78,8 +78,14 @@ const Map = ({ onClose, coord }) => {
                 <MapView
                     style={{ flex: 1 }}
                     initialRegion={{
-                        latitude: 1.3521,
-                        longitude: 103.851959,
+                        latitude:
+                            coord.length == 0
+                                ? 1.3521
+                                : coord[0].coord.latitude,
+                        longitude:
+                            coord.length == 0
+                                ? 103.851959
+                                : coord[0].coord.longitude,
                         latitudeDelta: 0.15,
                         longitudeDelta: 0.15,
                     }}
