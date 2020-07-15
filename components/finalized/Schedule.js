@@ -51,6 +51,8 @@ const Schedule = (props) => {
             props.data,
             props.initRoutes
         );
+        console.log("Updated Events are", combinedData);
+        console.log("Passed data is", props.data);
         //console.log("Updated Timings are ", updatedTimings);
         //setTimingsArray(updatedTimings);
         setEvents(combinedData);
@@ -117,8 +119,7 @@ const Schedule = (props) => {
         let updatedData = indexFinder.map((item, index) => {
             return { ...item, time: newTimingsArray[index].start };
         });
-        console.log(props.timings);
-        console.log(newTimingsArray);
+
         props.setTimingsArray(newTimingsArray);
         setEvents(updatedData);
         setVisible(false);

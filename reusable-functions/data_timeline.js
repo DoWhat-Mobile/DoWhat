@@ -72,7 +72,7 @@ export const filterHelper = (filters, events) => {
         temp.push(eventList[0]);
     }
 
-    let rand = Math.floor(Math.random() * temp.length);
+    let rand = Math.floor(Math.random() * temp.length - 1);
     return { [genre]: temp[rand] };
 };
 
@@ -85,6 +85,7 @@ export const genreEventObjectArray = (
 ) => {
     let currentEvents = [];
     let dinner = 0;
+    console.log(filters);
     if (userGenres.includes("food") && endTime >= 18) dinner = 1;
 
     if (userGenres.includes("food")) {
@@ -112,9 +113,11 @@ export const genreEventObjectArray = (
         }
     }
     if (dinner == 1) {
-        console.log(filters);
-        let obj = filterHelper(filters, events);
-        if (obj != currentEvents[0]) currentEvents.push(obj);
+        let obj = filterHelper(
+            { area: filters.area, cuisine: ["Hawker", "Cafe"], price: 3 },
+            events
+        );
+        currentEvents.push(obj);
     }
     return currentEvents;
 };
@@ -206,7 +209,7 @@ export const data_shuffle = (events, genres, time, unsatisfied, filters) => {
         }
     }
     for (let i = 0; i < 3; i++) {
-        let randomNumber = Math.floor(Math.random() * selectable.length);
+        let randomNumber = Math.floor(Math.random() * selectable.length - 1);
         let event = selectable[randomNumber];
 
         let obj = objectFormatter(
@@ -261,6 +264,7 @@ const startEndChange = (newTimeObject, hourDifference, minuteDifference) => {
             : parseInt(newTimeObject.start.substring(0, 2)) + hourDifference;
 
     const newStartMin =
+        //parseInt(newTimeObject.start.substring(3, 5)) + minuteDifference ==
         parseInt(newTimeObject.start.substring(3, 5)) + minuteDifference;
 
     const newStartTime = newStartHour + ":" + newStartMin;
