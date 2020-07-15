@@ -85,7 +85,6 @@ export const genreEventObjectArray = (
 ) => {
     let currentEvents = [];
     let dinner = 0;
-    console.log(filters);
     if (userGenres.includes("food") && endTime >= 18) dinner = 1;
 
     if (userGenres.includes("food")) {
@@ -229,6 +228,7 @@ export const data_shuffle = (events, genres, time, unsatisfied, filters) => {
  * Creates the object with keys (time, title description) that the timeline library accepts
  */
 export const objectFormatter = (startTime, event, genre) => {
+    console.log(event.coord);
     let imageURI = event.image;
     if (imageURI.substring(0, 5) != "https") {
         imageURI =
@@ -264,8 +264,11 @@ const startEndChange = (newTimeObject, hourDifference, minuteDifference) => {
             : parseInt(newTimeObject.start.substring(0, 2)) + hourDifference;
 
     const newStartMin =
-        //parseInt(newTimeObject.start.substring(3, 5)) + minuteDifference ==
-        parseInt(newTimeObject.start.substring(3, 5)) + minuteDifference;
+        parseInt(newTimeObject.start.substring(3, 5)) + minuteDifference < 10
+            ? "" +
+              parseInt(newTimeObject.start.substring(3, 5)) +
+              minuteDifference
+            : parseInt(newTimeObject.start.substring(3, 5)) + minuteDifference;
 
     const newStartTime = newStartHour + ":" + newStartMin;
 
@@ -274,7 +277,11 @@ const startEndChange = (newTimeObject, hourDifference, minuteDifference) => {
             ? "00"
             : parseInt(newTimeObject.end.substring(0, 2)) + hourDifference;
     const newEndMin =
-        parseInt(newTimeObject.end.substring(3, 5)) + minuteDifference;
+        parseInt(newTimeObject.end.substring(3, 5)) + minuteDifference < 10
+            ? "" +
+              parseInt(newTimeObject.end.substring(3, 5)) +
+              minuteDifference
+            : parseInt(newTimeObject.end.substring(3, 5));
     const newEndTime = newEndHour + ":" + newEndMin;
     return { start: newStartTime, end: newEndTime };
 };
@@ -550,6 +557,7 @@ export const eventsWithDirections = (timingsArray, events, directions) => {
         if (timingsArray[i].start == events[j].time) {
             result.push(events[j]);
         } else {
+            console.log(timingsArray[i].start, events[j].time);
             let obj = {
                 title: "Directions",
                 time: "",

@@ -79,22 +79,24 @@ const Loading = (props) => {
     }, []);
 
     const allData = () => {
-        const time = route === "link" ? freeTime : timeline;
-        const currentEvents = genreEventObjectArray(
-            userGenres,
-            props.allEvents,
-            filters,
-            weather,
-            time[1]
-        );
+        if (props.allEvents) {
+            const time = route === "link" ? freeTime : timeline;
+            const currentEvents = genreEventObjectArray(
+                userGenres,
+                props.allEvents,
+                filters,
+                weather,
+                time[1]
+            );
 
-        const allEvents =
-            props.route.params.currentEvents == undefined
-                ? data_timeline(time, props.allEvents, currentEvents)
-                : props.route.params.currentEvents;
+            const allEvents =
+                props.route.params.currentEvents == undefined
+                    ? data_timeline(time, props.allEvents, currentEvents)
+                    : props.route.params.currentEvents;
 
-        storeFinalizedEventsInCollabBoard(allEvents);
-        return allEvents;
+            storeFinalizedEventsInCollabBoard(allEvents);
+            return allEvents;
+        }
     };
 
     // Add to firebase so all collaboration board invitees see the same finalized timeline

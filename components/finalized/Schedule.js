@@ -22,21 +22,9 @@ import {
 import {
     handleRipple,
     renderDetail,
-    merge,
     eventsWithDirections,
 } from "../../reusable-functions/data_timeline";
-import { timing } from "react-native-reanimated";
 
-//  navigation,
-//     data,
-//     allEvents,
-//     mapUpdate,
-//     initRoutes,
-//     genres,
-//     accessRights,
-//     userID,
-//     route,
-//     board,   For board route, will be undefined for other route
 const Schedule = (props) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
@@ -51,13 +39,12 @@ const Schedule = (props) => {
             props.data,
             props.initRoutes
         );
-        console.log("Updated Events are", combinedData);
-        console.log("Passed data is", props.data);
+
         //console.log("Updated Timings are ", updatedTimings);
         //setTimingsArray(updatedTimings);
         setEvents(combinedData);
         setLoading(false);
-    }, [props.initRoutes]);
+    }, [props.data]);
 
     const onReselect = (selected) => {
         const updatedData = events.map((item) => {
@@ -116,12 +103,15 @@ const Schedule = (props) => {
         });
         newTimingsArray = handleRipple(newTimingsArray, newStartTime, i);
 
-        let updatedData = indexFinder.map((item, index) => {
-            return { ...item, time: newTimingsArray[index].start };
-        });
+        let updatedData = indexFinder.reduce((acc, item, index) => {
+            if (item.genre !== "directions") {
+                acc.push({ ...item, time: newTimingsArray[index].start });
+            }
+            return acc;
+        }, []);
 
         props.setTimingsArray(newTimingsArray);
-        setEvents(updatedData);
+        props.eventsUpdate(updatedData);
         setVisible(false);
     };
 

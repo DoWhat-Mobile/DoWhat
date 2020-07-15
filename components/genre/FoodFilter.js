@@ -27,7 +27,6 @@ const FoodFilter = ({ onClose, handlePress, selectFilter }) => {
     const handleConfirmPress = () => {
         handlePress("food");
         selectFilter(filters);
-        console.log(filters);
         onClose();
     };
     return (
