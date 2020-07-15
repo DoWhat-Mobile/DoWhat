@@ -21,7 +21,6 @@ import {
 } from "../../reusable-functions/GoogleCalendarInvite";
 import {
     handleRipple,
-    routeFormatter,
     renderDetail,
     merge,
     eventsWithDirections,
@@ -42,22 +41,18 @@ const Schedule = (props) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
-    const [timingsArray, setTimingsArray] = React.useState([]);
+    //const [timingsArray, setTimingsArray] = React.useState([]);
     const [isLoading, setLoading] = React.useState(true);
 
-    // React.useEffect(() => {
-    //     setEvents(props.data[0]);
-    //     setTimingsArray(props.data[1]);
-    // }, []);
     React.useEffect(() => {
-        let updatedTimings = merge(props.timings, props.initRoutes);
+        //let updatedTimings = merge(props.timings, props.initRoutes);
         let combinedData = eventsWithDirections(
-            updatedTimings,
+            props.timings,
             props.data,
             props.initRoutes
         );
-        console.log("Updated Timings are ", updatedTimings);
-        setTimingsArray(updatedTimings);
+        //console.log("Updated Timings are ", updatedTimings);
+        //setTimingsArray(updatedTimings);
         setEvents(combinedData);
         setLoading(false);
     }, [props.initRoutes]);
@@ -107,7 +102,7 @@ const Schedule = (props) => {
             .tz("Asia/Singapore")
             .format("HH:mm");
         let i = 0;
-        let newTimingsArray = timingsArray;
+        let newTimingsArray = props.timings;
 
         let indexFinder = events.map((item, index) => {
             if (item === unsatisfied) {
@@ -122,9 +117,9 @@ const Schedule = (props) => {
         let updatedData = indexFinder.map((item, index) => {
             return { ...item, time: newTimingsArray[index].start };
         });
-
+        console.log(props.timings);
         console.log(newTimingsArray);
-        setTimingsArray(newTimingsArray);
+        props.setTimingsArray(newTimingsArray);
         setEvents(updatedData);
         setVisible(false);
     };
@@ -153,12 +148,12 @@ const Schedule = (props) => {
             // Create calendar event and send calendar invite to invitees
             await handleBoardRouteProcess(
                 formattedData,
-                timingsArray,
+                props.timings,
                 props.board
             );
         } else {
             // handleProcess function and all other logic is in GoogleCalendarInvite.js
-            await handleProcess(formattedData, timingsArray);
+            await handleProcess(formattedData, props.timings);
         }
         let updates = {};
         updates["/users/" + props.userID + "/busy_periods"] = null;
@@ -197,6 +192,7 @@ const Schedule = (props) => {
                             events={props.allEvents}
                             genres={props.genres}
                             newTimeChange={newTimeChange}
+                            filters={props.filters}
                         />
                     </Modal>
                     <Timeline

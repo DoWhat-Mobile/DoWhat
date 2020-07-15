@@ -10,7 +10,7 @@ import {
     Image,
     Dimensions,
 } from "react-native";
-import { routeFormatter } from "../../reusable-functions/data_timeline";
+import { routeFormatter, merge } from "../../reusable-functions/data_timeline";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import Schedule from "./Schedule";
@@ -45,7 +45,6 @@ const Finalized = (props) => {
         // console.log(initRoutes);
         setRoutes(initRoutes);
         setData(data[0]);
-        setTimings(data[1]);
         setCoord(data[2]);
         directionsArray(initRoutes);
     }, []);
@@ -90,6 +89,7 @@ const Finalized = (props) => {
             result.push(obj);
         }
         setDirections(result);
+        setTimings(merge(data[1], result));
         setIsLoading(false);
     };
 
@@ -103,6 +103,10 @@ const Finalized = (props) => {
 
     const eventsUpdate = (events) => {
         setData(events);
+    };
+
+    const setTimingsArray = (newTimingsArray) => {
+        setTimings(newTimingsArray);
     };
 
     const routeUpdate = (selected, unsatisfied) => {
@@ -194,6 +198,8 @@ const Finalized = (props) => {
                         eventsUpdate={eventsUpdate}
                         mapUpdate={mapUpdate}
                         timings={timings}
+                        filters={props.finalGenres[2]}
+                        setTimingsArray={setTimingsArray}
                     />
 
                     <Modal animated visible={visible} animationType="fade">

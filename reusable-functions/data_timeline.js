@@ -96,7 +96,7 @@ export const genreEventObjectArray = (
             const genre = userGenres[i] === "food" ? "food" : "indoors";
             if (genre === "indoors") {
                 const eventObject = events[genre]["list"];
-                const rand = Math.floor(Math.random() * eventObject.length);
+                const rand = Math.floor(Math.random() * eventObject.length - 1);
                 const event = events[genre]["list"][rand];
                 currentEvents.push({ [genre]: event });
             }
@@ -106,12 +106,16 @@ export const genreEventObjectArray = (
             const genre = userGenres[i].toLowerCase();
             if (genre !== "food") {
                 const eventObject = events[genre]["list"];
-                const rand = Math.floor(Math.random() * eventObject.length);
+                const rand = Math.floor(Math.random() * eventObject.length - 1);
                 currentEvents.push({ [genre]: events[genre]["list"][rand] });
             }
         }
     }
-    if (dinner == 1) currentEvents.push(filterHelper(filters, events));
+    if (dinner == 1) {
+        console.log(filters);
+        let obj = filterHelper(filters, events);
+        if (obj != currentEvents[0]) currentEvents.push(obj);
+    }
     return currentEvents;
 };
 
@@ -178,14 +182,21 @@ export const data_timeline = (timeline, events, currentEvents) => {
  * @param {*} time is the time interval free period of the user
  * @param {*} unsatisfied is the genre of the event that the user is reselecting
  */
-export const data_shuffle = (events, genres, time, unsatisfied) => {
+export const data_shuffle = (events, genres, time, unsatisfied, filters) => {
     let data = [];
     let selectable = [];
     for (let i = 0; i < genres.length; i++) {
         let type = genres[i].toString().toLowerCase();
         if (type === "food") {
-            Array.prototype.push.apply(selectable, events["hawker"]["list"]);
-            Array.prototype.push.apply(selectable, events["cafes"]["list"]);
+            if (filters.cuisine.includes("Hawker"))
+                Array.prototype.push.apply(
+                    selectable,
+                    events["hawker"]["list"]
+                );
+
+            if (filters.cuisine.includes("Cafe"))
+                Array.prototype.push.apply(selectable, events["cafes"]["list"]);
+
             Array.prototype.push.apply(
                 selectable,
                 events["restaurants"]["list"]
@@ -249,14 +260,18 @@ const startEndChange = (newTimeObject, hourDifference, minuteDifference) => {
             ? "00"
             : parseInt(newTimeObject.start.substring(0, 2)) + hourDifference;
 
-    const newStartTime = newStartHour + ":" + minuteDifference;
+    const newStartMin =
+        parseInt(newTimeObject.start.substring(3, 5)) + minuteDifference;
+
+    const newStartTime = newStartHour + ":" + newStartMin;
 
     const newEndHour =
         parseInt(newTimeObject.end.substring(0, 2)) + hourDifference >= 24
             ? "00"
             : parseInt(newTimeObject.end.substring(0, 2)) + hourDifference;
-
-    const newEndTime = newEndHour + ":" + minuteDifference;
+    const newEndMin =
+        parseInt(newTimeObject.end.substring(3, 5)) + minuteDifference;
+    const newEndTime = newEndHour + ":" + newEndMin;
     return { start: newStartTime, end: newEndTime };
 };
 
@@ -266,7 +281,9 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
         parseInt(newTimingsArray[index].start.substring(0, 2));
     // in case user inputs wrong extreme time
     if (Math.abs(hourDifference) >= 5) return newTimingsArray;
-    const minuteDifference = newStartTime.substring(3, 5);
+    const minuteDifference =
+        parseInt(newStartTime.substring(3, 5)) -
+        parseInt(newTimingsArray[index].start.substring(3, 5));
 
     // case when user changes start time from {start: 12, end: 15} to {start: >= 15, end: 15};
     if (

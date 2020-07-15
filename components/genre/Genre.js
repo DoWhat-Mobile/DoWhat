@@ -180,9 +180,9 @@ const Genre = (props) => {
                 </TouchableOpacity>
             </View>
             <View>
-                <Text style={{ marginLeft: 250 }}>
+                {/* <Text style={{ marginLeft: 250 }}>
                     {preference === {} ? "" : Object.values(preference)}
-                </Text>
+                </Text> */}
             </View>
 
             <View>

@@ -52,7 +52,8 @@ const ShuffleModal = (props) => {
                         props.allEvents,
                         props.genres,
                         props.unsatisfied["time"],
-                        props.unsatisfied["genre"]
+                        props.unsatisfied["genre"],
+                        props.filters
                     )}
                     renderItem={({ item }) => (
                         <Item

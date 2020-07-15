@@ -30,6 +30,7 @@ const ActionOptions = (props) => {
                     onClose={props.onClose}
                     unsatisfied={props.unsatisfied}
                     genres={props.genres}
+                    filters={props.filters}
                 />
             </Modal>
             <TimeEdit
