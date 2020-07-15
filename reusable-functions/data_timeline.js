@@ -257,32 +257,42 @@ export const objectFormatter = (startTime, event, genre) => {
     };
 };
 
+const minuteHandler = (hour, min) => {
+    let finalHour = hour;
+    let finalMin = min;
+    if (min >= 60) {
+        finalMin = min - 60;
+        finalHour += 1;
+    }
+    if (finalHour >= 24) {
+        finalHour -= 24;
+    }
+    if (min < 0) {
+        finalMin = 60 + min;
+        finalHour -= 1;
+    }
+    finalMin = finalMin < 10 ? "0" + finalMin : "" + finalMin;
+    finalHour = finalHour < 10 ? "0" + finalHour : "" + finalHour;
+    console.log(finalMin);
+    return finalHour + ":" + finalMin;
+};
+
 const startEndChange = (newTimeObject, hourDifference, minuteDifference) => {
     const newStartHour =
-        parseInt(newTimeObject.start.substring(0, 2)) + hourDifference >= 24
-            ? "00"
-            : parseInt(newTimeObject.start.substring(0, 2)) + hourDifference;
+        parseInt(newTimeObject.start.substring(0, 2)) + hourDifference;
 
     const newStartMin =
-        parseInt(newTimeObject.start.substring(3, 5)) + minuteDifference < 10
-            ? "" +
-              parseInt(newTimeObject.start.substring(3, 5)) +
-              minuteDifference
-            : parseInt(newTimeObject.start.substring(3, 5)) + minuteDifference;
+        parseInt(newTimeObject.start.substring(3, 5)) + minuteDifference;
 
-    const newStartTime = newStartHour + ":" + newStartMin;
+    const newStartTime = minuteHandler(newStartHour, newStartMin);
 
     const newEndHour =
-        parseInt(newTimeObject.end.substring(0, 2)) + hourDifference >= 24
-            ? "00"
-            : parseInt(newTimeObject.end.substring(0, 2)) + hourDifference;
+        parseInt(newTimeObject.end.substring(0, 2)) + hourDifference;
+
     const newEndMin =
-        parseInt(newTimeObject.end.substring(3, 5)) + minuteDifference < 10
-            ? "" +
-              parseInt(newTimeObject.end.substring(3, 5)) +
-              minuteDifference
-            : parseInt(newTimeObject.end.substring(3, 5));
-    const newEndTime = newEndHour + ":" + newEndMin;
+        parseInt(newTimeObject.end.substring(3, 5)) + minuteDifference;
+
+    const newEndTime = minuteHandler(newEndHour, newEndMin);
     return { start: newStartTime, end: newEndTime };
 };
 
@@ -557,7 +567,7 @@ export const eventsWithDirections = (timingsArray, events, directions) => {
         if (timingsArray[i].start == events[j].time) {
             result.push(events[j]);
         } else {
-            console.log(timingsArray[i].start, events[j].time);
+            //console.log(timingsArray[i].start, events[j].time);
             let obj = {
                 title: "Directions",
                 time: "",
