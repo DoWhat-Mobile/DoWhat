@@ -69,10 +69,15 @@ export const filterHelper = (filters, events) => {
         }
     }
     if (temp.length == 0) {
-        temp.push(eventList[0]);
+        let backup = {
+            area: filters.area,
+            cuisine: ["Hawker", "Cafe"],
+            price: 2,
+        };
+        return filterHelper(backup, events);
     }
 
-    let rand = Math.floor(Math.random() * temp.length - 1);
+    let rand = Math.floor(Math.random() * temp.length);
     return { [genre]: temp[rand] };
 };
 
@@ -96,7 +101,7 @@ export const genreEventObjectArray = (
             const genre = userGenres[i] === "food" ? "food" : "indoors";
             if (genre === "indoors") {
                 const eventObject = events[genre]["list"];
-                const rand = Math.floor(Math.random() * eventObject.length - 1);
+                const rand = Math.floor(Math.random() * eventObject.length);
                 const event = events[genre]["list"][rand];
                 currentEvents.push({ [genre]: event });
             }
@@ -106,7 +111,7 @@ export const genreEventObjectArray = (
             const genre = userGenres[i].toLowerCase();
             if (genre !== "food") {
                 const eventObject = events[genre]["list"];
-                const rand = Math.floor(Math.random() * eventObject.length - 1);
+                const rand = Math.floor(Math.random() * eventObject.length);
                 currentEvents.push({ [genre]: events[genre]["list"][rand] });
             }
         }
@@ -208,7 +213,7 @@ export const data_shuffle = (events, genres, time, unsatisfied, filters) => {
         }
     }
     for (let i = 0; i < 3; i++) {
-        let randomNumber = Math.floor(Math.random() * selectable.length - 1);
+        let randomNumber = Math.floor(Math.random() * selectable.length);
         let event = selectable[randomNumber];
 
         let obj = objectFormatter(
