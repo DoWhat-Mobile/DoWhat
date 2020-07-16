@@ -5,6 +5,7 @@ import { parse } from "expo-linking";
 import { TIH_API_KEY } from "react-native-dotenv";
 import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 import Route from "../components/finalized/Route";
+import { min } from "react-native-reanimated";
 
 /**
  * handles filter for food to be added in data array. Returns array of data that is formatted to be passed as props into
@@ -274,11 +275,9 @@ const minuteHandler = (hour, min) => {
     }
     if (min < 0) {
         finalMin = 60 + min;
-        finalHour -= 1;
     }
     finalMin = finalMin < 10 ? "0" + finalMin : "" + finalMin;
     finalHour = finalHour < 10 ? "0" + finalHour : "" + finalHour;
-    console.log(finalMin);
     return finalHour + ":" + finalMin;
 };
 
@@ -309,14 +308,45 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
     if (Math.abs(hourDifference) >= 5) return newTimingsArray;
     const minuteDifference =
         parseInt(newStartTime.substring(3, 5)) -
-        parseInt(newTimingsArray[index].start.substring(3, 5));
+        (parseInt(newTimingsArray[index].start.substring(3, 5)) == 0
+            ? 60
+            : parseInt(newTimingsArray[index].start.substring(3, 5)));
 
-    // case when user changes start time from {start: 12, end: 15} to {start: >= 15, end: 15};
+    console.log("Mins is ", newStartTime.substring(3, 5));
+    console.log(minuteDifference);
+
+    // For all cases, direction would be tied to the respective event
+
+    // Easiest case where the event is the last event
     if (
-        hourDifference > 0 &&
-        parseInt(newStartTime.substring(0, 2)) >=
-            parseInt(newTimingsArray[index].end.substring(0, 2))
+        (hourDifference > 0 || minuteDifference > 0) &&
+        index == newTimingsArray.length - 1
     ) {
+        newTimingsArray[index - 1] = startEndChange(
+            newTimingsArray[index - 1],
+            hourDifference,
+            minuteDifference
+        );
+        newTimingsArray[index] = startEndChange(
+            newTimingsArray[index],
+            hourDifference,
+            minuteDifference
+        );
+    }
+    // case when user changes start time from {start: 12, end: 15} to {start: >= 15, end: 15} that causes ripple. (Overshoots)
+    else if (
+        (hourDifference > 0 &&
+            parseInt(newStartTime.substring(0, 2)) >=
+                parseInt(newTimingsArray[index].end.substring(0, 2))) ||
+        (minuteDifference > 0 &&
+            parseInt(newStartTime.substring(3, 5)) >=
+                parseInt(newTimingsArray[index].end.substring(3, 5)))
+    ) {
+        newTimingsArray[index - 1] = startEndChange(
+            newTimingsArray[index - 1],
+            hourDifference,
+            minuteDifference
+        );
         for (let i = index; i < newTimingsArray.length; i++) {
             newTimingsArray[i] = startEndChange(
                 newTimingsArray[i],
@@ -325,46 +355,74 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
             );
         }
     }
-
-    // case when user changes start time from {start: 12, end: 15} to {start: 13 or 14, end: 15};
-    else if (hourDifference > 0 && index != 0) {
+    // case when user changes the first event time and not overshooting the next event's time
+    // affecting its respective direction timing only
+    else if ((hourDifference > 0 || minuteDifference > 0) && index == 1) {
+        newTimingsArray[index - 1] = startEndChange(
+            newTimingsArray[index - 1],
+            hourDifference,
+            minuteDifference
+        );
         newTimingsArray[index].start = newStartTime;
-        newTimingsArray[index - 1].end = newStartTime;
-    } else if (hourDifference > 0 && index == 0) {
-        newTimingsArray[index].start = newStartTime;
-    }
-    // case when user changes start time from {start: 15, end: 19} to {start: 13 or 14, end: 19}
-    // and the previous timing is {start: 12, end: 15} (eats into previous end time)
-    else if (
-        hourDifference < 0 &&
-        index != 0 &&
-        parseInt(newStartTime.substring(0, 2)) >
-            parseInt(newTimingsArray[index - 1].start.substring(0, 2))
-    ) {
-        newTimingsArray[index].start = newStartTime;
-        newTimingsArray[index - 1].end = newStartTime;
     }
 
-    // case when user changes start time from {start: 15, end: 19} to {start: 12, end: 19}
-    // and previous timings is {start: 12, end: 15} (eats into previous start time)
-    else if (
-        hourDifference < 0 &&
-        index != 0 &&
-        parseInt(newStartTime.substring(0, 2)) <=
-            parseInt(newTimingsArray[index - 1].start.substring(0, 2))
-    ) {
-        for (let i = index; i >= 0; i--) {
-            newTimingsArray[i] = startEndChange(
-                newTimingsArray[i],
-                hourDifference,
-                minuteDifference
-            );
-        }
-    } else if (hourDifference < 0 && index == 0) {
-        newTimingsArray[index].start = newStartTime;
-    } else {
+    // case when user changes start time from {start: 12, end: 15} to {start: 13 or 14, end: 15} and not
+    // overshooting the next events' time, affecting its respective direction timing, and the
+    // previous event's end time
+    else if ((hourDifference > 0 || minuteDifference > 0) && index > 1) {
+        newTimingsArray[index - 1] = startEndChange(
+            newTimingsArray[index - 1],
+            hourDifference,
+            minuteDifference
+        );
+        newTimingsArray[index - 2].end = newTimingsArray[index - 1].start;
         newTimingsArray[index].start = newStartTime;
     }
+
+    // case when user decreases the timing of the first event
+    else if ((hourDifference < 0 || minuteDifference < 0) && index == 1) {
+        newTimingsArray[index].start = newStartTime;
+        newTimingsArray[index - 1] = startEndChange(
+            newTimingsArray[index - 1],
+            hourDifference,
+            minuteDifference
+        );
+    }
+
+    // case when decreases the timing of any other event
+    else if ((hourDifference < 0 || minuteDifference < 0) && index > 1) {
+        newTimingsArray[index].start = newStartTime;
+        let newTiming = startEndChange(
+            newTimingsArray[index - 1],
+            hourDifference,
+            minuteDifference
+        );
+        console.log("Is this being called");
+        newTimingsArray[index - 1] = newTiming;
+        newTimingsArray[index - 2].end = newTiming.start;
+    }
+
+    // else if (
+    //     (hourDifference < 0 &&
+    //         parseInt(newStartTime.substring(0, 2)) <=
+    //             parseInt(newTimingsArray[index].end.substring(0, 2))) ||
+    //     (minuteDifference < 0 &&
+    //         parseInt(newStartTime.substring(3, 5)) <=
+    //             parseInt(newTimingsArray[index].end.substring(3, 5)))
+    // ) {
+    //     newTimingsArray[index - 1] = startEndChange(
+    //         newTimingsArray[index - 1],
+    //         hourDifference,
+    //         minuteDifference
+    //     );
+    //     for (let i = index; i >= 0; i--) {
+    //         newTimingsArray[i] = startEndChange(
+    //             newTimingsArray[i],
+    //             hourDifference,
+    //             minuteDifference
+    //         );
+    //     }
+    console.log(newTimingsArray);
     return newTimingsArray;
 };
 
