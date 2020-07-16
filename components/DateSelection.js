@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TouchableOpacity, View, Text, StyleSheet, Modal } from "react-native";
+import { TouchableOpacity, View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { connect } from "react-redux";
 import { selectDate, setLocation } from "../actions/date_select_action";
 import { extractCalendarEvents } from "../actions/auth_screen_actions";
@@ -8,7 +8,9 @@ import firebase from "../database/firebase";
 import Genre from "../components/genre/Genre";
 import { getBusyPeriodFromGoogleCal } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
 import Calendar from "./Calendar";
-import { Divider, Overlay } from "react-native-elements";
+import { Divider, Overlay, Badge } from "react-native-elements";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import ManualFavouritesModal from './ManualFavouritesModal'
 
 export const formatDate = (day, month, date) => {
     const possibleDays = [
@@ -46,12 +48,40 @@ export const formatDate = (day, month, date) => {
  * preferences.
  */
 const DateSelection = (props) => {
+    useEffect(() => {
+        getUsersFavourites();
+        return () => null;
+    }, [])
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [usersFavourites, setUsersFavourites] = useState([])
+    const [isUserFavouritesModalVisible, setIsUserFavouritesModalVisible] = useState(false);
     const [date, setDate] = useState(new Date()); // new Date() gives today's date
     const [modalVisible, setModalVisible] = useState(false);
     const [isFinalized, setIsFinalized] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
 
     let synced = isButtonDisabled ? "synced" : "manual";
+
+    const getUsersFavourites = () => {
+        firebase.database().ref('/users/' + props.userID)
+            .once("value")
+            .then((snapshot) => {
+                const userData = snapshot.val();
+                if (userData.hasOwnProperty("favourites")) {
+                    let object = userData.favourites;
+
+                    var finalFavouritesArray = [];
+                    for (var key in object) {
+                        const arr = [object[key], false]
+                        finalFavouritesArray.push(arr);
+                    }
+                    setUsersFavourites[finalFavouritesArray]
+                    setIsLoading(false);
+                }
+            })
+
+    }
 
     const inputAvailabilities = () => {
         getBusyPeriodFromGoogleCal(props.userID, date); // User ID comes from Redux state
@@ -141,9 +171,21 @@ const DateSelection = (props) => {
         setModalVisible(false);
     };
 
+    const closeUserFavouritesModal = () => {
+        setIsUserFavouritesModalVisible(false)
+    }
+
     const onFinalize = () => {
         setIsFinalized(true);
     };
+
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+                <ActivityIndicator size='large' />
+            </View>
+        )
+    }
 
     return (
         <View style={styles.container}>
@@ -166,6 +208,16 @@ const DateSelection = (props) => {
                 />
             </Overlay>
 
+            <Overlay
+                isVisible={isUserFavouritesModalVisible}
+                windowBackgroundColor="rgba(255, 255, 255, .5)"
+                width="auto"
+                height="auto"
+                overlayStyle={{ width: '95%', height: '95%', borderRadius: 20, }}
+            >
+                <ManualFavouritesModal onClose={closeUserFavouritesModal} usersFavourites={usersFavourites} />
+            </Overlay>
+
             <View style={styles.dateInput}>
                 <View style={{ flexDirection: "row", marginTop: 10 }}>
                     <Text style={[styles.header, { fontSize: 20 }]}>
@@ -178,6 +230,11 @@ const DateSelection = (props) => {
                             date.getDate()
                         )}
                     </Text>
+                    <TouchableOpacity onPress={() => setIsUserFavouritesModalVisible(true)}
+                        style={{ marginTop: 1, marginLeft: 10 }}>
+                        <Badge status="primary" containerStyle={{ position: "absolute", top: 0, right: -4 }} />
+                        <MaterialCommunityIcons name="dots-horizontal" color={'black'} size={25} />
+                    </TouchableOpacity>
                 </View>
             </View>
             <View style={styles.calendar}>

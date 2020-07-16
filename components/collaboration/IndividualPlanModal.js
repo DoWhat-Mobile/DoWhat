@@ -55,18 +55,6 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         return finalFavouritesArray
     })
 
-    const setAllFavouritesInArray = (object) => {
-        if (object == undefined) return []; // No favourites
-
-        var finalFavouritesArray = [];
-        for (var key in object) {
-            const arr = [object[key], false]
-            finalFavouritesArray.push(arr);
-        }
-        setFavourites(finalFavouritesArray)
-    }
-
-
     // Subscribe to changes in Firebase
     const listenToGenreChanges = () => {
         // Add history of messages to the collab board

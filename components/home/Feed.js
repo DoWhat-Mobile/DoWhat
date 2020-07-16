@@ -146,7 +146,14 @@ const Feed = (props) => {
     }
 
     const handleAddFavouriteToPersonal = (event) => {
-
+        Alert.alert(
+            'Successfully added',
+            'Go to your plan and confirm it to your finalized timeline!',
+            [
+                { text: 'DONE' },
+            ],
+            { cancelable: true }
+        )
     }
 
     const handleRemoveFavourites = (event) => {
