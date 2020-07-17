@@ -129,9 +129,9 @@ const Schedule = (props) => {
             .tz("Asia/Singapore")
             .format("HH:mm");
         let i = 0;
-        let newTimingsArray = timingsArray;
+        const temp = props.timings;
 
-        let indexFinder = events.map((item, index) => {
+        const indexFinder = props.data.map((item, index) => {
             if (item === unsatisfied) {
                 i = index;
                 return { ...item, time: newStartTime };
@@ -139,19 +139,12 @@ const Schedule = (props) => {
                 return item;
             }
         });
-        newTimingsArray = handleRipple(newTimingsArray, newStartTime, i);
+        const newTimingsArray = handleRipple(temp, newStartTime, i);
 
-        let updatedData = indexFinder.reduce((acc, item, index) => {
-            if (item.genre !== "directions") {
-                acc.push({ ...item, time: newTimingsArray[index].start });
-            }
-            return acc;
-        }, []);
-        // let updated = indexFinder.map((item, index) => {
-        //     return
-        // })
-        // console.log("Timings are", newTimingsArray);
-        // console.log("Reflected data are", updatedData);
+        let updatedData = indexFinder.map((item, index) => {
+            return { ...item, time: newTimingsArray[index].start };
+        });
+
         setUnsatisfied({ ...unsatisfied, time: newStartTime });
         setTimingsArray(newTimingsArray);
         props.eventsUpdate(updatedData);
