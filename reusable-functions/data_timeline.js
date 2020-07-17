@@ -299,31 +299,21 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
     const hourDifference =
         parseInt(newStartTime.substring(0, 2)) -
         parseInt(newTimingsArray[index].start.substring(0, 2));
+
     // in case user inputs wrong extreme time
     if (Math.abs(hourDifference) >= 5) return newTimingsArray;
     const minuteDifference =
-        parseInt(newStartTime.substring(3, 5)) -
-        (parseInt(newTimingsArray[index].start.substring(3, 5)) == 0
+        (parseInt(newStartTime.substring(3, 5)) == 0
             ? 60
-            : parseInt(newTimingsArray[index].start.substring(3, 5)));
+            : parseInt(newStartTime.substring(3, 5))) -
+        parseInt(newTimingsArray[index].start.substring(3, 5));
 
-    // For all cases, direction would be tied to the respective event
-
-    // Easiest case where the event is the last event
     // case when user changes start time from {start: 12, end: 15} to {start: >= 15, end: 15} that causes ripple. (Overshoots)
     if (
-        (hourDifference > 0 &&
-            parseInt(newStartTime.substring(0, 2)) >=
-                parseInt(newTimingsArray[index].end.substring(0, 2))) ||
-        (minuteDifference > 0 &&
-            parseInt(newStartTime.substring(3, 5)) >=
-                parseInt(newTimingsArray[index].end.substring(3, 5)))
+        hourDifference > 0 &&
+        parseInt(newStartTime.substring(0, 2)) >=
+            parseInt(newTimingsArray[index].end.substring(0, 2))
     ) {
-        // newTimingsArray[index - 1] = startEndChange(
-        //     newTimingsArray[index - 1],
-        //     hourDifference,
-        //     minuteDifference
-        // );
         for (let i = index; i < newTimingsArray.length; i++) {
             newTimingsArray[i] = startEndChange(
                 newTimingsArray[i],
@@ -332,86 +322,50 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
             );
         }
     }
-    // case when user changes the first event time and not overshooting the next event's time
-    // affecting its respective direction timing only
+    // case when user changes start time from {start: 12, end: 15} to {start: 13 or 14, end: 15};
     else if ((hourDifference > 0 || minuteDifference > 0) && index != 0) {
-        // newTimingsArray[index - 1] = startEndChange(
-        //     newTimingsArray[index - 1],
-        //     hourDifference,
-        //     minuteDifference
-        // );
         newTimingsArray[index].start = newStartTime;
         newTimingsArray[index - 1].end = newStartTime;
-        // newTimingsArray[index] = startEndChange(
-        //     newTimingsArray[index],
-        //     hourDifference,
-        //     minuteDifference
-        // );
-    } else if ((hourDifference > 0 || minuteDifference > 0) && index == 0) {
-        // newTimingsArray[index - 1] = startEndChange(
-        //     newTimingsArray[index - 1],
-        //     hourDifference,
-        //     minuteDifference
-        // );
+    }
+
+    // case when user increases the first event's timings that does not affect the others
+    else if ((hourDifference > 0 || minuteDifference > 0) && index == 0) {
         newTimingsArray[index].start = newStartTime;
     }
 
-    // case when user changes start time from {start: 12, end: 15} to {start: 13 or 14, end: 15} and not
-    // overshooting the next events' time, affecting its respective direction timing, and the
-    // previous event's end time
-    else if ((hourDifference > 0 || minuteDifference > 0) && index > 1) {
-        newTimingsArray[index - 1] = startEndChange(
-            newTimingsArray[index - 1],
-            hourDifference,
-            minuteDifference
-        );
-        newTimingsArray[index - 2].end = newTimingsArray[index - 1].start;
+    // case when user decreases the first event's timing
+    else if ((hourDifference < 0 || minuteDifference < 0) && index == 0) {
         newTimingsArray[index].start = newStartTime;
     }
 
-    // case when user decreases the timing of the first event
-    else if ((hourDifference < 0 || minuteDifference < 0) && index == 1) {
+    // case when user changes start time from {start: 15, end: 19} to {start: 13 or 14, end: 19}
+    // and the previous timing is {start: 12, end: 15} (eats into previous end time)
+    else if (
+        hourDifference < 0 &&
+        index != 0 &&
+        parseInt(newStartTime.substring(0, 2)) >
+            parseInt(newTimingsArray[index - 1].start.substring(0, 2))
+    ) {
         newTimingsArray[index].start = newStartTime;
-        newTimingsArray[index - 1] = startEndChange(
-            newTimingsArray[index - 1],
-            hourDifference,
-            minuteDifference
-        );
+        newTimingsArray[index - 1].end = newStartTime;
     }
 
-    // case when decreases the timing of any other event
-    else if ((hourDifference < 0 || minuteDifference < 0) && index > 1) {
-        newTimingsArray[index].start = newStartTime;
-        let newTiming = startEndChange(
-            newTimingsArray[index - 1],
-            hourDifference,
-            minuteDifference
-        );
-        newTimingsArray[index - 1] = newTiming;
-        newTimingsArray[index - 2].end = newTiming.start;
+    // case when user changes start time from {start: 15, end: 19} to {start: 12, end: 19}
+    // and previous timings is {start: 12, end: 15} (eats into previous start time)
+    else if (
+        hourDifference < 0 &&
+        index != 0 &&
+        parseInt(newStartTime.substring(0, 2)) <=
+            parseInt(newTimingsArray[index - 1].start.substring(0, 2))
+    ) {
+        for (let i = index; i >= 0; i--) {
+            newTimingsArray[i] = startEndChange(
+                newTimingsArray[i],
+                hourDifference,
+                minuteDifference
+            );
+        }
     }
-
-    // else if (
-    //     (hourDifference < 0 &&
-    //         parseInt(newStartTime.substring(0, 2)) <=
-    //             parseInt(newTimingsArray[index].end.substring(0, 2))) ||
-    //     (minuteDifference < 0 &&
-    //         parseInt(newStartTime.substring(3, 5)) <=
-    //             parseInt(newTimingsArray[index].end.substring(3, 5)))
-    // ) {
-    //     newTimingsArray[index - 1] = startEndChange(
-    //         newTimingsArray[index - 1],
-    //         hourDifference,
-    //         minuteDifference
-    //     );
-    //     for (let i = index; i >= 0; i--) {
-    //         newTimingsArray[i] = startEndChange(
-    //             newTimingsArray[i],
-    //             hourDifference,
-    //             minuteDifference
-    //         );
-    //     }
-
     return newTimingsArray;
 };
 
@@ -614,14 +568,11 @@ export const merge = (timings, direction) => {
 
 export const eventsWithDirections = (timingsArray, events, directions) => {
     let result = [];
-    // console.log("Timing array ", timingsArray);
     for (let i = 0; i < timingsArray.length; i++) {
         let j = i % 2 == 0 ? i / 2 : (i - 1) / 2;
-        //console.log("events timings", events[j].time);
         if (timingsArray[i].start == events[j].time) {
             result.push(events[j]);
         } else {
-            //console.log(timingsArray[i].start, events[j].time);
             let obj = {
                 title: "Directions",
                 time: "",

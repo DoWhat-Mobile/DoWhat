@@ -34,12 +34,6 @@ const Schedule = (props) => {
     const [isLoading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
-        console.log(
-            "What is this",
-            props.initRoutes,
-            props.timings,
-            props.data
-        );
         directionsArray(props.initRoutes, props.timings, props.data);
     }, [props.data]);
 
@@ -144,11 +138,11 @@ const Schedule = (props) => {
         let updatedData = indexFinder.map((item, index) => {
             return { ...item, time: newTimingsArray[index].start };
         });
+        console.log(newTimingsArray);
 
         setUnsatisfied({ ...unsatisfied, time: newStartTime });
         setTimingsArray(newTimingsArray);
         props.eventsUpdate(updatedData);
-
         setVisible(false);
     };
 
