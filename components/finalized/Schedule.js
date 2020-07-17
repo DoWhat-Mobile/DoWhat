@@ -30,7 +30,6 @@ const Schedule = (props) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
-    const [timingsArray, setTimingsArray] = React.useState([]);
     const [isLoading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
@@ -75,12 +74,10 @@ const Schedule = (props) => {
                 obj.distance = distance;
                 obj.duration = duration;
                 return obj;
-                // result.push(obj);
             })
         );
         let updatedTimings = merge(timings, result);
         let combinedData = eventsWithDirections(updatedTimings, data, result);
-        setTimingsArray(updatedTimings);
         setEvents(combinedData);
         setLoading(false);
     };
@@ -141,7 +138,6 @@ const Schedule = (props) => {
         console.log(newTimingsArray);
 
         setUnsatisfied({ ...unsatisfied, time: newStartTime });
-        setTimingsArray(newTimingsArray);
         props.eventsUpdate(updatedData);
         setVisible(false);
     };
@@ -164,7 +160,7 @@ const Schedule = (props) => {
      * date)
      */
     const sendGcalInviteAndResetAttendeeData = async () => {
-        const formattedData = formatEventsData(events); // Formatted data contains event title
+        const formattedData = formatEventsData(props.data); // Formatted data contains event title
         if (props.route == "board") {
             // collab board route
             // Create calendar event and send calendar invite to invitees
