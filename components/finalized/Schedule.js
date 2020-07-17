@@ -41,7 +41,7 @@ const Schedule = (props) => {
             props.data
         );
         directionsArray(props.initRoutes, props.timings, props.data);
-    }, []);
+    }, [props.data]);
 
     const directionsArray = async (allRoutes, timings, data) => {
         const result = await Promise.all(
@@ -84,7 +84,6 @@ const Schedule = (props) => {
                 // result.push(obj);
             })
         );
-        console.log(result);
         let updatedTimings = merge(timings, result);
         let combinedData = eventsWithDirections(updatedTimings, data, result);
         setTimingsArray(updatedTimings);
@@ -93,26 +92,17 @@ const Schedule = (props) => {
     };
 
     const onReselect = (selected) => {
-        const updatedData = events.map((item) => {
+        const updatedData = props.data.map((item) => {
             if (item === unsatisfied) {
                 return selected;
             } else {
                 return item;
             }
         });
-        const filteredData = updatedData.filter(
-            (item) => item.genre !== "directions"
-        );
-        // console.log("Updated data is", updatedData);
-        // console.log("Filtered data is", filteredData);
-        const updatedCoord = updatedData.reduce((acc, item) => {
-            if (item.genre !== "directions") {
-                acc.push({ coord: item.coord, name: item.title });
-            }
-            return acc;
-        }, []);
-
-        props.eventsUpdate(filteredData);
+        const updatedCoord = updatedData.map((item) => {
+            return { coord: item.coord, name: item.title };
+        });
+        props.eventsUpdate(updatedData);
         props.mapUpdate(updatedCoord);
         props.routeUpdate(selected, unsatisfied);
     };
