@@ -41,9 +41,9 @@ const Schedule = (props) => {
     /**
      * Fetches all direction routes between each event and then combines routes with events into one array. Creates a new timings
      * array that takes into account travel time as well
-     * @param {*} allRoutes is the array of all locations including the user's current location
-     * @param {*} timings is the timings array that has each event's allocated timing
-     * @param {*} data is the array of events that are generated for the user
+     * @param {array of all locations including the user's current location} allRoutes
+     * @param {timings array that has each event's allocated timing} timings
+     * @param {array of events that are generated for the user} data
      */
     const directionsArray = async (allRoutes, timings, data) => {
         const result = await Promise.all(
@@ -93,7 +93,7 @@ const Schedule = (props) => {
 
     /**
      * Edits the event array prop and also the updates the coordinates with the new event swapped in
-     * @param {*} selected is the event that the user picked to swap with the unsatisfied event
+     * @param {*event that the user picked to swap with the unsatisfied event} selected
      */
     const onReselect = (selected) => {
         const updatedData = props.data.map((item) => {
@@ -117,7 +117,7 @@ const Schedule = (props) => {
 
     /**
      * Only the host is allowed to edit events. Directions cannot be editted
-     * @param {*} event is the unsatisfied event that will be swapped out
+     * @param {unsatisfied event that will be swapped out} event
      */
     const onEventPress = (event) => {
         if (event.genre == "directions") {
@@ -133,7 +133,7 @@ const Schedule = (props) => {
 
     /**
      * Edits the timing array prop from and the the timing of each event of the event array prop
-     * @param {*} selectedDate is the updated timing the user picked
+     * @param {updated timing the user picked} selectedDate
      */
     const newTimeChange = (selectedDate) => {
         const currentDate = selectedDate || newTime;

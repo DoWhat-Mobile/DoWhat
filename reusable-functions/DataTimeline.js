@@ -7,8 +7,8 @@ import Route from "../components/finalized/Route";
 /**
  * handles filter for food to be added in data array. Returns array of data that is formatted to be passed as props into
  * timeline library, and timings array of start time and end time of each array, and location of each event
- * @param {*} filters in array of area price and cuisine the user selected
- * @param {*} events are all the events
+ * @param {array of area price and cuisine the user selected} filters
+ * @param {events are all the events}
  */
 export const filterHelper = (filters, events) => {
     const genre = filters.cuisine.includes("Hawker")
@@ -79,6 +79,14 @@ export const filterHelper = (filters, events) => {
     return { [genre]: temp[rand] };
 };
 
+/**
+ * Helper function to generate possible events the user can see on his timeline
+ * @param {array of genres selected by the user} userGenres
+ * @param {all events stored in redux} events
+ * @param {user picked filters} filters
+ * @param {today's weather} weather
+ * @param {end time range of all participants} endTime
+ */
 export const genreEventObjectArray = (
     userGenres,
     events,
@@ -87,6 +95,8 @@ export const genreEventObjectArray = (
     endTime
 ) => {
     let currentEvents = [];
+
+    // See whether dinner event can be scheduled for the user
     let dinner = 0;
     if (userGenres.includes("food") && endTime >= 18) dinner = 1;
 
@@ -127,10 +137,10 @@ export const genreEventObjectArray = (
 /**
  * Returns data needed for the timeline library, a timings array to be used to schedule the calendar and a location array with
  * long lat objects of the events scheduled for the user
- * @param {*} timeline is the array that stores the user's available time range
- * @param {*} userGenres is the genres the user picked
- * @param {*} events is the database of all events
- * @param {*} filters is the food filters the user selected
+ * @param {array that stores the user's available time range} timeline
+ * @param {genres the user picked} userGenres
+ * @param {database of all events} events
+ * @param {food filters the user selected} filters
  */
 export const data_timeline = (timeline, events, currentEvents) => {
     const data = [];
@@ -182,10 +192,10 @@ export const data_timeline = (timeline, events, currentEvents) => {
 
 /**
  * Formats the object to be shown in the reshuffle modal
- * @param {*} events are all the events stored in the database
- * @param {*} genres is the array of genres that the user selected
- * @param {*} time is the time interval free period of the user
- * @param {*} unsatisfied is the genre of the event that the user is reselecting
+ * @param {all the events stored in the database} events
+ * @param {array of genres that the user selected} genres
+ * @param {time interval free period of the user} time
+ * @param {genre of the event that the user is reselecting} unsatisfied
  */
 export const data_shuffle = (events, genres, time, unsatisfied, filters) => {
     let data = [];
@@ -255,6 +265,9 @@ export const objectFormatter = (startTime, event, genre) => {
     };
 };
 
+/**
+ * Formats and renders the details in each block of the timeline
+ */
 export const renderDetail = (rowData, sectionID, rowID) => {
     const renderTruncatedFooter = (handlePress) => {
         return (

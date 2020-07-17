@@ -1,3 +1,6 @@
+/**
+ * Helper function to deal with addition and subtraction of time
+ */
 const minuteHandler = (hour, min) => {
     let finalHour = hour;
     let finalMin = min;
@@ -16,6 +19,9 @@ const minuteHandler = (hour, min) => {
     return finalHour + ":" + finalMin;
 };
 
+/**
+ * Helper function to edit the start and end time of a time object in the timings array
+ */
 const startEndChange = (newTimeObject, hourDifference, minuteDifference) => {
     const newStartHour =
         parseInt(newTimeObject.start.substring(0, 2)) + hourDifference;
@@ -35,6 +41,12 @@ const startEndChange = (newTimeObject, hourDifference, minuteDifference) => {
     return { start: newStartTime, end: newEndTime };
 };
 
+/**
+ * Lets the user increases/decreases the timing of an event without overshooting into the next/previous event
+ * @param {*} newTimingsArray
+ * @param {the editted time the user picked} newStartTime
+ * @param {position of the event in timeline that the user modified} index
+ */
 export const handleRipple = (newTimingsArray, newStartTime, index) => {
     const hourDifference =
         parseInt(newStartTime.substring(0, 2)) -
@@ -109,6 +121,9 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
     return newTimingsArray;
 };
 
+/**
+ * converts minutes into the 24 hour hours minutes format
+ */
 const timeConvert = (n) => {
     let num = n;
     let hours = num / 60;
@@ -122,6 +137,12 @@ const timeConvert = (n) => {
     return rhours + ":" + rminutes;
 };
 
+/**
+ *
+ * @param {the time formatted with colon eg. 16:30} colon
+ * @param {time formatted with hours and minutes eg 1 hour 23 mins} hr
+ * @param {*} minus
+ */
 const parseTime = (colon, hr, minus) => {
     let hour = parseInt(hr.substring(0, 1));
     let minute = parseInt(hr.substring(6, 9));
@@ -133,6 +154,12 @@ const parseTime = (colon, hr, minus) => {
     return timeConvert(final);
 };
 
+/**
+ * combines the timings allocated to each event  with time taken to travel into an array with objects
+ * having start and end timing keys
+ * @param {timings array of the events generated} timings
+ * @param {timings array time taken from one event to another} direction
+ */
 export const mergeTimings = (timings, direction) => {
     let temp = [];
 

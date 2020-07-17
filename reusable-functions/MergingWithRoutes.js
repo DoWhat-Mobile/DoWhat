@@ -1,4 +1,8 @@
 import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
+
+/**
+ * Helper function that creates an object with all route details key, distance, duration, instructions, mode and start
+ */
 export const routeFormatter = async (obj) => {
     let format = {
         key: "",
@@ -52,6 +56,12 @@ export const routeFormatter = async (obj) => {
     return format;
 };
 
+/**
+ * Creates a combined data array including directions inside it to be passed to the timeline library
+ * @param {array of timings with directions and events combined} timingsArray
+ * @param {events that are generated for the user} events
+ * @param {directions between each event} directions
+ */
 export const eventsWithDirections = (timingsArray, events, directions) => {
     let result = [];
     for (let i = 0; i < timingsArray.length; i++) {
