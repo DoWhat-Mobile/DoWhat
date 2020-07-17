@@ -18,13 +18,15 @@ import {
     formatEventsData,
     handleBoardRouteProcess,
 } from "../../reusable-functions/GoogleCalendarInvite";
+import { renderDetail } from "../../reusable-functions/DataTimeline";
+import {
+    eventsWithDirections,
+    routeFormatter,
+} from "../../reusable-functions/MergingWithRoutes";
 import {
     handleRipple,
-    renderDetail,
-    eventsWithDirections,
-    merge,
-    routeFormatter,
-} from "../../reusable-functions/data_timeline";
+    mergeTimings,
+} from "../../reusable-functions/TimeRelatedFunctions";
 
 const Schedule = (props) => {
     const [events, setEvents] = React.useState([]);
@@ -36,6 +38,13 @@ const Schedule = (props) => {
         directionsArray(props.initRoutes, props.timings, props.data);
     }, [props.data]);
 
+    /**
+     * Fetches all direction routes between each event and then combines routes with events into one array. Creates a new timings
+     * array that takes into account travel time as well
+     * @param {*} allRoutes is the array of all locations including the user's current location
+     * @param {*} timings is the timings array that has each event's allocated timing
+     * @param {*} data is the array of events that are generated for the user
+     */
     const directionsArray = async (allRoutes, timings, data) => {
         const result = await Promise.all(
             allRoutes.map(async (route, index, element) => {
@@ -76,12 +85,16 @@ const Schedule = (props) => {
                 return obj;
             })
         );
-        let updatedTimings = merge(timings, result);
+        let updatedTimings = mergeTimings(timings, result);
         let combinedData = eventsWithDirections(updatedTimings, data, result);
         setEvents(combinedData);
         setLoading(false);
     };
 
+    /**
+     * Edits the event array prop and also the updates the coordinates with the new event swapped in
+     * @param {*} selected is the event that the user picked to swap with the unsatisfied event
+     */
     const onReselect = (selected) => {
         const updatedData = props.data.map((item) => {
             if (item === unsatisfied) {
@@ -102,6 +115,10 @@ const Schedule = (props) => {
         setVisible(false);
     };
 
+    /**
+     * Only the host is allowed to edit events. Directions cannot be editted
+     * @param {*} event is the unsatisfied event that will be swapped out
+     */
     const onEventPress = (event) => {
         if (event.genre == "directions") {
             return;
@@ -114,6 +131,10 @@ const Schedule = (props) => {
         }
     };
 
+    /**
+     * Edits the timing array prop from and the the timing of each event of the event array prop
+     * @param {*} selectedDate is the updated timing the user picked
+     */
     const newTimeChange = (selectedDate) => {
         const currentDate = selectedDate || newTime;
         let newStartTime = moment(currentDate)
@@ -142,6 +163,7 @@ const Schedule = (props) => {
         setVisible(false);
     };
 
+    // Renders proceed button only for the host of the event
     const renderProceedButton = () => {
         if (props.accessRights != "host") {
             return;
@@ -223,18 +245,10 @@ const Schedule = (props) => {
                             padding: 5,
                             borderRadius: 13,
                         }}
-                        // detailContainerStyle={{
-                        //     marginBottom: 20,
-                        //     paddingLeft: 15,
-                        //     paddingRight: 15,
-                        //     backgroundColor: "white",
-                        //     borderRadius: 20,
-                        // }}
                         renderDetail={renderDetail}
                         circleColor="black"
                     />
                 </View>
-                {/* <TransitRoutes routes={routes} /> */}
                 <View style={styles.footer}>{renderProceedButton()}</View>
             </View>
         );
@@ -257,7 +271,6 @@ const styles = StyleSheet.create({
         marginLeft: 200,
     },
     proceed: {
-        //borderWidth: 0.5,
         paddingTop: "3%",
         paddingBottom: "3%",
         paddingLeft: "15%",

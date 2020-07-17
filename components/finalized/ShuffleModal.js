@@ -5,12 +5,11 @@ import {
     StyleSheet,
     FlatList,
     TouchableOpacity,
-    TextInput,
     ActivityIndicator,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import Item from "./ModalItem";
-import { data_shuffle } from "../../reusable-functions/data_timeline";
+import { data_shuffle } from "../../reusable-functions/DataTimeline";
 import { connect } from "react-redux";
 const ShuffleModal = (props) => {
     const [isLoading, setLoading] = React.useState(true);

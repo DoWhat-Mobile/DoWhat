@@ -3,11 +3,11 @@ import sinon from "sinon";
 import { shallow, configure } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 
-import { filterHelper } from "../reusable-functions/data_timeline";
-import { data_timeline } from "../reusable-functions/data_timeline";
-import { genreEventObjectArray } from "../reusable-functions/data_timeline";
+import { filterHelper } from "../reusable-functions/DataTimeline";
+import { data_timeline } from "../reusable-functions/DataTimeline";
+import { genreEventObjectArray } from "../reusable-functions/DataTimeline";
 import { events } from "../MockEvents";
-import Finalized from "../components/finalized/Finalized"
+import Finalized from "../components/finalized/Finalized";
 
 configure({ adapter: new Adapter() });
 
@@ -199,40 +199,40 @@ configure({ adapter: new Adapter() });
 
 /***************************************************************
  * Integration for final scheduling algo. Test using number of *
- * items in location array and timeline end     
- * 
+ * items in location array and timeline end
+ *
  * location array length should be expected
  * Maybe can test timeslots whether correctly                *
  ***************************************************************/
 test("timing, data and location array should all have length equal to number of events scheduled", () => {
     const filters = {
-                area: ["North"],
-                cuisine: ["Hawker"],
-                price: 3,
-            };
+        area: ["North"],
+        cuisine: ["Hawker"],
+        price: 3,
+    };
     const userGenres = ["food", "adventure", "nature"];
-    const timeline = [12,20];
+    const timeline = [12, 20];
     const result = data_timeline(timeline, userGenres, events, filters);
-    const timingsArray = result[1]
-    const locationsArray = result[2]
-    const dataLength = result[0].length
+    const timingsArray = result[1];
+    const locationsArray = result[2];
+    const dataLength = result[0].length;
     expect(timingsArray.length).toBe(dataLength);
     expect(locationsArray.length).toBe(dataLength);
 });
 
 test("last event never exceeds time interval", () => {
     const filters = {
-                area: ["North"],
-                cuisine: ["Hawker"],
-                price: 3,
-            };
-    const userGenres = [ "adventure", "nature"];
-    const timeline = [10,20];
+        area: ["North"],
+        cuisine: ["Hawker"],
+        price: 3,
+    };
+    const userGenres = ["adventure", "nature"];
+    const timeline = [10, 20];
     const result = data_timeline(timeline, userGenres, events, filters);
-    const timingsArray = result[1]
+    const timingsArray = result[1];
     const lastTiming = timingsArray.pop();
-    const lastEnd = parseInt(lastTiming.end.substring(0,2))
-    console.log(lastEnd)
-    console.log(timingsArray.length)
-    expect(lastEnd).toBeLessThan(timeline[1])
+    const lastEnd = parseInt(lastTiming.end.substring(0, 2));
+    console.log(lastEnd);
+    console.log(timingsArray.length);
+    expect(lastEnd).toBeLessThan(timeline[1]);
 });

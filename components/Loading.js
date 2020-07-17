@@ -7,15 +7,13 @@ import { findOverlappingIntervals } from "../reusable-functions/OverlappingInter
 import {
     data_timeline,
     genreEventObjectArray,
-} from "../reusable-functions/data_timeline";
+} from "../reusable-functions/DataTimeline";
 
 const Loading = (props) => {
     const [freeTime, setFreeTime] = React.useState([]);
     const [weather, setWeather] = React.useState("");
     const [isWeatherLoading, setWeatherLoading] = React.useState(true);
     const [isTimingsLoading, setTimingsLoading] = React.useState(true);
-    //const [isRoutesLoading, setRoutesLoading] = React.useState(true);
-    //const [routeGuide, setRoutes] = React.useState([]);
 
     const route = props.route.params.route;
     const synced = props.route.params.synced;
@@ -78,6 +76,7 @@ const Loading = (props) => {
             });
     }, []);
 
+    // Generates all events for the user taking into account which route the user came from
     const allData = () => {
         if (props.allEvents) {
             const time = route === "link" ? freeTime : timeline;
@@ -117,13 +116,6 @@ const Loading = (props) => {
     };
 
     const onComplete = () => {
-        // let temp = [];
-        // temp.push({
-        //     lat: userLocation.coords.latitude,
-        //     long: userLocation.coords.longitude,
-        // });
-        // let routes = temp.concat(data[3]);
-        //console.log(routeGuide);
         props.navigation.navigate("Finalized", {
             route: route, // 'board' | 'manual'
             access: accessRights, // 'host
@@ -131,7 +123,6 @@ const Loading = (props) => {
             synced: synced,
             data: allData(),
             userGenres: userGenres,
-            //outeGuide: routes,
         });
     };
     if (isWeatherLoading || isTimingsLoading) {
@@ -168,7 +159,6 @@ const mapStateToProps = (state) => {
         finalTiming: state.timeline.finalTiming,
         allEvents: state.add_events.events,
         difference: state.date_select.difference,
-        //userLocation: state.date_select.userLocation,
     };
 };
 

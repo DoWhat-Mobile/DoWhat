@@ -7,14 +7,8 @@ import {
     Modal,
     ActivityIndicator,
     ScrollView,
-    Image,
     Dimensions,
 } from "react-native";
-import {
-    routeFormatter,
-    merge,
-    eventsWithDirections,
-} from "../../reusable-functions/data_timeline";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import Schedule from "./Schedule";
@@ -25,12 +19,10 @@ import { YellowBox } from "react-native";
 
 const Finalized = (props) => {
     YellowBox.ignoreWarnings(["VirtualizedLists should never be nested"]);
-    //const [isLoading, setIsLoading] = React.useState(true);
     const [visible, setVisible] = React.useState(false);
     const [coord, setCoord] = React.useState([]);
     const [routes, setRoutes] = React.useState([]);
     const [allData, setData] = React.useState([]);
-    //const [directions, setDirections] = React.useState([]);
     const [timings, setTimings] = React.useState([]);
     const [isLoading, setLoading] = React.useState(true);
 
@@ -179,14 +171,10 @@ const styles = StyleSheet.create({
     },
     header: {
         flex: 0,
-        //backgroundColor: "#cc5327",
-        // justifyContent: "center",
-        // alignItems: "center",
     },
     body: {
         flex: 1,
         marginTop: 10,
-        //backgroundColor: "#ffcc80",
     },
     image: {
         flex: 1,
