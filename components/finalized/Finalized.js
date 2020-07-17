@@ -10,7 +10,11 @@ import {
     Image,
     Dimensions,
 } from "react-native";
-import { routeFormatter, merge } from "../../reusable-functions/data_timeline";
+import {
+    routeFormatter,
+    merge,
+    eventsWithDirections,
+} from "../../reusable-functions/data_timeline";
 import { connect } from "react-redux";
 import * as actions from "../../actions";
 import Schedule from "./Schedule";
@@ -18,17 +22,17 @@ import Map from "./Map";
 import Minimap from "./Minimap";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { YellowBox } from "react-native";
-import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 
 const Finalized = (props) => {
     YellowBox.ignoreWarnings(["VirtualizedLists should never be nested"]);
-    const [isLoading, setIsLoading] = React.useState(true);
+    //const [isLoading, setIsLoading] = React.useState(true);
     const [visible, setVisible] = React.useState(false);
     const [coord, setCoord] = React.useState([]);
     const [routes, setRoutes] = React.useState([]);
     const [allData, setData] = React.useState([]);
-    const [directions, setDirections] = React.useState([]);
+    //const [directions, setDirections] = React.useState([]);
     const [timings, setTimings] = React.useState([]);
+    const [isLoading, setLoading] = React.useState(true);
 
     const data = props.route.params.data;
     const accessRights = props.route.params.access;
@@ -42,56 +46,13 @@ const Finalized = (props) => {
                 long: props.userLocation.coords.longitude,
             },
         ].concat(data[3]);
-        // console.log(initRoutes);
+
         setRoutes(initRoutes);
         setData(data[0]);
         setCoord(data[2]);
-        directionsArray(initRoutes);
+        setTimings(data[1]);
+        setLoading(false);
     }, []);
-    const directionsArray = async (allRoutes) => {
-        let result = [];
-
-        for (let i = 0; i < allRoutes.length - 1; i++) {
-            let obj = { distance: "", duration: "", steps: [] };
-            let steps = [];
-            let distance = "";
-            let duration = "";
-            let origin =
-                typeof allRoutes[i] === "object"
-                    ? allRoutes[i].lat + "," + allRoutes[i].long
-                    : allRoutes[i];
-            let destination = allRoutes[i + 1];
-            try {
-                let resp = await fetch(
-                    "https://maps.googleapis.com/maps/api/directions/json?origin=" +
-                        origin +
-                        "&destination=" +
-                        destination +
-                        "&key=" +
-                        GOOGLE_MAPS_API_KEY +
-                        "&mode=transit&region=sg"
-                );
-                //console.log(JSON.stringify(await resp.json()));
-                let data = (await resp.json())["routes"][0]["legs"][0];
-                let response = data["steps"];
-                distance = data["distance"]["text"];
-                duration = data["duration"]["text"];
-
-                for (let j = 0; j < response.length; j++) {
-                    steps.push(await routeFormatter(await response[j]));
-                }
-            } catch (err) {
-                console.log(err);
-            }
-            obj.steps = steps;
-            obj.distance = distance;
-            obj.duration = duration;
-            result.push(obj);
-        }
-        setDirections(result);
-        setTimings(merge(data[1], result));
-        setIsLoading(false);
-    };
 
     const onClose = () => {
         setVisible(false);
@@ -115,7 +76,7 @@ const Finalized = (props) => {
             return item == unsatisfied.location ? selected.location : item;
         });
         setRoutes(result);
-        directionsArray(result);
+        // directionsArray(result);
     };
 
     const weatherIcon = (weather) => {
@@ -190,7 +151,7 @@ const Finalized = (props) => {
                     <Schedule
                         data={allData}
                         navigation={props.navigation}
-                        initRoutes={directions}
+                        initRoutes={routes}
                         genres={userGenres}
                         accessRights={accessRights}
                         userID={props.userID}

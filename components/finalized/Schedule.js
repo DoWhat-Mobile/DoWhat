@@ -3,8 +3,7 @@ import ActionOptions from "./ActionOptions";
 import Timeline from "react-native-timeline-flatlist";
 import moment from "moment-timezone";
 import firebase from "../../database/firebase";
-import TransitRoutes from "./TransitRoutes";
-
+import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 import {
     Text,
     Modal,
@@ -23,28 +22,75 @@ import {
     handleRipple,
     renderDetail,
     eventsWithDirections,
+    merge,
+    routeFormatter,
 } from "../../reusable-functions/data_timeline";
 
 const Schedule = (props) => {
     const [events, setEvents] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [unsatisfied, setUnsatisfied] = React.useState("");
-    //const [timingsArray, setTimingsArray] = React.useState([]);
+    const [timingsArray, setTimingsArray] = React.useState([]);
     const [isLoading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
-        //let updatedTimings = merge(props.timings, props.initRoutes);
-        let combinedData = eventsWithDirections(
+        console.log(
+            "What is this",
+            props.initRoutes,
             props.timings,
-            props.data,
-            props.initRoutes
+            props.data
         );
+        directionsArray(props.initRoutes, props.timings, props.data);
+    }, []);
 
-        //console.log("Updated Timings are ", updatedTimings);
-        //setTimingsArray(updatedTimings);
+    const directionsArray = async (allRoutes, timings, data) => {
+        const result = await Promise.all(
+            allRoutes.map(async (route, index, element) => {
+                let obj = { distance: "", duration: "", steps: [] };
+                let steps = [];
+                let distance = "";
+                let duration = "";
+                let origin =
+                    typeof route === "object"
+                        ? route.lat + "," + route.long
+                        : route;
+                let destination = element[index + 1];
+                try {
+                    let resp = await fetch(
+                        "https://maps.googleapis.com/maps/api/directions/json?origin=" +
+                            origin +
+                            "&destination=" +
+                            destination +
+                            "&key=" +
+                            GOOGLE_MAPS_API_KEY +
+                            "&mode=transit&region=sg"
+                    );
+                    //console.log(JSON.stringify(await resp.json()));
+                    let data = (await resp.json())["routes"][0]["legs"][0];
+                    let response = data["steps"];
+                    distance = data["distance"]["text"];
+                    duration = data["duration"]["text"];
+
+                    for (let j = 0; j < response.length; j++) {
+                        steps.push(await routeFormatter(await response[j]));
+                    }
+                } catch (err) {
+                    console.log(err);
+                }
+                obj.steps = steps;
+                obj.distance = distance;
+                obj.duration = duration;
+                return obj;
+                // result.push(obj);
+            })
+        );
+        console.log(result);
+        let updatedTimings = merge(timings, result);
+        let combinedData = eventsWithDirections(updatedTimings, data, result);
+        setTimingsArray(updatedTimings);
         setEvents(combinedData);
         setLoading(false);
-    }, [props.data]);
+    };
 
     const onReselect = (selected) => {
         const updatedData = events.map((item) => {
@@ -57,6 +103,8 @@ const Schedule = (props) => {
         const filteredData = updatedData.filter(
             (item) => item.genre !== "directions"
         );
+        // console.log("Updated data is", updatedData);
+        // console.log("Filtered data is", filteredData);
         const updatedCoord = updatedData.reduce((acc, item) => {
             if (item.genre !== "directions") {
                 acc.push({ coord: item.coord, name: item.title });
@@ -91,7 +139,7 @@ const Schedule = (props) => {
             .tz("Asia/Singapore")
             .format("HH:mm");
         let i = 0;
-        let newTimingsArray = props.timings;
+        let newTimingsArray = timingsArray;
 
         let indexFinder = events.map((item, index) => {
             if (item === unsatisfied) {
@@ -109,9 +157,15 @@ const Schedule = (props) => {
             }
             return acc;
         }, []);
-
-        props.setTimingsArray(newTimingsArray);
+        // let updated = indexFinder.map((item, index) => {
+        //     return
+        // })
+        // console.log("Timings are", newTimingsArray);
+        // console.log("Reflected data are", updatedData);
+        setUnsatisfied({ ...unsatisfied, time: newStartTime });
+        setTimingsArray(newTimingsArray);
         props.eventsUpdate(updatedData);
+
         setVisible(false);
     };
 

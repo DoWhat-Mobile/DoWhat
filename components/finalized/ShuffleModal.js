@@ -18,6 +18,7 @@ const ShuffleModal = (props) => {
 
     React.useEffect(() => {
         if (props.allEvents !== {}) {
+            console.log(props.unsatisfied.time);
             setLoading(false);
         }
     }, []);

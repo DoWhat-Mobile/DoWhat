@@ -161,7 +161,7 @@ export const data_timeline = (timeline, events, currentEvents) => {
                 busRoutes.push(event.location);
 
                 //data.push({ startTime: startTime, event: event, genre: genre });
-                data.push(objectFormatter(startTime, event, genre));
+                data.push(objectFormatter(intervalObject.start, event, genre));
                 currentEvents.splice(i, 1);
                 startTime += events[genre]["duration"];
 
@@ -217,11 +217,7 @@ export const data_shuffle = (events, genres, time, unsatisfied, filters) => {
         let randomNumber = Math.floor(Math.random() * selectable.length);
         let event = selectable[randomNumber];
 
-        let obj = objectFormatter(
-            time.substring(0, 2),
-            event,
-            unsatisfied.toLowerCase()
-        );
+        let obj = objectFormatter(time, event, unsatisfied.toLowerCase());
 
         // ensure no duplicate objects
         const checkName = (object) => object.title === obj.title;
@@ -234,7 +230,6 @@ export const data_shuffle = (events, genres, time, unsatisfied, filters) => {
  * Creates the object with keys (time, title description) that the timeline library accepts
  */
 export const objectFormatter = (startTime, event, genre) => {
-    console.log(event.coord);
     let imageURI = event.image;
     if (imageURI.substring(0, 5) != "https") {
         imageURI =
@@ -244,7 +239,7 @@ export const objectFormatter = (startTime, event, genre) => {
             TIH_API_KEY;
     }
     return {
-        time: startTime + ":00",
+        time: startTime,
         title: event.tags.includes("Indoors")
             ? event.name + " " + "(Indoors)"
             : event.name,
@@ -311,9 +306,6 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
         (parseInt(newTimingsArray[index].start.substring(3, 5)) == 0
             ? 60
             : parseInt(newTimingsArray[index].start.substring(3, 5)));
-
-    console.log("Mins is ", newStartTime.substring(3, 5));
-    console.log(minuteDifference);
 
     // For all cases, direction would be tied to the respective event
 
@@ -397,7 +389,6 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
             hourDifference,
             minuteDifference
         );
-        console.log("Is this being called");
         newTimingsArray[index - 1] = newTiming;
         newTimingsArray[index - 2].end = newTiming.start;
     }
@@ -422,7 +413,7 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
     //             minuteDifference
     //         );
     //     }
-    console.log(newTimingsArray);
+
     return newTimingsArray;
 };
 
@@ -625,8 +616,10 @@ export const merge = (timings, direction) => {
 
 export const eventsWithDirections = (timingsArray, events, directions) => {
     let result = [];
+    console.log("Timing array ", timingsArray);
     for (let i = 0; i < timingsArray.length; i++) {
         let j = i % 2 == 0 ? i / 2 : (i - 1) / 2;
+        console.log("events timings", events[j].time);
         if (timingsArray[i].start == events[j].time) {
             result.push(events[j]);
         } else {
