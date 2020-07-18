@@ -32,6 +32,7 @@ const Feed = (props) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [favourites, setFavourites] = useState({});
     const [viewFavourites, setViewFavourites] = useState(false);
+    const [addingFavouritesToPlan, setAddingFavouritesToPlan] = useState(false);
 
     const getDataFromFirebase = async () => {
         try {
@@ -72,6 +73,7 @@ const Feed = (props) => {
         var updates = {}
         var eventWithRating = event[0];
         eventWithRating.rating = event[1]
+        eventWithRating.votes = 0; // For use in collaboration board
         updates['/favourites/' + event[0].id] = eventWithRating;
 
         firebase.database().ref('/users/' + props.userID)
@@ -108,6 +110,10 @@ const Feed = (props) => {
 
     // Event represents an event node in the database of events
     const handleEventPress = (event, sectionTitle, index, foodIndex) => {
+        if (addingFavouritesToPlan) {
+            alert("Hello")
+
+        }
         Alert.alert(
             'Add to favourites',
             'Do you want to add this event to your favourites?',
@@ -145,7 +151,14 @@ const Feed = (props) => {
     }
 
     const handleAddFavouriteToPersonal = (event) => {
-
+        Alert.alert(
+            'Successfully added',
+            'Go to your plan and confirm it to your finalized timeline!',
+            [
+                { text: 'DONE' },
+            ],
+            { cancelable: true }
+        )
     }
 
     const handleRemoveFavourites = (event) => {
@@ -257,7 +270,6 @@ const Feed = (props) => {
                                         REMOVE FROM FAVOURITES
                                         </Text>
                                 </TouchableOpacity>
-
                                 <TouchableOpacity style={styles.favouritesButton}
                                     onPress={() => handleFavouriteEventPress(event)}>
                                     <Text style={styles.favouritesButtonText}>ADD TO PLAN</Text>
@@ -303,6 +315,115 @@ const Feed = (props) => {
         return (<Text style={styles.CategoryTitleText}>{text}</Text>)
     }
 
+    // const toggle
+
+    const renderListHeaderComponent = (isFavouritesHeader) => {
+        return (
+            <View style={[styles.header, addingFavouritesToPlan
+                ? { backgroundColor: '#BEBEBE' } : {}]}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={styles.headerText}>Check these categories out!</Text>
+                    <TouchableOpacity onPress={signOut}>
+                        <Text style={{
+                            color: "grey", textDecorationLine: 'underline',
+                            marginRight: 5, marginTop: 2
+                        }}>
+                            Sign out
+                                    </Text>
+                    </TouchableOpacity>
+                </View>
+                {isFavouritesHeader
+                    ? <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', marginTop: 5, }}>
+                        <View style={{ flex: 2.5, flexDirection: 'row', justifyContent: 'space-around' }}>
+                            <View>
+                                <TouchableOpacity onPress={() => setViewFavourites(false)}
+                                    style={styles.headerCategory}>
+                                    <MaterialCommunityIcons name="reorder-horizontal" color={'black'} size={30} />
+                                </TouchableOpacity>
+                                <CategoryTitleText text='See all Events' />
+                            </View>
+
+                            {addingFavouritesToPlan
+                                ? <View>
+                                    <TouchableOpacity onPress={() => setAddingFavouritesToPlan(false)}
+                                        style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
+                                        <MaterialCommunityIcons name="reply" color={'white'} size={30} />
+                                    </TouchableOpacity>
+                                    <CategoryTitleText text='Back' />
+                                </View>
+                                : null}
+                            {addingFavouritesToPlan
+                                ? <View>
+                                    <TouchableOpacity onPress={() => setAddingFavouritesToPlan(false)}
+                                        style={[styles.headerCategory, { backgroundColor: 'green' }]}>
+                                        <MaterialCommunityIcons name="check-bold" color={'white'} size={30} />
+                                    </TouchableOpacity>
+                                    <CategoryTitleText text='Done' />
+                                </View>
+                                : <View>
+                                    <TouchableOpacity onPress={() => setAddingFavouritesToPlan(true)}
+                                        style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
+                                        <MaterialCommunityIcons name="animation" color={'white'} size={30} />
+                                    </TouchableOpacity>
+                                    <CategoryTitleText text='Plan Outing with Favourites' />
+                                </View>
+                            }
+                        </View>
+                        <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
+                            <TouchableOpacity
+                                onPress={() => props.navigation.navigate("Plan", { addingFavourite: false })}
+                                style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
+                                <MaterialCommunityIcons name="feature-search" color={'white'} size={30} />
+                            </TouchableOpacity>
+                            <CategoryTitleText text='Plan with Friends' />
+                        </View>
+                    </View>
+                    : <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', marginTop: 5, }}>
+                        <View style={{ flex: 2.5, flexDirection: 'row', justifyContent: 'space-around' }}>
+                            <View>
+                                <TouchableOpacity onPress={() => setViewFavourites(true)}
+                                    style={styles.headerCategory}>
+                                    <MaterialCommunityIcons name="cards-heart" color={'#d00000'} size={30} />
+                                </TouchableOpacity>
+                                <CategoryTitleText text='Favourites' />
+                            </View>
+                            <View>
+                                <TouchableOpacity onPress={() => scroll(0, 0)}
+                                    style={styles.headerCategory}>
+                                    <MaterialCommunityIcons name="star" color={'#CCCC00'} size={30} />
+                                </TouchableOpacity>
+                                <CategoryTitleText text='Popular' />
+                            </View>
+                            <View>
+                                <TouchableOpacity onPress={() => scroll(1, 0)}
+                                    style={styles.headerCategory}>
+                                    <MaterialCommunityIcons name="silverware-variant" color={'#9d8189'} size={30} />
+                                </TouchableOpacity>
+                                <CategoryTitleText text='Eateries' />
+                            </View>
+                            <View>
+                                <TouchableOpacity onPress={() => scroll(2, 0)}
+                                    style={styles.headerCategory}>
+                                    <MaterialCommunityIcons name="city" color={'#3d5a80'} size={30} />
+                                </TouchableOpacity>
+                                <CategoryTitleText text='Discover' />
+                            </View>
+                        </View>
+                        <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
+                            <TouchableOpacity
+                                onPress={() => props.navigation.navigate("Plan", { addingFavourite: false })}
+                                style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
+                                <MaterialCommunityIcons name="feature-search" color={'white'} size={30} />
+                            </TouchableOpacity>
+                            <CategoryTitleText text='Plan with Friends' />
+                        </View>
+                    </View>
+
+                }
+            </View>
+        )
+    }
+
     const signOut = () => {
         firebase.auth().signOut();
         props.navigation.navigate("Auth")
@@ -321,58 +442,25 @@ const Feed = (props) => {
     if (viewFavourites) {
         var favouritesArr = [];
         for (var event in favourites) {
-            const formattedData = [favourites[event], favourites[event].rating]
+            const formattedData = [favourites[event], favourites[event].rating, false] // Last boolean if is adding
             favouritesArr.push(formattedData)
         }
         // Favourites view
         return (
-            < View style={styles.container} >
+            < View style={[styles.container, addingFavouritesToPlan
+                ? { backgroundColor: '#BEBEBE' } : {}]} >
                 <SectionList
                     onRefresh={() => refreshPage()}
                     ref={ref => (sectionListRef = ref)}
-                    ListHeaderComponent={() => {
-                        return (
-                            <View style={styles.header}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <Text style={styles.headerText}>Check these categories out!</Text>
-                                    <TouchableOpacity onPress={signOut}>
-                                        <Text style={{
-                                            color: "grey", textDecorationLine: 'underline',
-                                            marginRight: 5, marginTop: 2
-                                        }}>
-                                            Sign out
-                                    </Text>
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', marginTop: 5, }}>
-                                    <View style={{ flex: 2.5, flexDirection: 'row', justifyContent: 'space-around' }}>
-                                        <View>
-                                            <TouchableOpacity onPress={() => setViewFavourites(false)}
-                                                style={styles.headerCategory}>
-                                                <MaterialCommunityIcons name="reorder-horizontal" color={'black'} size={30} />
-                                            </TouchableOpacity>
-                                            <CategoryTitleText text='See all Events' />
-                                        </View>
-                                    </View>
-                                    <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
-                                        <TouchableOpacity
-                                            onPress={() => props.navigation.navigate("Plan", { addingFavourite: false })}
-                                            style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
-                                            <MaterialCommunityIcons name="feature-search" color={'white'} size={30} />
-                                        </TouchableOpacity>
-                                        <CategoryTitleText text='Plan with Friends' />
-                                    </View>
-                                </View>
-                            </View>
-                        )
-                    }}
+                    ListHeaderComponent={() => renderListHeaderComponent(true)}
                     progressViewOffset={100}
                     refreshing={isRefreshing}
                     sections={[
                         { title: "My favourites", data: favouritesArr }
                     ]}
-                    renderItem={({ item, section, index }) => renderEventCard(item, false, 'favourites', 0, 0)}
+                    renderItem={({ item, section, index }) =>
+                        renderEventCard(item, false, 'favourites', 0, 0)
+                    }
                     renderSectionHeader={({ section }) =>
                         <View style={styles.sectionHeader}>
                             <TouchableOpacity
@@ -383,6 +471,20 @@ const Feed = (props) => {
                     }
                     keyExtractor={(item, index) => index}
                 />
+                { // Render empty state favourites screen
+                    favouritesArr.length == 0
+                        ? <View style={{ flex: 20, justifyContent: 'center' }}>
+                            <Text style={{
+                                fontSize: 20, fontWeight: 'bold', textAlign: "center",
+                                fontFamily: 'serif'
+                            }}>No favourites added yet.</Text>
+                            <Text style={{
+                                margin: 5, fontSize: 14, color: 'grey', textAlign: "center",
+                                fontFamily: 'serif'
+                            }}>Add an event to favourites by clicking on the event in the home feed.</Text>
+                        </View>
+                        : null
+                }
             </View >
         )
     }
@@ -393,64 +495,7 @@ const Feed = (props) => {
             <SectionList
                 onRefresh={() => refreshPage()}
                 ref={ref => (sectionListRef = ref)}
-                ListHeaderComponent={() => {
-                    return (
-                        <View style={styles.header}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={styles.headerText}>Check these categories out!</Text>
-                                <TouchableOpacity onPress={signOut}>
-                                    <Text style={{
-                                        color: "grey", textDecorationLine: 'underline',
-                                        marginRight: 5, marginTop: 2
-                                    }}>
-                                        Sign out
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', marginTop: 5, }}>
-                                <View style={{ flex: 2.5, flexDirection: 'row', justifyContent: 'space-around' }}>
-                                    <View>
-                                        <TouchableOpacity onPress={() => setViewFavourites(true)}
-                                            style={styles.headerCategory}>
-                                            <MaterialCommunityIcons name="cards-heart" color={'#d00000'} size={30} />
-                                        </TouchableOpacity>
-                                        <CategoryTitleText text='Favourites' />
-                                    </View>
-                                    <View>
-                                        <TouchableOpacity onPress={() => scroll(0, 0)}
-                                            style={styles.headerCategory}>
-                                            <MaterialCommunityIcons name="star" color={'#CCCC00'} size={30} />
-                                        </TouchableOpacity>
-                                        <CategoryTitleText text='Popular' />
-                                    </View>
-                                    <View>
-                                        <TouchableOpacity onPress={() => scroll(1, 0)}
-                                            style={styles.headerCategory}>
-                                            <MaterialCommunityIcons name="silverware-variant" color={'#9d8189'} size={30} />
-                                        </TouchableOpacity>
-                                        <CategoryTitleText text='Eateries' />
-                                    </View>
-                                    <View>
-                                        <TouchableOpacity onPress={() => scroll(2, 0)}
-                                            style={styles.headerCategory}>
-                                            <MaterialCommunityIcons name="city" color={'#3d5a80'} size={30} />
-                                        </TouchableOpacity>
-                                        <CategoryTitleText text='Discover' />
-                                    </View>
-                                </View>
-                                <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
-                                    <TouchableOpacity
-                                        onPress={() => props.navigation.navigate("Plan", { addingFavourite: false })}
-                                        style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
-                                        <MaterialCommunityIcons name="feature-search" color={'white'} size={30} />
-                                    </TouchableOpacity>
-                                    <CategoryTitleText text='Plan with Friends' />
-                                </View>
-                            </View>
-                        </View>
-                    )
-                }}
+                ListHeaderComponent={() => renderListHeaderComponent(false)}
                 progressViewOffset={100}
                 refreshing={isRefreshing}
                 sections={[
