@@ -251,11 +251,7 @@ export const objectFormatter = (startTime, event, genre) => {
             ? event.name + " " + "(Indoors)"
             : event.name,
 
-        description:
-            "                                                                                               " +
-            event.location +
-            "\n\n" +
-            event.description,
+        description: event.location + "\n\n" + event.description,
 
         lineColor: "#cc5327",
         imageUrl: imageURI,
@@ -297,31 +293,35 @@ export const renderDetail = (rowData, sectionID, rowID) => {
     let desc = null;
     if (rowData.description && rowData.imageUrl) {
         desc = (
-            <View style={{ padding: 5 }}>
-                {title}
+            <View>
                 <Image
                     source={{ uri: rowData.imageUrl }}
                     style={{
-                        width: 230,
+                        //width: 230,
                         height: 120,
-                        borderRadius: 25,
-                        marginTop: 10,
+                        borderTopLeftRadius: 25,
+                        borderTopRightRadius: 25,
+                        //marginTop: 10,
                         //marginLeft: 5,
                     }}
                 />
-                <ReadMore
-                    numberOfLines={1}
-                    renderTruncatedFooter={renderTruncatedFooter}
-                    renderRevealedFooter={renderRevealedFooter}
-                >
-                    <Text
-                        style={{
-                            flex: 1,
-                        }}
+                <View style={{ marginHorizontal: 10, marginVertical: 5 }}>
+                    <ReadMore
+                        numberOfLines={2}
+                        renderTruncatedFooter={renderTruncatedFooter}
+                        renderRevealedFooter={renderRevealedFooter}
                     >
-                        {rowData.description}
-                    </Text>
-                </ReadMore>
+                        <Text
+                            style={{
+                                flex: 1,
+                            }}
+                        >
+                            {title}
+                            {"\n"}
+                            {rowData.description}
+                        </Text>
+                    </ReadMore>
+                </View>
             </View>
         );
     } else if (rowData.description) {
@@ -341,10 +341,10 @@ export const renderDetail = (rowData, sectionID, rowID) => {
         <View
             style={{
                 flex: 1,
-                paddingTop: 10,
+                //paddingTop: 10,
                 marginBottom: 10,
-                paddingLeft: 15,
-                paddingRight: 15,
+                //paddingLeft: 15,
+                //paddingRight: 15,
                 backgroundColor: "white",
                 borderRadius: 20,
             }}

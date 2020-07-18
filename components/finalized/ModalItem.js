@@ -61,7 +61,7 @@ const Item = ({ item, onReselect, onClose }) => {
                     renderTruncatedFooter={renderTruncatedFooter}
                     renderRevealedFooter={renderRevealedFooter}
                 >
-                    <Text>{item.description.substring(95)}</Text>
+                    <Text>{item.description}</Text>
                 </ReadMore>
             </Card>
         </TouchableOpacity>
