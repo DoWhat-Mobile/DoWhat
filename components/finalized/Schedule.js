@@ -246,7 +246,8 @@ const Schedule = (props) => {
                             borderRadius: 13,
                         }}
                         renderDetail={renderDetail}
-                        circleColor="black"
+                        circleColor="#cc5327"
+                        innerCircle={"dot"}
                     />
                 </View>
                 <View style={styles.footer}>{renderProceedButton()}</View>
@@ -262,7 +263,7 @@ const styles = StyleSheet.create({
     body: {
         flex: 10,
         padding: 20,
-        paddingTop: 65,
+        paddingTop: 45,
     },
     footer: {
         flex: 1,

@@ -250,9 +250,7 @@ export const objectFormatter = (startTime, event, genre) => {
         title: event.tags.includes("Indoors")
             ? event.name + " " + "(Indoors)"
             : event.name,
-
         description: event.location + "\n\n" + event.description,
-
         lineColor: "#cc5327",
         imageUrl: imageURI,
         genre: genre,

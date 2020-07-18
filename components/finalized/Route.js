@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
+
 import ReadMore from "react-native-read-more-text";
 
 const Route = ({ item }) => {
@@ -31,7 +31,6 @@ const Route = ({ item }) => {
         let str = "";
         let directions = item.steps;
         for (let i = 0; i < item.steps.length; i++) {
-            console.log("Is this printed", directions[i]);
             let block =
                 "\n" +
                 directions[i].distance +
@@ -42,7 +41,6 @@ const Route = ({ item }) => {
                 "\n";
             str += block;
         }
-        console.log(str);
         return str;
     };
 

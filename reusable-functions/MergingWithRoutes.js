@@ -1,4 +1,7 @@
+import React from "react";
+import { View } from "react-native";
 import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
+import { FontAwesome } from "@expo/vector-icons";
 
 /**
  * Helper function that creates an object with all route details key, distance, duration, instructions, mode and start
@@ -72,7 +75,7 @@ export const eventsWithDirections = (timingsArray, events, directions) => {
             let obj = {
                 title: "Directions",
                 time: "",
-                lineColor: "black",
+                lineColor: "white",
                 description: "",
                 genre: "directions",
             };
