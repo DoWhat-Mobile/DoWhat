@@ -77,6 +77,7 @@ const DateSelection = (props) => {
                         finalFavouritesArray.push(arr);
                     }
                     setUsersFavourites[finalFavouritesArray]
+                    console.log("User's favourites : ", usersFavourites)
                     setIsLoading(false);
                 }
             })

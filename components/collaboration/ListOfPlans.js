@@ -79,9 +79,21 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, addingFavourite, ev
             })
     }
 
+    const getTopVotedFavouriteEvent = (allVotedFavourites) => {
+        if (allVotedFavourites == undefined) return; // No favourites added
+
+        return Object.keys(allVotedFavourites).reduce((x, y) => {
+            const event1 = allVotedFavourites[x];
+            const event2 = allVotedFavourites[y];
+
+            return event1.votes > event2.votes ? event1 : event2;
+        })
+    }
+
     const goToFinalized = (boardFromFirebase, finalizedTimeline, boardFromParent) => {
         const accessRights = boardFromParent.isUserHost ? 'host' : 'attendee';
 
+        const topVotedFavouriteEvent = getTopVotedFavouriteEvent(boardFromFirebase.favourites)
         const topGenres = getTopVoted(boardFromFirebase.preferences, 3);
         const topCuisines = getTopVoted(boardFromFirebase.food_filters.cuisine, 3);
         const topArea = getTopVoted(boardFromFirebase.food_filters.area, 1);
@@ -101,7 +113,8 @@ const ListOfPlans = ({ plans, navigation, userID, allEvents, addingFavourite, ev
             board: boardFromFirebase, // for Gcal Invite 
             boardID: boardFromParent.boardID,
             currentEvents: finalizedTimeline,
-            access: accessRights// 'host' | 'invitee' 
+            access: accessRights,// 'host' | 'invitee' 
+            topVotedEvent: topVotedFavouriteEvent, // If anyone adds suggestions and votes casted 
             //userLocation: 
 
         }
