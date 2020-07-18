@@ -278,16 +278,8 @@ export const renderDetail = (rowData, sectionID, rowID) => {
             </Text>
         );
     };
-    let title = (
-        <Text
-            style={{
-                fontSize: 18,
-                fontWeight: "bold",
-            }}
-        >
-            {rowData.title}
-        </Text>
-    );
+    let title = rowData.title;
+
     let desc = null;
     if (rowData.description && rowData.imageUrl) {
         desc = (
@@ -312,7 +304,14 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                                 fontSize: 16,
                             }}
                         >
-                            {title}
+                            <Text
+                                style={{
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                }}
+                            >
+                                {title}
+                            </Text>
                             {"\n"}
                             {rowData.description}
                         </Text>
@@ -329,7 +328,14 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                     paddingVertical: 10,
                 }}
             >
-                {title}
+                <Text
+                    style={{
+                        fontSize: 16,
+                        fontWeight: "bold",
+                    }}
+                >
+                    {title}
+                </Text>
                 <Route item={rowData.description} />
             </View>
         );

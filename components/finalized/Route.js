@@ -50,7 +50,7 @@ const Route = ({ item }) => {
             renderTruncatedFooter={renderTruncatedFooter}
             renderRevealedFooter={renderRevealedFooter}
         >
-            <Text style={{ fontSize: 16 }}>{str}</Text>
+            <Text style={{ fontSize: 14 }}>{str}</Text>
             <Text style={{ marginLeft: 5 }}>{block(item)}</Text>
         </ReadMore>
     );

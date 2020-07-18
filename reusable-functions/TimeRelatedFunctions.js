@@ -183,12 +183,17 @@ export const mergeTimings = (timings, direction) => {
                 direction[i + 1].duration,
                 "minus"
             );
-            first.start = timings[i].start;
-            first.end = mid;
-            second.start = mid;
-            second.end = timings[i].end;
-            temp.push(first);
-            temp.push(second);
+            if (isNaN(mid) && typeof mid !== "string") {
+                console.log(mid);
+                temp.push(timings[i]);
+            } else {
+                first.start = timings[i].start;
+                first.end = mid;
+                second.start = mid;
+                second.end = timings[i].end;
+                temp.push(first);
+                temp.push(second);
+            }
         }
     }
     return temp;
