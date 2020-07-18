@@ -12,14 +12,17 @@ export const buttons = (list, selected, handlePress) =>
                 styles.button,
                 {
                     backgroundColor: selected.includes(items)
-                        ? "silver"
-                        : "white",
+                        ? "#F28333"
+                        : "#ffe0b3",
                 },
             ]}
         >
             <Text
                 style={{
                     fontSize: 16,
+                    fontFamily: "serif",
+                    fontWeight: "bold",
+                    color: selected.includes(items) ? "#ffe0b3" : "#F28333",
                 }}
             >
                 {items}
@@ -29,10 +32,11 @@ export const buttons = (list, selected, handlePress) =>
 
 const styles = StyleSheet.create({
     button: {
-        borderRadius: 10,
-        padding: 5,
+        borderRadius: 20,
+        padding: 10,
         borderWidth: StyleSheet.hairlineWidth,
-        marginHorizontal: 5,
+        marginRight: 10,
         marginVertical: 10,
+        borderColor: "white",
     },
 });

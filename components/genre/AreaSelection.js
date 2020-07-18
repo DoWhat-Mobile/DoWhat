@@ -39,12 +39,12 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
-        marginLeft: 20,
     },
     header: {
-        marginLeft: 25,
         fontSize: 20,
         fontWeight: "bold",
+        marginLeft: 5,
+        fontFamily: "serif",
     },
 });
 

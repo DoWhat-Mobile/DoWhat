@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Dimensions,
+} from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import AreaSelection from "./AreaSelection";
 import CuisineSelection from "./CuisineSelection";
@@ -31,32 +37,50 @@ const FoodFilter = ({ onClose, handlePress, selectFilter }) => {
     };
     return (
         <View style={styles.container}>
-            <AntDesign
-                name="close"
-                size={24}
-                onPress={() => onClose()}
-                style={styles.close}
-            />
-            <View style={styles.header}>
-                <Text style={{ fontSize: 30, fontWeight: "bold" }}>
-                    Filters
-                </Text>
-            </View>
+            <View style={styles.modal}>
+                <AntDesign
+                    name="close"
+                    size={24}
+                    onPress={() => onClose()}
+                    style={styles.close}
+                />
+                <View style={styles.header}>
+                    <Text
+                        style={{
+                            fontSize: 30,
+                            fontWeight: "bold",
+                            fontFamily: "serif",
+                        }}
+                    >
+                        Filters
+                    </Text>
+                </View>
 
-            <View style={styles.body}>
-                <AreaSelection handleAreaPress={handleAreaPress} />
-                <CuisineSelection handleCuisinePress={handleCuisinePress} />
-                <PriceSelection handlePricePress={handlePricePress} />
-            </View>
+                <View style={styles.body}>
+                    <AreaSelection handleAreaPress={handleAreaPress} />
+                    <CuisineSelection handleCuisinePress={handleCuisinePress} />
+                    <PriceSelection handlePricePress={handlePricePress} />
+                </View>
 
-            <View style={styles.footer}>
-                <TouchableOpacity
-                    onPress={() => {
-                        handleConfirmPress();
-                    }}
-                >
-                    <Text>Confirm</Text>
-                </TouchableOpacity>
+                <View style={styles.footer}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            handleConfirmPress();
+                        }}
+                    >
+                        <Text
+                            style={{
+                                fontFamily: "serif",
+                                marginLeft: 280,
+                                fontSize: 18,
+                                fontWeight: "bold",
+                                color: "#F28333",
+                            }}
+                        >
+                            Done
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     );
@@ -67,17 +91,26 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: "#00000080",
+    },
+    modal: {
+        marginTop: 180,
+        height: Dimensions.get("window").height - 180,
+        backgroundColor: "#fff5e6",
+        padding: 20,
+        borderTopRightRadius: 25,
+        borderTopLeftRadius: 25,
     },
     header: {
-        flex: 1,
-        marginTop: 40,
-        marginRight: 270,
+        //flex: 1,
+        marginTop: 10,
+        //marginRight: 270,
     },
     body: {
-        flex: 5,
+        //  flex: 5,
     },
     footer: {
-        flex: 2,
+        //  flex: 2,
     },
     close: {
         position: "absolute",

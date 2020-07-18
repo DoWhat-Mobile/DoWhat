@@ -39,21 +39,22 @@ const CuisineSelection = ({ handleCuisinePress }) => {
 
 const styles = StyleSheet.create({
     button: {
-        borderRadius: 10,
-        padding: 5,
+        borderRadius: 20,
+        padding: 10,
         borderWidth: StyleSheet.hairlineWidth,
-        marginHorizontal: 5,
+        marginHorizontal: 10,
         marginVertical: 10,
+        borderColor: "white",
     },
     buttonContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
-        marginLeft: 20,
     },
     header: {
-        marginLeft: 25,
+        marginLeft: 5,
         fontSize: 20,
         fontWeight: "bold",
+        fontFamily: "serif",
     },
 });
 

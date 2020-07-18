@@ -26,7 +26,9 @@ const PriceSelection = ({ handlePricePress }) => {
                 <Text
                     style={{
                         fontSize: 25,
-                        color: !selected.includes(price) ? "gray" : "black",
+                        color: !selected.includes(price)
+                            ? "#ffcc80"
+                            : "#F28333",
                     }}
                 >
                     $
@@ -50,12 +52,12 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
-        marginLeft: 20,
     },
     header: {
-        marginLeft: 25,
         fontSize: 20,
         fontWeight: "bold",
+        marginLeft: 5,
+        fontFamily: "serif",
     },
 });
 

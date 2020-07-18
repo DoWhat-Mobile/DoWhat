@@ -12,48 +12,9 @@ const Genre = (props) => {
     const [visible, setVisible] = React.useState(false);
     const [selected, setSelected] = React.useState([]);
     const [preference, setPreference] = React.useState({});
-    // const [isLoading, setIsLoading] = React.useState(true);
+
     const genreType = ["ADVENTURE", "ARTS", "LEISURE", "NATURE", "NIGHTLIFE"];
     const finalized = [];
-
-    const [freeTime, setFreeTime] = React.useState([]);
-    // const route = props.route.params.route;
-
-    /**
-     * Get data from firebase and initiate algo to find overlapping time intervals.
-     */
-    // React.useEffect(() => {
-    //     const userId = firebase.auth().currentUser.uid; //Firebase UID of current user
-    //     firebase
-    //         .database()
-    //         .ref("users/" + userId)
-    //         .once("value")
-    //         .then((snapshot) => {
-    //             const userData = snapshot.val();
-    //             const allAttendees = userData.all_attendees; // Undefined if no friends synced their Gcal
-    //             const mainUserBusyPeriod = userData.busy_periods;
-    //             const finalizedTimeRange = findOverlappingIntervals(
-    //                 allAttendees,
-    //                 mainUserBusyPeriod
-    //             );
-    //             // Returns finalized available range [20,24]
-    //             return finalizedTimeRange;
-    //         })
-    //         .then((resultRange) => {
-    //             // resultRange is undefined if no friends synced their Gcal
-    //             setFreeTime(resultRange); // Set state
-    //             setIsLoading(false);
-    //         })
-    //         .catch((err) => {
-    //             // Error occurs when no friends synced their Gcal, then we will use the route input timings
-    //             setFreeTime(props.finalTiming);
-    //             setIsLoading(false);
-    //         });
-    // }, []);
-
-    // if (isLoading) {
-    //     return <Text>Wait for all friends to input their time</Text>;
-    // }
 
     const onClose = () => {
         setVisible(false);
@@ -129,7 +90,12 @@ const Genre = (props) => {
 
     return (
         <View style={{ backgroundColor: "#fff5e6" }}>
-            <Modal animated visible={visible} animationType="fade">
+            <Modal
+                transparent={true}
+                animated
+                visible={visible}
+                animationType="fade"
+            >
                 <FoodFilter
                     onClose={onClose}
                     handlePress={handlePress}
