@@ -78,7 +78,7 @@ export const eventsWithDirections = (timingsArray, events, directions) => {
             };
 
             obj.time = timingsArray[i].start;
-            obj.description = directions[j].steps;
+            obj.description = directions[j];
 
             result.push(obj);
         }

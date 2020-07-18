@@ -19,19 +19,30 @@ const Route = ({ item }) => {
             </Text>
         );
     };
-
+    let str =
+        "Total time taken: " +
+        item.duration +
+        "\n" +
+        "Total distance travelled: " +
+        item.distance +
+        "\n\n";
     const block = (item) => {
+        //console.log(item);
         let str = "";
-        for (let i = 0; i < item.length; i++) {
+        let directions = item.steps;
+        for (let i = 0; i < item.steps.length; i++) {
+            console.log("Is this printed", directions[i]);
             let block =
-                item[i].distance +
-                " " +
-                item[i].duration +
                 "\n" +
-                item[i].instructions +
-                "\n\n";
+                directions[i].distance +
+                " " +
+                directions[i].duration +
+                "\n" +
+                directions[i].instructions +
+                "\n";
             str += block;
         }
+        console.log(str);
         return str;
     };
 
@@ -41,6 +52,7 @@ const Route = ({ item }) => {
             renderTruncatedFooter={renderTruncatedFooter}
             renderRevealedFooter={renderRevealedFooter}
         >
+            <Text style={{ fontSize: 16 }}>{str}</Text>
             <Text style={{ marginLeft: 5 }}>{block(item)}</Text>
         </ReadMore>
     );

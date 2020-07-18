@@ -283,7 +283,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
     let title = (
         <Text
             style={{
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: "bold",
             }}
         >
@@ -297,12 +297,9 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                 <Image
                     source={{ uri: rowData.imageUrl }}
                     style={{
-                        //width: 230,
                         height: 120,
                         borderTopLeftRadius: 25,
                         borderTopRightRadius: 25,
-                        //marginTop: 10,
-                        //marginLeft: 5,
                     }}
                 />
                 <View style={{ marginHorizontal: 10, marginVertical: 5 }}>
@@ -314,6 +311,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                         <Text
                             style={{
                                 flex: 1,
+                                fontSize: 16,
                             }}
                         >
                             {title}
@@ -329,7 +327,8 @@ export const renderDetail = (rowData, sectionID, rowID) => {
             <View
                 style={{
                     flex: 1,
-                    padding: 5,
+                    paddingHorizontal: 15,
+                    paddingVertical: 10,
                 }}
             >
                 {title}
@@ -341,10 +340,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
         <View
             style={{
                 flex: 1,
-                //paddingTop: 10,
                 marginBottom: 10,
-                //paddingLeft: 15,
-                //paddingRight: 15,
                 backgroundColor: "white",
                 borderRadius: 20,
             }}
