@@ -8,6 +8,7 @@ import firebase from '../database/firebase';
 import { Avatar } from 'react-native-elements';
 import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyPeriods';
 import { selectDate } from "../actions/date_select_action";
+import { addFavouritesToPlan } from '../actions/favourite_event_actions';
 
 /**
  * Child component of FriendInput, displays the friends that can be invited, and holds
@@ -15,7 +16,7 @@ import { selectDate } from "../actions/date_select_action";
  */
 const FriendsDisplay = ({ userID, currUserName, selected_date, database,
     currUserPreferenceArr, currUserFoodFilterObj, currUserProfilePicture,
-    startTime, endTime }) => {
+    startTime, endTime, favouriteEventsToBeAdded, addFavouritesToPlan }) => {
     useEffect(() => {
         showAllMyFriends(); // All accepted friends
     }, []);
@@ -189,6 +190,14 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
         updates['finalized/' + currUserName] = userID; // Host finalized selection already
         updates['/isNewlyAddedBoard'] = true;
 
+        // Add favourites as suggested events
+        favouriteEventsToBeAdded.forEach(event => { // Add all selected favourites
+            var cleanedEvent = event[0];
+            delete cleanedEvent.favourited;
+            delete cleanedEvent.selected;
+            updates['/favourites/' + cleanedEvent.id] = cleanedEvent;
+        })
+
         updates['/preferences'] = {
             adventure: 0,
             arts: 0,
@@ -217,6 +226,8 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
         firebase.database()
             .ref()
             .update(pointerToBoard);
+
+        addFavouritesToPlan([]); // Reset Redux state.
     }
 
     /**
@@ -345,6 +356,10 @@ const FriendsDisplay = ({ userID, currUserName, selected_date, database,
     );
 };
 
+const mapDispatchToProps = {
+    addFavouritesToPlan
+}
+
 // Get previously inputted date from DateSelection for API call
 const mapStateToProps = (state) => {
     const startTime = state.timeline.availableTimings[0].startTime.get('hour') + ':' +
@@ -362,10 +377,11 @@ const mapStateToProps = (state) => {
         currUserProfilePicture: state.add_events.profilePicture,
         startTime: startTime,
         endTime: endTime,
+        favouriteEventsToBeAdded: state.favourite_events.favouriteEvents,
     };
 };
 
-export default connect(mapStateToProps, null)(FriendsDisplay);
+export default connect(mapStateToProps, mapDispatchToProps)(FriendsDisplay);
 
 const styles = StyleSheet.create({
     container: {
