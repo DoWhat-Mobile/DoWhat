@@ -165,20 +165,21 @@ const ListOfPlans = ({
         }
     };
 
-    const addFavouriteToCollab = (event, boardID) => {
+    const addFavouriteToCollab = (allEvents, boardID) => {
         var updates = {};
-        var cleanedEvent = event[0];
-        delete cleanedEvent.favourited;
-        delete cleanedEvent.selected;
-
-        updates['/favourites/' + cleanedEvent.id] = cleanedEvent;
+        allEvents.forEach(event => { // Add all selected favourites
+            var cleanedEvent = event[0];
+            delete cleanedEvent.favourited;
+            delete cleanedEvent.selected;
+            updates['/favourites/' + cleanedEvent.id] = cleanedEvent;
+        })
 
         firebase.database().ref("collab_boards").child(boardID).update(updates);
 
         navigation.navigate("Plan", { addingFavourite: false }); //Done adding
     };
 
-    const handleAddFavourite = (event, boardID) => {
+    const handleAddFavourite = (allEvents, boardID) => {
         Alert.alert(
             "Add to collaboration",
             "Would you like to add this favourite event as a suggestion in this collaboration?",
@@ -188,9 +189,10 @@ const ListOfPlans = ({
                     onPress: () => navigation.navigate("Plan", { addingFavourite: false }),
                     style: 'cancel'
                 },
+                { text: 'Yes', onPress: () => addFavouriteToCollab(allEvents, boardID) },
             ],
             { cancelable: true }
-        );
+        )
     };
 
     const renderCollaborationBoard = (board) => {

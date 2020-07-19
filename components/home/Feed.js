@@ -20,7 +20,7 @@ import ReadMore from 'react-native-read-more-text';
 const Feed = (props) => {
     useFocusEffect(
         useCallback(() => {
-            let isMounted = true;
+            var isMounted = true;
             getDataFromFirebase(); // Subscribe to changes
             return () => { isMounted = false };
         }, [props.allEvents])
@@ -31,7 +31,7 @@ const Feed = (props) => {
     const [hungryData, setHungryData] = useState([]);
     const [somethingNewData, setSomethingNewData] = useState([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [favourites, setFavourites] = useState({});
+    const [favourites, setFavourites] = useState([]);
     const [viewFavourites, setViewFavourites] = useState(false);
     const [addingFavouritesToPlan, setAddingFavouritesToPlan] = useState(false);
 
@@ -47,7 +47,13 @@ const Feed = (props) => {
 
                     if (userData.hasOwnProperty("favourites")) {
                         const userFavourites = userData.favourites;
-                        setFavourites(userFavourites)
+                        var favouritesArr = [];
+                        for (var event in userFavourites) {
+                            const formattedData = [userFavourites[event],
+                            userFavourites[event].rating, false] // Last boolean if is adding
+                            favouritesArr.push(formattedData)
+                        }
+                        setFavourites(favouritesArr)
                     }
 
                     if (Object.keys(allCategories).length !== 0) { // Check that event has already been loaded from redux state
@@ -73,6 +79,7 @@ const Feed = (props) => {
     const handleAddToFavourites = (event, sectionTitle, index, foodIndex) => {
         var updates = {}
         var eventWithRating = event[0];
+        eventWithRating.favourited = true; // Mark as favourited
         eventWithRating.rating = event[1]
         eventWithRating.votes = 0; // For use in collaboration board
         updates['/favourites/' + event[0].id] = eventWithRating;
@@ -81,9 +88,11 @@ const Feed = (props) => {
             .update(updates);
 
         // Add to component state, so no need to pull data from Firebase
-        var additionalEvent = {};
-        additionalEvent[event[0].id] = eventWithRating;
-        setFavourites(Object.assign({}, favourites, additionalEvent))
+        var additionalEvent = [];
+        additionalEvent[0] = eventWithRating; // Entire event object
+        additionalEvent[1] = event[1]; // Rating of event
+        additionalEvent[2] = false; // Selected or not
+        setFavourites([...favourites, additionalEvent])
 
         // Visual cue to users, add heart to card
         if (sectionTitle == 'Hungry?') {
@@ -114,6 +123,7 @@ const Feed = (props) => {
         if (addingFavouritesToPlan) {
             alert("Hello")
         }
+
         handleAddToFavourites(event, sectionTitle, index, foodIndex);
         //  Alert.alert(
         //      'Add to favourites',
@@ -130,47 +140,65 @@ const Feed = (props) => {
         //  )
     }
 
-    const handleFavouriteEventPress = (event) => {
+    const handleDoneSelectingFavourites = () => {
+        var allEvents = []
+        favourites.forEach(event => { // Include all events selected
+            const shouldEventBeAdded = event[2]
+            if (shouldEventBeAdded) {
+                allEvents.push(event)
+            }
+        })
+
         Alert.alert(
             'Add to plan',
-            'Where would you like to include this favourite event?',
+            'Where would you like to include all the selected favourite event?',
             [
                 {
                     text: 'Cancel',
                     onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel'
                 },
-                { text: 'Collaboration', onPress: () => handleAddFavouriteToCollab(event) },
-                { text: 'Personal', onPress: () => handleAddFavouriteToPersonal(event) }
+                { text: 'Collaboration', onPress: () => handleAddFavouriteToCollab(allEvents) },
+                { text: 'Personal', onPress: () => handleAddFavouriteToPersonal(allEvents) }
             ],
             { cancelable: true }
         )
     }
 
-    const handleAddFavouriteToCollab = (event) => {
-        props.navigation.navigate("Plan", { event: event, addingFavourite: true })
+    // Toggle for whether or not event will be included in planning when adding to plan
+    const handleFavouriteEventPress = (event, index) => {
+        var newState = [...favourites]
+        newState[index][2] = !newState[index][2];
+        setFavourites(newState);
     }
 
-    const handleAddFavouriteToPersonal = (event) => {
+
+    const handleAddFavouriteToCollab = (allEvents) => {
+        props.navigation.navigate("Plan", { event: allEvents, addingFavourite: true })
+    }
+
+    const handleAddFavouriteToPersonal = (allEvents) => {
         Alert.alert(
             'Successfully added',
             'Go to your plan and confirm it to your finalized timeline!',
             [
-                { text: 'DONE' },
+                { text: 'DONE', onPress: () => setAddingFavouritesToPlan(false) },
             ],
             { cancelable: true }
         )
     }
 
-    const handleRemoveFavourites = (event) => {
+    const handleRemoveFavourites = (event, index) => {
         // Remove from Firebase
         firebase.database()
             .ref('/users/' + props.userID + '/favourites/' + event[0].id)
             .remove();
 
         // Remove from component state
-        var newFavourites = Object.assign({}, favourites);
-        delete newFavourites[event[0].id];
+        var newFavourites = [...favourites]
+        console.log("initial length: ", newFavourites.length)
+        newFavourites = newFavourites.filter(selectedEvent =>
+            selectedEvent[0].id != event[0].id)
         setFavourites(newFavourites);
     }
 
@@ -184,12 +212,25 @@ const Feed = (props) => {
         }
     }
 
+    const checkIfEventIsFavourited = (event) => {
+        var isEventFavourited = false;
+        favourites.forEach(selectedEvent => {
+            const favouritedEventID = selectedEvent[0].id
+            if (favouritedEventID == event[0].id) {
+                isEventFavourited = true;
+            }
+        })
+
+        return event[0].favourited
+            || isEventFavourited;
+    }
+
     // Takes in indivdual event array and inject it to <Card>, for vertical views 
     const renderEventCard = (event, isEventFood, sectionTitle, index, foodIndex) => {
-        var isEventFavourited = false;
-        // Two checks for event favourited, so we don't have to subscribe to Firebase changes.
-        // (Firebase changes causes frequent and unecessary re-render of home feed events)
-        if (favourites.hasOwnProperty(event[0].id) || event[0].favourited) {
+        const isEventBeingAddedToPlan = event[2];
+
+        var isEventFavourited = false; // Separate variable as .favourited property dont exist
+        if (checkIfEventIsFavourited(event)) {
             isEventFavourited = true;
         }
 
@@ -265,22 +306,40 @@ const Feed = (props) => {
                         </ReadMore>
 
                         {sectionTitle == 'favourites'
-                            ? <View style={{
-                                flexDirection: 'row', justifyContent: 'space-between',
-                                marginTop: 5,
-                            }}>
-                                <TouchableOpacity style={styles.favouritesButton}
-                                    onPress={() => handleRemoveFavourites(event)}>
-                                    <Text style={styles.favouritesButtonText}>
-                                        REMOVE FROM FAVOURITES
+                            ? addingFavouritesToPlan
+                                ? <View style={{
+                                    flexDirection: 'row', justifyContent: 'space-between',
+                                    marginTop: 5,
+                                }}>
+                                    <TouchableOpacity style={styles.favouritesButton}
+                                        onPress={() => handleRemoveFavourites(event, index)}>
+                                        <Text style={styles.favouritesButtonText}>
+                                            REMOVE FROM FAVOURITES
                                         </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.favouritesButton}
-                                    onPress={() => handleFavouriteEventPress(event)}>
-                                    <Text style={styles.favouritesButtonText}>ADD TO PLAN</Text>
-                                </TouchableOpacity>
-                            </View>
-                            : null}
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.favouritesButton}
+                                        onPress={() => handleFavouriteEventPress(event, index)}>
+                                        <Text style={styles.favouritesButtonText}>
+                                            {isEventBeingAddedToPlan
+                                                ? 'ADDED'
+                                                : 'ADD TO PLAN'
+                                            }
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                                : < View style={{
+                                    flexDirection: 'row', justifyContent: 'space-between',
+                                    marginTop: 5,
+                                }}>
+                                    <TouchableOpacity style={styles.favouritesButton}
+                                        onPress={() => handleRemoveFavourites(event)}>
+                                        <Text style={styles.favouritesButtonText}>
+                                            REMOVE FROM FAVOURITES
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            : null
+                        }
 
                     </Card>
                 </View>
@@ -321,14 +380,17 @@ const Feed = (props) => {
         return (<Text style={styles.CategoryTitleText}>{text}</Text>)
     }
 
-    // const toggle
-
     const renderListHeaderComponent = (isFavouritesHeader) => {
         return (
             <View style={[styles.header, addingFavouritesToPlan
                 ? { backgroundColor: '#BEBEBE' } : {}]}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={styles.headerText}>Check these categories out!</Text>
+                    <Text style={styles.headerText}>
+                        {isFavouritesHeader
+                            ? 'Plan something!'
+                            : 'Check these categories out!'
+                        }
+                    </Text>
                     <TouchableOpacity onPress={signOut}>
                         <Text style={{
                             color: "grey", textDecorationLine: 'underline',
@@ -360,7 +422,7 @@ const Feed = (props) => {
                                 : null}
                             {addingFavouritesToPlan
                                 ? <View>
-                                    <TouchableOpacity onPress={() => setAddingFavouritesToPlan(false)}
+                                    <TouchableOpacity onPress={() => handleDoneSelectingFavourites()}
                                         style={[styles.headerCategory, { backgroundColor: 'green' }]}>
                                         <MaterialCommunityIcons name="check-bold" color={'white'} size={30} />
                                     </TouchableOpacity>
@@ -368,7 +430,7 @@ const Feed = (props) => {
                                 </View>
                                 : <View>
                                     <TouchableOpacity onPress={() => setAddingFavouritesToPlan(true)}
-                                        style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
+                                        style={[styles.headerCategory, { backgroundColor: '#ff664a' }]}>
                                         <MaterialCommunityIcons name="animation" color={'white'} size={30} />
                                     </TouchableOpacity>
                                     <CategoryTitleText text='Plan Outing with Favourites' />
@@ -446,11 +508,6 @@ const Feed = (props) => {
     }
 
     if (viewFavourites) {
-        var favouritesArr = [];
-        for (var event in favourites) {
-            const formattedData = [favourites[event], favourites[event].rating, false] // Last boolean if is adding
-            favouritesArr.push(formattedData)
-        }
         // Favourites view
         return (
             < View style={[styles.container, addingFavouritesToPlan
@@ -462,10 +519,10 @@ const Feed = (props) => {
                     progressViewOffset={100}
                     refreshing={isRefreshing}
                     sections={[
-                        { title: "My favourites", data: favouritesArr }
+                        { title: "My favourites", data: favourites }
                     ]}
                     renderItem={({ item, section, index }) =>
-                        renderEventCard(item, false, 'favourites', 0, 0)
+                        renderEventCard(item, false, 'favourites', index, 0)
                     }
                     renderSectionHeader={({ section }) =>
                         <View style={styles.sectionHeader}>
@@ -478,7 +535,7 @@ const Feed = (props) => {
                     keyExtractor={(item, index) => index}
                 />
                 { // Render empty state favourites screen
-                    favouritesArr.length == 0
+                    favourites.length == 0
                         ? <View style={{ flex: 20, justifyContent: 'center' }}>
                             <Text style={{
                                 fontSize: 20, fontWeight: 'bold', textAlign: "center",
@@ -487,7 +544,8 @@ const Feed = (props) => {
                             <Text style={{
                                 margin: 5, fontSize: 14, color: 'grey', textAlign: "center",
                                 fontFamily: 'serif'
-                            }}>Add an event to favourites by clicking on the event in the home feed.</Text>
+                            }}>Add an event to favourites by clicking on the heart
+                             in the event in the home feed.</Text>
                         </View>
                         : null
                 }
