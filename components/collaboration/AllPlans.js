@@ -6,18 +6,20 @@ import {
 import { useFocusEffect } from '@react-navigation/native'
 import firebase from '../../database/firebase';
 import ListOfPlans from './ListOfPlans';
+import { setAddingFavourites } from '../../actions/favourite_event_actions';
 import { connect } from 'react-redux';
 import RouteFilterModal from './RouteFilterModal';
 
 /**
  * Parent component holding all the plans, and modal to start planning a new timeline 
  */
-const AllPlans = ({ navigation, userID, route }) => {
+const AllPlans = ({ navigation, userID, route, isAddingFavouriteToNewPlan }) => {
     useFocusEffect(
         useCallback(() => {
-            var isAddingFavouriteToNewPlan = route.params == undefined
-                ? false : route.params.addingFavouriteToNewPlan;
-            if (isAddingFavouriteToNewPlan) setModalVisibility(true)
+            if (isAddingFavouriteToNewPlan) {
+                console.log("Entered")
+                setModalVisibility(true)
+            }
             getUpcomingCollaborationsFromFirebase();
             return () => firebase.database().ref().off();
         }, [])
@@ -184,13 +186,19 @@ const AllPlans = ({ navigation, userID, route }) => {
     );
 }
 
+const mapDispatchToProps = {
+    setAddingFavourites
+}
+
 const mapStateToProps = (state) => {
+    console.log(state.favourite_events.isAddingFavourites);
     return {
-        userID: state.add_events.userID
+        userID: state.add_events.userID,
+        isAddingFavouriteToNewPlan: state.favourite_events.isAddingFavourites
     };
 };
 
-export default connect(mapStateToProps, null)(AllPlans);
+export default connect(mapStateToProps, mapDispatchToProps)(AllPlans);
 
 const styles = StyleSheet.create({
     container: {

@@ -10,7 +10,6 @@ import { getBusyPeriodFromGoogleCal } from "../reusable-functions/GoogleCalendar
 import Calendar from "./Calendar";
 import { Divider, Overlay, Badge } from "react-native-elements";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import ManualFavouritesModal from './ManualFavouritesModal'
 
 export const formatDate = (day, month, date) => {
     const possibleDays = [
@@ -55,7 +54,6 @@ const DateSelection = (props) => {
 
     const [isLoading, setIsLoading] = useState(true);
     const [usersFavourites, setUsersFavourites] = useState([])
-    const [isUserFavouritesModalVisible, setIsUserFavouritesModalVisible] = useState(false);
     const [date, setDate] = useState(new Date()); // new Date() gives today's date
     const [modalVisible, setModalVisible] = useState(false);
     const [isFinalized, setIsFinalized] = useState(false);
@@ -111,7 +109,7 @@ const DateSelection = (props) => {
                                 fontFamily: "serif",
                             }}
                         >
-                            Sync Calendar
+                            SYNC CALENDAR
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -130,7 +128,7 @@ const DateSelection = (props) => {
                             fontFamily: "serif",
                         }}
                     >
-                        Sync Calendar
+                        SYNC CALENDAR
                     </Text>
                 </TouchableOpacity>
             );
@@ -172,10 +170,6 @@ const DateSelection = (props) => {
         setModalVisible(false);
     };
 
-    const closeUserFavouritesModal = () => {
-        setIsUserFavouritesModalVisible(false)
-    }
-
     const onFinalize = () => {
         setIsFinalized(true);
     };
@@ -209,16 +203,6 @@ const DateSelection = (props) => {
                 />
             </Overlay>
 
-            <Overlay
-                isVisible={isUserFavouritesModalVisible}
-                windowBackgroundColor="rgba(255, 255, 255, .5)"
-                width="auto"
-                height="auto"
-                overlayStyle={{ width: '95%', height: '95%', borderRadius: 20, }}
-            >
-                <ManualFavouritesModal onClose={closeUserFavouritesModal} usersFavourites={usersFavourites} />
-            </Overlay>
-
             <View style={styles.dateInput}>
                 <View style={{ flexDirection: "row", marginTop: 10 }}>
                     <Text style={[styles.header, { fontSize: 20 }]}>
@@ -231,11 +215,6 @@ const DateSelection = (props) => {
                             date.getDate()
                         )}
                     </Text>
-                    <TouchableOpacity onPress={() => setIsUserFavouritesModalVisible(true)}
-                        style={{ marginTop: 1, marginLeft: 10 }}>
-                        <Badge status="primary" containerStyle={{ position: "absolute", top: 0, right: -4 }} />
-                        <MaterialCommunityIcons name="dots-horizontal" color={'black'} size={25} />
-                    </TouchableOpacity>
                 </View>
             </View>
             <View style={styles.calendar}>
@@ -287,7 +266,7 @@ const DateSelection = (props) => {
                                         : { color: "#F28333" },
                                 ]}
                             >
-                                Manual Input
+                                MANUAL INPUT
                             </Text>
                         </TouchableOpacity>
                         <Divider

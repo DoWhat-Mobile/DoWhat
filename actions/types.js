@@ -33,3 +33,9 @@ export const EXTRACT_CALENDAR_EVENTS = "EXTRACT_CALENDAR_EVENTS"
  */
 export const FIND_FRIENDS = "FIND_FRIENDS";
 export const REMOVE_FRIEND = "REMOVE_FRIEND";
+
+/**
+ * Actions for favourite event linking to timeline generation
+ */
+
+export const ADDING_FAVOURITES = 'ADDING_FAVOURITES'; // State determining how "Plan" component looks 

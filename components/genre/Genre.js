@@ -70,8 +70,8 @@ const Genre = (props) => {
                     styles.button,
                     selected.includes(items)
                         ? {
-                              backgroundColor: "#F28333",
-                          }
+                            backgroundColor: "#F28333",
+                        }
                         : { backgroundColor: "#ffe0b3" },
                 ]}
             >
@@ -125,8 +125,8 @@ const Genre = (props) => {
                         styles.button,
                         selected.includes("food")
                             ? {
-                                  backgroundColor: "#F28333",
-                              }
+                                backgroundColor: "#F28333",
+                            }
                             : { backgroundColor: "#ffe0b3" },
                     ]}
                     onPress={() => handleFoodPress()}
@@ -156,7 +156,7 @@ const Genre = (props) => {
                     style={styles.continue}
                     onPress={() => onComplete()}
                 >
-                    <Text style={styles.continueButton}>Continue</Text>
+                    <Text style={styles.continueButton}>CONTINUE</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     continueButton: {
-        fontSize: 20,
+        fontSize: 18,
         fontFamily: "serif",
         textAlign: "center",
         borderRadius: 5,
