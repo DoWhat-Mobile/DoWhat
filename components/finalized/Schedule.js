@@ -3,6 +3,8 @@ import ActionOptions from "./ActionOptions";
 import Timeline from "react-native-timeline-flatlist";
 import moment from "moment-timezone";
 import firebase from "../../database/firebase";
+import { connect } from "react-redux";
+import { addFavouritesToPlan } from "../../actions/favourite_event_actions";
 import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 import {
     Text,
@@ -196,7 +198,7 @@ const Schedule = (props) => {
         }
         let updates = {};
         updates["/users/" + props.userID + "/busy_periods"] = null;
-
+        props.addFavouritesToPlan([]);
         firebase.database().ref().update(updates);
         props.navigation.navigate("Home"); // navigate back once done
         alert(
@@ -282,5 +284,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#cc5327",
     },
 });
+const mapDispatchToProps = {
+    addFavouritesToPlan,
+};
 
-export default Schedule;
+export default connect(null, mapDispatchToProps)(Schedule);
