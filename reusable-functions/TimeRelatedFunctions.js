@@ -145,6 +145,7 @@ const timeConvert = (n) => {
  */
 const parseTime = (colon, hr, minus) => {
     let hour = parseInt(hr.substring(0, 1));
+    if (isNaN(hour)) return "-";
     let minute = parseInt(hr.substring(6, 9));
     let minuteDifference =
         hr.length > 8 ? hour * 60 + minute : parseInt(hr.substring(0, 2));
@@ -183,17 +184,12 @@ export const mergeTimings = (timings, direction) => {
                 direction[i + 1].duration,
                 "minus"
             );
-            if (isNaN(mid) && typeof mid !== "string") {
-                console.log(mid);
-                temp.push(timings[i]);
-            } else {
-                first.start = timings[i].start;
-                first.end = mid;
-                second.start = mid;
-                second.end = timings[i].end;
-                temp.push(first);
-                temp.push(second);
-            }
+            first.start = timings[i].start;
+            first.end = mid;
+            second.start = mid;
+            second.end = timings[i].end;
+            temp.push(first);
+            temp.push(second);
         }
     }
     return temp;

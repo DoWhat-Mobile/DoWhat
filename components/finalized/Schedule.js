@@ -156,7 +156,6 @@ const Schedule = (props) => {
         let updatedData = indexFinder.map((item, index) => {
             return { ...item, time: newTimingsArray[index].start };
         });
-        console.log(newTimingsArray);
 
         setUnsatisfied({ ...unsatisfied, time: newStartTime });
         props.eventsUpdate(updatedData);

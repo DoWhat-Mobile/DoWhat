@@ -1,53 +1,69 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState } from "react";
 import {
-    View, Text, StyleSheet, Image,
-    TouchableOpacity, ActivityIndicator, Modal
+    View,
+    Text,
+    StyleSheet,
+    Image,
+    TouchableOpacity,
+    ActivityIndicator,
+    Modal,
 } from "react-native";
-import { useFocusEffect } from '@react-navigation/native'
-import firebase from '../../database/firebase';
-import ListOfPlans from './ListOfPlans';
-import { setAddingFavourites } from '../../actions/favourite_event_actions';
-import { connect } from 'react-redux';
-import RouteFilterModal from './RouteFilterModal';
+import { useFocusEffect } from "@react-navigation/native";
+import firebase from "../../database/firebase";
+import ListOfPlans from "./ListOfPlans";
+import { setAddingFavourites } from "../../actions/favourite_event_actions";
+import { connect } from "react-redux";
+import RouteFilterModal from "./RouteFilterModal";
 
 /**
- * Parent component holding all the plans, and modal to start planning a new timeline 
+ * Parent component holding all the plans, and modal to start planning a new timeline
  */
-const AllPlans = ({ navigation, userID, route, isAddingFavouriteToNewPlan, setAddingFavourites,
-    favouriteEvents, isAddingFavouritesToExistingBoard }) => {
+const AllPlans = ({
+    navigation,
+    userID,
+    route,
+    isAddingFavouriteToNewPlan,
+    setAddingFavourites,
+    favouriteEvents,
+    isAddingFavouritesToExistingBoard,
+}) => {
     useFocusEffect(
         useCallback(() => {
             if (isAddingFavouriteToNewPlan) {
-                setModalVisibility(true)
+                setModalVisibility(true);
                 setAddingFavourites(false);
             }
             getUpcomingCollaborationsFromFirebase();
             return () => firebase.database().ref().off();
         }, [isAddingFavouriteToNewPlan])
-    )
+    );
 
     const [allBoards, setAllBoards] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [modalVisibility, setModalVisibility] = useState(false);
 
     const getUpcomingCollaborationsFromFirebase = async () => {
-        firebase.database().ref()
-            .on('value', snapshot => {
+        firebase
+            .database()
+            .ref()
+            .on("value", (snapshot) => {
                 const database = snapshot.val();
                 const allUsers = database.users;
-                if (allUsers[userID].hasOwnProperty('collab_boards')) {
+                if (allUsers[userID].hasOwnProperty("collab_boards")) {
                     const allCollaborations = allUsers[userID].collab_boards;
                     var newBoardState = [];
                     for (var board in allCollaborations) {
                         const boardID = board;
                         var collabBoard = database.collab_boards[boardID];
                         if (isBoardOutdated(boardID)) {
-                            removeFromFirebase(collabBoard, boardID)
+                            removeFromFirebase(collabBoard, boardID);
                             continue;
                         }
 
-                        collabBoard.boardID = boardID; // Attach board ID to props of board 
-                        collabBoard.isUserHost = boardID.substring(0, boardID.indexOf("_")) == userID;
+                        collabBoard.boardID = boardID; // Attach board ID to props of board
+                        collabBoard.isUserHost =
+                            boardID.substring(0, boardID.indexOf("_")) ==
+                            userID;
                         newBoardState.push(collabBoard);
                         setAllBoards([...allBoards, collabBoard]);
                     }
@@ -55,41 +71,40 @@ const AllPlans = ({ navigation, userID, route, isAddingFavouriteToNewPlan, setAd
                 } else {
                     setAllBoards([]); // If no collab boards node under user
                 }
-                setIsLoading(false)
-            })
-    }
+                setIsLoading(false);
+            });
+    };
 
     // Clean data from Firebase if the board is outdated
     const removeFromFirebase = async (board, boardID) => {
-        var updates = {}
-        updates['/collab_boards/' + boardID] = null;
+        var updates = {};
+        updates["/collab_boards/" + boardID] = null;
 
         // Add all the invitees to the updates(deletes) to be made
         for (var firebaseID in board.invitees) {
             const inviteeID = firebaseID;
-            updates['/users/' + inviteeID + '/collab_boards/' + boardID] = null;
+            updates["/users/" + inviteeID + "/collab_boards/" + boardID] = null;
         }
 
         // Delete collab board, as well as the invitations on each user's Firebase node
-        firebase.database().ref()
-            .update(updates);
-    }
+        firebase.database().ref().update(updates);
+    };
 
     const isBoardOutdated = (boardID) => {
         var currDate = new Date();
-        const yesterday = currDate.setDate(currDate.getDate() - 1)
-        const boardDate = new Date(boardID.substring(boardID.indexOf('_') + 1));
+        const yesterday = currDate.setDate(currDate.getDate() - 1);
+        const boardDate = new Date(boardID.substring(boardID.indexOf("_") + 1));
         return boardDate.getTime() <= yesterday;
-    }
+    };
 
     const renderAppropriateScreen = () => {
-        var isAddingFavourite = route.params == undefined
-            ? false : route.params.addingFavourite; // Undefined if come from Feed using bottom tab nav
-
+        var isAddingFavourite =
+            route.params == undefined ? false : route.params.addingFavourite; // Undefined if come from Feed using bottom tab nav
 
         // console.log("Route parameters: ", route.params)
 
-        if (allBoards.length == 0) { // Empty state
+        if (allBoards.length == 0) {
+            // Empty state
             return (
                 <View style={styles.container}>
                     <Modal
@@ -97,108 +112,154 @@ const AllPlans = ({ navigation, userID, route, isAddingFavouriteToNewPlan, setAd
                         transparent={true}
                         visible={modalVisibility}
                         onRequestClose={() => {
-                            closeModal()
-                        }}>
+                            closeModal();
+                        }}
+                    >
                         <View style={styles.modalContainer}>
-                            <RouteFilterModal onClose={closeModal} navigation={navigation} />
+                            <RouteFilterModal
+                                onClose={closeModal}
+                                navigation={navigation}
+                            />
                         </View>
                     </Modal>
-                    <View style={{ flex: 5, justifyContent: 'center', }}>
+                    <View style={{ flex: 5, justifyContent: "center" }}>
                         <Image
                             style={styles.image}
                             source={require("../../assets/clueless.png")}
                         />
                     </View>
-                    <View style={{ flex: 1, }}>
-                        <Text style={{
-                            fontSize: 20, fontWeight: 'bold', textAlign: "center",
-                            fontFamily: 'serif'
-                        }}>
+                    <View style={{ flex: 1 }}>
+                        <Text
+                            style={{
+                                fontSize: 20,
+                                fontWeight: "bold",
+                                textAlign: "center",
+                                fontFamily: "serif",
+                            }}
+                        >
                             No plans yet
                         </Text>
-                        <Text style={{
-                            margin: 5, fontSize: 14, color: 'grey', textAlign: "center",
-                            fontFamily: 'serif'
-                        }}>
-                            Add some friends in DoWhat and plan with them! Your plans with your DoWhat friends will appear here.
+                        <Text
+                            style={{
+                                margin: 5,
+                                fontSize: 14,
+                                color: "grey",
+                                textAlign: "center",
+                                fontFamily: "serif",
+                            }}
+                        >
+                            Add some friends in DoWhat and plan with them! Your
+                            plans with your DoWhat friends will appear here.
                         </Text>
                     </View>
                     <View style={styles.footer}>
-                        <TouchableOpacity style={styles.planForMe} onPress={() => setModalVisibility(true)}>
-                            <Text style={styles.buttonText}>Plan my first activity</Text>
+                        <TouchableOpacity
+                            style={styles.planForMe}
+                            onPress={() => setModalVisibility(true)}
+                        >
+                            <Text style={styles.buttonText}>
+                                Plan my first activity
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-            )
+            );
         }
 
         return (
-            <View style={[styles.container,
-            isAddingFavouritesToExistingBoard ? { backgroundColor: 'grey' } : {}]}>
+            <View
+                style={[
+                    styles.container,
+                    isAddingFavouritesToExistingBoard
+                        ? { backgroundColor: "grey" }
+                        : {},
+                ]}
+            >
                 <Modal
                     animationType="fade"
                     transparent={true}
                     visible={modalVisibility}
                     onRequestClose={() => {
-                        closeModal()
-                    }}>
+                        closeModal();
+                    }}
+                >
                     <View style={styles.modalContainer}>
-                        <RouteFilterModal onClose={closeModal} navigation={navigation} />
+                        <RouteFilterModal
+                            onClose={closeModal}
+                            navigation={navigation}
+                        />
                     </View>
                 </Modal>
                 <View style={styles.header}>
                     <Text style={styles.headerText}> Upcoming Plans</Text>
                 </View>
                 <View style={styles.body}>
-                    <ListOfPlans plans={allBoards} refreshList={getUpcomingCollaborationsFromFirebase}
-                        navigation={navigation} userID={userID} addingFavourite={isAddingFavouritesToExistingBoard}
-                        event={isAddingFavouritesToExistingBoard ? favouriteEvents : null} />
+                    <ListOfPlans
+                        plans={allBoards}
+                        refreshList={getUpcomingCollaborationsFromFirebase}
+                        navigation={navigation}
+                        userID={userID}
+                        addingFavourite={isAddingFavouritesToExistingBoard}
+                        event={
+                            isAddingFavouritesToExistingBoard
+                                ? favouriteEvents
+                                : null
+                        }
+                    />
                 </View>
                 <View style={styles.footer}>
-                    <TouchableOpacity style={styles.planForMe}
+                    <TouchableOpacity
+                        style={styles.planForMe}
                         disabled={isAddingFavourite}
-                        onPress={() => setModalVisibility(true)}>
-                        <Text style={[styles.buttonText,
-                        isAddingFavourite
-                            ? { backgroundColor: '#72706E', color: '#ABAAAA' } // Disabled button visual
-                            : {}]}>
+                        onPress={() => setModalVisibility(true)}
+                    >
+                        <Text
+                            style={[
+                                styles.buttonText,
+                                isAddingFavourite
+                                    ? {
+                                          backgroundColor: "#72706E",
+                                          color: "#ABAAAA",
+                                      } // Disabled button visual
+                                    : {},
+                            ]}
+                        >
                             Plan activities for me
                         </Text>
                     </TouchableOpacity>
                 </View>
             </View>
-        )
-    }
+        );
+    };
 
     const closeModal = () => {
         setModalVisibility(false);
-    }
+    };
 
     if (isLoading) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center' }}>
-                <ActivityIndicator size='large' />
+            <View style={{ flex: 1, justifyContent: "center" }}>
+                <ActivityIndicator size="large" />
             </View>
-        )
+        );
     }
 
-    return (
-        renderAppropriateScreen()
-    );
-}
+    return renderAppropriateScreen();
+};
 
 const mapDispatchToProps = {
-    setAddingFavourites
-}
+    setAddingFavourites,
+};
 
 const mapStateToProps = (state) => {
-    console.log("All added events: ",
-        state.favourite_events)
+    // console.log("All added events: ",
+    //     state.favourite_events)
     return {
         userID: state.add_events.userID,
         isAddingFavouriteToNewPlan: state.favourite_events.isAddingFavourites,
-        isAddingFavouritesToExistingBoard: state.favourite_events.isAddingFavouritesToExistingBoard,
-        favouriteEvents: state.favourite_events.favouriteEvents, // 2D array 
+        isAddingFavouritesToExistingBoard:
+            state.favourite_events.isAddingFavouritesToExistingBoard,
+        favouriteEvents: state.favourite_events.favouriteEvents, // 2D array
     };
 };
 
@@ -210,28 +271,26 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        alignItems: "center",
     },
     header: {
         flex: 1,
-        justifyContent: 'center',
-
+        justifyContent: "center",
     },
     headerText: {
-        textAlign: 'center',
-        fontWeight: 'bold',
+        textAlign: "center",
+        fontWeight: "bold",
         fontSize: 18,
-        fontFamily: 'serif'
-
+        fontFamily: "serif",
     },
     body: {
         flex: 7,
-        justifyContent: 'center',
+        justifyContent: "center",
     },
     image: {
-        width: '100%',
+        width: "100%",
         borderTopWidth: 30,
         borderRadius: 15,
         borderWidth: 0.2,
@@ -245,16 +304,16 @@ const styles = StyleSheet.create({
         alignContent: "stretch",
         marginLeft: "5%",
         marginRight: "5%",
-        marginTop: "8%"
+        marginTop: "8%",
     },
     buttonText: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontWeight: "bold",
         textAlign: "center",
         borderRadius: 5,
         backgroundColor: "#cc5327",
         color: "#fcf5f2",
-        fontFamily: 'serif'
+        fontFamily: "serif",
     },
     footer: {
         flex: 1,
