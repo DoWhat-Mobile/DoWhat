@@ -11,6 +11,10 @@ import { TIH_API_KEY } from 'react-native-dotenv';
 import { connect } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ReadMore from 'react-native-read-more-text';
+import {
+    setAddingFavourites, addFavouritesToPlan,
+    setAddingFavouritesToExistsingBoard
+} from '../../actions/favourite_event_actions';
 
 /**
  * User feed in home page. Has 3 divisions: Show whats popular, eateries, and activities
@@ -161,16 +165,17 @@ const Feed = (props) => {
 
 
     const handleAddFavouriteToCollab = (allEvents) => {
-        props.navigation.navigate("Plan", { event: allEvents, addingFavourite: true })
+        props.setAddingFavouritesToExistsingBoard(true) // Mark redux state before navigating
+        props.addFavouritesToPlan(allEvents)
+        props.navigation.navigate("Plan")
         setViewFavourites(false);
         setAddingFavouritesToPlan(false);
     }
 
     const handleAddFavouriteToPersonal = (allEvents) => {
-        props.navigation.navigate("Plan", {
-            event: allEvents,
-            addingFavouriteToNewPlan: true, addingFavourite: false
-        })
+        props.setAddingFavourites(true); // Update redux state before navigating
+        props.addFavouritesToPlan(allEvents)
+        props.navigation.navigate("Plan")
         setViewFavourites(false);
         setAddingFavouritesToPlan(false);
     }
@@ -569,6 +574,10 @@ const Feed = (props) => {
     );
 }
 
+const mapDispatchToProps = {
+    setAddingFavourites, addFavouritesToPlan, setAddingFavouritesToExistsingBoard
+}
+
 const mapStateToProps = (state) => {
     return {
         allEvents: state.add_events.events,
@@ -576,7 +585,7 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, null)(Feed);
+export default connect(mapStateToProps, mapDispatchToProps)(Feed);
 
 const styles = StyleSheet.create({
     container: {

@@ -39,3 +39,5 @@ export const REMOVE_FRIEND = "REMOVE_FRIEND";
  */
 
 export const ADDING_FAVOURITES = 'ADDING_FAVOURITES'; // State determining how "Plan" component looks 
+export const ADDING_FAVOURITES_TO_EXISTING_BOARD = 'ADDING_FAVOURITES_TO_EXISTING_BOARD'
+export const ADD_FAVOURITES_TO_PLAN = 'ADD_FAVOURITES_TO_PLAN' 

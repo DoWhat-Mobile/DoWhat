@@ -14,9 +14,9 @@ import ChatRoomModal from "./ChatRoomModal";
 import firebase from "../../database/firebase";
 import { findOverlappingIntervals } from "../../reusable-functions/OverlappingIntervals";
 import { Overlay } from "react-native-elements";
-import { genreEventObjectArray } from "../../reusable-functions/DataTimeline";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { formatDate } from "../DateSelection";
+import { setAddingFavouritesToExistsingBoard } from '../../actions/favourite_event_actions';
 
 /**
  * The <SectionList> Component within the AllPlans component. This is the component
@@ -29,6 +29,7 @@ const ListOfPlans = ({
     allEvents,
     addingFavourite,
     event,
+    setAddingFavouritesToExistsingBoard
 }) => {
     const [boardModalVisibility, setBoardModalVisibility] = useState(false);
     const [boardDetails, setBoardDetails] = useState({});
@@ -174,9 +175,11 @@ const ListOfPlans = ({
             updates['/favourites/' + cleanedEvent.id] = cleanedEvent;
         })
 
+        setAddingFavouritesToExistsingBoard(false); // Reset redux state after adding to collab
+
         firebase.database().ref("collab_boards").child(boardID).update(updates);
 
-        navigation.navigate("Plan", { addingFavourite: false }); //Done adding
+        navigation.navigate("Plan"); //Done adding
     };
 
     const handleAddFavourite = (allEvents, boardID) => {
@@ -370,13 +373,17 @@ const ListOfPlans = ({
     );
 };
 
+const mapDispatchToProps = {
+    setAddingFavouritesToExistsingBoard
+}
+
 const mapStateToProps = (state) => {
     return {
         allEvents: state.add_events.events,
     };
 };
 
-export default connect(mapStateToProps, null)(ListOfPlans);
+export default connect(mapStateToProps, mapDispatchToProps)(ListOfPlans);
 
 const styles = StyleSheet.create({
     container: {
