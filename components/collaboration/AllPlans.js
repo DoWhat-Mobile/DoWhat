@@ -15,6 +15,9 @@ import RouteFilterModal from './RouteFilterModal';
 const AllPlans = ({ navigation, userID, route }) => {
     useFocusEffect(
         useCallback(() => {
+            var isAddingFavouriteToNewPlan = route.params == undefined
+                ? false : route.params.addingFavouriteToNewPlan;
+            if (isAddingFavouriteToNewPlan) setModalVisibility(true)
             getUpcomingCollaborationsFromFirebase();
             return () => firebase.database().ref().off();
         }, [])
@@ -79,7 +82,10 @@ const AllPlans = ({ navigation, userID, route }) => {
     const renderAppropriateScreen = () => {
         var isAddingFavourite = route.params == undefined
             ? false : route.params.addingFavourite; // Undefined if come from Feed using bottom tab nav
-        console.log("Route parameters: ", route.params)
+
+
+        // console.log("Route parameters: ", route.params)
+
         if (allBoards.length == 0) { // Empty state
             return (
                 <View style={styles.container}>
@@ -122,6 +128,7 @@ const AllPlans = ({ navigation, userID, route }) => {
                 </View>
             )
         }
+
         return (
             <View style={[styles.container,
             isAddingFavourite ? { backgroundColor: 'grey' } : {}]}>

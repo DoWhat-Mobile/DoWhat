@@ -125,19 +125,6 @@ const Feed = (props) => {
         }
 
         handleAddToFavourites(event, sectionTitle, index, foodIndex);
-        //  Alert.alert(
-        //      'Add to favourites',
-        //      'Do you want to add this event to your favourites?',
-        //      [
-        //          {
-        //              text: 'No',
-        //              onPress: () => console.log('Cancel Pressed'),
-        //              style: 'cancel'
-        //          },
-        //          { text: 'Yes', onPress: () => handleAddToFavourites(event, sectionTitle, index, foodIndex) }
-        //      ],
-        //      { cancelable: false }
-        //  )
     }
 
     const handleDoneSelectingFavourites = () => {
@@ -175,17 +162,17 @@ const Feed = (props) => {
 
     const handleAddFavouriteToCollab = (allEvents) => {
         props.navigation.navigate("Plan", { event: allEvents, addingFavourite: true })
+        setViewFavourites(false);
+        setAddingFavouritesToPlan(false);
     }
 
     const handleAddFavouriteToPersonal = (allEvents) => {
-        Alert.alert(
-            'Successfully added',
-            'Go to your plan and confirm it to your finalized timeline!',
-            [
-                { text: 'DONE', onPress: () => setAddingFavouritesToPlan(false) },
-            ],
-            { cancelable: true }
-        )
+        props.navigation.navigate("Plan", {
+            event: allEvents,
+            addingFavouriteToNewPlan: true, addingFavourite: false
+        })
+        setViewFavourites(false);
+        setAddingFavouritesToPlan(false);
     }
 
     const handleRemoveFavourites = (event, index) => {

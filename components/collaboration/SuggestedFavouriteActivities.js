@@ -80,12 +80,24 @@ const SuggestedFavouriteActivities = ({ activities, handleFavouritesSelect }) =>
             <Text style={styles.genreSelectionText}>
                 Suggested activities:
              </Text>
-            <FlatList
-                data={activities}
-                horizontal={true}
-                renderItem={({ item, index }) => renderFavourites(item[0], item[1], index)}
-                keyExtractor={(item, index) => item + index}
-            />
+            {activities.length == 0
+                ? <View style={{ justifyContent: 'center', alignContent: 'center' }}>
+                    <Text style={{
+                        fontSize: 16, fontWeight: 'bold', textAlign: "center",
+                        fontFamily: 'serif'
+                    }}>No activities suggested.</Text>
+                    <Text style={{
+                        margin: 5, fontSize: 12, color: 'grey', textAlign: "center",
+                        fontFamily: 'serif'
+                    }}>You can add a suggestion from your favourited activities
+                             </Text>
+                </View>
+                : <FlatList
+                    data={activities}
+                    horizontal={true}
+                    renderItem={({ item, index }) => renderFavourites(item[0], item[1], index)}
+                    keyExtractor={(item, index) => item + index} />
+            }
         </View>
     );
 }
