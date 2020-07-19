@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -29,14 +29,16 @@ const AllPlans = ({
 }) => {
     useFocusEffect(
         useCallback(() => {
-            if (isAddingFavouriteToNewPlan) {
-                setModalVisibility(true);
-                setAddingFavourites(false);
-            }
             getUpcomingCollaborationsFromFirebase();
             return () => firebase.database().ref().off();
-        }, [isAddingFavouriteToNewPlan])
+        }, [])
     );
+    useEffect(() => {
+        if (isAddingFavouriteToNewPlan) {
+            setModalVisibility(true);
+            setAddingFavourites(false);
+        }
+    }, [isAddingFavouriteToNewPlan]);
 
     const [allBoards, setAllBoards] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
