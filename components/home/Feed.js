@@ -20,8 +20,9 @@ import ReadMore from 'react-native-read-more-text';
 const Feed = (props) => {
     useFocusEffect(
         useCallback(() => {
+            let isMounted = true;
             getDataFromFirebase(); // Subscribe to changes
-            return () => null;
+            return () => { isMounted = false };
         }, [props.allEvents])
     )
 
@@ -112,21 +113,21 @@ const Feed = (props) => {
     const handleEventPress = (event, sectionTitle, index, foodIndex) => {
         if (addingFavouritesToPlan) {
             alert("Hello")
-
         }
-        Alert.alert(
-            'Add to favourites',
-            'Do you want to add this event to your favourites?',
-            [
-                {
-                    text: 'No',
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel'
-                },
-                { text: 'Yes', onPress: () => handleAddToFavourites(event, sectionTitle, index, foodIndex) }
-            ],
-            { cancelable: false }
-        )
+        handleAddToFavourites(event, sectionTitle, index, foodIndex);
+        //  Alert.alert(
+        //      'Add to favourites',
+        //      'Do you want to add this event to your favourites?',
+        //      [
+        //          {
+        //              text: 'No',
+        //              onPress: () => console.log('Cancel Pressed'),
+        //              style: 'cancel'
+        //          },
+        //          { text: 'Yes', onPress: () => handleAddToFavourites(event, sectionTitle, index, foodIndex) }
+        //      ],
+        //      { cancelable: false }
+        //  )
     }
 
     const handleFavouriteEventPress = (event) => {
@@ -224,8 +225,9 @@ const Feed = (props) => {
         }
 
         return (
-            <TouchableOpacity disabled={sectionTitle == 'favourites'}
-                onPress={() => handleEventPress(event, sectionTitle, index, foodIndex)}>
+            <View>
+                {/*<TouchableOpacity disabled={sectionTitle == 'favourites'}
+                onPress={() => handleEventPress(event, sectionTitle, index, foodIndex)}>*/}
                 <View style={{ width: Dimensions.get('window').width }}>
                     <Card
                         style={{ height: (Dimensions.get('window').height / 2) }}
@@ -243,9 +245,12 @@ const Feed = (props) => {
                                 <MaterialCommunityIcons name="star" color={'#1d3557'} size={18} />
                                 <Text style={{ fontSize: 12, color: '#1d3557', marginTop: 2, }}> {eventRatings}</Text>
                             </View>
-                            {isEventFavourited
-                                ? <MaterialCommunityIcons name="google-fit" color={'#e63946'} size={18} />
-                                : null}
+                            <TouchableOpacity disabled={sectionTitle == 'favourites'}
+                                onPress={() => handleEventPress(event, sectionTitle, index, foodIndex)}>
+                                {isEventFavourited
+                                    ? <MaterialCommunityIcons name="heart" color={'#e63946'} size={18} />
+                                    : <MaterialCommunityIcons name="heart-outline" color={'black'} size={18} />}
+                            </TouchableOpacity>
                         </View>
 
                         <ReadMore
@@ -279,7 +284,8 @@ const Feed = (props) => {
 
                     </Card>
                 </View>
-            </TouchableOpacity >
+                {/*</TouchableOpacity> */}
+            </View>
         );
     }
 
