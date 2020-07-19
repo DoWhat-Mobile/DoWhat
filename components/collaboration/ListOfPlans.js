@@ -14,9 +14,9 @@ import ChatRoomModal from "./ChatRoomModal";
 import firebase from "../../database/firebase";
 import { findOverlappingIntervals } from "../../reusable-functions/OverlappingIntervals";
 import { Overlay } from "react-native-elements";
-import { genreEventObjectArray } from "../../reusable-functions/DataTimeline";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { formatDate } from "../DateSelection";
+import { setAddingFavouritesToExistsingBoard } from '../../actions/favourite_event_actions';
 
 /**
  * The <SectionList> Component within the AllPlans component. This is the component
@@ -29,6 +29,7 @@ const ListOfPlans = ({
     allEvents,
     addingFavourite,
     event,
+    setAddingFavouritesToExistsingBoard
 }) => {
     const [boardModalVisibility, setBoardModalVisibility] = useState(false);
     const [boardDetails, setBoardDetails] = useState({});
@@ -165,20 +166,23 @@ const ListOfPlans = ({
         }
     };
 
-    const addFavouriteToCollab = (event, boardID) => {
+    const addFavouriteToCollab = (allEvents, boardID) => {
         var updates = {};
-        var cleanedEvent = event[0];
-        delete cleanedEvent.favourited;
-        delete cleanedEvent.selected;
+        allEvents.forEach(event => { // Add all selected favourites
+            var cleanedEvent = event[0];
+            delete cleanedEvent.favourited;
+            delete cleanedEvent.selected;
+            updates['/favourites/' + cleanedEvent.id] = cleanedEvent;
+        })
 
-        updates['/favourites/' + cleanedEvent.id] = cleanedEvent;
+        setAddingFavouritesToExistsingBoard(false); // Reset redux state after adding to collab
 
         firebase.database().ref("collab_boards").child(boardID).update(updates);
 
-        navigation.navigate("Plan", { addingFavourite: false }); //Done adding
+        navigation.navigate("Plan"); //Done adding
     };
 
-    const handleAddFavourite = (event, boardID) => {
+    const handleAddFavourite = (allEvents, boardID) => {
         Alert.alert(
             "Add to collaboration",
             "Would you like to add this favourite event as a suggestion in this collaboration?",
@@ -188,9 +192,10 @@ const ListOfPlans = ({
                     onPress: () => navigation.navigate("Plan", { addingFavourite: false }),
                     style: 'cancel'
                 },
+                { text: 'Yes', onPress: () => addFavouriteToCollab(allEvents, boardID) },
             ],
             { cancelable: true }
-        );
+        )
     };
 
     const renderCollaborationBoard = (board) => {
@@ -368,13 +373,17 @@ const ListOfPlans = ({
     );
 };
 
+const mapDispatchToProps = {
+    setAddingFavouritesToExistsingBoard
+}
+
 const mapStateToProps = (state) => {
     return {
         allEvents: state.add_events.events,
     };
 };
 
-export default connect(mapStateToProps, null)(ListOfPlans);
+export default connect(mapStateToProps, mapDispatchToProps)(ListOfPlans);
 
 const styles = StyleSheet.create({
     container: {

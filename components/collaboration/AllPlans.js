@@ -6,18 +6,24 @@ import {
 import { useFocusEffect } from '@react-navigation/native'
 import firebase from '../../database/firebase';
 import ListOfPlans from './ListOfPlans';
+import { setAddingFavourites } from '../../actions/favourite_event_actions';
 import { connect } from 'react-redux';
 import RouteFilterModal from './RouteFilterModal';
 
 /**
  * Parent component holding all the plans, and modal to start planning a new timeline 
  */
-const AllPlans = ({ navigation, userID, route }) => {
+const AllPlans = ({ navigation, userID, route, isAddingFavouriteToNewPlan, setAddingFavourites,
+    favouriteEvents, isAddingFavouritesToExistingBoard }) => {
     useFocusEffect(
         useCallback(() => {
+            if (isAddingFavouriteToNewPlan) {
+                setModalVisibility(true)
+                setAddingFavourites(false);
+            }
             getUpcomingCollaborationsFromFirebase();
             return () => firebase.database().ref().off();
-        }, [])
+        }, [isAddingFavouriteToNewPlan])
     )
 
     const [allBoards, setAllBoards] = useState([]);
@@ -79,7 +85,10 @@ const AllPlans = ({ navigation, userID, route }) => {
     const renderAppropriateScreen = () => {
         var isAddingFavourite = route.params == undefined
             ? false : route.params.addingFavourite; // Undefined if come from Feed using bottom tab nav
-        console.log("Route parameters: ", route.params)
+
+
+        // console.log("Route parameters: ", route.params)
+
         if (allBoards.length == 0) { // Empty state
             return (
                 <View style={styles.container}>
@@ -122,9 +131,10 @@ const AllPlans = ({ navigation, userID, route }) => {
                 </View>
             )
         }
+
         return (
             <View style={[styles.container,
-            isAddingFavourite ? { backgroundColor: 'grey' } : {}]}>
+            isAddingFavouritesToExistingBoard ? { backgroundColor: 'grey' } : {}]}>
                 <Modal
                     animationType="fade"
                     transparent={true}
@@ -141,8 +151,8 @@ const AllPlans = ({ navigation, userID, route }) => {
                 </View>
                 <View style={styles.body}>
                     <ListOfPlans plans={allBoards} refreshList={getUpcomingCollaborationsFromFirebase}
-                        navigation={navigation} userID={userID} addingFavourite={isAddingFavourite}
-                        event={isAddingFavourite ? route.params.event : null} />
+                        navigation={navigation} userID={userID} addingFavourite={isAddingFavouritesToExistingBoard}
+                        event={isAddingFavouritesToExistingBoard ? favouriteEvents : null} />
                 </View>
                 <View style={styles.footer}>
                     <TouchableOpacity style={styles.planForMe}
@@ -177,13 +187,22 @@ const AllPlans = ({ navigation, userID, route }) => {
     );
 }
 
+const mapDispatchToProps = {
+    setAddingFavourites
+}
+
 const mapStateToProps = (state) => {
+    console.log("All added events: ",
+        state.favourite_events)
     return {
-        userID: state.add_events.userID
+        userID: state.add_events.userID,
+        isAddingFavouriteToNewPlan: state.favourite_events.isAddingFavourites,
+        isAddingFavouritesToExistingBoard: state.favourite_events.isAddingFavouritesToExistingBoard,
+        favouriteEvents: state.favourite_events.favouriteEvents, // 2D array 
     };
 };
 
-export default connect(mapStateToProps, null)(AllPlans);
+export default connect(mapStateToProps, mapDispatchToProps)(AllPlans);
 
 const styles = StyleSheet.create({
     container: {
