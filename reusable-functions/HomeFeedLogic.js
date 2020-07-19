@@ -8,7 +8,7 @@
  * @param {*} allEventsObject is an object from Firebase events node, object
  * has the following props: duration, list, slots
  */
-const sortEventsByRatings = (allEventsObject) => {
+const sortEventsByRatings = (allEventsObject, genre) => {
     const eventsList = allEventsObject.list;
     var sortable = []; //2D Array to be used for sorting by ratings
     var count = 0;
@@ -27,6 +27,7 @@ const sortEventsByRatings = (allEventsObject) => {
             tags: currEvent.tags,
             selected: false, // To prevent duplicates when selecting 
             favourited: false,
+            genre: genre,
         }, currEvent.rating])
         count++;
     }
@@ -51,9 +52,9 @@ const randomIntFromInterval = (min, max) => {
  */
 const getTopEateries = (restaurants, hawkers, cafes) => {
     // 2D array of [{}, rating]
-    const topRestaurants = sortEventsByRatings(restaurants);
-    const topHawkers = sortEventsByRatings(hawkers);
-    const topCafes = sortEventsByRatings(cafes);
+    const topRestaurants = sortEventsByRatings(restaurants, 'restaurants');
+    const topHawkers = sortEventsByRatings(hawkers, 'hawker');
+    const topCafes = sortEventsByRatings(cafes, 'cafes');
 
     const selections = [topRestaurants, topHawkers, topCafes];
     var result = [];
@@ -129,8 +130,8 @@ const findSomethingNew = (allCategories, userPreferences) => {
  * @param {*} allCategories is an object copied from Firebase containing info to render to SectionList
  */
 const getTopEventsFromGenres = (genre1, genre2, allCategories) => {
-    const topFromGenre1 = sortEventsByRatings(allCategories[genre1]);
-    const topFromGenre2 = sortEventsByRatings(allCategories[genre2]);
+    const topFromGenre1 = sortEventsByRatings(allCategories[genre1], genre1);
+    const topFromGenre2 = sortEventsByRatings(allCategories[genre2], genre2);
 
     const genreChecker = [genre1, genre2]; // Since algo is randomized, we dk what genre1 | genre2 will be
     const selections = [topFromGenre1, topFromGenre2];
@@ -191,11 +192,11 @@ const getTopEventsFromGenres = (genre1, genre2, allCategories) => {
  * @param {} high is an integer representing the top high(th) ranked event
  */
 const getPopularEvents = (allCategories, low, high) => {
-    const topAdventures = sortEventsByRatings(allCategories.adventure)
-    const topArts = sortEventsByRatings(allCategories.arts)
-    const topLeisure = sortEventsByRatings(allCategories.leisure)
-    const topNature = sortEventsByRatings(allCategories.nature)
-    const topNightlife = sortEventsByRatings(allCategories.nightlife)
+    const topAdventures = sortEventsByRatings(allCategories.adventure, 'adventure')
+    const topArts = sortEventsByRatings(allCategories.arts, 'arts')
+    const topLeisure = sortEventsByRatings(allCategories.leisure, 'leisure')
+    const topNature = sortEventsByRatings(allCategories.nature, 'nature')
+    const topNightlife = sortEventsByRatings(allCategories.nightlife, 'nightlife')
 
     const ensureValidSelection = (genre, index) => {
         if (genre == 2) {// leisure has only 5 activities 

@@ -188,7 +188,6 @@ const Feed = (props) => {
 
         // Remove from component state
         var newFavourites = [...favourites]
-        console.log("initial length: ", newFavourites.length)
         newFavourites = newFavourites.filter(selectedEvent =>
             selectedEvent[0].id != event[0].id)
         setFavourites(newFavourites);
