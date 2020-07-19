@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { TouchableOpacity, View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import {
+    TouchableOpacity,
+    View,
+    Text,
+    StyleSheet,
+    ActivityIndicator,
+} from "react-native";
 import { connect } from "react-redux";
 import { selectDate, setLocation } from "../actions/date_select_action";
 import { extractCalendarEvents } from "../actions/auth_screen_actions";
@@ -9,7 +15,7 @@ import Genre from "../components/genre/Genre";
 import { getBusyPeriodFromGoogleCal } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
 import Calendar from "./Calendar";
 import { Divider, Overlay, Badge } from "react-native-elements";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export const formatDate = (day, month, date) => {
     const possibleDays = [
@@ -50,10 +56,10 @@ const DateSelection = (props) => {
     useEffect(() => {
         getUsersFavourites();
         return () => null;
-    }, [])
+    }, []);
 
     const [isLoading, setIsLoading] = useState(true);
-    const [usersFavourites, setUsersFavourites] = useState([])
+    const [usersFavourites, setUsersFavourites] = useState([]);
     const [date, setDate] = useState(new Date()); // new Date() gives today's date
     const [modalVisible, setModalVisible] = useState(false);
     const [isFinalized, setIsFinalized] = useState(false);
@@ -62,7 +68,9 @@ const DateSelection = (props) => {
     let synced = isButtonDisabled ? "synced" : "manual";
 
     const getUsersFavourites = () => {
-        firebase.database().ref('/users/' + props.userID)
+        firebase
+            .database()
+            .ref("/users/" + props.userID)
             .once("value")
             .then((snapshot) => {
                 const userData = snapshot.val();
@@ -71,16 +79,15 @@ const DateSelection = (props) => {
 
                     var finalFavouritesArray = [];
                     for (var key in object) {
-                        const arr = [object[key], false]
+                        const arr = [object[key], false];
                         finalFavouritesArray.push(arr);
                     }
-                    setUsersFavourites[finalFavouritesArray]
-                    console.log("User's favourites : ", usersFavourites)
+                    setUsersFavourites[finalFavouritesArray];
+                    //console.log("User's favourites : ", usersFavourites)
                     setIsLoading(false);
                 }
-            })
-
-    }
+            });
+    };
 
     const inputAvailabilities = () => {
         getBusyPeriodFromGoogleCal(props.userID, date); // User ID comes from Redux state
@@ -176,10 +183,10 @@ const DateSelection = (props) => {
 
     if (isLoading) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center' }}>
-                <ActivityIndicator size='large' />
+            <View style={{ flex: 1, justifyContent: "center" }}>
+                <ActivityIndicator size="large" />
             </View>
-        )
+        );
     }
 
     return (
@@ -188,7 +195,7 @@ const DateSelection = (props) => {
                 isVisible={modalVisible}
                 width="auto"
                 height="auto"
-                overlayStyle={{ width: '95%', height: '32%', borderRadius: 20 }}
+                overlayStyle={{ width: "95%", height: "32%", borderRadius: 20 }}
             >
                 <AvailabilityInputModal
                     onClose={closeModal}

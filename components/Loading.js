@@ -34,7 +34,6 @@ const Loading = (props) => {
     React.useEffect(() => {
         const diff = props.difference;
         const userId = firebase.auth().currentUser.uid; //Firebase UID of current user
-
         firebase
             .database()
             .ref("users/" + userId)
@@ -76,18 +75,36 @@ const Loading = (props) => {
             });
     }, []);
 
+    const favFormatter = (fav) => {
+        return fav.map((item) => {
+            let {
+                ["title"]: name,
+                ["favourited"]: fav,
+                ["selected"]: selected,
+                ["votes"]: votes,
+                ["imageURL"]: image,
+                ["genre"]: genre,
+                ...rest
+            } = item[0];
+            rest.name = name;
+            rest.image = image;
+            return { [genre]: rest };
+        });
+    };
+
     // Generates all events for the user taking into account which route the user came from
     const allData = () => {
         if (props.allEvents) {
             const time = route === "link" ? freeTime : timeline;
-            const currentEvents = genreEventObjectArray(
+            let currentEvents = genreEventObjectArray(
                 userGenres,
                 props.allEvents,
                 filters,
                 weather,
                 time[1]
             );
-
+            if (props.fav.length !== 0)
+                currentEvents = favFormatter(props.fav).concat(currentEvents);
             const allEvents =
                 props.route.params.currentEvents == undefined
                     ? data_timeline(time, props.allEvents, currentEvents)
@@ -159,6 +176,7 @@ const mapStateToProps = (state) => {
         finalTiming: state.timeline.finalTiming,
         allEvents: state.add_events.events,
         difference: state.date_select.difference,
+        fav: state.favourite_events.favouriteEvents,
     };
 };
 
