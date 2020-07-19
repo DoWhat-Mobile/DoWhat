@@ -6,7 +6,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native'
 import firebase from '../../database/firebase';
 import ListOfPlans from './ListOfPlans';
-import { setAddingFavourites, setAddingFavouritesToExistsingBoard } from '../../actions/favourite_event_actions';
+import { setAddingFavourites } from '../../actions/favourite_event_actions';
 import { connect } from 'react-redux';
 import RouteFilterModal from './RouteFilterModal';
 
@@ -14,7 +14,7 @@ import RouteFilterModal from './RouteFilterModal';
  * Parent component holding all the plans, and modal to start planning a new timeline 
  */
 const AllPlans = ({ navigation, userID, route, isAddingFavouriteToNewPlan, setAddingFavourites,
-    setAddingFavouritesToExistsingBoard, favouriteEvents, isAddingFavouritesToExistingBoard }) => {
+    favouriteEvents, isAddingFavouritesToExistingBoard }) => {
     useFocusEffect(
         useCallback(() => {
             if (isAddingFavouriteToNewPlan) {
@@ -188,7 +188,7 @@ const AllPlans = ({ navigation, userID, route, isAddingFavouriteToNewPlan, setAd
 }
 
 const mapDispatchToProps = {
-    setAddingFavourites, setAddingFavouritesToExistsingBoard
+    setAddingFavourites
 }
 
 const mapStateToProps = (state) => {
