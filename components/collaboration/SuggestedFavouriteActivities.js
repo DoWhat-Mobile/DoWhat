@@ -9,7 +9,6 @@ import { TIH_API_KEY } from 'react-native-dotenv';
 
 const SuggestedFavouriteActivities = ({ activities, handleFavouritesSelect }) => {
     const renderFavourites = (activity, selected, index) => {
-        console.log("Activitiy : ", activity)
         var imageURI = activity.imageURL
         // If imageURI is a code, convert it to URI using TIH API
         if (imageURI.substring(0, 5) != 'https') {

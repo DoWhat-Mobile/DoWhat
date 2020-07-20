@@ -14,7 +14,7 @@ const sortEventsByRatings = (allEventsObject, genre) => {
     var count = 0;
 
     for (var prop in eventsList) {
-        if (count == 11) break; // We only take top 10 events
+        if (count == 19) break; // We only take top 20 events
 
         const currEvent = eventsList[prop];
         sortable.push([{
