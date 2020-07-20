@@ -144,8 +144,8 @@ const Feed = (props) => {
                     onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel'
                 },
-                { text: 'Collaboration', onPress: () => handleAddFavouriteToCollab(allEvents) },
-                { text: 'Personal', onPress: () => handleAddFavouriteToPersonal(allEvents) }
+                { text: 'Ongoing collaboration', onPress: () => handleAddFavouriteToCollab(allEvents) },
+                { text: 'Start a new plan', onPress: () => handleAddFavouriteToPersonal(allEvents) }
             ],
             { cancelable: true }
         )
