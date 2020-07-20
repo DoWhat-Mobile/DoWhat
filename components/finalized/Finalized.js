@@ -131,7 +131,9 @@ const Finalized = (props) => {
                         style={{
                             fontWeight: "bold",
                             fontFamily: "serif",
-                            opacity: 0.7,
+                            opacity: 0.8,
+                            left: Dimensions.get("window").width - 120,
+                            top: Dimensions.get("window").height / 5 + 10,
                         }}
                     >
                         Tap to interact
@@ -201,6 +203,7 @@ const styles = StyleSheet.create({
         marginBottom: -35,
         marginLeft: 10,
         fontSize: 25,
+        fontFamily: "serif",
         fontWeight: "bold",
         zIndex: 1,
     },

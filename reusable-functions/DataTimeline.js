@@ -274,7 +274,10 @@ export const objectFormatter = (startTime, event, genre) => {
 export const renderDetail = (rowData, sectionID, rowID) => {
     const renderTruncatedFooter = (handlePress) => {
         return (
-            <Text style={{ color: "#595959" }} onPress={handlePress}>
+            <Text
+                style={{ color: "#595959", fontFamily: "serif" }}
+                onPress={handlePress}
+            >
                 Read more
             </Text>
         );
@@ -282,7 +285,10 @@ export const renderDetail = (rowData, sectionID, rowID) => {
 
     const renderRevealedFooter = (handlePress) => {
         return (
-            <Text style={{ color: "#595959" }} onPress={handlePress}>
+            <Text
+                style={{ color: "#595959", fontFamily: "serif" }}
+                onPress={handlePress}
+            >
                 Show less
             </Text>
         );
@@ -310,12 +316,13 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                         <Text
                             style={{
                                 flex: 1,
-                                fontSize: 16,
+                                fontSize: 14,
+                                fontFamily: "serif",
                             }}
                         >
                             <Text
                                 style={{
-                                    fontSize: 18,
+                                    fontSize: 16,
                                     fontWeight: "bold",
                                 }}
                             >
@@ -341,6 +348,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                     style={{
                         fontSize: 16,
                         fontWeight: "bold",
+                        fontFamily: "serif",
                     }}
                 >
                     {title}
