@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
     View, Text, StyleSheet, TouchableOpacity, FlatList, Alert,
-    ScrollView
+    ScrollView, Dimensions
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
@@ -31,6 +31,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         }
     }, []);
 
+    const [isTooltipVisible, setIsTooltipVisible] = useState(false); // Tooltip for possible timings
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
     const [topGenres, setTopGenres] = useState([]);
     const [allGenres, setAllGenres] = useState([['ADVENTURE', false], ['ARTS', false],
@@ -416,19 +417,37 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
             <View style={styles.footer}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <View style={{ flexDirection: 'column' }}>
-                        <Tooltip
-                            height={120}
-                            width={200}
-                            overlayColor={'transparent'}
-                            backgroundColor={'#E86830'}
-                            popover={<Text style={{ color: 'white', textAlign: 'center' }}>
-                                This is your available timings
-                                for the selected date. It will be used to find a common timing
-                                between you and your friends for the finalized timeline.
-                        </Text>}>
-                            <Text style={styles.sectionHeaderText}>Possible Timings</Text>
-                        </Tooltip>
 
+                        {isTooltipVisible
+                            ? <View style={styles.tooltip}>
+                                <Text style={{
+                                    fontSize: 14,
+                                    color: 'white', textAlign: 'center'
+                                }}>
+                                    This is your available timings
+                                    for the selected date. It will be used to find a common timing
+                                    between you and your friends for the finalized timeline.
+                        </Text>
+                                <View style={styles.tipOfTooltip}>
+                                    <MaterialCommunityIcons
+                                        name="menu-down"
+                                        color={"grey"}
+                                        size={50}
+                                    />
+                                </View>
+                            </View>
+                            : null
+                        }
+
+                        <TouchableOpacity onPress={() => setIsTooltipVisible(!isTooltipVisible)}
+                            style={{ position: 'absolute', right: 10, top: -12, padding: 2 }}>
+                            <MaterialCommunityIcons
+                                name="information"
+                                color={"grey"}
+                                size={20}
+                            />
+                        </TouchableOpacity>
+                        <Text style={styles.sectionHeaderText}>Possible Timings</Text>
                         <Text style={styles.sectionSubHeaderText}>
                             Input your available timings
                  </Text>
@@ -557,4 +576,18 @@ const styles = StyleSheet.create({
     close: {
         color: 'white',
     },
+    tooltip: {
+        backgroundColor: 'grey',
+        position: 'absolute',
+        top: -155,
+        right: -25,
+        borderRadius: 17,
+        padding: 10,
+        width: Dimensions.get('window').width / 2.5,
+
+    },
+    tipOfTooltip: {
+        position: 'absolute', bottom: -27, right: 20,
+
+    }
 });
