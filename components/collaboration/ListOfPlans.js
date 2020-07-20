@@ -99,7 +99,7 @@ const ListOfPlans = ({
     };
 
     const getTopVotedFavouriteEvent = (allVotedFavourites) => {
-        if (allVotedFavourites == undefined) return; // No favourites added
+        if (allVotedFavourites == undefined) return {}; // No favourites added
 
         return Object.keys(allVotedFavourites).reduce((x, y) => {
             const event1 = allVotedFavourites[x];
