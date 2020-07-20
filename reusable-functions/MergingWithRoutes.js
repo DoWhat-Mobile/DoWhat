@@ -75,7 +75,7 @@ export const eventsWithDirections = (timingsArray, events, directions) => {
             let obj = {
                 title: "Directions",
                 time: "",
-                lineColor: "#ffd699",
+                lineColor: "#e18a07",
                 description: "",
                 genre: "directions",
             };

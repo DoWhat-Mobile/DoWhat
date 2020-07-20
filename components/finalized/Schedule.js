@@ -241,14 +241,16 @@ const Schedule = (props) => {
                         data={events}
                         timeStyle={{
                             textAlign: "center",
-                            backgroundColor: "#cc5327",
-                            color: "white",
+                            //backgroundColor: "#E18A07",
+                            color: "black",
                             padding: 5,
                             borderRadius: 13,
+                            fontWeight: "bold",
+                            fontSize: 16,
                         }}
+                        timeContainerStyle={{ marginRight: -5 }}
                         renderDetail={renderDetail}
                         circleColor="#cc5327"
-                        innerCircle={"dot"}
                     />
                 </View>
                 <View style={styles.footer}>{renderProceedButton()}</View>

@@ -178,7 +178,7 @@ const Finalized = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#ffebcc",
+        backgroundColor: "white",
     },
     header: {
         flex: 0,

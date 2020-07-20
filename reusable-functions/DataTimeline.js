@@ -260,7 +260,7 @@ export const objectFormatter = (startTime, event, genre) => {
             ? event.name + " " + "(Indoors)"
             : event.name,
         description: event.location + "\n\n" + event.description,
-        lineColor: "#cc5327",
+        lineColor: "#e18a07",
         imageUrl: imageURI,
         genre: genre,
         coord: event.coord,
@@ -303,8 +303,8 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                     source={{ uri: rowData.imageUrl }}
                     style={{
                         height: 120,
-                        borderTopLeftRadius: 25,
-                        borderTopRightRadius: 25,
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
                     }}
                 />
                 <View style={{ marginHorizontal: 10, marginVertical: 5 }}>
@@ -362,8 +362,9 @@ export const renderDetail = (rowData, sectionID, rowID) => {
             style={{
                 flex: 1,
                 marginBottom: 10,
-                backgroundColor: "white",
-                borderRadius: 20,
+                backgroundColor: "#fff5e6",
+                borderRadius: 10,
+                elevation: 5,
             }}
         >
             {desc}

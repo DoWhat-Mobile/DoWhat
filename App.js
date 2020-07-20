@@ -55,10 +55,7 @@ const MainNavigator = () => {
                 options={({ navigation }) => ({
                     title: null,
                     // headerStyle: {
-                    //     //backgroundColor: "#cc5327",
-                    //     borderBottomWidth: 0,
-                    //     elevation: 0,
-                    //     shadowOpacity: 0,
+                    //     backgroundColor: "#cc5327",
                     // },
                     headerLeft: () => (
                         <HeaderBackButton
