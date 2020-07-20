@@ -151,6 +151,18 @@ const Feed = (props) => {
         )
     }
 
+    const resetAddingFavourites = () => {
+        // If any favourites selected, unselect them.
+        var newState = [...favourites]
+        newState.forEach(event => {
+            event[2] = false; // Unselect
+        })
+        setNumberOfFavouritesClicked(0)
+        setAnyFavouritesClicked(false)
+        setFavouriteSummaryModalVisibile(false)
+        setAddingFavouritesToPlan(false)
+    }
+
     // Summary cart shows all the favourite events that have been selected to use in planning
     const addToSummaryCart = (event, isEventIncluded) => {
         var anyEventSelected = false;
@@ -395,14 +407,18 @@ const Feed = (props) => {
                             : 'Check these categories out!'
                         }
                     </Text>
-                    <TouchableOpacity onPress={signOut}>
-                        <Text style={{
-                            color: "grey", textDecorationLine: 'underline',
-                            marginRight: 5, marginTop: 2
-                        }}>
-                            Sign out
+                    {isFavouritesHeader
+                        ? null
+                        : <TouchableOpacity onPress={signOut}>
+                            <Text style={{
+                                color: "grey", textDecorationLine: 'underline',
+                                marginRight: 5, marginTop: 2
+                            }}>
+                                Sign out
                                     </Text>
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                    }
+
                 </View>
                 {isFavouritesHeader
                     ? <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', marginTop: 5, }}>
@@ -414,35 +430,27 @@ const Feed = (props) => {
                                 </TouchableOpacity>
                                 <CategoryTitleText text='See all Events' />
                             </View>
+                        </View>
 
-                            {addingFavouritesToPlan
-                                ? <View>
-                                    <TouchableOpacity onPress={() => setAddingFavouritesToPlan(false)}
-                                        style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
-                                        <MaterialCommunityIcons name="reply" color={'white'} size={30} />
-                                    </TouchableOpacity>
-                                    <CategoryTitleText text='Back' />
-                                </View>
-                                : null}
-                            {addingFavouritesToPlan
-                                ? <View>
-                                    <TouchableOpacity onPress={() => handleDoneSelectingFavourites()}
-                                        style={[styles.headerCategory, { backgroundColor: 'green' }]}>
-                                        <MaterialCommunityIcons name="check-bold" color={'white'} size={30} />
-                                    </TouchableOpacity>
-                                    <CategoryTitleText text='Done' />
-                                </View>
-                                : null
-                            }
-                        </View>
-                        <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
-                            <TouchableOpacity disabled={addingFavouritesToPlan}
-                                onPress={() => setAddingFavouritesToPlan(true)}
-                                style={[styles.headerCategory, { backgroundColor: '#ff664a' }]}>
-                                <MaterialCommunityIcons name="animation" color={'white'} size={30} />
-                            </TouchableOpacity>
-                            <CategoryTitleText text='Plan with Favourites' />
-                        </View>
+                        {addingFavouritesToPlan
+                            ? <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
+                                <TouchableOpacity onPress={() => resetAddingFavourites()}
+                                    style={[styles.headerCategory, {
+                                        backgroundColor: '#e63946',
+                                    }]}>
+                                    <MaterialCommunityIcons name="reply" color={'white'} size={30} />
+                                </TouchableOpacity>
+                                <CategoryTitleText text='Back' />
+                            </View>
+                            : <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
+                                <TouchableOpacity disabled={addingFavouritesToPlan}
+                                    onPress={() => setAddingFavouritesToPlan(true)}
+                                    style={[styles.headerCategory, { backgroundColor: '#ff664a' }]}>
+                                    <MaterialCommunityIcons name="animation" color={'white'} size={30} />
+                                </TouchableOpacity>
+                                <CategoryTitleText text='Plan with Favourites' />
+                            </View>}
+
                     </View>
                     : <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', marginTop: 5, }}>
                         <View style={{ flex: 2.5, flexDirection: 'row', justifyContent: 'space-around' }}>
