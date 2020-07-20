@@ -137,7 +137,7 @@ const Feed = (props) => {
 
         Alert.alert(
             'Add to plan',
-            'Where would you like to include all the selected favourite event?',
+            'Where would you like to include all the selected favourite events?',
             [
                 {
                     text: 'Cancel',

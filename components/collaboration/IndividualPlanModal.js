@@ -13,8 +13,9 @@ import GenrePicker from './GenrePicker';
 import firebase from '../../database/firebase'
 import { inputBusyPeriodFromGcal } from '../../reusable-functions/GoogleCalendarGetBusyPeriods';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Avatar, Badge } from 'react-native-elements'
+import { Avatar, Badge, Tooltip } from 'react-native-elements'
 import SuggestedFavouriteActivities from './SuggestedFavouriteActivities'
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 /**
  * The modal that shows when user selects each of the individual upcoming plans
@@ -116,18 +117,10 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         return (
             <View pointerEvents={foodIsSelected ? 'auto' : 'none'}
                 style={styles.foodFilters}>
-                {foodIsSelected
-                    ? null
-                    : <Text style={{
-                        position: 'absolute', right: 5, top: 12,
-                        fontSize: 12, fontWeight: '400', color: '#E86830',
-                        fontFamily: 'serif'
-                    }}>
-                        Select food to enable filter selection
-                </Text>
-                }
-                <FoodLocation location={location} handleLocationSelect={handleLocationSelect} />
-                <FoodCuisine cuisine={cuisine} handleCuisineSelect={handleCuisineSelect} />
+                <FoodLocation location={location} handleLocationSelect={handleLocationSelect}
+                    preferences={board.food_filters.area} />
+                <FoodCuisine cuisine={cuisine} handleCuisineSelect={handleCuisineSelect}
+                    preferences={board.food_filters.cuisine} />
                 <FoodPrice handlePricePress={(price) => handlePricePress(price)} />
             </View>
         );
@@ -406,7 +399,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                         </View>
                     </View>
                     <GenrePicker allGenres={allGenres} handleGenreSelect={handleGenreSelect}
-                        topGenres={topGenres} />
+                        topGenres={topGenres} preferences={board.preferences} />
                 </View>
                 {renderFoodFilter(allGenres[5][1])}
             </View>
@@ -423,7 +416,19 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
             <View style={styles.footer}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <View style={{ flexDirection: 'column' }}>
-                        <Text style={styles.sectionHeaderText}>Possible Timings</Text>
+                        <Tooltip
+                            height={120}
+                            width={200}
+                            overlayColor={'transparent'}
+                            backgroundColor={'#E86830'}
+                            popover={<Text style={{ color: 'white', textAlign: 'center' }}>
+                                This is your available timings
+                                for the selected date. It will be used to find a common timing
+                                between you and your friends for the finalized timeline.
+                        </Text>}>
+                            <Text style={styles.sectionHeaderText}>Possible Timings</Text>
+                        </Tooltip>
+
                         <Text style={styles.sectionSubHeaderText}>
                             Input your available timings
                  </Text>
@@ -507,7 +512,7 @@ const styles = StyleSheet.create({
     genreSelection: {
         borderBottomWidth: 1.5,
         borderBottomColor: '#e4e4e4',
-        paddingBottom: 10
+        paddingBottom: 15
     },
     genreButton: {
         borderWidth: 0.5,
