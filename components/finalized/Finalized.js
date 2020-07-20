@@ -127,6 +127,15 @@ const Finalized = (props) => {
                     >
                         <Minimap coord={coord} />
                     </TouchableOpacity>
+                    <Text
+                        style={{
+                            fontWeight: "bold",
+                            fontFamily: "serif",
+                            opacity: 0.7,
+                        }}
+                    >
+                        Tap to interact
+                    </Text>
                 </View>
                 <View style={styles.body}>
                     <View
