@@ -37,7 +37,11 @@ const MainNavigator = () => {
             <Stack.Screen
                 name="Home"
                 component={HomeScreen}
-                options={{ title: null }}
+                options={{
+                    title: null,
+                    headerShown: false,
+                    headerLeft: null,
+                }}
             />
             <Stack.Screen
                 name="Timeline"

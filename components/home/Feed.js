@@ -297,7 +297,10 @@ const Feed = (props) => {
         const renderTruncatedFooter = (handlePress) => {
             return (
                 <Text
-                    style={{ color: "#595959", marginTop: 5 }}
+                    style={{
+                        color: "#595959",
+                        marginVertical: 5,
+                    }}
                     onPress={handlePress}
                 >
                     Read more
@@ -308,7 +311,10 @@ const Feed = (props) => {
         const renderRevealedFooter = (handlePress) => {
             return (
                 <Text
-                    style={{ color: "#595959", marginTop: 5 }}
+                    style={{
+                        color: "#595959",
+                        marginVertical: 5,
+                    }}
                     onPress={handlePress}
                 >
                     Show less
@@ -329,146 +335,161 @@ const Feed = (props) => {
         }
 
         return (
-            <View>
-                <View style={{ width: Dimensions.get("window").width }}>
-                    {/* <Card
-                        style={{ height: (Dimensions.get('window').height / 2) }}
-                        title={event[0].title}
-                    > */}
-                    <Image
-                        source={{ uri: imageURI }}
-                        style={
-                            {
-                                height: 100,
-                                width: "100%",
-                            }
-                            // isEventFood
-                            //     ? { height: 100, width: "100%" }
-                            //     : {
-                            //           height: 100,
-                            //           width:
-                            //               Dimensions.get("window").width * 0.85,
-                            //       }
-                        }
-                    />
+            <View
+                style={{
+                    flex: 1,
+                    width: Dimensions.get("window").width,
+                    //marginHorizontal: 20,
+                    marginVertical: 20,
+                    backgroundColor: "white",
+                    //borderRadius: 12,
+                    elevation: 5,
+                }}
+            >
+                <Image
+                    source={{ uri: imageURI }}
+                    style={{
+                        height: isEventFood ? 100 : 210,
+                        width: "100%",
+                        //borderTopRightRadius: 12,
+                        //borderTopLeftRadius: 12,
+                    }}
+                />
 
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                        }}
-                    >
-                        <View style={{ flexDirection: "row" }}>
-                            <MaterialCommunityIcons
-                                name="star"
-                                color={"#1d3557"}
-                                size={18}
-                            />
-                            <Text
-                                style={{
-                                    fontSize: 12,
-                                    color: "#1d3557",
-                                    marginTop: 2,
-                                }}
-                            >
-                                {" "}
-                                {eventRatings}
-                            </Text>
-                        </View>
-                        <TouchableOpacity
-                            disabled={sectionTitle == "favourites"}
-                            onPress={() =>
-                                handleAddToFavourites(
-                                    event,
-                                    sectionTitle,
-                                    index,
-                                    foodIndex
-                                )
-                            }
+                <Text
+                    style={{
+                        fontSize: 18,
+                        fontWeight: "bold",
+                        //marginTop: 10,
+                        paddingTop: 20,
+                        paddingHorizontal: 10,
+                        borderTopWidth: 0.5,
+                    }}
+                >
+                    {event[0].title}
+                </Text>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        paddingHorizontal: 10,
+                        marginBottom: 10,
+                    }}
+                >
+                    <View style={{ flexDirection: "row" }}>
+                        <MaterialCommunityIcons
+                            name="star"
+                            color={"#1d3557"}
+                            size={24}
+                        />
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                color: "#1d3557",
+                                marginTop: 2,
+                            }}
                         >
-                            {isEventFavourited ? (
-                                <MaterialCommunityIcons
-                                    name="heart"
-                                    color={"#e63946"}
-                                    size={18}
-                                />
-                            ) : (
-                                <MaterialCommunityIcons
-                                    name="heart-outline"
-                                    color={"black"}
-                                    size={18}
-                                />
-                            )}
-                        </TouchableOpacity>
+                            {" "}
+                            {eventRatings}
+                        </Text>
                     </View>
+                    <TouchableOpacity
+                        disabled={sectionTitle == "favourites"}
+                        onPress={() =>
+                            handleAddToFavourites(
+                                event,
+                                sectionTitle,
+                                index,
+                                foodIndex
+                            )
+                        }
+                    >
+                        {isEventFavourited ? (
+                            <MaterialCommunityIcons
+                                name="heart"
+                                color={"#e63946"}
+                                size={24}
+                            />
+                        ) : (
+                            <MaterialCommunityIcons
+                                name="heart-outline"
+                                color={"black"}
+                                size={24}
+                            />
+                        )}
+                    </TouchableOpacity>
+                </View>
 
+                <View style={{ marginLeft: 10 }}>
                     <ReadMore
-                        numberOfLines={4}
+                        numberOfLines={1}
                         renderTruncatedFooter={renderTruncatedFooter}
                         renderRevealedFooter={renderRevealedFooter}
                     >
-                        <Text>
-                            {"\n"}
+                        <Text
+                            style={{
+                                marginHorizontal: 10,
+                                marginVertical: 5,
+                                fontSize: 16,
+                            }}
+                        >
                             {event[0].description}
+                            {"\n"}
                         </Text>
                     </ReadMore>
-
-                    {sectionTitle == "favourites" ? (
-                        addingFavouritesToPlan ? (
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    marginTop: 5,
-                                }}
-                            >
-                                <TouchableOpacity
-                                    style={styles.favouritesButton}
-                                    onPress={() =>
-                                        handleRemoveFavourites(event, index)
-                                    }
-                                >
-                                    <Text style={styles.favouritesButtonText}>
-                                        REMOVE FROM FAVOURITES
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={styles.favouritesButton}
-                                    onPress={() =>
-                                        handleFavouriteEventPress(event, index)
-                                    }
-                                >
-                                    <Text style={styles.favouritesButtonText}>
-                                        {isEventBeingAddedToPlan
-                                            ? "ADDED"
-                                            : "ADD TO PLAN"}
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        ) : (
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    marginTop: 5,
-                                }}
-                            >
-                                <TouchableOpacity
-                                    style={styles.favouritesButton}
-                                    onPress={() =>
-                                        handleRemoveFavourites(event)
-                                    }
-                                >
-                                    <Text style={styles.favouritesButtonText}>
-                                        REMOVE FROM FAVOURITES
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        )
-                    ) : null}
-
-                    {/* </Card> */}
                 </View>
+
+                {sectionTitle == "favourites" ? (
+                    addingFavouritesToPlan ? (
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                marginTop: 5,
+                            }}
+                        >
+                            <TouchableOpacity
+                                style={styles.favouritesButton}
+                                onPress={() =>
+                                    handleRemoveFavourites(event, index)
+                                }
+                            >
+                                <Text style={styles.favouritesButtonText}>
+                                    REMOVE FROM FAVOURITES
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.favouritesButton}
+                                onPress={() =>
+                                    handleFavouriteEventPress(event, index)
+                                }
+                            >
+                                <Text style={styles.favouritesButtonText}>
+                                    {isEventBeingAddedToPlan
+                                        ? "ADDED"
+                                        : "ADD TO PLAN"}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                marginTop: 5,
+                            }}
+                        >
+                            <TouchableOpacity
+                                style={styles.favouritesButton}
+                                onPress={() => handleRemoveFavourites(event)}
+                            >
+                                <Text style={styles.favouritesButtonText}>
+                                    REMOVE FROM FAVOURITES
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    )
+                ) : null}
             </View>
         );
     };
@@ -530,7 +551,7 @@ const Feed = (props) => {
                     <Text style={styles.headerText}>
                         {isFavouritesHeader
                             ? "Plan something!"
-                            : "Welcome to DoWhat!"}
+                            : "Welcome to DoWhat"}
                     </Text>
                     {isFavouritesHeader ? null : (
                         <TouchableOpacity onPress={signOut}>
@@ -539,7 +560,7 @@ const Feed = (props) => {
                                     color: "grey",
                                     textDecorationLine: "underline",
                                     marginRight: 5,
-                                    marginTop: 2,
+                                    marginTop: 30,
                                 }}
                             >
                                 Sign out
@@ -557,7 +578,7 @@ const Feed = (props) => {
                         color: "gray",
                     }}
                 >
-                    Check these events out
+                    Browse Categories
                 </Text>
                 {isFavouritesHeader ? (
                     <View
@@ -658,7 +679,7 @@ const Feed = (props) => {
                                 flexDirection: "row",
                                 justifyContent: "space-around",
                                 marginLeft: -5,
-                                marginVertical: 5,
+                                marginVertical: 15,
                             }}
                         >
                             <View>
@@ -672,10 +693,10 @@ const Feed = (props) => {
                                     <MaterialCommunityIcons
                                         name="cards-heart"
                                         color={"#d00000"}
-                                        size={30}
+                                        size={25}
                                     />
                                 </TouchableOpacity>
-                                <CategoryTitleText text="Favourites" />
+                                <CategoryTitleText text="FAVOURITES" />
                             </View>
                             <View>
                                 <TouchableOpacity
@@ -688,10 +709,10 @@ const Feed = (props) => {
                                     <MaterialCommunityIcons
                                         name="star"
                                         color={"#CCCC00"}
-                                        size={30}
+                                        size={25}
                                     />
                                 </TouchableOpacity>
-                                <CategoryTitleText text="Popular" />
+                                <CategoryTitleText text="POPULAR" />
                             </View>
                             <View>
                                 <TouchableOpacity
@@ -704,10 +725,10 @@ const Feed = (props) => {
                                     <MaterialCommunityIcons
                                         name="silverware-variant"
                                         color={"#9d8189"}
-                                        size={30}
+                                        size={25}
                                     />
                                 </TouchableOpacity>
-                                <CategoryTitleText text="Eateries" />
+                                <CategoryTitleText text="EATERIES" />
                             </View>
                             <View>
                                 <TouchableOpacity
@@ -720,10 +741,10 @@ const Feed = (props) => {
                                     <MaterialCommunityIcons
                                         name="city"
                                         color={"#3d5a80"}
-                                        size={30}
+                                        size={25}
                                     />
                                 </TouchableOpacity>
-                                <CategoryTitleText text="Discover" />
+                                <CategoryTitleText text="DISCOVER" />
                             </View>
                         </View>
                         {/* <View
@@ -754,17 +775,6 @@ const Feed = (props) => {
                         </View> */}
                     </View>
                 )}
-                <View
-                    style={{
-                        backgroundColor: "#A2A2A2",
-                        height: 2,
-                        width: Dimensions.get("window").width - 30,
-                        borderColor: "gray",
-                        marginHorizontal: 5,
-                        opacity: 0.6,
-                        marginVertical: 20,
-                    }}
-                />
             </View>
         );
     };
@@ -864,7 +874,6 @@ const Feed = (props) => {
                                     justifyContent: "center",
                                     fontWeight: "bold",
                                     fontSize: 14,
-                                    fontFamily: "serif",
                                     marginTop: 3,
                                     marginLeft: 10,
                                 }}
@@ -900,7 +909,6 @@ const Feed = (props) => {
                                     fontSize: 20,
                                     fontWeight: "bold",
                                     textAlign: "center",
-                                    fontFamily: "serif",
                                 }}
                             >
                                 No favourites added yet.
@@ -911,7 +919,6 @@ const Feed = (props) => {
                                     fontSize: 14,
                                     color: "grey",
                                     textAlign: "center",
-                                    fontFamily: "serif",
                                 }}
                             >
                                 Add an event to favourites by clicking on the
@@ -935,11 +942,11 @@ const Feed = (props) => {
                 refreshing={isRefreshing}
                 sections={[
                     {
-                        title: "What is currently popular",
+                        title: "Popular",
                         data: whatsPopularData,
                     }, // eventData[0] is an array of data items
                     { title: "Hungry?", data: hungryData }, // eventData[1] is an array of one element: [data]
-                    { title: "Find something new", data: somethingNewData }, // eventData[2] is an array data items
+                    { title: "Discover", data: somethingNewData }, // eventData[2] is an array data items
                 ]}
                 renderItem={({ item, section, index }) =>
                     renderFeed(item, section, index)
@@ -975,51 +982,49 @@ export default connect(mapStateToProps, mapDispatchToProps)(Feed);
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "white",
     },
     headerText: {
         color: "black",
-        fontFamily: "serif",
-        fontSize: 24,
+        fontSize: 26,
         marginLeft: 10,
         textShadowColor: "#e85d04",
         fontWeight: "bold",
         marginBottom: 20,
+        marginTop: 80,
     },
     headerCategory: {
         //borderWidth: 0.5,
         padding: 15,
-        borderRadius: 12,
+        borderRadius: 30,
         //elevation: 0.01,
         alignSelf: "center",
     },
     header: {
         backgroundColor: "white",
-        margin: 5,
         elevation: 0.1,
     },
     CategoryTitleText: {
         color: "black",
         textAlign: "center",
-        fontSize: 16,
+        fontSize: 13,
         fontWeight: "bold",
         marginTop: 10,
     },
     sectionHeaderText: {
-        fontSize: 18,
+        fontSize: 22,
         fontWeight: "bold",
-        fontFamily: "serif",
-        color: "#f1faee",
-        marginLeft: "2%",
+        marginLeft: 10,
+        marginBottom: 5,
+        marginTop: 10,
     },
-    sectionHeader: {
-        marginRight: 15,
-        marginTop: 5,
-        borderRadius: 5,
-        borderWidth: 0.5,
-        borderColor: "black",
-        backgroundColor: "#e63946",
-    },
+    // sectionHeader: {
+    //     marginRight: 15,
+    //     marginTop: 5,
+    //     borderRadius: 5,
+    //     borderWidth: 0.5,
+    //     borderColor: "black",
+    //     //backgroundColor: "#e63946",
+    // },
     cardButton: {
         borderRadius: 5,
         marginLeft: "1%",
@@ -1031,7 +1036,6 @@ const styles = StyleSheet.create({
     moreDetailsButtonText: {
         color: "#f1faee",
         fontWeight: "300",
-        fontFamily: "serif",
         textAlign: "center",
     },
     favouritesButton: {
