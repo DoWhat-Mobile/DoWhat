@@ -4,7 +4,7 @@ import {
     Image, FlatList, TouchableOpacity, Dimensions, Alert
 } from "react-native";
 import { useFocusEffect } from '@react-navigation/native'
-import { Card } from 'react-native-elements';
+import { Card, Overlay } from 'react-native-elements';
 import firebase from '../../database/firebase';
 import { handleEventsOf } from '../../reusable-functions/HomeFeedLogic';
 import { TIH_API_KEY } from 'react-native-dotenv';
@@ -15,6 +15,7 @@ import {
     setAddingFavourites, addFavouritesToPlan,
     setAddingFavouritesToExistsingBoard
 } from '../../actions/favourite_event_actions';
+import SelectedFavouriteSummaryModal from './SelectedFavouritesSummaryModal';
 
 /**
  * User feed in home page. Has 3 divisions: Show whats popular, eateries, and activities
@@ -38,6 +39,9 @@ const Feed = (props) => {
     const [favourites, setFavourites] = useState([]);
     const [viewFavourites, setViewFavourites] = useState(false);
     const [addingFavouritesToPlan, setAddingFavouritesToPlan] = useState(false);
+    const [anyFavouritesClicked, setAnyFavouritesClicked] = useState(false);
+    const [numberOfFavouritesClicked, setNumberOfFavouritesClicked] = useState(0);
+    const [favouriteSummaryModalVisible, setFavouriteSummaryModalVisibile] = useState(true);
 
     const getDataFromFirebase = async () => {
         try {
@@ -156,13 +160,28 @@ const Feed = (props) => {
         )
     }
 
+    // Summary cart shows all the favourite events that have been selected to use in planning
+    const addToSummaryCart = (event, isEventIncluded) => {
+        var anyEventSelected = false;
+        var noOfFavsClicked = 0;
+        favourites.forEach(selectedEvent => {
+            const eventIsSelected = selectedEvent[2];
+            if (eventIsSelected) {
+                noOfFavsClicked += 1;
+                anyEventSelected = true;
+            }
+        })
+        setNumberOfFavouritesClicked(noOfFavsClicked);
+        setAnyFavouritesClicked(anyEventSelected);
+    }
+
     // Toggle for whether or not event will be included in planning when adding to plan
     const handleFavouriteEventPress = (event, index) => {
         var newState = [...favourites]
         newState[index][2] = !newState[index][2];
+        addToSummaryCart(event, newState[index][2]);
         setFavourites(newState);
     }
-
 
     const handleAddFavouriteToCollab = (allEvents) => {
         props.setAddingFavouritesToExistsingBoard(true) // Mark redux state before navigating
@@ -419,22 +438,16 @@ const Feed = (props) => {
                                     </TouchableOpacity>
                                     <CategoryTitleText text='Done' />
                                 </View>
-                                : <View>
-                                    <TouchableOpacity onPress={() => setAddingFavouritesToPlan(true)}
-                                        style={[styles.headerCategory, { backgroundColor: '#ff664a' }]}>
-                                        <MaterialCommunityIcons name="animation" color={'white'} size={30} />
-                                    </TouchableOpacity>
-                                    <CategoryTitleText text='Plan Outing with Favourites' />
-                                </View>
+                                : null
                             }
                         </View>
                         <View style={{ flex: 1, borderLeftWidth: 1, marginLeft: 5 }}>
-                            <TouchableOpacity
-                                onPress={() => props.navigation.navigate("Plan", { addingFavourite: false })}
-                                style={[styles.headerCategory, { backgroundColor: '#e63946' }]}>
-                                <MaterialCommunityIcons name="feature-search" color={'white'} size={30} />
+                            <TouchableOpacity disabled={addingFavouritesToPlan}
+                                onPress={() => setAddingFavouritesToPlan(true)}
+                                style={[styles.headerCategory, { backgroundColor: '#ff664a' }]}>
+                                <MaterialCommunityIcons name="animation" color={'white'} size={30} />
                             </TouchableOpacity>
-                            <CategoryTitleText text='Plan with Friends' />
+                            <CategoryTitleText text='Plan with Favourites' />
                         </View>
                     </View>
                     : <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', marginTop: 5, }}>
@@ -503,6 +516,7 @@ const Feed = (props) => {
         return (
             < View style={[styles.container, addingFavouritesToPlan
                 ? { backgroundColor: '#BEBEBE' } : {}]} >
+
                 <SectionList
                     onRefresh={() => refreshPage()}
                     ref={ref => (sectionListRef = ref)}
@@ -525,6 +539,31 @@ const Feed = (props) => {
                     }
                     keyExtractor={(item, index) => index}
                 />
+
+                <Overlay
+                    isVisible={favouriteSummaryModalVisible}
+                    width="auto"
+                    height="auto"
+                    overlayStyle={{ width: '95%', height: '32%', borderRadius: 20 }}
+                >
+                    <SelectedFavouriteSummaryModal onClose={() => setFavouriteSummaryModalVisibile(false)} />
+                </Overlay>
+
+                {anyFavouritesClicked
+                    ? <View style={{ opacity: 100 }}>
+                        <TouchableOpacity onPress={() => setFavouriteSummaryModalVisibile(true)}
+                            style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                            <MaterialCommunityIcons name="dots-horizontal" color={'#e63946'} size={18} />
+                        </TouchableOpacity>
+                        <View style={{ padding: 10, borderWidth: 1, borderRadius: 10 }}>
+                            <Text style={{ textAlign: "center" }}>
+                                Summary cart here {numberOfFavouritesClicked}
+                            </Text>
+                        </View>
+                    </View>
+                    : null
+                }
+
                 { // Render empty state favourites screen
                     favourites.length == 0
                         ? <View style={{ flex: 20, justifyContent: 'center' }}>
