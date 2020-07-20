@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
     View, Text, StyleSheet, TouchableOpacity, FlatList, Alert,
-    ScrollView
+    ScrollView, Dimensions
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { connect } from 'react-redux';
@@ -13,8 +13,9 @@ import GenrePicker from './GenrePicker';
 import firebase from '../../database/firebase'
 import { inputBusyPeriodFromGcal } from '../../reusable-functions/GoogleCalendarGetBusyPeriods';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Avatar, Badge } from 'react-native-elements'
+import { Avatar, Badge, CheckBox } from 'react-native-elements'
 import SuggestedFavouriteActivities from './SuggestedFavouriteActivities'
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 /**
  * The modal that shows when user selects each of the individual upcoming plans
@@ -30,6 +31,8 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         }
     }, []);
 
+    const [checked, setChecked] = useState(false); // Input availabilities checkbox
+    const [isTooltipVisible, setIsTooltipVisible] = useState(false); // Tooltip for possible timings
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Input avails button
     const [topGenres, setTopGenres] = useState([]);
     const [allGenres, setAllGenres] = useState([['ADVENTURE', false], ['ARTS', false],
@@ -116,18 +119,10 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         return (
             <View pointerEvents={foodIsSelected ? 'auto' : 'none'}
                 style={styles.foodFilters}>
-                {foodIsSelected
-                    ? null
-                    : <Text style={{
-                        position: 'absolute', right: 5, top: 12,
-                        fontSize: 12, fontWeight: '400', color: '#E86830',
-                        fontFamily: 'serif'
-                    }}>
-                        Select food to enable filter selection
-                </Text>
-                }
-                <FoodLocation location={location} handleLocationSelect={handleLocationSelect} />
-                <FoodCuisine cuisine={cuisine} handleCuisineSelect={handleCuisineSelect} />
+                <FoodLocation location={location} handleLocationSelect={handleLocationSelect}
+                    preferences={board.food_filters.area} />
+                <FoodCuisine cuisine={cuisine} handleCuisineSelect={handleCuisineSelect}
+                    preferences={board.food_filters.cuisine} />
                 <FoodPrice handlePricePress={(price) => handlePricePress(price)} />
             </View>
         );
@@ -262,29 +257,6 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
 
     }
 
-    const renderInputAvailabilitiesButton = () => {
-        if (isButtonDisabled) {
-            return (
-                <View>
-                    <TouchableOpacity style={[styles.finalizeButton, { backgroundColor: '#2a9d8f', borderWidth: 0.1 }]}
-                        disabled={true}
-                        onPress={() => finalizeBoard()}>
-                        <Text style={{ color: 'white', fontFamily: 'serif' }}>
-                            Availabilities Inputted
-                            </Text>
-                    </TouchableOpacity>
-                </View>
-            );
-        } else {
-            return (
-                <TouchableOpacity style={styles.finalizeButton} onPress={() => inputAvailabilities()}
-                    disabled={isButtonDisabled}>
-                    <Text style={{ fontFamily: 'serif' }}>Input Availabilities</Text>
-                </TouchableOpacity>
-            );
-        }
-    }
-
     // Top portion of modal, which is identical for both host and invitees' board
     const renderTopPortion = (isUserHost) => {
         return (
@@ -300,7 +272,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                         left: 0,
                         right: 0,
                         top: 0,
-                        height: 120,
+                        height: 150,
                         borderTopLeftRadius: 10,
                         borderTopRightRadius: 10,
                     }}
@@ -406,7 +378,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                         </View>
                     </View>
                     <GenrePicker allGenres={allGenres} handleGenreSelect={handleGenreSelect}
-                        topGenres={topGenres} />
+                        topGenres={topGenres} preferences={board.preferences} />
                 </View>
                 {renderFoodFilter(allGenres[5][1])}
             </View>
@@ -423,12 +395,58 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
             <View style={styles.footer}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <View style={{ flexDirection: 'column' }}>
+
+                        {isTooltipVisible
+                            ? <View style={styles.tooltip}>
+                                <Text style={{
+                                    fontSize: 14,
+                                    color: 'white', textAlign: 'center'
+                                }}>
+                                    This is your available timings
+                                    for the selected date. It will be used to find a common timing
+                                    between you and your friends for the finalized timeline.
+                        </Text>
+                                <View style={styles.tipOfTooltip}>
+                                    <MaterialCommunityIcons
+                                        name="menu-down"
+                                        color={"grey"}
+                                        size={50}
+                                    />
+                                </View>
+                            </View>
+                            : null
+                        }
+
+                        <TouchableOpacity onPress={() => setIsTooltipVisible(!isTooltipVisible)}
+                            style={{ position: 'absolute', right: '-16%', top: '-20%', padding: 2 }}>
+                            <MaterialCommunityIcons
+                                name="information"
+                                color={"grey"}
+                                size={20}
+                            />
+                        </TouchableOpacity>
                         <Text style={styles.sectionHeaderText}>Possible Timings</Text>
                         <Text style={styles.sectionSubHeaderText}>
-                            Input your available timings
-                 </Text>
+                            {checked
+                                ? 'Your availability from Google calendar will be considered'
+                                : 'Input your available timings'}
+                        </Text>
                     </View>
-                    {renderInputAvailabilitiesButton()}
+
+                    <View style={{ right: -15, top: -16, }}>
+                        <CheckBox
+                            iconRight={true}
+                            title='Sync Google Calendar'
+                            titleProps={{ fontSize: 16, fontWeight: '600' }}
+                            onPress={() => {
+                                if (!checked) inputAvailabilities(); // Prevent spamming of API calls
+                                setChecked(true)
+                            }}
+                            checked={checked}
+                            checkedColor={'#E86830'}
+                            containerStyle={{ backgroundColor: 'transparent', borderWidth: 0 }}
+                        />
+                    </View>
                 </View>
             </View>
 
@@ -475,6 +493,7 @@ const styles = StyleSheet.create({
     modal: {
         flex: 1,
         borderRadius: 10,
+        padding: -20,
     },
     header: {
         flex: 1,
@@ -507,7 +526,7 @@ const styles = StyleSheet.create({
     genreSelection: {
         borderBottomWidth: 1.5,
         borderBottomColor: '#e4e4e4',
-        paddingBottom: 10
+        paddingBottom: 15
     },
     genreButton: {
         borderWidth: 0.5,
@@ -521,7 +540,9 @@ const styles = StyleSheet.create({
         fontWeight: '800'
     },
     sectionSubHeaderText: {
-        fontSize: 12, color: '#A4A4A6', fontWeight: '100'
+        fontSize: 12, color: '#A4A4A6', fontWeight: '100',
+        position: 'absolute', top: '35%',
+        width: Dimensions.get('window').width / 2.2
     },
     foodFilters: {
         borderBottomWidth: 1.5,
@@ -541,15 +562,21 @@ const styles = StyleSheet.create({
         paddingTop: 10,
 
     },
-    finalizeButton: {
-        borderWidth: 1,
-        borderRadius: 5,
-        padding: 5,
-        marginRight: 10,
-        marginLeft: 10,
-        alignSelf: 'flex-start',
-    },
     close: {
         color: 'white',
     },
+    tooltip: {
+        backgroundColor: 'grey',
+        position: 'absolute',
+        bottom: '135%',
+        right: '-43%',
+        borderRadius: 17,
+        padding: 10,
+        width: Dimensions.get('window').width / 2.5,
+
+    },
+    tipOfTooltip: {
+        position: 'absolute', bottom: -27, right: 20,
+
+    }
 });

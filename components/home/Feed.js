@@ -163,7 +163,7 @@ const Feed = (props) => {
 
         Alert.alert(
             "Add to plan",
-            "Where would you like to include all the selected favourite event?",
+            "Where would you like to include all the selected favourite events?",
             [
                 {
                     text: "Cancel",
@@ -213,6 +213,10 @@ const Feed = (props) => {
     // Toggle for whether or not event will be included in planning when adding to plan
     const handleFavouriteEventPress = (event, index) => {
         var newState = [...favourites];
+        // Maximum number clicked and attempting to add a fourth event
+        if (numberOfFavouritesClicked == 3 && newState[index][2] == false)
+            return;
+
         newState[index][2] = !newState[index][2];
         addToSummaryCart(event, newState[index][2]);
         setFavourites(newState);
@@ -855,6 +859,19 @@ const Feed = (props) => {
                                 right: -100,
                             }}
                         />
+                        {numberOfFavouritesClicked == 3 ? (
+                            <Text
+                                style={{
+                                    position: "absolute",
+                                    marginTop: 5,
+                                    marginLeft: 20,
+                                    color: "red",
+                                    fontWeight: "600",
+                                }}
+                            >
+                                Maximum number of events added
+                            </Text>
+                        ) : null}
 
                         <View
                             style={{

@@ -22,9 +22,16 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
         var formattedItems = {}; // For use with calendar library
 
         userEvents.forEach((event) => {
-            const startTime = event.start.dateTime.substring(11, 16);
-            const endTime = event.end.dateTime.substring(11, 16);
-            const date = event.start.dateTime.substring(0, 10);
+            var startTime = '08:00'
+            var endTime = '23:59'
+            var date = ''
+            if (event.start.hasOwnProperty('dateTime')) { // Not whole day event
+                startTime = event.start.dateTime.substring(11, 16);
+                endTime = event.end.dateTime.substring(11, 16);
+                date = event.start.dateTime.substring(0, 10);
+            } else { // Whole day event doesnt have .dateTime prop
+                date = event.start.date
+            }
             const name = event.summary;
             const startMoment = moment(date + " " + startTime);
             const endMoment = moment(date + " " + endTime);
