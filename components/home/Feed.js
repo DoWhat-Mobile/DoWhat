@@ -4,7 +4,7 @@ import {
     Image, FlatList, TouchableOpacity, Dimensions, Alert
 } from "react-native";
 import { useFocusEffect } from '@react-navigation/native'
-import { Card, Overlay } from 'react-native-elements';
+import { Card, Badge } from 'react-native-elements';
 import firebase from '../../database/firebase';
 import { handleEventsOf } from '../../reusable-functions/HomeFeedLogic';
 import { TIH_API_KEY } from 'react-native-dotenv';
@@ -15,7 +15,7 @@ import {
     setAddingFavourites, addFavouritesToPlan,
     setAddingFavouritesToExistsingBoard
 } from '../../actions/favourite_event_actions';
-import SelectedFavouriteSummaryModal from './SelectedFavouritesSummaryModal';
+import SelectedFavouritesSummaryModal from './SelectedFavouritesSummaryModal';
 
 /**
  * User feed in home page. Has 3 divisions: Show whats popular, eateries, and activities
@@ -36,12 +36,12 @@ const Feed = (props) => {
     const [hungryData, setHungryData] = useState([]);
     const [somethingNewData, setSomethingNewData] = useState([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [favourites, setFavourites] = useState([]);
-    const [viewFavourites, setViewFavourites] = useState(false);
-    const [addingFavouritesToPlan, setAddingFavouritesToPlan] = useState(false);
-    const [anyFavouritesClicked, setAnyFavouritesClicked] = useState(false);
+    const [favourites, setFavourites] = useState([]); // All the favourited events, and whether or not they are selected
+    const [viewFavourites, setViewFavourites] = useState(false); // Between favourites view and all events view
+    const [addingFavouritesToPlan, setAddingFavouritesToPlan] = useState(false); // Selecting which favourited events to use in plan
+    const [anyFavouritesClicked, setAnyFavouritesClicked] = useState(false); // Show bottom summary cart when any clicked
     const [numberOfFavouritesClicked, setNumberOfFavouritesClicked] = useState(0);
-    const [favouriteSummaryModalVisible, setFavouriteSummaryModalVisibile] = useState(true);
+    const [favouriteSummaryModalVisible, setFavouriteSummaryModalVisibile] = useState(false); // Summary of all events in cart 
 
     const getDataFromFirebase = async () => {
         try {
@@ -126,15 +126,6 @@ const Feed = (props) => {
         }
     }
 
-    // Event represents an event node in the database of events
-    const handleEventPress = (event, sectionTitle, index, foodIndex) => {
-        if (addingFavouritesToPlan) {
-            alert("Hello")
-        }
-
-        handleAddToFavourites(event, sectionTitle, index, foodIndex);
-    }
-
     const handleDoneSelectingFavourites = () => {
         var allEvents = []
         favourites.forEach(event => { // Include all events selected
@@ -183,6 +174,23 @@ const Feed = (props) => {
         setFavourites(newState);
     }
 
+    // Functionality of remove button in summary cart
+    const removeSelectedFavourite = (eventID) => {
+        var newState = [...favourites]
+        for (var i = 0; i < newState.length; i++) {
+            const currEventID = newState[i][0].id;
+            if (currEventID == eventID) {
+                newState[i][2] = false; // Unselect
+            }
+        }
+        setFavourites(newState);
+        if (numberOfFavouritesClicked - 1 == 0) { // No more favourites clicked, close modals
+            setFavouriteSummaryModalVisibile(false);
+            setAnyFavouritesClicked(false);
+        }
+        setNumberOfFavouritesClicked(numberOfFavouritesClicked - 1)
+    }
+
     const handleAddFavouriteToCollab = (allEvents) => {
         props.setAddingFavouritesToExistsingBoard(true) // Mark redux state before navigating
         props.addFavouritesToPlan(allEvents)
@@ -210,16 +218,6 @@ const Feed = (props) => {
         newFavourites = newFavourites.filter(selectedEvent =>
             selectedEvent[0].id != event[0].id)
         setFavourites(newFavourites);
-    }
-
-    const handleTitlePress = (title) => {
-        if (title == 'What is currently popular') {
-            alert("Future enhancements")
-        } else if (title == 'Hungry?') {
-            alert("Future enhancements for Hungry")
-        } else {
-            alert("Future enhancements for Find something new")
-        }
     }
 
     const checkIfEventIsFavourited = (event) => {
@@ -277,8 +275,6 @@ const Feed = (props) => {
 
         return (
             <View>
-                {/*<TouchableOpacity disabled={sectionTitle == 'favourites'}
-                onPress={() => handleEventPress(event, sectionTitle, index, foodIndex)}>*/}
                 <View style={{ width: Dimensions.get('window').width }}>
                     <Card
                         style={{ height: (Dimensions.get('window').height / 2) }}
@@ -297,7 +293,7 @@ const Feed = (props) => {
                                 <Text style={{ fontSize: 12, color: '#1d3557', marginTop: 2, }}> {eventRatings}</Text>
                             </View>
                             <TouchableOpacity disabled={sectionTitle == 'favourites'}
-                                onPress={() => handleEventPress(event, sectionTitle, index, foodIndex)}>
+                                onPress={() => handleAddToFavourites(event, sectionTitle, index, foodIndex)}>
                                 {isEventFavourited
                                     ? <MaterialCommunityIcons name="heart" color={'#e63946'} size={18} />
                                     : <MaterialCommunityIcons name="heart-outline" color={'black'} size={18} />}
@@ -353,7 +349,6 @@ const Feed = (props) => {
 
                     </Card>
                 </View>
-                {/*</TouchableOpacity> */}
             </View>
         );
     }
@@ -392,8 +387,7 @@ const Feed = (props) => {
 
     const renderListHeaderComponent = (isFavouritesHeader) => {
         return (
-            <View style={[styles.header, addingFavouritesToPlan
-                ? { backgroundColor: '#BEBEBE' } : {}]}>
+            <View style={styles.header}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={styles.headerText}>
                         {isFavouritesHeader
@@ -514,8 +508,7 @@ const Feed = (props) => {
     if (viewFavourites) {
         // Favourites view
         return (
-            < View style={[styles.container, addingFavouritesToPlan
-                ? { backgroundColor: '#BEBEBE' } : {}]} >
+            < View style={styles.container} >
 
                 <SectionList
                     onRefresh={() => refreshPage()}
@@ -531,34 +524,54 @@ const Feed = (props) => {
                     }
                     renderSectionHeader={({ section }) =>
                         <View style={styles.sectionHeader}>
-                            <TouchableOpacity
-                                onPress={() => handleTitlePress(section.title)}>
-                                <Text style={styles.sectionHeaderText}>{section.title}</Text>
-                            </TouchableOpacity>
+                            <Text style={styles.sectionHeaderText}>{section.title}</Text>
                         </View>
                     }
                     keyExtractor={(item, index) => index}
                 />
 
-                <Overlay
-                    isVisible={favouriteSummaryModalVisible}
-                    width="auto"
-                    height="auto"
-                    overlayStyle={{ width: '95%', height: '32%', borderRadius: 20 }}
-                >
-                    <SelectedFavouriteSummaryModal onClose={() => setFavouriteSummaryModalVisibile(false)} />
-                </Overlay>
+                {favouriteSummaryModalVisible // Modal of cart sumamry
+                    ? <SelectedFavouritesSummaryModal onClose={() => setFavouriteSummaryModalVisibile(false)}
+                        allEvents={favourites} removeSelectedFavourite={removeSelectedFavourite} />
+                    : null
+                }
 
                 {anyFavouritesClicked
                     ? <View style={{ opacity: 100 }}>
-                        <TouchableOpacity onPress={() => setFavouriteSummaryModalVisibile(true)}
-                            style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                            <MaterialCommunityIcons name="dots-horizontal" color={'#e63946'} size={18} />
-                        </TouchableOpacity>
-                        <View style={{ padding: 10, borderWidth: 1, borderRadius: 10 }}>
-                            <Text style={{ textAlign: "center" }}>
-                                Summary cart here {numberOfFavouritesClicked}
+                        <Badge
+                            value={<MaterialCommunityIcons name="dots-horizontal"
+                                color={'white'} size={28} />}
+                            badgeStyle={{
+                                backgroundColor: '#cc5237', paddingTop: 15,
+                                paddingBottom: 15, borderTopLeftRadius: 10, borderTopRightRadius: 10,
+                                borderWidth: 0,
+                            }}
+                            onPress={() =>
+                                setFavouriteSummaryModalVisibile(!favouriteSummaryModalVisible)}
+                            containerStyle={{
+                                position: 'relative', top: 5, right: -100
+                            }}
+                        />
+
+                        <View style={{
+                            flexDirection: 'row', justifyContent: 'space-between',
+                            padding: 10, borderRadius: 5, marginLeft: 20, marginRight: 20,
+                            backgroundColor: "#cc5327",
+                        }}>
+                            <Text style={{
+                                textAlign: "center", color: 'white', justifyContent: 'center',
+                                fontWeight: 'bold', fontSize: 14, fontFamily: 'serif',
+                                marginTop: 3, marginLeft: 10,
+                            }}>
+                                {numberOfFavouritesClicked} |  Use events for plan
                             </Text>
+
+                            <TouchableOpacity onPress={handleDoneSelectingFavourites}
+                                style={{
+                                    padding: 5, backgroundColor: 'white', borderRadius: 5,
+                                }}>
+                                <MaterialCommunityIcons name="greater-than" color={'black'} size={16} />
+                            </TouchableOpacity>
                         </View>
                     </View>
                     : null
@@ -600,10 +613,7 @@ const Feed = (props) => {
                 renderItem={({ item, section, index }) => renderFeed(item, section, index)}
                 renderSectionHeader={({ section }) =>
                     <View style={styles.sectionHeader}>
-                        <TouchableOpacity
-                            onPress={() => handleTitlePress(section.title)}>
-                            <Text style={styles.sectionHeaderText}>{section.title}</Text>
-                        </TouchableOpacity>
+                        <Text style={styles.sectionHeaderText}>{section.title}</Text>
                     </View>
                 }
                 keyExtractor={(item, index) => index}
@@ -695,5 +705,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         color: 'white'
+    },
+    modalContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderRadius: 10,
+
     }
 });
