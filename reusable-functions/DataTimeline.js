@@ -106,8 +106,13 @@ export const genreEventObjectArray = (
     }
     if (weather === "Rain" || weather === "Thunderstorm") {
         for (let i = 0; i < userGenres.length; i++) {
-            const genre = userGenres[i] === "food" ? "food" : "indoors";
-            if (genre === "indoors") {
+            const genre =
+                userGenres[i] === "food"
+                    ? "food"
+                    : userGenres[i].toLowerCase() === "nightlife"
+                    ? "nightlife"
+                    : "indoors";
+            if (genre === "indoors" || genre === "nightlife") {
                 const eventObject = events[genre]["list"];
                 const rand = Math.floor(Math.random() * eventObject.length);
                 const event = events[genre]["list"][rand];
@@ -126,7 +131,11 @@ export const genreEventObjectArray = (
     }
     if (dinner == 1) {
         let obj = filterHelper(
-            { area: filters.area, cuisine: ["Hawker", "Cafe"], price: 3 },
+            {
+                area: filters.area.concat("Central"),
+                cuisine: ["Hawker", "Cafe"],
+                price: 3,
+            },
             events
         );
         currentEvents.push(obj);
