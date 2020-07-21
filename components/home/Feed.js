@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     Dimensions,
     Alert,
+    ScrollView,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Card, Badge } from "react-native-elements";
@@ -339,161 +340,166 @@ const Feed = (props) => {
         }
 
         return (
-            <View
-                style={{
-                    flex: 1,
-                    width: Dimensions.get("window").width,
-                    //marginHorizontal: 20,
-                    marginVertical: 20,
-                    backgroundColor: "white",
-                    //borderRadius: 12,
-                    elevation: 5,
-                }}
-            >
-                <Image
-                    source={{ uri: imageURI }}
-                    style={{
-                        height: isEventFood ? 100 : 210,
-                        width: "100%",
-                        //borderTopRightRadius: 12,
-                        //borderTopLeftRadius: 12,
-                    }}
-                />
-
-                <Text
-                    style={{
-                        fontSize: 18,
-                        fontWeight: "bold",
-                        //marginTop: 10,
-                        paddingTop: 20,
-                        paddingHorizontal: 10,
-                        borderTopWidth: 0.5,
-                    }}
-                >
-                    {event[0].title}
-                </Text>
+            <View>
                 <View
                     style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        paddingHorizontal: 10,
-                        marginBottom: 10,
+                        flex: 1,
+                        width: Dimensions.get("window").width,
+                        //marginHorizontal: 20,
+                        marginVertical: 20,
+                        backgroundColor: "white",
+                        //borderRadius: 12,
+                        elevation: 5,
                     }}
                 >
-                    <View style={{ flexDirection: "row" }}>
-                        <MaterialCommunityIcons
-                            name="star"
-                            color={"#1d3557"}
-                            size={24}
-                        />
-                        <Text
-                            style={{
-                                fontSize: 16,
-                                color: "#1d3557",
-                                marginTop: 2,
-                            }}
+                    <Image
+                        source={{ uri: imageURI }}
+                        style={{
+                            height: isEventFood ? 100 : 210,
+                            width: "100%",
+                            //borderTopRightRadius: 12,
+                            //borderTopLeftRadius: 12,
+                        }}
+                    />
+
+                    <Text
+                        style={{
+                            fontSize: 18,
+                            fontWeight: "bold",
+                            //marginTop: 10,
+                            paddingTop: 20,
+                            paddingHorizontal: 10,
+                            borderTopWidth: 0.5,
+                        }}
+                    >
+                        {event[0].title}
+                    </Text>
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingHorizontal: 10,
+                            marginBottom: 10,
+                        }}
+                    >
+                        <View style={{ flexDirection: "row" }}>
+                            <MaterialCommunityIcons
+                                name="star"
+                                color={"#1d3557"}
+                                size={24}
+                            />
+                            <Text
+                                style={{
+                                    fontSize: 16,
+                                    color: "#1d3557",
+                                    marginTop: 2,
+                                }}
+                            >
+                                {" "}
+                                {eventRatings}
+                            </Text>
+                        </View>
+                        <TouchableOpacity
+                            disabled={sectionTitle == "favourites"}
+                            onPress={() =>
+                                handleAddToFavourites(
+                                    event,
+                                    sectionTitle,
+                                    index,
+                                    foodIndex
+                                )
+                            }
                         >
-                            {" "}
-                            {eventRatings}
-                        </Text>
+                            {isEventFavourited ? (
+                                <MaterialCommunityIcons
+                                    name="heart"
+                                    color={"#e63946"}
+                                    size={24}
+                                />
+                            ) : (
+                                <MaterialCommunityIcons
+                                    name="heart-outline"
+                                    color={"black"}
+                                    size={24}
+                                />
+                            )}
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity
-                        disabled={sectionTitle == "favourites"}
-                        onPress={() =>
-                            handleAddToFavourites(
-                                event,
-                                sectionTitle,
-                                index,
-                                foodIndex
-                            )
-                        }
-                    >
-                        {isEventFavourited ? (
-                            <MaterialCommunityIcons
-                                name="heart"
-                                color={"#e63946"}
-                                size={24}
-                            />
+
+                    <View style={{ marginLeft: 10 }}>
+                        <ReadMore
+                            numberOfLines={1}
+                            renderTruncatedFooter={renderTruncatedFooter}
+                            renderRevealedFooter={renderRevealedFooter}
+                        >
+                            <Text
+                                style={{
+                                    marginHorizontal: 10,
+                                    marginVertical: 5,
+                                    fontSize: 16,
+                                }}
+                            >
+                                {event[0].description}
+                                {"\n"}
+                            </Text>
+                        </ReadMore>
+                    </View>
+
+                    {sectionTitle == "favourites" ? (
+                        addingFavouritesToPlan ? (
+                            <View
+                                style={{
+                                    flex: 1,
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    marginTop: 25,
+                                }}
+                            >
+                                <TouchableOpacity
+                                    style={styles.favouritesButton}
+                                    onPress={() =>
+                                        handleRemoveFavourites(event, index)
+                                    }
+                                >
+                                    <Text style={styles.favouritesButtonText}>
+                                        REMOVE FROM FAVOURITES
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.favouritesButton}
+                                    onPress={() =>
+                                        handleFavouriteEventPress(event, index)
+                                    }
+                                >
+                                    <Text style={styles.favouritesButtonText}>
+                                        {isEventBeingAddedToPlan
+                                            ? "ADDED"
+                                            : "ADD TO PLAN"}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
                         ) : (
-                            <MaterialCommunityIcons
-                                name="heart-outline"
-                                color={"black"}
-                                size={24}
-                            />
-                        )}
-                    </TouchableOpacity>
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    marginTop: 5,
+                                }}
+                            >
+                                <TouchableOpacity
+                                    style={styles.favouritesButton}
+                                    onPress={() =>
+                                        handleRemoveFavourites(event)
+                                    }
+                                >
+                                    <Text style={styles.favouritesButtonText}>
+                                        REMOVE FROM FAVOURITES
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        )
+                    ) : null}
                 </View>
-
-                <View style={{ marginLeft: 10 }}>
-                    <ReadMore
-                        numberOfLines={1}
-                        renderTruncatedFooter={renderTruncatedFooter}
-                        renderRevealedFooter={renderRevealedFooter}
-                    >
-                        <Text
-                            style={{
-                                marginHorizontal: 10,
-                                marginVertical: 5,
-                                fontSize: 16,
-                            }}
-                        >
-                            {event[0].description}
-                            {"\n"}
-                        </Text>
-                    </ReadMore>
-                </View>
-
-                {sectionTitle == "favourites" ? (
-                    addingFavouritesToPlan ? (
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                marginTop: 5,
-                            }}
-                        >
-                            <TouchableOpacity
-                                style={styles.favouritesButton}
-                                onPress={() =>
-                                    handleRemoveFavourites(event, index)
-                                }
-                            >
-                                <Text style={styles.favouritesButtonText}>
-                                    REMOVE FROM FAVOURITES
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.favouritesButton}
-                                onPress={() =>
-                                    handleFavouriteEventPress(event, index)
-                                }
-                            >
-                                <Text style={styles.favouritesButtonText}>
-                                    {isEventBeingAddedToPlan
-                                        ? "ADDED"
-                                        : "ADD TO PLAN"}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    ) : (
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                marginTop: 5,
-                            }}
-                        >
-                            <TouchableOpacity
-                                style={styles.favouritesButton}
-                                onPress={() => handleRemoveFavourites(event)}
-                            >
-                                <Text style={styles.favouritesButtonText}>
-                                    REMOVE FROM FAVOURITES
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    )
-                ) : null}
             </View>
         );
     };
@@ -572,9 +578,21 @@ const Feed = (props) => {
                         </TouchableOpacity>
                     )}
                 </View>
+                {/* <Text style={{ marginLeft: 10 }}>Your Favourited Events</Text>
+                <View style={{ marginVertical: 30 }}>
+                    <Text
+                        style={{
+                            marginLeft: Dimensions.get("window").width / 4,
+                            fontWeight: "bold",
+                            fontSize: 20,
+                        }}
+                    >
+                        Nothing Selected Yet
+                    </Text>
+                </View> */}
                 <Text
                     style={{
-                        marginTop: -15,
+                        marginTop: 0,
                         marginBottom: 20,
                         fontWeight: "bold",
                         marginLeft: 10,
@@ -1063,7 +1081,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: "bold",
         textAlign: "center",
-        color: "white",
+        color: "black",
     },
     modalContainer: {
         flex: 1,
