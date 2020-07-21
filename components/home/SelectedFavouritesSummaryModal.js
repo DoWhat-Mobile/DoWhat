@@ -32,7 +32,7 @@ const SelectedFavouritesSummaryModal = ({ onClose, allEvents, removeSelectedFavo
                 }}>
                     <View style={{ height: Dimensions.get('window').height * 0.07 }}>
                         <Text style={{
-                            fontSize: 16, fontWeight: 'bold', fontFamily: 'serif',
+                            fontSize: 16, fontWeight: 'bold',
                             textAlign: 'left', marginLeft: 10
 
                         }}>{activity.title}</Text>
@@ -51,7 +51,7 @@ const SelectedFavouritesSummaryModal = ({ onClose, allEvents, removeSelectedFavo
                     </TouchableOpacity>
 
                 </View>
-            </View>
+            </View >
         )
     }
 

@@ -150,7 +150,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                     : null}
 
                 <Text style={{
-                    fontFamily: 'serif', fontSize: 11, fontWeight: '100',
+                    fontSize: 11, fontWeight: '100',
                     textAlign: "center", color: "#5C5656", marginTop: 4,
                 }}>{userName}</Text>
             </View >
@@ -167,7 +167,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
         return (
             <View style={{ flex: 1, }}>
                 <Text style={{
-                    fontSize: 16, fontWeight: '800', fontFamily: 'serif',
+                    fontSize: 16, fontWeight: '800',
                     marginLeft: 16, marginTop: 5
                 }}>
                     Invited ({data.length})
@@ -177,7 +177,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                     horizontal={true}
                     renderItem={({ item, index }) => formatInvitee(item[0], item[1], item[2])}
                     keyExtractor={(item, index) => item + index} />
-            </View>
+            </View >
         )
     }
 
@@ -283,7 +283,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                             Your outing on {formatDate(selectedDate.getDay(),
                             selectedDate.getMonth(), selectedDate.getDate())}
                         </Text>
-                        <Text style={{ color: '#f0f0f0', fontFamily: 'serif', fontSize: 12 }}>
+                        <Text style={{ color: '#f0f0f0', fontSize: 12 }}>
                             Hosted by {isUserHost ? 'you' : board.host.replace(/_/g, ' ')}
                         </Text>
                     </View>
@@ -294,7 +294,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                         />
                     </View>
                 </View>
-            </View>
+            </View >
         )
     }
 
@@ -453,7 +453,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
             <View style={styles.buttonGroup}>
                 <TouchableOpacity onPress={() => finalizeBoard()}>
                     <Text style={{
-                        fontFamily: 'serif', color: '#E86830', fontWeight: 'bold',
+                        color: '#E86830', fontWeight: 'bold',
                         fontSize: 14
                     }}>Finalize Selections</Text>
                 </TouchableOpacity>
@@ -471,11 +471,11 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                     { cancelable: false }
                 )}>
                     <Text style={{
-                        fontFamily: 'serif', color: '#E86830', fontWeight: 'bold',
+                        color: '#E86830', fontWeight: 'bold',
                         fontSize: 14
                     }}>Opt Out</Text>
                 </TouchableOpacity>
-            </View>
+            </View >
         </ScrollView >
     );
 }
@@ -503,7 +503,6 @@ const styles = StyleSheet.create({
     headerText: {
         fontWeight: '800',
         fontSize: 20,
-        fontFamily: 'serif',
         color: '#FEFBFA'
     },
     invitedPeople: {
@@ -535,7 +534,6 @@ const styles = StyleSheet.create({
         margin: 5,
     },
     sectionHeaderText: {
-        fontFamily: 'serif',
         fontSize: 15,
         fontWeight: '800'
     },

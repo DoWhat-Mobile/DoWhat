@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginTop: '15%',
         marginLeft: '8%',
-        fontFamily: 'serif'
+
     },
     body: {
         flex: 8,
