@@ -3,6 +3,7 @@ import { Text, View, Image, ScrollView } from "react-native";
 import ReadMore from "react-native-read-more-text";
 import { TIH_API_KEY } from "react-native-dotenv";
 import Route from "../components/finalized/Route";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 /**
  * handles filter for food to be added in data array. Returns array of data that is formatted to be passed as props into
@@ -265,6 +266,7 @@ export const objectFormatter = (startTime, event, genre) => {
         genre: genre,
         coord: event.coord,
         location: event.location,
+        fav: event.fav,
     };
 };
 
@@ -297,6 +299,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
 
     let desc = null;
     if (rowData.description && rowData.imageUrl) {
+        console.log(rowData);
         desc = (
             <View>
                 <Image
@@ -327,6 +330,13 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                                 }}
                             >
                                 {title}
+                                {rowData.fav && (
+                                    <MaterialCommunityIcons
+                                        name="heart"
+                                        color={"#e63946"}
+                                        size={24}
+                                    />
+                                )}
                             </Text>
                             {"\n"}
                             {rowData.description}
@@ -362,7 +372,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
             style={{
                 flex: 1,
                 marginBottom: 10,
-                backgroundColor: "#fff5e6",
+                backgroundColor: "white",
                 borderRadius: 10,
                 elevation: 5,
             }}

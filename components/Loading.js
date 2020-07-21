@@ -88,6 +88,7 @@ const Loading = (props) => {
             } = item[0];
             rest.name = name;
             rest.image = image;
+            rest.fav = 1;
             return { [genre]: rest };
         });
     };
