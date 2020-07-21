@@ -34,7 +34,7 @@ const SuggestedFavouriteActivities = ({ activities, handleFavouritesSelect }) =>
                     justifyContent: 'center', paddingBottom: 5
                 }}>
                     <Text style={{
-                        fontSize: 12, fontWeight: 'bold', fontFamily: 'serif',
+                        fontSize: 12, fontWeight: 'bold',
                         textAlign: 'center'
 
                     }}>{activity.title}</Text>
@@ -70,7 +70,7 @@ const SuggestedFavouriteActivities = ({ activities, handleFavouritesSelect }) =>
                     </TouchableOpacity>
 
                 </View>
-            </View>
+            </View >
         )
     }
 
@@ -83,11 +83,11 @@ const SuggestedFavouriteActivities = ({ activities, handleFavouritesSelect }) =>
                 ? <View style={{ justifyContent: 'center', alignContent: 'center' }}>
                     <Text style={{
                         fontSize: 16, fontWeight: 'bold', textAlign: "center",
-                        fontFamily: 'serif'
+
                     }}>No activities suggested.</Text>
                     <Text style={{
                         margin: 5, fontSize: 12, color: 'grey', textAlign: "center",
-                        fontFamily: 'serif'
+
                     }}>You can add a suggestion from your favourited activities
                              </Text>
                 </View>
@@ -111,7 +111,6 @@ const styles = StyleSheet.create({
         margin: 5,
     },
     genreSelectionText: {
-        fontFamily: 'serif',
         fontSize: 15,
         fontWeight: '800'
     },

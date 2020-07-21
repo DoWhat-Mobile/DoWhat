@@ -121,7 +121,7 @@ const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
                 <View style={{ flex: 1, justifyContent: 'center', flexDirection: 'column' }}>
                     <Text style={{
                         marginLeft: 10, fontSize: 16,
-                        fontWeight: '800', fontFamily: 'serif',
+                        fontWeight: '800',
                     }}>
                         {name.replace(/_/g, ' ')}
                     </Text>
@@ -148,7 +148,7 @@ const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            </View >
         )
     }
 
@@ -161,7 +161,7 @@ const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
                 />
                 <Text style={{
                     textAlign: 'center', justifyContent: 'center',
-                    fontSize: 16, fontFamily: 'serif', fontWeight: 'bold',
+                    fontSize: 16, fontWeight: 'bold',
                     marginTop: 20,
                 }}>
                     No friend requests
@@ -172,7 +172,7 @@ const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
                 }}>
                     All your friend requests will be here
                 </Text>
-            </View>
+            </View >
         )
     }
 
@@ -187,7 +187,7 @@ const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={{ marginLeft: 20, fontSize: 20, fontFamily: 'serif' }}> Friend Requests </Text>
+                <Text style={{ marginLeft: 20, fontSize: 20, }}> Friend Requests </Text>
                 <AntDesign
                     name="close"
                     size={24}
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     userName: {
         fontSize: 18,
         fontWeight: '800',
-        fontFamily: 'serif',
+
         textAlign: 'center'
 
     },

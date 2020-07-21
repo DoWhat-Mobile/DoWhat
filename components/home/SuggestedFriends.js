@@ -113,7 +113,7 @@ const SuggestedFriends = ({ friends, seeMore, fullView, currUserName,
                     borderTopWidth: 40, position: 'absolute', borderTopColor: '#b7b7a4',
                     alignSelf: 'stretch'
                 }}>
-                    <Text>             {/*This spacing is for styling*/}                       </Text>
+                    <Text>             {/*This spacing is for styling*/}                           </Text>
                 </View>
                 <View style={{
                     flex: 1, width: '100%', alignItems: 'center',
@@ -138,11 +138,11 @@ const SuggestedFriends = ({ friends, seeMore, fullView, currUserName,
     return (
         <View>
             <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                <Text style={{ color: 'black', marginLeft: 10, fontFamily: 'serif', }}>
+                <Text style={{ color: 'black', marginLeft: 10, }}>
                     {fullView ? 'All ' : ''}Suggested Friends
                 </Text>
                 <TouchableOpacity onPress={seeMore}>
-                    <Text style={{ color: '#6c757d', marginRight: 5, fontFamily: 'serif' }}>
+                    <Text style={{ color: '#6c757d', marginRight: 5, }}>
                         {fullView ? 'Close' : 'See all'}
                     </Text>
                 </TouchableOpacity>
@@ -158,7 +158,7 @@ const SuggestedFriends = ({ friends, seeMore, fullView, currUserName,
                     keyExtractor={(item, index) => item + index}
                 />
             </View>
-        </View>
+        </View >
     )
 }
 

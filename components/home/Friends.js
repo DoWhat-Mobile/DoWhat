@@ -186,7 +186,7 @@ const AllFriends = ({ userID }) => {
                 />
                 <Text style={{ marginLeft: '2%' }}>{name.replace(/_/g, ' ')}</Text>
                 <View style={styles.buttonGroup}>
-                    <TouchableOpacity style={{ borderWidth: 1, borderRadius: 10, padding: 2 }}
+                    <TouchableOpacity style={{ borderWidth: 1, borderRadius: 5, padding: 2 }}
                         onPress={() => alert("More details about user (future enhancement)")}>
                         <Text>More details</Text>
                     </TouchableOpacity>
@@ -221,7 +221,7 @@ const AllFriends = ({ userID }) => {
                 <View>
                     <Text style={{
                         margin: 5, fontSize: 14, color: 'grey', textAlign: "center",
-                        fontFamily: 'serif'
+
                     }}>
                         No friends yet, your added friends will appear here
                     </Text>
@@ -315,6 +315,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(AllFriends);
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        marginTop: '10%'
     },
     header: {
         flex: 1,
@@ -333,7 +334,6 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         fontSize: 20,
         marginTop: '10%',
-        fontFamily: 'serif',
         alignSelf: 'center',
         color: 'white'
 

@@ -193,13 +193,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     fromToText: {
-        fontFamily: 'serif',
         fontSize: 16,
         fontWeight: '800',
         marginRight: '10%'
     },
     AddFriendText: {
-        fontFamily: 'serif', color: '#E86830', fontWeight: 'bold',
+        color: '#E86830', fontWeight: 'bold',
         fontSize: 12
     },
     time: {

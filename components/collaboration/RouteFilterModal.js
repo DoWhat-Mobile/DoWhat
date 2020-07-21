@@ -119,7 +119,6 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         color: 'white',
         fontSize: 14,
-        fontFamily: 'serif',
         fontWeight: 'bold',
         letterSpacing: 0.5,
     },

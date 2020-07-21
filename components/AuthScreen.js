@@ -113,11 +113,11 @@ class AuthScreen extends Component {
                 <View style={style.body}>
                     <Text style={{
                         fontSize: 20, fontWeight: "800",
-                        fontFamily: 'serif'
+
                     }}>
                         Welcome to DoWhat!
                     </Text>
-                    <Text style={{ fontSize: 12, color: "grey", fontFamily: 'serif' }}>
+                    <Text style={{ fontSize: 12, color: "grey", }}>
                         An automated planner that curates your perfect day out, all at your fingertips.
                         Sign in to begin.
                     </Text>

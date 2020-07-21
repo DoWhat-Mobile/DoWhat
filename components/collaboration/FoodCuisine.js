@@ -104,12 +104,11 @@ const styles = StyleSheet.create({
         width: 90,
     },
     genreSelectionText: {
-        fontFamily: 'serif',
         fontSize: 15,
         fontWeight: '800'
     },
     buttonText: {
-        fontFamily: 'serif', fontSize: 11, fontWeight: '100', textAlign: 'center'
+        fontSize: 11, fontWeight: '100', textAlign: 'center'
     }
 
 });

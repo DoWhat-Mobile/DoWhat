@@ -84,12 +84,12 @@ const GenrePicker = ({ allGenres, handleGenreSelect, topGenres, preferences }) =
                 : <Text style={{
                     position: 'absolute', marginTop: '12%',
                     fontSize: 12, fontWeight: '400', color: '#E86830',
-                    fontFamily: 'serif', alignSelf: 'flex-end'
+                    alignSelf: 'flex-end'
                 }}>
                     Select food to enable filter selection
                     </Text>
             }
-        </View>
+        </View >
     );
 }
 
@@ -107,13 +107,12 @@ const styles = StyleSheet.create({
 
     },
     genreSelectionText: {
-        fontFamily: 'serif',
         marginLeft: 5,
         fontSize: 15,
         fontWeight: '800',
         textAlign: 'center'
     },
     buttonText: {
-        fontFamily: 'serif', fontSize: 11, fontWeight: '100', textAlign: 'center'
+        fontSize: 11, fontWeight: '100', textAlign: 'center'
     }
 })
