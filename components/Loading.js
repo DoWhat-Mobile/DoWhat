@@ -103,8 +103,16 @@ const Loading = (props) => {
                 weather,
                 time[1]
             );
-            if (props.fav.length !== 0)
+            if (props.fav.length !== 0) {
                 currentEvents = favFormatter(props.fav).concat(currentEvents);
+            } else if (
+                route === "board" &&
+                props.route.params.topVotedEvent !== {}
+            ) {
+                currentEvents = favFormatter([
+                    props.route.params.topVotedEvent,
+                ]).concat(currentEvents);
+            }
             const allEvents =
                 props.route.params.currentEvents == undefined
                     ? data_timeline(time, props.allEvents, currentEvents)
