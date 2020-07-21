@@ -36,8 +36,11 @@ const Minimap = ({ coord }) => {
         );
     } else {
         return (
-            <View style={StyleSheet.absoluteFillObject}>
-                <MapView style={StyleSheet.absoluteFillObject} region={region}>
+            <View style={[StyleSheet.absoluteFillObject]}>
+                <MapView
+                    style={[StyleSheet.absoluteFillObject]}
+                    region={region}
+                >
                     {coords.map((marker, index) => {
                         return (
                             <Marker

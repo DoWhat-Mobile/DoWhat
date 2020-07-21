@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, Image, ScrollView } from "react-native";
+import { Text, View, Image, ScrollView, StyleSheet } from "react-native";
 import ReadMore from "react-native-read-more-text";
 import { TIH_API_KEY } from "react-native-dotenv";
 import Route from "../components/finalized/Route";
@@ -276,10 +276,7 @@ export const objectFormatter = (startTime, event, genre) => {
 export const renderDetail = (rowData, sectionID, rowID) => {
     const renderTruncatedFooter = (handlePress) => {
         return (
-            <Text
-                style={{ color: "#595959", fontFamily: "serif" }}
-                onPress={handlePress}
-            >
+            <Text style={{ color: "#595959" }} onPress={handlePress}>
                 Read more
             </Text>
         );
@@ -287,10 +284,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
 
     const renderRevealedFooter = (handlePress) => {
         return (
-            <Text
-                style={{ color: "#595959", fontFamily: "serif" }}
-                onPress={handlePress}
-            >
+            <Text style={{ color: "#595959" }} onPress={handlePress}>
                 Show less
             </Text>
         );
@@ -320,7 +314,6 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                             style={{
                                 flex: 1,
                                 fontSize: 14,
-                                fontFamily: "serif",
                             }}
                         >
                             <Text
@@ -350,20 +343,26 @@ export const renderDetail = (rowData, sectionID, rowID) => {
             <View
                 style={{
                     flex: 1,
-                    paddingHorizontal: 15,
-                    paddingVertical: 10,
+                    // paddingHorizontal: 15,
+                    // paddingVertical: 10,
                 }}
             >
                 <Text
                     style={{
                         fontSize: 16,
                         fontWeight: "bold",
-                        fontFamily: "serif",
+                        paddingLeft: 15,
+                        paddingVertical: 10,
+                        backgroundColor: "#e6e6e6",
+                        borderTopLeftRadius: 15,
+                        borderTopRightRadius: 15,
                     }}
                 >
                     {title}
                 </Text>
-                <Route item={rowData.description} />
+                <View style={{ paddingHorizontal: 15, paddingVertical: 10 }}>
+                    <Route item={rowData.description} />
+                </View>
             </View>
         );
     }

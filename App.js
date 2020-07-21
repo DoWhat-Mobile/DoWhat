@@ -58,6 +58,7 @@ const MainNavigator = () => {
                 component={Finalized}
                 options={({ navigation }) => ({
                     title: null,
+                    headerShown: false,
                     // headerStyle: {
                     //     backgroundColor: "#cc5327",
                     // },
