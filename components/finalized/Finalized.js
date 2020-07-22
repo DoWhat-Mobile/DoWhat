@@ -30,6 +30,7 @@ const Finalized = (props) => {
     const accessRights = props.route.params.access;
     const weather = props.route.params.weather;
     const userGenres = props.route.params.userGenres;
+    const filters = props.route.params.filters;
 
     React.useEffect(() => {
         const initRoutes = [
@@ -178,7 +179,7 @@ const Finalized = (props) => {
                         eventsUpdate={eventsUpdate}
                         mapUpdate={mapUpdate}
                         timings={timings}
-                        filters={props.finalGenres[2]}
+                        filters={filters}
                         setTimingsArray={setTimingsArray}
                     />
 

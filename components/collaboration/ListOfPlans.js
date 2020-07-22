@@ -16,7 +16,7 @@ import { findOverlappingIntervals } from "../../reusable-functions/OverlappingIn
 import { Overlay } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { formatDate } from "../DateSelection";
-import { setAddingFavouritesToExistsingBoard } from '../../actions/favourite_event_actions';
+import { setAddingFavouritesToExistsingBoard } from "../../actions/favourite_event_actions";
 
 /**
  * The <SectionList> Component within the AllPlans component. This is the component
@@ -29,7 +29,7 @@ const ListOfPlans = ({
     allEvents,
     addingFavourite,
     event,
-    setAddingFavouritesToExistsingBoard
+    setAddingFavouritesToExistsingBoard,
 }) => {
     const [boardModalVisibility, setBoardModalVisibility] = useState(false);
     const [boardDetails, setBoardDetails] = useState({});
@@ -106,19 +106,33 @@ const ListOfPlans = ({
             const event2 = allVotedFavourites[y];
 
             return event1.votes > event2.votes ? event1 : event2;
-        })
-    }
+        });
+    };
 
-    const goToFinalized = (boardFromFirebase, finalizedTimeline, boardFromParent) => {
-        const accessRights = boardFromParent.isUserHost ? 'host' : 'attendee';
+    const goToFinalized = (
+        boardFromFirebase,
+        finalizedTimeline,
+        boardFromParent
+    ) => {
+        const accessRights = boardFromParent.isUserHost ? "host" : "attendee";
 
-        const topVotedFavouriteEvent = getTopVotedFavouriteEvent(boardFromFirebase.favourites)
+        const topVotedFavouriteEvent = getTopVotedFavouriteEvent(
+            boardFromFirebase.favourites
+        );
         const topGenres = getTopVoted(boardFromFirebase.preferences, 3);
-        const topCuisines = getTopVoted(
+        var topCuisines = getTopVoted(
             boardFromFirebase.food_filters.cuisine,
             3
         );
-        const topArea = getTopVoted(boardFromFirebase.food_filters.area, 1);
+        topCuisines = topCuisines.map(
+            (item) => item.charAt(0).toUpperCase() + item.slice(1)
+        ); // Capitalize first letter
+
+        var topArea = getTopVoted(boardFromFirebase.food_filters.area, 1);
+        topArea = topArea.map(
+            (item) => item.charAt(0).toUpperCase() + item.slice(1)
+        ); // Capitalize first letter
+
         const topPrice = getTopVoted(
             boardFromFirebase.food_filters.price,
             1
@@ -141,12 +155,10 @@ const ListOfPlans = ({
             board: boardFromFirebase, // for Gcal Invite
             boardID: boardFromParent.boardID,
             currentEvents: finalizedTimeline,
-            access: accessRights,// 'host' | 'invitee' 
-            topVotedEvent: topVotedFavouriteEvent, // If anyone adds suggestions and votes casted 
-            //userLocation: 
-
-        }
-        console.log("navigation props: ", navigationProps.access);
+            access: accessRights, // 'host' | 'attendee'
+            topVotedEvent: topVotedFavouriteEvent, // If anyone adds suggestions and votes casted
+            //userLocation:
+        };
         navigation.navigate("Loading", navigationProps);
     };
 
@@ -168,12 +180,13 @@ const ListOfPlans = ({
 
     const addFavouriteToCollab = (allEvents, boardID) => {
         var updates = {};
-        allEvents.forEach(event => { // Add all selected favourites
+        allEvents.forEach((event) => {
+            // Add all selected favourites
             var cleanedEvent = event[0];
             delete cleanedEvent.favourited;
             delete cleanedEvent.selected;
-            updates['/favourites/' + cleanedEvent.id] = cleanedEvent;
-        })
+            updates["/favourites/" + cleanedEvent.id] = cleanedEvent;
+        });
 
         setAddingFavouritesToExistsingBoard(false); // Reset redux state after adding to collab
 
@@ -188,14 +201,18 @@ const ListOfPlans = ({
             "Would you like to add this favourite event as a suggestion in this collaboration?",
             [
                 {
-                    text: 'No',
-                    onPress: () => navigation.navigate("Plan", { addingFavourite: false }),
-                    style: 'cancel'
+                    text: "No",
+                    onPress: () =>
+                        navigation.navigate("Plan", { addingFavourite: false }),
+                    style: "cancel",
                 },
-                { text: 'Yes', onPress: () => addFavouriteToCollab(allEvents, boardID) },
+                {
+                    text: "Yes",
+                    onPress: () => addFavouriteToCollab(allEvents, boardID),
+                },
             ],
             { cancelable: true }
-        )
+        );
     };
 
     const renderCollaborationBoard = (board) => {
@@ -211,29 +228,29 @@ const ListOfPlans = ({
             return isBoardFinalized
                 ? "Timeline generated"
                 : board.isNewlyAddedBoard
-                    ? "Newly added board"
-                    : "Collaboration in progress";
+                ? "Newly added board"
+                : "Collaboration in progress";
         };
 
         const boardSubTitleString = () => {
             return isBoardFinalized
                 ? "Your schedule is ready to view!"
                 : board.isNewlyAddedBoard
-                    ? "Check me out!"
-                    : "Wait for all your friends to finalize their input!";
+                ? "Check me out!"
+                : "Wait for all your friends to finalize their input!";
         };
 
         const cardColorStyle = () => {
             return isBoardFinalized
                 ? { backgroundColor: "#eddcd2" }
                 : board.isNewlyAddedBoard
-                    ? {
-                        backgroundColor: "white",
-                        borderColor: "#eddcd2",
-                        borderWidth: 4,
-                        elevation: 1,
-                    }
-                    : { backgroundColor: "white" };
+                ? {
+                      backgroundColor: "white",
+                      borderColor: "#eddcd2",
+                      borderWidth: 4,
+                      elevation: 1,
+                  }
+                : { backgroundColor: "white" };
         };
 
         // generateFinalizedTimeline(board, isBoardFinalized)
@@ -243,8 +260,8 @@ const ListOfPlans = ({
                     addingFavourite
                         ? handleAddFavourite(event, board.boardID) // Event comes from home feed favourite event
                         : isBoardFinalized
-                            ? handleRouteToFinalized(board)
-                            : viewMoreDetails(board)
+                        ? handleRouteToFinalized(board)
+                        : viewMoreDetails(board)
                 }
             >
                 <View style={[styles.individualPlan, cardColorStyle()]}>
@@ -374,8 +391,8 @@ const ListOfPlans = ({
 };
 
 const mapDispatchToProps = {
-    setAddingFavouritesToExistsingBoard
-}
+    setAddingFavouritesToExistsingBoard,
+};
 
 const mapStateToProps = (state) => {
     return {

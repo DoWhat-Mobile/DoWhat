@@ -15,8 +15,8 @@ export const filterHelper = (filters, events) => {
     const genre = filters.cuisine.includes("Hawker")
         ? "hawker"
         : filters.cuisine.includes("Cafe")
-            ? "cafes"
-            : "restaurants";
+        ? "cafes"
+        : "restaurants";
 
     const eventList = events[genre]["list"];
     // so there will be a variety of places to choose from
@@ -75,7 +75,6 @@ export const filterHelper = (filters, events) => {
         };
         return filterHelper(backup, events);
     }
-
     let rand = Math.floor(Math.random() * temp.length);
     return { [genre]: temp[rand] };
 };
@@ -96,7 +95,6 @@ export const genreEventObjectArray = (
     endTime
 ) => {
     let currentEvents = [];
-
     // See whether dinner event can be scheduled for the user
     let dinner = 0;
     if (userGenres.includes("food") && endTime >= 18) dinner = 1;
@@ -111,8 +109,8 @@ export const genreEventObjectArray = (
                 userGenres[i] === "food"
                     ? "food"
                     : userGenres[i].toLowerCase() === "nightlife"
-                        ? "nightlife"
-                        : "indoors";
+                    ? "nightlife"
+                    : "indoors";
             if (genre === "indoors" || genre === "nightlife") {
                 const eventObject = events[genre]["list"];
                 const rand = Math.floor(Math.random() * eventObject.length);
@@ -141,6 +139,7 @@ export const genreEventObjectArray = (
         );
         currentEvents.push(obj);
     }
+    console.log(currentEvents[0]);
     return currentEvents;
 };
 
@@ -166,7 +165,7 @@ export const data_timeline = (timeline, events, currentEvents) => {
         for (let i = 0; i < currentEvents.length; i++) {
             const genre = currentEvents
                 .map((x) => Object.keys(x)[0])
-            [i].toLowerCase();
+                [i].toLowerCase();
             const event = currentEvents[i][genre];
             if (events[genre].slots.includes(startTime)) {
                 if (startTime + events[genre]["duration"] > timeline[1]) {
@@ -255,7 +254,7 @@ export const objectFormatter = (startTime, event, genre) => {
             "?apikey=" +
             TIH_API_KEY;
     }
-    return {
+    let obj = {
         time: startTime,
         title: event.tags.includes("Indoors")
             ? event.name + " " + "(Indoors)"
@@ -266,8 +265,14 @@ export const objectFormatter = (startTime, event, genre) => {
         genre: genre,
         coord: event.coord,
         location: event.location,
-        fav: event.fav,
     };
+    if (event.fav == undefined) {
+        obj.fav = 0;
+        return obj;
+    } else {
+        obj.fav = 1;
+        return obj;
+    }
 };
 
 /**
@@ -293,7 +298,6 @@ export const renderDetail = (rowData, sectionID, rowID) => {
 
     let desc = null;
     if (rowData.description && rowData.imageUrl) {
-        console.log(rowData);
         desc = (
             <View>
                 <Image
