@@ -15,8 +15,8 @@ export const filterHelper = (filters, events) => {
     const genre = filters.cuisine.includes("Hawker")
         ? "hawker"
         : filters.cuisine.includes("Cafe")
-        ? "cafes"
-        : "restaurants";
+            ? "cafes"
+            : "restaurants";
 
     const eventList = events[genre]["list"];
     // so there will be a variety of places to choose from
@@ -111,8 +111,8 @@ export const genreEventObjectArray = (
                 userGenres[i] === "food"
                     ? "food"
                     : userGenres[i].toLowerCase() === "nightlife"
-                    ? "nightlife"
-                    : "indoors";
+                        ? "nightlife"
+                        : "indoors";
             if (genre === "indoors" || genre === "nightlife") {
                 const eventObject = events[genre]["list"];
                 const rand = Math.floor(Math.random() * eventObject.length);
@@ -166,7 +166,7 @@ export const data_timeline = (timeline, events, currentEvents) => {
         for (let i = 0; i < currentEvents.length; i++) {
             const genre = currentEvents
                 .map((x) => Object.keys(x)[0])
-                [i].toLowerCase();
+            [i].toLowerCase();
             const event = currentEvents[i][genre];
             if (events[genre].slots.includes(startTime)) {
                 if (startTime + events[genre]["duration"] > timeline[1]) {

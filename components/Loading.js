@@ -28,8 +28,8 @@ const Loading = (props) => {
         route === "board"
             ? props.route.params.timeInterval // From collab board
             : props.route.params.synced === "synced"
-            ? props.route.params.time
-            : props.finalGenres[1]; // From Redux state
+                ? props.route.params.time
+                : props.finalGenres[1]; // From Redux state
 
     React.useEffect(() => {
         const diff = props.difference;
@@ -54,7 +54,6 @@ const Loading = (props) => {
             })
             .then((resultRange) => {
                 // resultRange is undefined if no friends synced their Gcal
-                //console.log(resultRange);
                 setFreeTime(resultRange); // Set state
                 setTimingsLoading(false);
             })
@@ -65,7 +64,7 @@ const Loading = (props) => {
             });
         fetch(
             "https://api.openweathermap.org/data/2.5/onecall?lat=1.290270&lon=103.851959&%20exclude=hourly,daily&appid=" +
-                WEATHER_API_KEY
+            WEATHER_API_KEY
         )
             .then((response) => response.json())
             .then((data) => {
@@ -118,6 +117,7 @@ const Loading = (props) => {
                 props.route.params.currentEvents == undefined
                     ? data_timeline(time, props.allEvents, currentEvents)
                     : props.route.params.currentEvents;
+
 
             storeFinalizedEventsInCollabBoard(allEvents);
             return allEvents;

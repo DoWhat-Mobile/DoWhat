@@ -49,19 +49,22 @@ const takeLargestBlockOfTimeFrom = (timeline) => {
     var endHour = 0; // This hour corresponds to the 24 hour clock. So we count from 1 instead of 0.
 
     for (var i = 0; i < timeline.length; i++) {
-        if (i == 23 && timeline[i] == 5) {
-            // Last entry, corner case
+        if (i == 23 && timeline[i] == 5) { // Last entry, corner case
             currCount++;
             if (currCount > longestCount) {
                 // Update longestCount, start & end indexes
                 longestCount = currCount;
                 endHour = 24;
             }
-        } else if (timeline[i] == 0) {
-            // End of the continuous sequence
+        } else if (timeline[i] == 0) { // End of the continuous sequence
+            if (currCount == longestCount) {
+                if (i <= 19 && i >= 12) { //Prioritize afternoon time slots
+                    endHour = i;
+                }
+            }
+
             if (currCount > longestCount) {
-                // Update longestCount, start & end indexes
-                longestCount = currCount;
+                longestCount = currCount; // Update longestCount, start & end indexes
                 endHour = i; // When arr[i] == 0, means the (i-1)th hour is available
             }
             currCount = 0; // Reset curr count once hit a busy period. No longer continuous availability
