@@ -179,7 +179,9 @@ const handleAllAttendeesData = (allAttendees) => {
 
     // Handle data for all the other attendees and insert into allAvailabilities array
     for (var attendee in allAttendees) {
-        const busyPeriodsOfAttendee = allAttendees[attendee].busy_periods; // Object with > 1 start&end busy periods
+        const busyPeriodsOfAttendee = allAttendees[attendee].busy_periods == undefined
+            ? allAttendees[attendee]  // If route comes from collab board
+            : allAttendees[attendee].busy_periods; // Object with > 1 start&end busy periods
         var currAttendeeAvails = [
             0,
             0,

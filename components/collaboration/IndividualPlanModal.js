@@ -359,7 +359,10 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                     <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
                         <View style={{ flexDirection: "column" }}>
                             <Text style={styles.sectionHeaderText}>Possible Preferences {'&'} Genres</Text>
-                            <Text style={styles.sectionSubHeaderText}>
+                            <Text style={[styles.sectionSubHeaderText, {
+                                position: 'absolute',
+                                marginTop: 4, width: '100%'
+                            }]}>
                                 Select according to your preference
                             </Text>
                         </View>

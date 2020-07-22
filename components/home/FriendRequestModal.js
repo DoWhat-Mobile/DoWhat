@@ -106,6 +106,7 @@ const FriendRequestModal = ({ userID, onClose, currUserProfilePicture }) => {
 
     // Show friends that user has already accepted
     const renderFriends = (name, userID, pictureURL) => {
+        console.log("Stacks")
         return (
             <View style={styles.friend}>
                 <View style={{ margin: 5, marginTop: 10 }}>

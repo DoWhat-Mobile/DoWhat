@@ -220,9 +220,9 @@ const AllPlans = ({
                                 styles.buttonText,
                                 isAddingFavourite
                                     ? {
-                                          backgroundColor: "#72706E",
-                                          color: "#ABAAAA",
-                                      } // Disabled button visual
+                                        backgroundColor: "#72706E",
+                                        color: "#ABAAAA",
+                                    } // Disabled button visual
                                     : {},
                             ]}
                         >
@@ -270,6 +270,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(AllPlans);
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        marginTop: 40,
     },
     modalContainer: {
         flex: 1,

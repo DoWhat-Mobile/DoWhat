@@ -114,11 +114,15 @@ const ListOfPlans = ({
 
         const topVotedFavouriteEvent = getTopVotedFavouriteEvent(boardFromFirebase.favourites)
         const topGenres = getTopVoted(boardFromFirebase.preferences, 3);
-        const topCuisines = getTopVoted(
+        var topCuisines = getTopVoted(
             boardFromFirebase.food_filters.cuisine,
             3
         );
-        const topArea = getTopVoted(boardFromFirebase.food_filters.area, 1);
+        topCuisines = topCuisines.map(item => item.charAt(0).toUpperCase() + item.slice(1)); // Capitalize first letter
+
+        var topArea = getTopVoted(boardFromFirebase.food_filters.area, 1);
+        topArea = topArea.map(item => item.charAt(0).toUpperCase() + item.slice(1)); // Capitalize first letter
+
         const topPrice = getTopVoted(
             boardFromFirebase.food_filters.price,
             1
@@ -141,12 +145,12 @@ const ListOfPlans = ({
             board: boardFromFirebase, // for Gcal Invite
             boardID: boardFromParent.boardID,
             currentEvents: finalizedTimeline,
-            access: accessRights,// 'host' | 'invitee' 
+            access: accessRights,// 'host' | 'attendee' 
             topVotedEvent: topVotedFavouriteEvent, // If anyone adds suggestions and votes casted 
             //userLocation: 
 
         }
-        console.log("navigation props: ", navigationProps.access);
+        console.log("navigation props: ", navigationProps.filters);
         navigation.navigate("Loading", navigationProps);
     };
 

@@ -299,7 +299,7 @@ const AllFriends = ({ userID }) => {
         </View>
     );
 }
-
+// {} Object.keys(Objectname).length == 0
 const mapStateToProps = (state) => {
     return {
         userID: state.add_events.userID,

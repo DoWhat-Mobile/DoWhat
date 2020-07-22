@@ -11,6 +11,8 @@ const FoodCuisine = ({ cuisine, handleCuisineSelect, preferences }) => {
 
     const renderCuisine = (cuisine, selected, index) => {
         const cuisineIsTopVoted = cuisine == topVoted.toUpperCase()
+            && preferences[topVoted] != 0;
+
         const numVotes = preferences[cuisine.toLowerCase()]
         if (!selected) {
             return (

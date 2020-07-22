@@ -11,6 +11,8 @@ const FoodLocation = ({ location, handleLocationSelect, preferences }) => {
 
     const renderLocation = (location, selected, index) => {
         const locationIsTopVoted = location == topVoted.toUpperCase()
+            && preferences[topVoted] != 0;
+
         const numVotes = preferences[location.toLowerCase()]
         if (!selected) {
             return (
