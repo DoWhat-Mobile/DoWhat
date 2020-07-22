@@ -64,7 +64,7 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
     if (
         hourDifference > 0 &&
         parseInt(newStartTime.substring(0, 2)) >=
-            parseInt(newTimingsArray[index].end.substring(0, 2))
+        parseInt(newTimingsArray[index].end.substring(0, 2))
     ) {
         for (let i = index; i < newTimingsArray.length; i++) {
             newTimingsArray[i] = startEndChange(
@@ -96,7 +96,7 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
         hourDifference < 0 &&
         index != 0 &&
         parseInt(newStartTime.substring(0, 2)) >
-            parseInt(newTimingsArray[index - 1].start.substring(0, 2))
+        parseInt(newTimingsArray[index - 1].start.substring(0, 2))
     ) {
         newTimingsArray[index].start = newStartTime;
         newTimingsArray[index - 1].end = newStartTime;
@@ -108,7 +108,7 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
         hourDifference < 0 &&
         index != 0 &&
         parseInt(newStartTime.substring(0, 2)) <=
-            parseInt(newTimingsArray[index - 1].start.substring(0, 2))
+        parseInt(newTimingsArray[index - 1].start.substring(0, 2))
     ) {
         for (let i = index; i >= 0; i--) {
             newTimingsArray[i] = startEndChange(

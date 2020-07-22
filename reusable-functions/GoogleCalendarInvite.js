@@ -203,6 +203,26 @@ export const formatEventsData = (data) => {
 /******************************************************/
 /******THESE ARE USED FROM THE COLLABORATIVE BOARD*****/
 /******************************************************/
+
+// Change to format usable with Gcal Event insert API.
+const formatAttendeeFromCollabBoard = (attendees, userId) => {
+    if (attendees == undefined) { // No attendees joining
+        return []; // Means no attendees are free to join the scheduled events
+    }
+
+    var allFormattedEmails = [];
+
+    for (var user in attendees) {
+        const inviteeFirebaseID = user;
+        if (inviteeFirebaseID == userId) continue; // Don't invite yourself, since you are the host
+        const modifiedEmail = attendees[user].gmail;
+        const formattedEmail = { 'email': modifiedEmail };
+        allFormattedEmails.push(formattedEmail);
+    }
+
+    return allFormattedEmails;
+}
+
 export const handleBoardRouteProcess = (formattedData, timingsArray, board) => {
     const selectedDate = board.selected_date;
     const attendees = board.invitees; // Object with all invitees 
@@ -231,25 +251,6 @@ export const handleBoardRouteProcess = (formattedData, timingsArray, board) => {
             })
 
     } catch (e) {
-        console.log(e);
+        console.log("Board route send calendar invite error: ", e);
     }
-}
-
-// Change to format usable with Gcal Event insert API.
-const formatAttendeeFromCollabBoard = (attendees, userId) => {
-    if (attendees == undefined) { // No attendees joining
-        return []; // Means no attendees are free to join the scheduled events
-    }
-
-    var allFormattedEmails = [];
-
-    for (var user in attendees) {
-        const inviteeFirebaseID = user;
-        if (inviteeFirebaseID == userId) continue; // Don't invite yourself, since you are the host
-        const modifiedEmail = attendees[user].gmail;
-        const formattedEmail = { 'email': modifiedEmail };
-        allFormattedEmails.push(formattedEmail);
-    }
-
-    return allFormattedEmails;
 }

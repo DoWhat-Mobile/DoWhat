@@ -258,11 +258,12 @@ const DateSelection = (props) => {
                         <TouchableOpacity
                             disabled={isButtonDisabled} // If sync google cal, cant manual input
                             style={[
-                                styles.manualInputButton,
-                                isFinalized
+                                props.route.params.route == 'manual'
+                                    ? styles.manualRouteInputButton
+                                    : styles.manualInputButton
+                                , isFinalized
                                     ? { backgroundColor: "#F28333" }
-                                    : {},
-                            ]}
+                                    : null]}
                             onPress={() => setModalVisible(true)}
                         >
                             <Text
@@ -283,7 +284,7 @@ const DateSelection = (props) => {
                                 borderColor: "#F9F0E6",
                             }}
                         />
-                        {renderSyncCalendarButton()}
+                        {props.route.params.route != 'manual' ? renderSyncCalendarButton() : null}
                     </View>
                 </View>
             </View>
@@ -392,4 +393,9 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: 30,
     },
+    manualRouteInputButton: {
+        borderRadius: 20,
+        padding: 10,
+        backgroundColor: "#ffe0b3",
+    }
 });

@@ -62,12 +62,12 @@ const Schedule = (props) => {
                 try {
                     let resp = await fetch(
                         "https://maps.googleapis.com/maps/api/directions/json?origin=" +
-                            origin +
-                            "&destination=" +
-                            destination +
-                            "&key=" +
-                            GOOGLE_MAPS_API_KEY +
-                            "&mode=transit&region=sg"
+                        origin +
+                        "&destination=" +
+                        destination +
+                        "&key=" +
+                        GOOGLE_MAPS_API_KEY +
+                        "&mode=transit&region=sg"
                     );
                     //console.log(JSON.stringify(await resp.json()));
                     let data = (await resp.json())["routes"][0]["legs"][0];

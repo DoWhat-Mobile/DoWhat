@@ -88,13 +88,13 @@ const Finalized = (props) => {
                 style={styles.icon}
             />
         ) : (
-            <MaterialCommunityIcons
-                name="weather-sunny"
-                size={24}
-                color="black"
-                style={styles.icon}
-            />
-        );
+                    <MaterialCommunityIcons
+                        name="weather-sunny"
+                        size={24}
+                        color="black"
+                        style={styles.icon}
+                    />
+                );
     };
 
     if (isLoading) {
@@ -122,7 +122,7 @@ const Finalized = (props) => {
                         top: 40,
                         zIndex: 1,
                     }}
-                    onPress={() => props.navigation.navigate("DateSelection")}
+                    onPress={() => props.navigation.pop(2)}
                 >
                     <MaterialCommunityIcons
                         name="keyboard-backspace"
@@ -180,6 +180,8 @@ const Finalized = (props) => {
                         mapUpdate={mapUpdate}
                         timings={timings}
                         filters={filters}
+                        route={props.route.params.route}
+                        board={props.route.params.board}
                         setTimingsArray={setTimingsArray}
                     />
 

@@ -28,8 +28,10 @@ const Loading = (props) => {
         route === "board"
             ? props.route.params.timeInterval // From collab board
             : props.route.params.synced === "synced"
-            ? props.route.params.time
-            : props.finalGenres[1]; // From Redux state
+                ? props.route.params.time
+                : props.finalGenres[1]; // From Redux state
+
+    console.log(timeline)
 
     React.useEffect(() => {
         const diff = props.difference;
@@ -64,7 +66,7 @@ const Loading = (props) => {
             });
         fetch(
             "https://api.openweathermap.org/data/2.5/onecall?lat=1.290270&lon=103.851959&%20exclude=hourly,daily&appid=" +
-                WEATHER_API_KEY
+            WEATHER_API_KEY
         )
             .then((response) => response.json())
             .then((data) => {
@@ -113,13 +115,11 @@ const Loading = (props) => {
                     props.route.params.topVotedEvent,
                 ]).concat(currentEvents);
             }
-            console.log(props.route.params);
+
             const allEvents =
                 props.route.params.currentEvents == undefined
                     ? data_timeline(time, props.allEvents, currentEvents)
                     : props.route.params.currentEvents;
-
-            console.log("What is this", allEvents);
 
             storeFinalizedEventsInCollabBoard(allEvents);
             return allEvents;
@@ -152,6 +152,7 @@ const Loading = (props) => {
             data: allData(),
             userGenres: userGenres,
             filters: filters,
+            board: props.route.params.board,
         });
     };
     if (isWeatherLoading || isTimingsLoading) {

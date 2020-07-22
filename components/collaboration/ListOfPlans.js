@@ -159,6 +159,7 @@ const ListOfPlans = ({
             topVotedEvent: topVotedFavouriteEvent, // If anyone adds suggestions and votes casted
             //userLocation:
         };
+        console.log("navigation props time interval: ", navigationProps.timeInterval)
         navigation.navigate("Loading", navigationProps);
     };
 
