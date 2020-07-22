@@ -36,7 +36,7 @@ const Feed = (props) => {
     useFocusEffect(
         useCallback(() => {
             var isMounted = true;
-            getDataFromFirebase(); // Subscribe to changes
+            getDataFromFirebase();
             return () => {
                 isMounted = false;
             };
@@ -99,8 +99,36 @@ const Feed = (props) => {
                 });
         } catch (err) {
             console.log("Error getting data from firebase: ", err);
+            getDataForFirstTimeUsers();
         }
     };
+
+    // First time users has no preference history, and no favourited events
+    const getDataForFirstTimeUsers = async () => {
+        try {
+            const database = firebase.database();
+            database
+                .ref("events")
+                .once("value")
+                .then((snapshot) => {
+                    const allCategories = snapshot.val();
+
+                    // Check that event has already been loaded from redux state
+                    if (Object.keys(allCategories).length !== 0) {
+                        const data = handleEventsOf(
+                            allCategories,
+                            undefined // No preferences yet
+                        );
+                        setWhatsPopularData(data[0]);
+                        setHungryData(data[1]);
+                        setSomethingNewData(data[2]);
+                        setIsLoading(false);
+                    }
+                });
+        } catch (err) {
+            console.log("Error getting data for first time users: ", err);
+        }
+    }
 
     const refreshPage = () => {
         setIsRefreshing(true);
@@ -417,12 +445,12 @@ const Feed = (props) => {
                                     size={24}
                                 />
                             ) : (
-                                <MaterialCommunityIcons
-                                    name="heart-outline"
-                                    color={"black"}
-                                    size={24}
-                                />
-                            )}
+                                    <MaterialCommunityIcons
+                                        name="heart-outline"
+                                        color={"black"}
+                                        size={24}
+                                    />
+                                )}
                         </TouchableOpacity>
                     </View>
 
@@ -479,25 +507,25 @@ const Feed = (props) => {
                                 </TouchableOpacity>
                             </View>
                         ) : (
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    marginTop: 5,
-                                }}
-                            >
-                                <TouchableOpacity
-                                    style={styles.favouritesButton}
-                                    onPress={() =>
-                                        handleRemoveFavourites(event)
-                                    }
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                        marginTop: 5,
+                                    }}
                                 >
-                                    <Text style={styles.favouritesButtonText}>
-                                        REMOVE FROM FAVOURITES
+                                    <TouchableOpacity
+                                        style={styles.favouritesButton}
+                                        onPress={() =>
+                                            handleRemoveFavourites(event)
+                                        }
+                                    >
+                                        <Text style={styles.favouritesButtonText}>
+                                            REMOVE FROM FAVOURITES
                                     </Text>
-                                </TouchableOpacity>
-                            </View>
-                        )
+                                    </TouchableOpacity>
+                                </View>
+                            )
                     ) : null}
                 </View>
             </View>
@@ -570,7 +598,7 @@ const Feed = (props) => {
                                     color: "grey",
                                     textDecorationLine: "underline",
                                     marginRight: 5,
-                                    marginTop: 30,
+                                    marginTop: 50,
                                 }}
                             >
                                 Sign out
@@ -659,117 +687,117 @@ const Feed = (props) => {
                                 <CategoryTitleText text="Back" />
                             </View>
                         ) : (
-                            <View
-                                style={{
-                                    flex: 1,
-                                    borderLeftWidth: 1,
-                                    marginLeft: 5,
-                                }}
-                            >
-                                <TouchableOpacity
-                                    disabled={addingFavouritesToPlan}
-                                    onPress={() =>
-                                        setAddingFavouritesToPlan(true)
-                                    }
-                                    style={[
-                                        styles.headerCategory,
-                                        { backgroundColor: "#ff664a" },
-                                    ]}
+                                <View
+                                    style={{
+                                        flex: 1,
+                                        borderLeftWidth: 1,
+                                        marginLeft: 5,
+                                    }}
                                 >
-                                    <MaterialCommunityIcons
-                                        name="animation"
-                                        color={"white"}
-                                        size={30}
-                                    />
-                                </TouchableOpacity>
-                                <CategoryTitleText text="Plan with Favourites" />
-                            </View>
-                        )}
+                                    <TouchableOpacity
+                                        disabled={addingFavouritesToPlan}
+                                        onPress={() =>
+                                            setAddingFavouritesToPlan(true)
+                                        }
+                                        style={[
+                                            styles.headerCategory,
+                                            { backgroundColor: "#ff664a" },
+                                        ]}
+                                    >
+                                        <MaterialCommunityIcons
+                                            name="animation"
+                                            color={"white"}
+                                            size={30}
+                                        />
+                                    </TouchableOpacity>
+                                    <CategoryTitleText text="Plan with Favourites" />
+                                </View>
+                            )}
                     </View>
                 ) : (
-                    <View
-                        style={{
-                            flex: 1,
-                            flexDirection: "row",
-                            justifyContent: "space-around",
-                            marginTop: 5,
-                        }}
-                    >
                         <View
                             style={{
-                                flex: 2.5,
+                                flex: 1,
                                 flexDirection: "row",
                                 justifyContent: "space-around",
-                                marginLeft: -5,
-                                marginVertical: 15,
+                                marginTop: 5,
                             }}
                         >
-                            <View>
-                                <TouchableOpacity
-                                    onPress={() => setViewFavourites(true)}
-                                    style={[
-                                        styles.headerCategory,
-                                        { backgroundColor: "#ffcccc" },
-                                    ]}
-                                >
-                                    <MaterialCommunityIcons
-                                        name="cards-heart"
-                                        color={"#d00000"}
-                                        size={25}
-                                    />
-                                </TouchableOpacity>
-                                <CategoryTitleText text="FAVOURITES" />
+                            <View
+                                style={{
+                                    flex: 2.5,
+                                    flexDirection: "row",
+                                    justifyContent: "space-around",
+                                    marginLeft: -5,
+                                    marginVertical: 15,
+                                }}
+                            >
+                                <View>
+                                    <TouchableOpacity
+                                        onPress={() => setViewFavourites(true)}
+                                        style={[
+                                            styles.headerCategory,
+                                            { backgroundColor: "#ffcccc" },
+                                        ]}
+                                    >
+                                        <MaterialCommunityIcons
+                                            name="cards-heart"
+                                            color={"#d00000"}
+                                            size={25}
+                                        />
+                                    </TouchableOpacity>
+                                    <CategoryTitleText text="FAVOURITES" />
+                                </View>
+                                <View>
+                                    <TouchableOpacity
+                                        onPress={() => scroll(0, 0)}
+                                        style={[
+                                            styles.headerCategory,
+                                            { backgroundColor: "#ffffb3" },
+                                        ]}
+                                    >
+                                        <MaterialCommunityIcons
+                                            name="star"
+                                            color={"#CCCC00"}
+                                            size={25}
+                                        />
+                                    </TouchableOpacity>
+                                    <CategoryTitleText text="POPULAR" />
+                                </View>
+                                <View>
+                                    <TouchableOpacity
+                                        onPress={() => scroll(1, 0)}
+                                        style={[
+                                            styles.headerCategory,
+                                            { backgroundColor: "#f2f2f2" },
+                                        ]}
+                                    >
+                                        <MaterialCommunityIcons
+                                            name="silverware-variant"
+                                            color={"#9d8189"}
+                                            size={25}
+                                        />
+                                    </TouchableOpacity>
+                                    <CategoryTitleText text="EATERIES" />
+                                </View>
+                                <View>
+                                    <TouchableOpacity
+                                        onPress={() => scroll(2, 0)}
+                                        style={[
+                                            styles.headerCategory,
+                                            { backgroundColor: "#cce0ff" },
+                                        ]}
+                                    >
+                                        <MaterialCommunityIcons
+                                            name="city"
+                                            color={"#3d5a80"}
+                                            size={25}
+                                        />
+                                    </TouchableOpacity>
+                                    <CategoryTitleText text="DISCOVER" />
+                                </View>
                             </View>
-                            <View>
-                                <TouchableOpacity
-                                    onPress={() => scroll(0, 0)}
-                                    style={[
-                                        styles.headerCategory,
-                                        { backgroundColor: "#ffffb3" },
-                                    ]}
-                                >
-                                    <MaterialCommunityIcons
-                                        name="star"
-                                        color={"#CCCC00"}
-                                        size={25}
-                                    />
-                                </TouchableOpacity>
-                                <CategoryTitleText text="POPULAR" />
-                            </View>
-                            <View>
-                                <TouchableOpacity
-                                    onPress={() => scroll(1, 0)}
-                                    style={[
-                                        styles.headerCategory,
-                                        { backgroundColor: "#f2f2f2" },
-                                    ]}
-                                >
-                                    <MaterialCommunityIcons
-                                        name="silverware-variant"
-                                        color={"#9d8189"}
-                                        size={25}
-                                    />
-                                </TouchableOpacity>
-                                <CategoryTitleText text="EATERIES" />
-                            </View>
-                            <View>
-                                <TouchableOpacity
-                                    onPress={() => scroll(2, 0)}
-                                    style={[
-                                        styles.headerCategory,
-                                        { backgroundColor: "#cce0ff" },
-                                    ]}
-                                >
-                                    <MaterialCommunityIcons
-                                        name="city"
-                                        color={"#3d5a80"}
-                                        size={25}
-                                    />
-                                </TouchableOpacity>
-                                <CategoryTitleText text="DISCOVER" />
-                            </View>
-                        </View>
-                        {/* <View
+                            {/* <View
                             style={{
                                 flex: 1,
                                 borderLeftWidth: 1,
@@ -795,8 +823,8 @@ const Feed = (props) => {
                             </TouchableOpacity>
                             <CategoryTitleText text="Plan with Friends" />
                         </View> */}
-                    </View>
-                )}
+                        </View>
+                    )}
             </View>
         );
     };
