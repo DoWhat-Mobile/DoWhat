@@ -172,7 +172,10 @@ export const data_timeline = (timeline, events, currentEvents) => {
                     break;
                 }
                 let intervalObject = { start: "", end: "" };
-                intervalObject.start = startTime.toString() + ":00";
+                intervalObject.start =
+                    startTime < 10
+                        ? "0" + startTime.toString() + ":00"
+                        : startTime.toString() + ":00";
                 locationArray.push({ coord: event.coord, name: event.name });
                 busRoutes.push(event.location);
 

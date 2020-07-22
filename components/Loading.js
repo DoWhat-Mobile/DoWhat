@@ -103,6 +103,7 @@ const Loading = (props) => {
                 weather,
                 time[1]
             );
+            console.log(time);
             if (props.fav.length !== 0) {
                 currentEvents = favFormatter(props.fav).concat(currentEvents);
             } else if (
@@ -113,13 +114,10 @@ const Loading = (props) => {
                     props.route.params.topVotedEvent,
                 ]).concat(currentEvents);
             }
-            console.log(props.route.params);
             const allEvents =
                 props.route.params.currentEvents == undefined
                     ? data_timeline(time, props.allEvents, currentEvents)
                     : props.route.params.currentEvents;
-
-            console.log("What is this", allEvents);
 
             storeFinalizedEventsInCollabBoard(allEvents);
             return allEvents;

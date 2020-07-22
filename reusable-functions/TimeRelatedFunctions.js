@@ -137,6 +137,17 @@ const timeConvert = (n) => {
     return rhours + ":" + rminutes;
 };
 
+const timeConvertHourMin = (n) => {
+    let num = n;
+    let hours = num / 60;
+    let rhours = Math.floor(hours);
+    let minutes = (hours - rhours) * 60;
+    let rminutes = Math.round(minutes);
+    return rhours !== 0
+        ? rhours + " hour " + rminutes + " mins"
+        : rminutes + " mins";
+};
+
 /**
  *
  * @param {the time formatted with colon eg. 16:30} colon
@@ -155,6 +166,23 @@ const parseTime = (colon, hr, minus) => {
     return timeConvert(final);
 };
 
+export const timeAddition = (steps) => {
+    let final = 0;
+
+    for (let i = 0; i < steps.length; i++) {
+        let time = steps[i].duration;
+        console.log("Time at ", i, time);
+        let hour = parseInt(time.substring(0, 1));
+        let minute = parseInt(time.substring(6, 9));
+        let totalMinutes =
+            time.length > 8
+                ? hour * 60 + minute
+                : parseInt(time.substring(0, 2));
+        final += totalMinutes;
+    }
+    console.log(timeConvertHourMin(final));
+    return timeConvertHourMin(final);
+};
 /**
  * combines the timings allocated to each event  with time taken to travel into an array with objects
  * having start and end timing keys

@@ -28,6 +28,7 @@ import {
 import {
     handleRipple,
     mergeTimings,
+    timeAddition,
 } from "../../reusable-functions/TimeRelatedFunctions";
 
 const Schedule = (props) => {
@@ -81,9 +82,10 @@ const Schedule = (props) => {
                 } catch (err) {
                     console.log(err);
                 }
+
                 obj.steps = steps;
                 obj.distance = distance;
-                obj.duration = duration;
+                obj.duration = timeAddition(steps);
                 return obj;
             })
         );
@@ -248,7 +250,7 @@ const Schedule = (props) => {
                             fontWeight: "bold",
                             fontSize: 16,
                         }}
-                        timeContainerStyle={{ marginRight: -5 }}
+                        timeContainerStyle={{ minWidth: 52, marginRight: -5 }}
                         renderDetail={renderDetail}
                         circleColor="#cc5327"
                     />
