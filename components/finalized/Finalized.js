@@ -114,41 +114,57 @@ const Finalized = (props) => {
     } else {
         return (
             <ScrollView style={styles.container}>
+                <TouchableOpacity
+                    style={{
+                        position: "absolute",
+                        left: 10,
+                        top: 40,
+                        zIndex: 1,
+                    }}
+                    onPress={() => props.navigation.navigate("DateSelection")}
+                >
+                    <MaterialCommunityIcons
+                        name="keyboard-backspace"
+                        size={30}
+                        color="black"
+                    />
+                </TouchableOpacity>
                 <View style={styles.header}></View>
                 <View
                     style={{
-                        height: Dimensions.get("window").height / 4,
+                        height: Dimensions.get("window").height / 3 + 50,
                         width: Dimensions.get("window").width + 30,
                     }}
                 >
+                    <Minimap coord={coord} />
                     <TouchableOpacity
-                        style={StyleSheet.absoluteFillObject}
+                        style={{
+                            marginLeft: 240,
+                            marginTop: Dimensions.get("window").height / 3 + 50,
+                        }}
                         onPress={() => setVisible(true)}
                     >
-                        <Minimap coord={coord} />
+                        <Text
+                            style={{
+                                fontWeight: "bold",
+                                opacity: 0.7,
+                            }}
+                        >
+                            Tap Here For Full Map
+                        </Text>
                     </TouchableOpacity>
-                    <Text
-                        style={{
-                            fontWeight: "bold",
-                            fontFamily: "serif",
-                            opacity: 0.8,
-                            left: Dimensions.get("window").width - 120,
-                            top: Dimensions.get("window").height / 5 + 10,
-                        }}
-                    >
-                        Tap to interact
-                    </Text>
                 </View>
+
                 <View style={styles.body}>
                     <View
                         style={{
                             marginLeft: 10,
+                            marginTop: 20,
                             flexDirection: "row",
                             alignItems: "flex-start",
                         }}
                     >
                         <Text style={styles.title}>Events</Text>
-
                         {weatherIcon(weather)}
                     </View>
                     <Schedule
@@ -178,7 +194,7 @@ const Finalized = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "white",
+        //backgroundColor: "white",
     },
     header: {
         flex: 0,
@@ -203,9 +219,7 @@ const styles = StyleSheet.create({
         marginBottom: -35,
         marginLeft: 10,
         fontSize: 25,
-        fontFamily: "serif",
         fontWeight: "bold",
-        zIndex: 1,
     },
 });
 

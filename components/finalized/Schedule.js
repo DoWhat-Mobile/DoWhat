@@ -241,10 +241,10 @@ const Schedule = (props) => {
                         data={events}
                         timeStyle={{
                             textAlign: "center",
-                            //backgroundColor: "#E18A07",
+                            //backgroundColor: "#e18a07",
                             color: "black",
                             padding: 5,
-                            borderRadius: 13,
+                            borderRadius: 16,
                             fontWeight: "bold",
                             fontSize: 16,
                         }}

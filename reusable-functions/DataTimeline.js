@@ -1,8 +1,9 @@
 import React from "react";
-import { Text, View, Image, ScrollView } from "react-native";
+import { Text, View, Image, ScrollView, StyleSheet } from "react-native";
 import ReadMore from "react-native-read-more-text";
 import { TIH_API_KEY } from "react-native-dotenv";
 import Route from "../components/finalized/Route";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 /**
  * handles filter for food to be added in data array. Returns array of data that is formatted to be passed as props into
@@ -265,6 +266,7 @@ export const objectFormatter = (startTime, event, genre) => {
         genre: genre,
         coord: event.coord,
         location: event.location,
+        fav: event.fav,
     };
 };
 
@@ -274,10 +276,7 @@ export const objectFormatter = (startTime, event, genre) => {
 export const renderDetail = (rowData, sectionID, rowID) => {
     const renderTruncatedFooter = (handlePress) => {
         return (
-            <Text
-                style={{ color: "#595959", fontFamily: "serif" }}
-                onPress={handlePress}
-            >
+            <Text style={{ color: "#595959" }} onPress={handlePress}>
                 Read more
             </Text>
         );
@@ -285,10 +284,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
 
     const renderRevealedFooter = (handlePress) => {
         return (
-            <Text
-                style={{ color: "#595959", fontFamily: "serif" }}
-                onPress={handlePress}
-            >
+            <Text style={{ color: "#595959" }} onPress={handlePress}>
                 Show less
             </Text>
         );
@@ -297,6 +293,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
 
     let desc = null;
     if (rowData.description && rowData.imageUrl) {
+        console.log(rowData);
         desc = (
             <View>
                 <Image
@@ -317,7 +314,6 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                             style={{
                                 flex: 1,
                                 fontSize: 14,
-                                fontFamily: "serif",
                             }}
                         >
                             <Text
@@ -327,6 +323,13 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                                 }}
                             >
                                 {title}
+                                {rowData.fav && (
+                                    <MaterialCommunityIcons
+                                        name="heart"
+                                        color={"#e63946"}
+                                        size={24}
+                                    />
+                                )}
                             </Text>
                             {"\n"}
                             {rowData.description}
@@ -340,20 +343,26 @@ export const renderDetail = (rowData, sectionID, rowID) => {
             <View
                 style={{
                     flex: 1,
-                    paddingHorizontal: 15,
-                    paddingVertical: 10,
+                    // paddingHorizontal: 15,
+                    // paddingVertical: 10,
                 }}
             >
                 <Text
                     style={{
                         fontSize: 16,
                         fontWeight: "bold",
-                        fontFamily: "serif",
+                        paddingLeft: 15,
+                        paddingVertical: 10,
+                        backgroundColor: "#e6e6e6",
+                        borderTopLeftRadius: 15,
+                        borderTopRightRadius: 15,
                     }}
                 >
                     {title}
                 </Text>
-                <Route item={rowData.description} />
+                <View style={{ paddingHorizontal: 15, paddingVertical: 10 }}>
+                    <Route item={rowData.description} />
+                </View>
             </View>
         );
     }
@@ -362,7 +371,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
             style={{
                 flex: 1,
                 marginBottom: 10,
-                backgroundColor: "#fff5e6",
+                backgroundColor: "white",
                 borderRadius: 10,
                 elevation: 5,
             }}
