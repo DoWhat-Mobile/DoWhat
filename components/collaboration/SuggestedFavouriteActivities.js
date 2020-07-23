@@ -3,7 +3,7 @@ import {
     View, Text, StyleSheet,
     Image, FlatList, TouchableOpacity, Dimensions
 } from "react-native";
-import { Card, Badge } from 'react-native-elements';
+import { Badge } from 'react-native-elements';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { TIH_API_KEY } from 'react-native-dotenv';
 
@@ -18,6 +18,7 @@ const SuggestedFavouriteActivities = ({ activities, handleFavouritesSelect }) =>
 
         return (
             <View style={styles.card}>
+
                 <Badge
                     status="success"
                     value={selected
@@ -49,25 +50,33 @@ const SuggestedFavouriteActivities = ({ activities, handleFavouritesSelect }) =>
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
                         <MaterialCommunityIcons name="map-marker" color={'black'} size={16} />
                         <View style={{ flexDirection: 'row' }}>
-                            <Text style={{ fontSize: 12, color: '#1d3557', marginTop: 2, }}> {activity.location}</Text>
+                            <Text style={{
+                                fontSize: 12, color: '#1d3557', marginTop: 2,
+                                width: Dimensions.get('window').width * 0.3
+                            }}>
+                                {activity.location}
+                            </Text>
                         </View>
                     </View>
 
-                    <TouchableOpacity style={[styles.favouritesButton, selected
-                        ? { backgroundColor: 'grey' } : {}]}
-                        onPress={() => handleFavouritesSelect(index)}>
-                        {selected
-                            ? <View >
-                                <Text style={styles.favouritesButtonText}>
-                                    UNVOTE
+
+                    <View style={{ justifyContent: 'flex-end', flex: 1, }}>
+                        <TouchableOpacity style={[styles.favouritesButton, selected
+                            ? { backgroundColor: 'grey' } : {}]}
+                            onPress={() => handleFavouritesSelect(index)}>
+                            {selected
+                                ? <View >
+                                    <Text style={styles.favouritesButtonText}>
+                                        UNVOTE
                                 </Text>
-                            </View>
-                            : <View style={{ flexDirection: 'row' }}>
-                                <MaterialCommunityIcons name="plus-one" color={'white'} size={16} />
-                                <Text style={styles.favouritesButtonText}> UPVOTE</Text>
-                            </View>
-                        }
-                    </TouchableOpacity>
+                                </View>
+                                : <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                                    <MaterialCommunityIcons name="plus-one" color={'white'} size={16} />
+                                    <Text style={styles.favouritesButtonText}> UPVOTE</Text>
+                                </View>
+                            }
+                        </TouchableOpacity>
+                    </View>
 
                 </View>
             </View >
@@ -118,13 +127,12 @@ const styles = StyleSheet.create({
         padding: 5,
         margin: 5,
         width: Dimensions.get('window').width / 2.5,
-        height: Dimensions.get('window').height / 6.2,
+        height: Dimensions.get('window').height / 5.5,
         borderWidth: 0.5,
         borderRadius: 10,
     },
     favouritesButton: {
         borderWidth: 0.1,
-        flexDirection: 'row',
         padding: 2,
         borderRadius: 5,
         backgroundColor: '#E86830',

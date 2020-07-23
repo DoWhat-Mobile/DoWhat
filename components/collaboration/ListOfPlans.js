@@ -98,6 +98,7 @@ const ListOfPlans = ({
             });
     };
 
+    // Out of all suggestions, get the one with most votes
     const getTopVotedFavouriteEvent = (allVotedFavourites) => {
         if (allVotedFavourites == undefined) return {}; // No favourites added
 
@@ -116,9 +117,9 @@ const ListOfPlans = ({
     ) => {
         const accessRights = boardFromParent.isUserHost ? "host" : "attendee";
 
-        const topVotedFavouriteEvent = getTopVotedFavouriteEvent(
+        const topVotedFavouriteEvent = [getTopVotedFavouriteEvent(
             boardFromFirebase.favourites
-        );
+        )]; // Format in array for loading.js function
         const topGenres = getTopVoted(boardFromFirebase.preferences, 3);
         var topCuisines = getTopVoted(
             boardFromFirebase.food_filters.cuisine,

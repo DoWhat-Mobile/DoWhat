@@ -31,7 +31,7 @@ const Loading = (props) => {
                 ? props.route.params.time
                 : props.finalGenres[1]; // From Redux state
 
-    console.log(timeline)
+
 
     React.useEffect(() => {
         const diff = props.difference;
@@ -77,7 +77,8 @@ const Loading = (props) => {
     }, []);
 
     const favFormatter = (fav) => {
-        return fav.map((item) => {
+
+        let final = fav.map((item) => {
             let {
                 ["title"]: name,
                 ["favourited"]: fav,
@@ -92,6 +93,7 @@ const Loading = (props) => {
             rest.fav = 1;
             return { [genre]: rest };
         });
+        return final
     };
 
     // Generates all events for the user taking into account which route the user came from
@@ -114,6 +116,7 @@ const Loading = (props) => {
                 currentEvents = favFormatter([
                     props.route.params.topVotedEvent,
                 ]).concat(currentEvents);
+
             }
             const allEvents =
                 props.route.params.currentEvents == undefined

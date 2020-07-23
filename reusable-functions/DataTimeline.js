@@ -249,7 +249,6 @@ export const data_shuffle = (events, genres, time, unsatisfied, filters) => {
  * Creates the object with keys (time, title description) that the timeline library accepts
  */
 export const objectFormatter = (startTime, event, genre) => {
-    console.log(event);
     let imageURI = event.image;
     if (imageURI.substring(0, 5) != "https") {
         imageURI =

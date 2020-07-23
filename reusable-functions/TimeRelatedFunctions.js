@@ -156,7 +156,7 @@ const timeConvertHourMin = (n) => {
  */
 const parseTime = (colon, hr, minus) => {
     let hour = parseInt(hr.substring(0, 1));
-    if (isNaN(hour)) return "-";
+    if (isNaN(hour) || hr == "0 mins") return "-";
     let minute = parseInt(hr.substring(6, 9));
     let minuteDifference =
         hr.length > 8 ? hour * 60 + minute : parseInt(hr.substring(0, 2));
@@ -191,6 +191,7 @@ export const mergeTimings = (timings, direction) => {
     let temp = [];
 
     for (let i = 0; i < timings.length; i++) {
+
         if (i == 0) {
             let newStart = parseTime(
                 timings[i].start,

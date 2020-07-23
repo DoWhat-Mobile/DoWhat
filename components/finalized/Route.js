@@ -19,7 +19,8 @@ const Route = ({ item }) => {
             </Text>
         );
     };
-    let str = item.duration === 0 ? "Sorry, there are no directions available!" :
+
+    let str = item.duration === "0 mins" ? "Sorry, there are no directions available!" :
         "Total time taken: " +
         item.duration +
         "\n" +

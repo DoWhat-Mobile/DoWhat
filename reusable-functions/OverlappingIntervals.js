@@ -162,8 +162,8 @@ const handleMainUserData = (mainUserBusyPeriod) => {
         const endTime = timeRange.end;
 
         // Time format in array is the beginning of the hour. EG a '1' at the 13th position in the array means 1300-1400hrs is BUSY.
-        const formattedStartTime = formatTime(startTime) - 1;
-        const formattedEndTime = formatTime(endTime) - 1;
+        const formattedStartTime = formatTime(startTime);
+        const formattedEndTime = formatTime(endTime);
 
         mainUserAvails.fill(1, formattedStartTime, formattedEndTime);
     }
@@ -179,9 +179,14 @@ const handleAllAttendeesData = (allAttendees) => {
 
     // Handle data for all the other attendees and insert into allAvailabilities array
     for (var attendee in allAttendees) {
-        const busyPeriodsOfAttendee = allAttendees[attendee].busy_periods == undefined
+        var busyPeriodsOfAttendee = allAttendees[attendee].busy_periods == undefined
             ? allAttendees[attendee]  // If route comes from collab board
             : allAttendees[attendee].busy_periods; // Object with > 1 start&end busy periods
+
+        if (Array.isArray(busyPeriodsOfAttendee)) { // Change to object for compatibility
+            busyPeriodsOfAttendee = Object.assign({}, busyPeriodsOfAttendee);
+        }
+
         var currAttendeeAvails = [
             0,
             0,
@@ -215,8 +220,7 @@ const handleAllAttendeesData = (allAttendees) => {
 
             // Time format in array is the beginning of the hour. EG a '1' at the 13th position in the array means 1300-1400hrs is BUSY.
             const formattedStartTime = formatTime(startTime);
-            const formattedEndTime = formatTime(endTime) - 1;
-
+            const formattedEndTime = formatTime(endTime);
             currAttendeeAvails.fill(1, formattedStartTime, formattedEndTime);
         }
         const availsAndAttendee = {};

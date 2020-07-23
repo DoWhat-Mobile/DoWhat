@@ -387,7 +387,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
             </View>
 
             <View style={{
-                flexDirection: 'column', height: 170,
+                flexDirection: 'column', height: 180,
                 borderColor: 'grey', borderBottomWidth: 0.2, marginBottom: 10,
             }}>
                 <SuggestedFavouriteActivities
