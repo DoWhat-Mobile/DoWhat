@@ -94,7 +94,7 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
                             fontWeight: "500",
                         }}
                     >
-                        {item.duration} hrs
+                        {Math.round(item.duration * 2) / 2} hrs
                     </Text>
                 </View>
 
