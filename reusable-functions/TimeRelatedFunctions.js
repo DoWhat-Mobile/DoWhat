@@ -171,7 +171,6 @@ export const timeAddition = (steps) => {
 
     for (let i = 0; i < steps.length; i++) {
         let time = steps[i].duration;
-        console.log("Time at ", i, time);
         let hour = parseInt(time.substring(0, 1));
         let minute = parseInt(time.substring(6, 9));
         let totalMinutes =
@@ -180,7 +179,6 @@ export const timeAddition = (steps) => {
                 : parseInt(time.substring(0, 2));
         final += totalMinutes;
     }
-    console.log(timeConvertHourMin(final));
     return timeConvertHourMin(final);
 };
 /**

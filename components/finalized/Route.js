@@ -19,7 +19,7 @@ const Route = ({ item }) => {
             </Text>
         );
     };
-    let str =
+    let str = item.duration === 0 ? "Sorry, there are no directions available!" :
         "Total time taken: " +
         item.duration +
         "\n" +
@@ -28,7 +28,7 @@ const Route = ({ item }) => {
         "\n\n";
     const block = (item) => {
         //console.log(item);
-        let str = "";
+        let routes = "";
         let directions = item.steps;
         for (let i = 0; i < item.steps.length; i++) {
             let block =
@@ -39,9 +39,10 @@ const Route = ({ item }) => {
                 "\n" +
                 directions[i].instructions +
                 "\n";
-            str += block;
+            routes += block;
         }
-        return str;
+        item.duration
+        return routes;
     };
 
     return (

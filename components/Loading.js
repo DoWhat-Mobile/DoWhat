@@ -105,7 +105,6 @@ const Loading = (props) => {
                 weather,
                 time[1]
             );
-            console.log(time);
             if (props.fav.length !== 0) {
                 currentEvents = favFormatter(props.fav).concat(currentEvents);
             } else if (

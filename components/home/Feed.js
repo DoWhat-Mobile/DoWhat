@@ -10,7 +10,6 @@ import {
     TouchableOpacity,
     Dimensions,
     Alert,
-    ScrollView,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Card, Badge } from "react-native-elements";
@@ -734,7 +733,13 @@ const Feed = (props) => {
                             >
                                 <View>
                                     <TouchableOpacity
-                                        onPress={() => setViewFavourites(true)}
+                                        onPress={() => {
+                                            setFavouriteSummaryModalVisibile(false);
+                                            setAddingFavouritesToPlan(false);
+                                            setAnyFavouritesClicked(false);
+                                            setNumberOfFavouritesClicked(0);
+                                            setViewFavourites(true)
+                                        }}
                                         style={[
                                             styles.headerCategory,
                                             { backgroundColor: "#ffcccc" },
