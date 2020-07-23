@@ -102,12 +102,13 @@ const ListOfPlans = ({
     const getTopVotedFavouriteEvent = (allVotedFavourites) => {
         if (allVotedFavourites == undefined) return {}; // No favourites added
 
-        return Object.keys(allVotedFavourites).reduce((x, y) => {
+        const topVotedEventKey = Object.keys(allVotedFavourites).reduce((x, y) => {
             const event1 = allVotedFavourites[x];
             const event2 = allVotedFavourites[y];
 
-            return event1.votes > event2.votes ? event1 : event2;
+            return event1.votes > event2.votes ? x : y;
         });
+        return allVotedFavourites[topVotedEventKey];
     };
 
     const goToFinalized = (

@@ -337,7 +337,9 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                     <Text style={styles.sectionHeaderText}>
                         You have successfully inputted your preferences
                         </Text>
-                    <Text style={styles.sectionSubHeaderText}>
+                    <Text style={{
+                        fontSize: 12, color: '#A4A4A6', fontWeight: '100',
+                    }}>
                         Please wait for all your friends to input their preferences
                     </Text>
 
