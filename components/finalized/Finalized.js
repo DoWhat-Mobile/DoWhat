@@ -88,13 +88,13 @@ const Finalized = (props) => {
                 style={styles.icon}
             />
         ) : (
-                    <MaterialCommunityIcons
-                        name="weather-sunny"
-                        size={24}
-                        color="black"
-                        style={styles.icon}
-                    />
-                );
+            <MaterialCommunityIcons
+                name="weather-sunny"
+                size={24}
+                color="black"
+                style={styles.icon}
+            />
+        );
     };
 
     if (isLoading) {
@@ -113,84 +113,118 @@ const Finalized = (props) => {
             </View>
         );
     } else {
-        return (
-            <ScrollView style={styles.container}>
-                <TouchableOpacity
-                    style={{
-                        position: "absolute",
-                        left: 10,
-                        top: 40,
-                        zIndex: 1,
-                    }}
-                    onPress={() => props.navigation.pop(2)}
-                >
-                    <MaterialCommunityIcons
-                        name="keyboard-backspace"
-                        size={30}
-                        color="black"
-                    />
-                </TouchableOpacity>
-                <View style={styles.header}></View>
+        console.log("data is ", data);
+        if (data[0].length == 0) {
+            return (
                 <View
                     style={{
-                        height: Dimensions.get("window").height / 3 + 50,
-                        width: Dimensions.get("window").width + 30,
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
                     }}
                 >
-                    <Minimap coord={coord} />
                     <TouchableOpacity
                         style={{
-                            marginLeft: 240,
-                            marginTop: Dimensions.get("window").height / 3 + 50,
+                            position: "absolute",
+                            left: 10,
+                            top: 40,
+                            zIndex: 1,
                         }}
-                        onPress={() => setVisible(true)}
+                        onPress={() => props.navigation.pop(2)}
                     >
-                        <Text
-                            style={{
-                                fontWeight: "bold",
-                                opacity: 0.7,
-                            }}
-                        >
-                            Tap Here For Full Map
-                        </Text>
+                        <MaterialCommunityIcons
+                            name="keyboard-backspace"
+                            size={30}
+                            color="black"
+                        />
                     </TouchableOpacity>
+                    <Text style={{ marginHorizontal: 10, fontSize: 20 }}>
+                        Sorry! There are no events available that suit your time
+                        range.
+                    </Text>
                 </View>
-
-                <View style={styles.body}>
+            );
+        } else {
+            return (
+                <ScrollView style={styles.container}>
+                    <TouchableOpacity
+                        style={{
+                            position: "absolute",
+                            left: 10,
+                            top: 40,
+                            zIndex: 1,
+                        }}
+                        onPress={() => props.navigation.pop(2)}
+                    >
+                        <MaterialCommunityIcons
+                            name="keyboard-backspace"
+                            size={30}
+                            color="black"
+                        />
+                    </TouchableOpacity>
+                    <View style={styles.header}></View>
                     <View
                         style={{
-                            marginLeft: 10,
-                            marginTop: 20,
-                            flexDirection: "row",
-                            alignItems: "flex-start",
+                            height: Dimensions.get("window").height / 3 + 50,
+                            width: Dimensions.get("window").width + 30,
                         }}
                     >
-                        <Text style={styles.title}>Events</Text>
-                        {weatherIcon(weather)}
+                        <Minimap coord={coord} />
+                        <TouchableOpacity
+                            style={{
+                                marginLeft: 240,
+                                marginTop:
+                                    Dimensions.get("window").height / 3 + 50,
+                            }}
+                            onPress={() => setVisible(true)}
+                        >
+                            <Text
+                                style={{
+                                    fontWeight: "bold",
+                                    opacity: 0.7,
+                                }}
+                            >
+                                Tap Here For Full Map
+                            </Text>
+                        </TouchableOpacity>
                     </View>
-                    <Schedule
-                        data={allData}
-                        navigation={props.navigation}
-                        initRoutes={routes}
-                        genres={userGenres}
-                        accessRights={accessRights}
-                        userID={props.userID}
-                        routeUpdate={routeUpdate}
-                        eventsUpdate={eventsUpdate}
-                        mapUpdate={mapUpdate}
-                        timings={timings}
-                        filters={filters}
-                        route={props.route.params.route}
-                        board={props.route.params.board}
-                        setTimingsArray={setTimingsArray}
-                    />
 
-                    <Modal animated visible={visible} animationType="fade">
-                        <Map onClose={onClose} coord={coord} />
-                    </Modal>
-                </View>
-            </ScrollView>
-        );
+                    <View style={styles.body}>
+                        <View
+                            style={{
+                                marginLeft: 10,
+                                marginTop: 20,
+                                flexDirection: "row",
+                                alignItems: "flex-start",
+                            }}
+                        >
+                            <Text style={styles.title}>Events</Text>
+                            {weatherIcon(weather)}
+                        </View>
+                        <Schedule
+                            data={allData}
+                            navigation={props.navigation}
+                            initRoutes={routes}
+                            genres={userGenres}
+                            accessRights={accessRights}
+                            userID={props.userID}
+                            routeUpdate={routeUpdate}
+                            eventsUpdate={eventsUpdate}
+                            mapUpdate={mapUpdate}
+                            timings={timings}
+                            filters={filters}
+                            route={props.route.params.route}
+                            board={props.route.params.board}
+                            setTimingsArray={setTimingsArray}
+                        />
+
+                        <Modal animated visible={visible} animationType="fade">
+                            <Map onClose={onClose} coord={coord} />
+                        </Modal>
+                    </View>
+                </ScrollView>
+            );
+        }
     }
 };
 
