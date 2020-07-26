@@ -119,7 +119,7 @@ class AuthScreen extends Component {
                     </Text>
                     <Text style={{ fontSize: 12, color: "grey", }}>
                         An automated planner that curates your perfect day out, all at your fingertips.
-                        Sign in to begin.
+                        Sign in to explore Singapore now!
                     </Text>
                 </View>
 
