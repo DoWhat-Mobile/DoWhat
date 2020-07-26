@@ -139,44 +139,55 @@ const Feed = (props) => {
     const handleAddToFavourites = (event, sectionTitle, index, foodIndex) => {
         var updates = {};
         var eventWithRating = event[0];
-        eventWithRating.favourited = true; // Mark as favourited
         eventWithRating.rating = event[1];
         eventWithRating.votes = 0; // For use in collaboration board
-        updates["/favourites/" + event[0].id] = eventWithRating;
 
+        // Visual cue to users, add heart to card
+        if (sectionTitle == "Hungry?") {
+            var newData = hungryData[index][foodIndex];
+            newData[0].favourited = !newData[0].favourited; // Mark as favourited
+            var finalData = [...hungryData[index]];
+            finalData[foodIndex] = newData;
+            setHungryData([[...finalData]]);
+            eventWithRating.favourited = newData[0].favourited // For Firebase update
+        } else if (sectionTitle == "Find something new") {
+            var newData = somethingNewData[index];
+            newData[0].favourited = !newData[0].favourited; // Mark as favourited
+            var finalData = [...somethingNewData];
+            finalData[index] = newData;
+            setSomethingNewData([...finalData]);
+            eventWithRating.favourited = newData[0].favourited // For Firebase update
+        } else {
+            // What is popular
+            var newData = [...whatsPopularData[index]];
+            newData[0].favourited = !newData[0].favourited; // Mark as favourited
+            var finalData = [...whatsPopularData];
+            finalData[index] = newData;
+            setWhatsPopularData([...finalData]);
+            eventWithRating.favourited = newData[0].favourited // For Firebase update
+        }
+
+        if (eventWithRating.favourited) {
+            updates["/favourites/" + event[0].id] = eventWithRating; // add
+
+            // Add to component state, so no need to pull data from Firebase
+            var additionalEvent = [];
+            additionalEvent[0] = eventWithRating; // Entire event object
+            additionalEvent[1] = event[1]; // Rating of event
+            additionalEvent[2] = false; // Selected or not
+            setFavourites([...favourites, additionalEvent]);
+        } else {
+            updates["/favourites/" + event[0].id] = null; // remove
+            var newState = [...favourites];
+            newState = newState.filter(currEvent => currEvent[0].id != event[0].id);
+            setFavourites(newState);
+        }
+        // Update Firebase
         firebase
             .database()
             .ref("/users/" + props.userID)
             .update(updates);
 
-        // Add to component state, so no need to pull data from Firebase
-        var additionalEvent = [];
-        additionalEvent[0] = eventWithRating; // Entire event object
-        additionalEvent[1] = event[1]; // Rating of event
-        additionalEvent[2] = false; // Selected or not
-        setFavourites([...favourites, additionalEvent]);
-
-        // Visual cue to users, add heart to card
-        if (sectionTitle == "Hungry?") {
-            var newData = hungryData[index][foodIndex];
-            newData[0].favourited = true; // Mark as favourited
-            var finalData = [...hungryData[index]];
-            finalData[foodIndex] = newData;
-            setHungryData([[...finalData]]);
-        } else if (sectionTitle == "Find something new") {
-            var newData = somethingNewData[index];
-            newData[0].favourited = true; // Mark as favourited
-            var finalData = [...somethingNewData];
-            finalData[index] = newData;
-            setSomethingNewData([...finalData]);
-        } else {
-            // What is popular
-            var newData = whatsPopularData[index];
-            newData[0].favourited = true; // Mark as favourited
-            var finalData = [...whatsPopularData];
-            finalData[index] = newData;
-            setWhatsPopularData([...finalData]);
-        }
     };
 
     const handleDoneSelectingFavourites = () => {
