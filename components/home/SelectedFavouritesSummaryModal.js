@@ -60,6 +60,29 @@ const SelectedFavouritesSummaryModal = ({ onClose, allEvents, removeSelectedFavo
     })
     return (
         <View style={styles.modalContainer}>
+            <Badge
+                value={
+                    <MaterialCommunityIcons
+                        name="chevron-down"
+                        color={"#cc5237"}
+                        size={28}
+                    />
+                }
+                badgeStyle={{
+                    backgroundColor: "white",
+                    paddingTop: 15,
+                    paddingBottom: 15,
+                    borderTopLeftRadius: 0,
+                    borderTopRightRadius: 0,
+                    borderWidth: 0,
+                }}
+                onPress={onClose}
+                containerStyle={{
+                    position: "relative",
+                    top: 0,
+                    right: -100,
+                }}
+            />
             <FlatList
                 data={cleanedEvents}
                 horizontal={false}
@@ -75,10 +98,11 @@ export default SelectedFavouritesSummaryModal;
 const styles = StyleSheet.create({
     modalContainer: {
         height: '60%',
-        width: '100%',
+        width: '90%',
+        marginLeft: '5%',
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
-        backgroundColor: '#ced4da',
+        backgroundColor: "#cc5237",
     },
     card: {
         padding: 5,
@@ -87,7 +111,9 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').height / 6.2,
         borderBottomWidth: 0.3,
         alignSelf: 'center',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        backgroundColor: 'white',
+        borderRadius: 10,
     },
     removeButton: {
         borderWidth: 0.1,

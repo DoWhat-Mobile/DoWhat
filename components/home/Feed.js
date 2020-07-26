@@ -894,34 +894,35 @@ const Feed = (props) => {
 
                 {anyFavouritesClicked ? (
                     <View style={{ opacity: 100 }}>
-                        <Badge
-                            value={
-                                <MaterialCommunityIcons
-                                    name="dots-horizontal"
-                                    color={"white"}
-                                    size={28}
-                                />
-                            }
-                            badgeStyle={{
-                                backgroundColor: "#cc5237",
-                                paddingTop: 15,
-                                paddingBottom: 15,
-                                borderTopLeftRadius: 10,
-                                borderTopRightRadius: 10,
-                                borderWidth: 0,
-                            }}
-                            onPress={() =>
-                                setFavouriteSummaryModalVisibile(
-                                    !favouriteSummaryModalVisible
-                                )
-                            }
-                            containerStyle={{
-                                position: "relative",
-                                top: 5,
-                                right: -100,
-                            }}
-                        />
-                        {numberOfFavouritesClicked == 3 ? (
+                        {favouriteSummaryModalVisible // Show opening arrow when modal is not visible 
+                            ? null
+                            : <Badge
+                                value={
+                                    <MaterialCommunityIcons
+                                        name="chevron-up"
+                                        color={"white"}
+                                        size={28}
+                                    />
+                                }
+                                badgeStyle={{
+                                    backgroundColor: "#cc5237",
+                                    paddingTop: 15,
+                                    paddingBottom: 15,
+                                    borderTopLeftRadius: 10,
+                                    borderTopRightRadius: 10,
+                                    borderWidth: 0,
+                                }}
+                                onPress={() =>
+                                    setFavouriteSummaryModalVisibile(true)}
+                                containerStyle={{
+                                    position: "relative",
+                                    top: 5,
+                                    right: -100,
+                                }}
+                            />
+                        }
+
+                        {numberOfFavouritesClicked == 3 ? ( // error message when max number of events clicked
                             <Text
                                 style={{
                                     position: "absolute",
@@ -936,15 +937,11 @@ const Feed = (props) => {
                         ) : null}
 
                         <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                padding: 10,
-                                borderRadius: 5,
-                                marginLeft: 20,
-                                marginRight: 20,
-                                backgroundColor: "#cc5327",
-                            }}
+                            style={[styles.summaryCartBottomContainer,
+                            favouriteSummaryModalVisible ? {
+                                borderTopLeftRadius: 0, borderTopRightRadius: 0,
+                                borderTopWidth: 0.2, borderTopColor: 'white'
+                            } : {}]}
                         >
                             <Text
                                 style={{
@@ -1135,4 +1132,13 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
     },
+    summaryCartBottomContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        padding: 10,
+        borderRadius: 5,
+        marginLeft: '5%',
+        marginRight: '5%',
+        backgroundColor: "#cc5327",
+    }
 });
