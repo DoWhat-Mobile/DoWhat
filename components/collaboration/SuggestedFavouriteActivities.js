@@ -89,7 +89,7 @@ const SuggestedFavouriteActivities = ({ activities, handleFavouritesSelect }) =>
                 Suggested activities:
              </Text>
             {activities.length == 0
-                ? <View style={{ justifyContent: 'center', alignContent: 'center' }}>
+                ? <View style={{ justifyContent: 'center', alignContent: 'center', marginTop: 24, }}>
                     <Text style={{
                         fontSize: 16, fontWeight: 'bold', textAlign: "center",
 

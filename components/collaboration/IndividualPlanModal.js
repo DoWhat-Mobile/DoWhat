@@ -360,12 +360,9 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                 <View style={styles.genreSelection}>
                     <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
                         <View style={{ flexDirection: "column" }}>
-                            <Text style={styles.sectionHeaderText}>Possible Preferences {'&'} Genres</Text>
-                            <Text style={[styles.sectionSubHeaderText, {
-                                position: 'absolute',
-                                marginTop: 4, width: '100%'
-                            }]}>
-                                Select according to your preference
+                            <Text style={styles.sectionHeaderText}>Preferences</Text>
+                            <Text style={styles.subHeaderText}>
+                                Vote for your preference
                             </Text>
                         </View>
                         <View style={{ flexDirection: 'row' }}>
@@ -382,6 +379,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                             </Text>
                         </View>
                     </View>
+
                     <GenrePicker allGenres={allGenres} handleGenreSelect={handleGenreSelect}
                         topGenres={topGenres} preferences={board.preferences} />
                 </View>
@@ -414,7 +412,7 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                                 <View style={styles.tipOfTooltip}>
                                     <MaterialCommunityIcons
                                         name="menu-down"
-                                        color={"grey"}
+                                        color={"#E86830"}
                                         size={50}
                                     />
                                 </View>
@@ -422,15 +420,17 @@ const IndividualPlanModal = ({ onClose, board, userID, currUserName }) => {
                             : null
                         }
 
-                        <TouchableOpacity onPress={() => setIsTooltipVisible(!isTooltipVisible)}
-                            style={{ position: 'absolute', right: '-16%', top: '-20%', padding: 2 }}>
-                            <MaterialCommunityIcons
-                                name="information"
-                                color={"grey"}
-                                size={20}
-                            />
-                        </TouchableOpacity>
-                        <Text style={styles.sectionHeaderText}>Possible Timings</Text>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={styles.sectionHeaderText}>Possible Timings</Text>
+                            <TouchableOpacity onPress={() => setIsTooltipVisible(!isTooltipVisible)}
+                                style={{ marginLeft: 4, }}>
+                                <MaterialCommunityIcons
+                                    name="information"
+                                    color={"#E86830"}
+                                    size={20}
+                                />
+                            </TouchableOpacity>
+                        </View>
                         <Text style={styles.sectionSubHeaderText}>
                             {checked
                                 ? 'Your availability from Google calendar will be considered'
@@ -498,7 +498,6 @@ const styles = StyleSheet.create({
     modal: {
         flex: 1,
         borderRadius: 10,
-        padding: -20,
     },
     header: {
         flex: 1,
@@ -525,12 +524,13 @@ const styles = StyleSheet.create({
     },
     body: {
         flex: 4,
-        marginTop: '50%',
+        marginTop: '60%',
     },
     genreSelection: {
         borderBottomWidth: 1.5,
         borderBottomColor: '#e4e4e4',
-        paddingBottom: 15
+        paddingBottom: 15,
+        height: 120
     },
     genreButton: {
         borderWidth: 0.5,
@@ -547,10 +547,14 @@ const styles = StyleSheet.create({
         position: 'absolute', top: '35%',
         width: Dimensions.get('window').width / 2.2
     },
+    subHeaderText: {
+        fontSize: 12, color: '#A4A4A6', fontWeight: '100',
+    },
     foodFilters: {
         borderBottomWidth: 1.5,
         borderBottomColor: '#e4e4e4',
-        paddingBottom: 10
+        paddingBottom: 10,
+        height: 200,
     },
     footer: {
         flex: 1.6,
@@ -569,10 +573,10 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     tooltip: {
-        backgroundColor: 'grey',
+        backgroundColor: '#E86830',
         position: 'absolute',
-        bottom: '135%',
-        right: '-43%',
+        bottom: '115%',
+        right: '-25%',
         borderRadius: 17,
         padding: 10,
         width: Dimensions.get('window').width / 2.5,

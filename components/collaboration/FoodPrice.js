@@ -48,7 +48,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     genreSelectionText: {
-        fontFamily: "serif",
         fontSize: 15,
         fontWeight: "800",
     },
