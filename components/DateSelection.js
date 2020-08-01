@@ -83,7 +83,8 @@ const DateSelection = (props) => {
                         finalFavouritesArray.push(arr);
                     }
                     setUsersFavourites[finalFavouritesArray];
-                    //console.log("User's favourites : ", usersFavourites)
+                    setIsLoading(false);
+                } else {
                     setIsLoading(false);
                 }
             });
@@ -258,12 +259,13 @@ const DateSelection = (props) => {
                         <TouchableOpacity
                             disabled={isButtonDisabled} // If sync google cal, cant manual input
                             style={[
-                                props.route.params.route == 'manual'
+                                props.route.params.route == "manual"
                                     ? styles.manualRouteInputButton
-                                    : styles.manualInputButton
-                                , isFinalized
+                                    : styles.manualInputButton,
+                                isFinalized
                                     ? { backgroundColor: "#F28333" }
-                                    : null]}
+                                    : null,
+                            ]}
                             onPress={() => setModalVisible(true)}
                         >
                             <Text
@@ -284,7 +286,9 @@ const DateSelection = (props) => {
                                 borderColor: "#F9F0E6",
                             }}
                         />
-                        {props.route.params.route != 'manual' ? renderSyncCalendarButton() : null}
+                        {props.route.params.route != "manual"
+                            ? renderSyncCalendarButton()
+                            : null}
                     </View>
                 </View>
             </View>
@@ -397,5 +401,5 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 10,
         backgroundColor: "#ffe0b3",
-    }
+    },
 });
