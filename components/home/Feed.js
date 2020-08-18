@@ -5,27 +5,19 @@ import {
 	StyleSheet,
 	SectionList,
 	ActivityIndicator,
-	Image,
 	FlatList,
 	TouchableOpacity,
-	Dimensions,
-	Alert,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { Card, Badge } from 'react-native-elements';
 import firebase from '../../database/firebase';
 import { handleEventsOf } from '../../reusable-functions/HomeFeedLogic';
-import { TIH_API_KEY } from 'react-native-dotenv';
 import { connect } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import ReadMore from 'react-native-read-more-text';
 import {
 	setAddingFavourites,
 	addFavouritesToPlan,
 	setAddingFavouritesToExistsingBoard,
 } from '../../actions/favourite_event_actions';
-import SelectedFavouritesSummaryModal from '../favourites/SelectedFavouritesSummaryModal';
-import HomeFavouritesHeader from '../favourites/HomeFavouritesHeader';
 import FeedEventCard from './FeedEventCard';
 
 /**
@@ -179,19 +171,6 @@ const Feed = (props) => {
 			.database()
 			.ref('/users/' + props.userID)
 			.update(updates);
-	};
-
-	const handleRemoveFavourites = (event, index) => {
-		// Remove from Firebase
-		firebase
-			.database()
-			.ref('/users/' + props.userID + '/favourites/' + event[0].id)
-			.remove();
-
-		// Remove from component state
-		var newFavourites = [...favourites];
-		newFavourites = newFavourites.filter((selectedEvent) => selectedEvent[0].id != event[0].id);
-		setFavourites(newFavourites);
 	};
 
 	/**
@@ -414,10 +393,8 @@ const styles = StyleSheet.create({
 		marginTop: 80,
 	},
 	headerCategory: {
-		//borderWidth: 0.5,
 		padding: 15,
 		borderRadius: 30,
-		//elevation: 0.01,
 		alignSelf: 'center',
 	},
 	header: {
@@ -437,19 +414,5 @@ const styles = StyleSheet.create({
 		marginLeft: 10,
 		marginBottom: 5,
 		marginTop: 10,
-	},
-
-	cardButton: {
-		borderRadius: 5,
-		marginLeft: '1%',
-		marginRight: '1%',
-		borderWidth: 0.2,
-		borderColor: 'black',
-		backgroundColor: '#457b9d',
-	},
-	moreDetailsButtonText: {
-		color: '#f1faee',
-		fontWeight: '300',
-		textAlign: 'center',
 	},
 });
