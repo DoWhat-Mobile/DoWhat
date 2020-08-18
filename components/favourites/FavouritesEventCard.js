@@ -23,15 +23,9 @@ import ReadMore from 'react-native-read-more-text';
 /**
  * Home feed event card
  */
-const FeedEventCard = ({
-	event,
-	isEventFood,
-	sectionTitle,
-	index,
-	foodIndex,
-	favourites,
-	handleAddToFavourites,
-}) => {
+const FeedEventCard = ({ event, isEventFood, sectionTitle, index, foodIndex, favourites }) => {
+	const isEventBeingAddedToPlan = event[2];
+
 	const checkIfEventIsFavourited = (event) => {
 		var isEventFavourited = false;
 		favourites.forEach((selectedEvent) => {
@@ -174,6 +168,53 @@ const FeedEventCard = ({
 						</Text>
 					</ReadMore>
 				</View>
+
+				{sectionTitle == 'favourites' ? (
+					addingFavouritesToPlan ? (
+						<View
+							style={{
+								flex: 1,
+								flexDirection: 'row',
+								justifyContent: 'space-between',
+								marginTop: 25,
+							}}
+						>
+							<TouchableOpacity
+								style={styles.favouritesButton}
+								onPress={() => handleRemoveFavourites(event, index)}
+							>
+								<Text style={styles.favouritesButtonText}>
+									REMOVE FROM FAVOURITES
+								</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={styles.favouritesButton}
+								onPress={() => handleFavouriteEventPress(event, index)}
+							>
+								<Text style={styles.favouritesButtonText}>
+									{isEventBeingAddedToPlan ? 'ADDED' : 'ADD TO PLAN'}
+								</Text>
+							</TouchableOpacity>
+						</View>
+					) : (
+						<View
+							style={{
+								flexDirection: 'row',
+								justifyContent: 'space-between',
+								marginTop: 5,
+							}}
+						>
+							<TouchableOpacity
+								style={styles.favouritesButton}
+								onPress={() => handleRemoveFavourites(event)}
+							>
+								<Text style={styles.favouritesButtonText}>
+									REMOVE FROM FAVOURITES
+								</Text>
+							</TouchableOpacity>
+						</View>
+					)
+				) : null}
 			</View>
 		</View>
 	);

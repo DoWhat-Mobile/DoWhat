@@ -150,6 +150,7 @@ const Feed = (props) => {
 			eventWithRating.favourited = newData[0].favourited; // For Firebase update
 		} else {
 			// What is popular
+			console.log('HERE ! !! ! ! ', whatsPopularData[index], index);
 			var newData = [...whatsPopularData[index]];
 			newData[0].favourited = !newData[0].favourited; // Mark as favourited
 			var finalData = [...whatsPopularData];
@@ -193,18 +194,6 @@ const Feed = (props) => {
 		setFavourites(newFavourites);
 	};
 
-	const checkIfEventIsFavourited = (event) => {
-		var isEventFavourited = false;
-		favourites.forEach((selectedEvent) => {
-			const favouritedEventID = selectedEvent[0].id;
-			if (favouritedEventID == event[0].id) {
-				isEventFavourited = true;
-			}
-		});
-
-		return event[0].favourited || isEventFavourited;
-	};
-
 	/**
 	 * Horizontal <FlatList> for food choices
 	 * @param {*} event is a 2D array of [[{eventDetails}, ratings], ...]
@@ -219,9 +208,10 @@ const Feed = (props) => {
 						event={item}
 						isEventFood={true}
 						sectionTitle={sectionTitle}
-						sectionIndex={sectionIndex}
+						index={sectionIndex}
 						foodIndex={index}
 						favourites={favourites}
+						handleAddToFavourites={handleAddToFavourites}
 					/>
 				)}
 				keyExtractor={(item, index) => item + index}
@@ -238,9 +228,10 @@ const Feed = (props) => {
 				event={item}
 				isEventFood={false}
 				sectionTitle={section.title}
-				sectionIndex={index}
 				foodIndex={index}
+				index={index}
 				favourites={favourites}
+				handleAddToFavourites={handleAddToFavourites}
 			/>
 		);
 	};
@@ -258,7 +249,7 @@ const Feed = (props) => {
 		return <Text style={styles.CategoryTitleText}>{text}</Text>;
 	};
 
-	const renderListHeaderComponent = (isFavouritesHeader) => {
+	const renderListHeaderComponent = () => {
 		return (
 			<View style={styles.header}>
 				<View
@@ -267,24 +258,22 @@ const Feed = (props) => {
 						justifyContent: 'space-between',
 					}}
 				>
-					<Text style={styles.headerText}>
-						{isFavouritesHeader ? 'Plan something!' : 'Welcome to DoWhat'}
-					</Text>
-					{isFavouritesHeader ? null : (
-						<TouchableOpacity onPress={signOut}>
-							<Text
-								style={{
-									color: 'grey',
-									textDecorationLine: 'underline',
-									marginRight: 5,
-									marginTop: 50,
-								}}
-							>
-								Sign out
-							</Text>
-						</TouchableOpacity>
-					)}
+					<Text style={styles.headerText}>Welcome to DoWhat</Text>
+
+					<TouchableOpacity onPress={signOut}>
+						<Text
+							style={{
+								color: 'grey',
+								textDecorationLine: 'underline',
+								marginRight: 5,
+								marginTop: 50,
+							}}
+						>
+							Sign out
+						</Text>
+					</TouchableOpacity>
 				</View>
+
 				<Text
 					style={{
 						marginTop: 0,
@@ -298,93 +287,56 @@ const Feed = (props) => {
 					Browse Categories
 				</Text>
 
-				{isFavouritesHeader ? (
-					<HomeFavouritesHeader
-						addingFavouritesToPlan={addingFavouritesToPlan}
-						resetAddingFavourites={resetAddingFavourites}
-						setAddFavouritesToPlan={() => setAddingFavouritesToPlan(true)}
-						viewAllEvents={() => setViewFavourites(false)}
-						numOfFavouriteEvents={favourites.length}
-					/>
-				) : (
+				<View
+					style={{
+						flex: 1,
+						flexDirection: 'row',
+						justifyContent: 'space-around',
+						marginTop: 5,
+					}}
+				>
 					<View
 						style={{
-							flex: 1,
+							flex: 2.5,
 							flexDirection: 'row',
 							justifyContent: 'space-around',
-							marginTop: 5,
+							marginLeft: -5,
+							marginVertical: 15,
 						}}
 					>
-						<View
-							style={{
-								flex: 2.5,
-								flexDirection: 'row',
-								justifyContent: 'space-around',
-								marginLeft: -5,
-								marginVertical: 15,
-							}}
-						>
-							<View>
-								<TouchableOpacity
-									onPress={() => {
-										setFavouriteSummaryModalVisibile(false);
-										setAddingFavouritesToPlan(false);
-										setAnyFavouritesClicked(false);
-										setNumberOfFavouritesClicked(0);
-										setViewFavourites(true);
-									}}
-									style={[styles.headerCategory, { backgroundColor: '#ffcccc' }]}
-								>
-									<MaterialCommunityIcons
-										name='cards-heart'
-										color={'#d00000'}
-										size={25}
-									/>
-								</TouchableOpacity>
-								<CategoryTitleText text='FAVOURITES' />
-							</View>
-							<View>
-								<TouchableOpacity
-									onPress={() => scroll(0, 0)}
-									style={[styles.headerCategory, { backgroundColor: '#ffffb3' }]}
-								>
-									<MaterialCommunityIcons
-										name='star'
-										color={'#CCCC00'}
-										size={25}
-									/>
-								</TouchableOpacity>
-								<CategoryTitleText text='POPULAR' />
-							</View>
-							<View>
-								<TouchableOpacity
-									onPress={() => scroll(1, 0)}
-									style={[styles.headerCategory, { backgroundColor: '#f2f2f2' }]}
-								>
-									<MaterialCommunityIcons
-										name='silverware-variant'
-										color={'#9d8189'}
-										size={25}
-									/>
-								</TouchableOpacity>
-								<CategoryTitleText text='EATERIES' />
-							</View>
-							<View>
-								<TouchableOpacity
-									onPress={() => scroll(2, 0)}
-									style={[styles.headerCategory, { backgroundColor: '#cce0ff' }]}
-								>
-									<MaterialCommunityIcons
-										name='city'
-										color={'#3d5a80'}
-										size={25}
-									/>
-								</TouchableOpacity>
-								<CategoryTitleText text='DISCOVER' />
-							</View>
+						<View>
+							<TouchableOpacity
+								onPress={() => scroll(0, 0)}
+								style={[styles.headerCategory, { backgroundColor: '#ffffb3' }]}
+							>
+								<MaterialCommunityIcons name='star' color={'#CCCC00'} size={25} />
+							</TouchableOpacity>
+							<CategoryTitleText text='POPULAR' />
+						</View>
+						<View>
+							<TouchableOpacity
+								onPress={() => scroll(1, 0)}
+								style={[styles.headerCategory, { backgroundColor: '#f2f2f2' }]}
+							>
+								<MaterialCommunityIcons
+									name='silverware-variant'
+									color={'#9d8189'}
+									size={25}
+								/>
+							</TouchableOpacity>
+							<CategoryTitleText text='EATERIES' />
+						</View>
+						<View>
+							<TouchableOpacity
+								onPress={() => scroll(2, 0)}
+								style={[styles.headerCategory, { backgroundColor: '#cce0ff' }]}
+							>
+								<MaterialCommunityIcons name='city' color={'#3d5a80'} size={25} />
+							</TouchableOpacity>
+							<CategoryTitleText text='DISCOVER' />
 						</View>
 					</View>
-				)}
+				</View>
 			</View>
 		);
 	};
@@ -410,7 +362,7 @@ const Feed = (props) => {
 			<SectionList
 				onRefresh={() => refreshPage()}
 				ref={(ref) => (sectionListRef = ref)}
-				ListHeaderComponent={() => renderListHeaderComponent(false)}
+				ListHeaderComponent={() => renderListHeaderComponent()}
 				progressViewOffset={100}
 				refreshing={isRefreshing}
 				sections={[
@@ -486,14 +438,7 @@ const styles = StyleSheet.create({
 		marginBottom: 5,
 		marginTop: 10,
 	},
-	// sectionHeader: {
-	//     marginRight: 15,
-	//     marginTop: 5,
-	//     borderRadius: 5,
-	//     borderWidth: 0.5,
-	//     borderColor: "black",
-	//     //backgroundColor: "#e63946",
-	// },
+
 	cardButton: {
 		borderRadius: 5,
 		marginLeft: '1%',
@@ -506,37 +451,5 @@ const styles = StyleSheet.create({
 		color: '#f1faee',
 		fontWeight: '300',
 		textAlign: 'center',
-	},
-	favouritesButton: {
-		borderWidth: 0.1,
-		padding: 5,
-	},
-	favouritesButtonText: {
-		fontSize: 12,
-		fontWeight: 'bold',
-		textAlign: 'center',
-		color: 'black',
-	},
-	modalContainer: {
-		flex: 1,
-		flexDirection: 'column',
-		justifyContent: 'flex-end',
-		alignItems: 'center',
-		borderWidth: 1,
-		borderRadius: 10,
-	},
-	summaryCartBottomContainer: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		padding: 10,
-		borderRadius: 5,
-		marginLeft: '5%',
-		marginRight: '5%',
-		backgroundColor: '#cc5237',
-	},
-	planWithFavouritesButton: {
-		flex: 1,
-		borderRightWidth: 1,
-		marginLeft: 5,
 	},
 });
