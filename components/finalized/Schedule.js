@@ -30,6 +30,7 @@ import {
     mergeTimings,
     timeAddition,
 } from "../../reusable-functions/TimeRelatedFunctions";
+import { COLORS } from "../../assets/colors";
 
 const Schedule = (props) => {
     const [events, setEvents] = React.useState([]);
@@ -63,12 +64,12 @@ const Schedule = (props) => {
                 try {
                     let resp = await fetch(
                         "https://maps.googleapis.com/maps/api/directions/json?origin=" +
-                        origin +
-                        "&destination=" +
-                        destination +
-                        "&key=" +
-                        GOOGLE_MAPS_API_KEY +
-                        "&mode=transit&region=sg"
+                            origin +
+                            "&destination=" +
+                            destination +
+                            "&key=" +
+                            GOOGLE_MAPS_API_KEY +
+                            "&mode=transit&region=sg"
                     );
                     //console.log(JSON.stringify(await resp.json()));
                     let data = (await resp.json())["routes"][0]["legs"][0];
@@ -243,16 +244,18 @@ const Schedule = (props) => {
                         data={events}
                         timeStyle={{
                             textAlign: "center",
-                            //backgroundColor: "#e18a07",
                             color: "black",
                             padding: 5,
                             borderRadius: 16,
-                            fontWeight: "bold",
-                            fontSize: 16,
+                            //fontWeight: "bold",
+                            fontSize: 18,
                         }}
-                        timeContainerStyle={{ minWidth: 52, marginRight: -5 }}
+                        innerCircle={"dot"}
+                        dotColor={COLORS.orange}
+                        dotSize={8}
+                        timeContainerStyle={{ minWidth: 59, marginRight: -10 }}
                         renderDetail={renderDetail}
-                        circleColor="#cc5327"
+                        circleColor={COLORS.lightOrange}
                     />
                 </View>
                 <View style={styles.footer}>{renderProceedButton()}</View>
@@ -267,8 +270,8 @@ const styles = StyleSheet.create({
     },
     body: {
         flex: 10,
-        padding: 20,
-        paddingTop: 45,
+        padding: 15,
+        //paddingTop: 45,
     },
     footer: {
         flex: 1,

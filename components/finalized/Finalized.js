@@ -15,6 +15,7 @@ import Schedule from "./Schedule";
 import Map from "./Map";
 import Minimap from "./Minimap";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { COLORS } from "../../assets/colors";
 import { YellowBox } from "react-native";
 
 const Finalized = (props) => {
@@ -77,21 +78,21 @@ const Finalized = (props) => {
             <MaterialCommunityIcons
                 name="weather-pouring"
                 size={24}
-                color="black"
+                color={COLORS.orange}
                 style={styles.icon}
             />
         ) : weather === "Clouds" ? (
             <MaterialCommunityIcons
                 name="weather-cloudy"
                 size={24}
-                color="black"
+                color={COLORS.lightOrange}
                 style={styles.icon}
             />
         ) : (
             <MaterialCommunityIcons
                 name="weather-sunny"
                 size={24}
-                color="black"
+                color={COLORS.orange}
                 style={styles.icon}
             />
         );
@@ -165,7 +166,7 @@ const Finalized = (props) => {
                     <View style={styles.header}></View>
                     <View
                         style={{
-                            height: Dimensions.get("window").height / 3 + 50,
+                            height: Dimensions.get("window").height / 3,
                             width: Dimensions.get("window").width + 30,
                         }}
                     >
@@ -173,8 +174,7 @@ const Finalized = (props) => {
                         <TouchableOpacity
                             style={{
                                 marginLeft: 240,
-                                marginTop:
-                                    Dimensions.get("window").height / 3 + 50,
+                                marginTop: Dimensions.get("window").height / 3,
                             }}
                             onPress={() => setVisible(true)}
                         >
@@ -198,7 +198,7 @@ const Finalized = (props) => {
                                 alignItems: "flex-start",
                             }}
                         >
-                            <Text style={styles.title}>Events</Text>
+                            <Text style={styles.title}>Outing Plan</Text>
                             {weatherIcon(weather)}
                         </View>
                         <Schedule
@@ -231,7 +231,7 @@ const Finalized = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        //backgroundColor: "white",
+        backgroundColor: "white",
     },
     header: {
         flex: 0,
@@ -248,12 +248,12 @@ const styles = StyleSheet.create({
     },
     icon: {
         fontSize: 35,
-        //marginTop: 10,
+        marginTop: 10,
         marginLeft: 10,
     },
     title: {
         marginTop: 10,
-        marginBottom: -35,
+        marginBottom: -5,
         marginLeft: 10,
         fontSize: 25,
         fontWeight: "bold",

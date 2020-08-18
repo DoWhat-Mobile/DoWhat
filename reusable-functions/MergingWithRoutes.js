@@ -2,6 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { GOOGLE_MAPS_API_KEY } from "react-native-dotenv";
 import { FontAwesome } from "@expo/vector-icons";
+import { COLORS } from "../assets/colors";
 
 /**
  * Helper function that creates an object with all route details key, distance, duration, instructions, mode and start
@@ -41,11 +42,11 @@ export const routeFormatter = async (obj) => {
     let long = obj.start_location.lng;
     let resp = await fetch(
         "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-        lat +
-        "," +
-        long +
-        "&key=" +
-        GOOGLE_MAPS_API_KEY
+            lat +
+            "," +
+            long +
+            "&key=" +
+            GOOGLE_MAPS_API_KEY
     );
     let start = (await resp.json()).results[0].formatted_address;
     //console.log(JSON.stringify(await resp.json()));
@@ -66,8 +67,8 @@ export const routeFormatter = async (obj) => {
  * @param {directions between each event} directions
  */
 export const eventsWithDirections = (timingsArray, events, directions) => {
-    console.log(timingsArray)
-    console.log("directions are", directions)
+    console.log(timingsArray);
+    console.log("directions are", directions);
     let result = [];
     for (let i = 0; i < timingsArray.length; i++) {
         let j = i % 2 == 0 ? i / 2 : (i - 1) / 2;
@@ -77,7 +78,7 @@ export const eventsWithDirections = (timingsArray, events, directions) => {
             let obj = {
                 title: "Directions",
                 time: "",
-                lineColor: "#e18a07",
+                lineColor: COLORS.orange,
                 description: "",
                 genre: "directions",
             };

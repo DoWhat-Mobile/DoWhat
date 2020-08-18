@@ -4,6 +4,7 @@ import ReadMore from "react-native-read-more-text";
 import { TIH_API_KEY } from "react-native-dotenv";
 import Route from "../components/finalized/Route";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { COLORS } from "../assets/colors";
 
 /**
  * handles filter for food to be added in data array. Returns array of data that is formatted to be passed as props into
@@ -15,8 +16,8 @@ export const filterHelper = (filters, events) => {
     const genre = filters.cuisine.includes("Hawker")
         ? "hawker"
         : filters.cuisine.includes("Cafe")
-            ? "cafes"
-            : "restaurants";
+        ? "cafes"
+        : "restaurants";
 
     const eventList = events[genre]["list"];
     // so there will be a variety of places to choose from
@@ -109,8 +110,8 @@ export const genreEventObjectArray = (
                 userGenres[i] === "food"
                     ? "food"
                     : userGenres[i].toLowerCase() === "nightlife"
-                        ? "nightlife"
-                        : "indoors";
+                    ? "nightlife"
+                    : "indoors";
             if (genre === "indoors" || genre === "nightlife") {
                 const eventObject = events[genre]["list"];
                 const rand = Math.floor(Math.random() * eventObject.length);
@@ -165,7 +166,7 @@ export const data_timeline = (timeline, events, currentEvents) => {
         for (let i = 0; i < currentEvents.length; i++) {
             const genre = currentEvents
                 .map((x) => Object.keys(x)[0])
-            [i].toLowerCase();
+                [i].toLowerCase();
             const event = currentEvents[i][genre];
             if (events[genre].slots.includes(startTime)) {
                 if (startTime + events[genre]["duration"] > timeline[1]) {
@@ -263,7 +264,7 @@ export const objectFormatter = (startTime, event, genre) => {
             ? event.name + " " + "(Indoors)"
             : event.name,
         description: event.location + "\n\n" + event.description,
-        lineColor: "#e18a07",
+        lineColor: COLORS.orange,
         imageUrl: imageURI,
         genre: genre,
         coord: event.coord,
@@ -296,7 +297,7 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                 Show less
             </Text>
         );
-    }
+    };
     let title = rowData.title;
 
     let desc = null;
