@@ -253,7 +253,10 @@ const Schedule = (props) => {
                         innerCircle={"dot"}
                         dotColor={COLORS.orange}
                         dotSize={8}
-                        timeContainerStyle={{ minWidth: 59, marginRight: -10 }}
+                        timeContainerStyle={{
+                            minWidth: 59,
+                            marginRight: -10,
+                        }}
                         renderDetail={renderDetail}
                         circleColor={COLORS.lightOrange}
                     />
@@ -270,8 +273,8 @@ const styles = StyleSheet.create({
     },
     body: {
         flex: 10,
-        padding: 15,
-        //paddingTop: 45,
+        marginHorizontal: 15,
+        marginTop: 20,
     },
     footer: {
         flex: 1,

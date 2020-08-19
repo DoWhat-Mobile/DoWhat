@@ -1,5 +1,12 @@
 import React from "react";
-import { Text, View, Image, ScrollView, StyleSheet } from "react-native";
+import {
+    Text,
+    View,
+    Image,
+    ScrollView,
+    StyleSheet,
+    ImageBackground,
+} from "react-native";
 import ReadMore from "react-native-read-more-text";
 import { TIH_API_KEY } from "react-native-dotenv";
 import Route from "../components/finalized/Route";
@@ -260,10 +267,8 @@ export const objectFormatter = (startTime, event, genre) => {
     }
     let obj = {
         time: startTime,
-        title: event.tags.includes("Indoors")
-            ? event.name + " " + "(Indoors)"
-            : event.name,
-        description: event.location + "\n\n" + event.description,
+        title: event.name,
+        description: event.description,
         lineColor: COLORS.orange,
         imageUrl: imageURI,
         genre: genre,
@@ -283,68 +288,82 @@ export const objectFormatter = (startTime, event, genre) => {
  * Formats and renders the details in each block of the timeline
  */
 export const renderDetail = (rowData, sectionID, rowID) => {
-    const renderTruncatedFooter = (handlePress) => {
-        return (
-            <Text style={{ color: "#595959" }} onPress={handlePress}>
-                Read more
-            </Text>
-        );
-    };
+    // const renderTruncatedFooter = (handlePress) => {
+    //     return (
+    //         <Text style={{ color: "#595959" }} onPress={handlePress}>
+    //             Read more
+    //         </Text>
+    //     );
+    // };
 
-    const renderRevealedFooter = (handlePress) => {
-        return (
-            <Text style={{ color: "#595959" }} onPress={handlePress}>
-                Show less
-            </Text>
-        );
-    };
+    // const renderRevealedFooter = (handlePress) => {
+    //     return (
+    //         <Text style={{ color: "#595959" }} onPress={handlePress}>
+    //             Show less
+    //         </Text>
+    //     );
+    // };
     let title = rowData.title;
 
     let desc = null;
     if (rowData.description && rowData.imageUrl) {
         desc = (
-            <View>
-                <Image
-                    source={{ uri: rowData.imageUrl }}
+            <ImageBackground
+                source={{ uri: rowData.imageUrl }}
+                style={{
+                    height: 175,
+                }}
+                imageStyle={{ borderRadius: 10 }}
+            >
+                <View
                     style={{
-                        height: 120,
-                        borderTopLeftRadius: 10,
-                        borderTopRightRadius: 10,
+                        flex: 1,
+                        backgroundColor: "rgba(0,0,0,0.2)",
+                        justifyContent: "flex-end",
+                        borderRadius: 10,
                     }}
-                />
-                <View style={{ marginHorizontal: 10, marginVertical: 5 }}>
-                    <ReadMore
-                        numberOfLines={2}
-                        renderTruncatedFooter={renderTruncatedFooter}
-                        renderRevealedFooter={renderRevealedFooter}
+                >
+                    <View
+                        style={{
+                            justifyContent: "flex-end",
+                            padding: 10,
+                            flex: 1,
+                        }}
                     >
-                        <Text
+                        <View
                             style={{
-                                flex: 1,
-                                fontSize: 14,
+                                flexDirection: "row",
+                                justifyContent: "space-between",
                             }}
                         >
                             <Text
                                 style={{
-                                    fontSize: 16,
+                                    fontSize: 22,
                                     fontWeight: "bold",
+                                    color: "white",
                                 }}
                             >
                                 {title}
-                                {rowData.fav == 1 && (
-                                    <MaterialCommunityIcons
-                                        name="heart"
-                                        color={"#e63946"}
-                                        size={24}
-                                    />
-                                )}
                             </Text>
-                            {"\n"}
+                            {rowData.fav == 1 && (
+                                <MaterialCommunityIcons
+                                    name="heart-outline"
+                                    size={22}
+                                    color={COLORS.lightOrange}
+                                    style={{ marginTop: 5 }}
+                                />
+                            )}
+                        </View>
+                        <Text
+                            style={{ color: "white", fontSize: 14, width: 230 }}
+                            numberOfLines={1}
+                            ellipsizeMode={"tail"}
+                        >
                             {rowData.description}
                         </Text>
-                    </ReadMore>
+                    </View>
                 </View>
-            </View>
+            </ImageBackground>
         );
     } else if (rowData.description) {
         desc = (
@@ -379,8 +398,6 @@ export const renderDetail = (rowData, sectionID, rowID) => {
             style={{
                 flex: 1,
                 marginBottom: 10,
-                backgroundColor: "white",
-                borderRadius: 10,
                 elevation: 5,
             }}
         >
