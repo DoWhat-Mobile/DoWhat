@@ -237,115 +237,109 @@ const Feed = (props) => {
 	const ListHeaderComponent = () => {
 		return (
 			<View style={styles.header}>
-				<View
+				<Image
 					style={{
-						flex: 1,
-						paddingTop: '10%',
-						flexDirection: 'row',
-						backgroundColor: COLORS.orange,
-						justifyContent: 'space-between',
+						borderRadius: 100,
+						height: 30,
+						width: 30,
+						borderWidth: 1,
+						borderColor: 'white',
+						marginLeft: 16,
+					}}
+					source={{
+						uri: props.userProfilePicture,
+					}}
+				/>
+
+				<Text style={styles.headerText}>Welcome!</Text>
+
+				<TouchableOpacity
+					onPress={signOut}
+					style={{
+						color: 'white',
+						textDecorationLine: 'underline',
+						marginTop: 4,
+						marginRight: 16,
 					}}
 				>
-					<Image
-						style={{
-							borderRadius: 100,
-							height: 30,
-							width: 30,
-							borderWidth: 1,
-							borderColor: 'white',
-							marginLeft: 16,
-						}}
-						source={{
-							uri: props.userProfilePicture,
-						}}
-					/>
+					<Feather name='more-horizontal' size={24} color='white' />
+				</TouchableOpacity>
+			</View>
+		);
+	};
 
-					<Text style={styles.headerText}>Welcome!</Text>
-
-					<TouchableOpacity
-						onPress={signOut}
-						style={{
-							color: 'white',
-							textDecorationLine: 'underline',
-							marginTop: 4,
-							marginRight: 16,
-						}}
-					>
-						<Feather name='more-horizontal' size={24} color='white' />
-					</TouchableOpacity>
-				</View>
-
+	const HeaderCategoryButtons = () => {
+		return (
+			<View
+				style={{
+					flex: 1,
+					flexDirection: 'row',
+					justifyContent: 'space-around',
+					marginTop: 5,
+				}}
+			>
 				<View
 					style={{
-						flex: 1,
+						flex: 2.5,
 						flexDirection: 'row',
 						justifyContent: 'space-around',
-						marginTop: 5,
+						marginLeft: -5,
+						marginVertical: 15,
 					}}
 				>
-					<View
-						style={{
-							flex: 2.5,
-							flexDirection: 'row',
-							justifyContent: 'space-around',
-							marginLeft: -5,
-							marginVertical: 15,
-						}}
+					<TouchableOpacity
+						onPress={() => scroll(0, 0)}
+						style={[
+							styles.headerCategory,
+							currSelectedGenre == 0 ? { backgroundColor: COLORS.orange } : {},
+						]}
 					>
-						<TouchableOpacity
-							onPress={() => scroll(0, 0)}
-							style={[
-								styles.headerCategory,
-								currSelectedGenre == 0 ? { backgroundColor: COLORS.orange } : {},
-							]}
-						>
-							<Feather
-								name='zap'
-								size={24}
-								color={currSelectedGenre == 0 ? 'white' : COLORS.orange}
-							/>
-							<CategoryTitleText
-								text='POPULAR'
-								color={currSelectedGenre == 0 ? 'white' : 'black'}
-							/>
-						</TouchableOpacity>
+						<Feather
+							name='zap'
+							size={24}
+							color={currSelectedGenre == 0 ? 'white' : COLORS.orange}
+						/>
+						<CategoryTitleText
+							text='POPULAR'
+							color={currSelectedGenre == 0 ? 'white' : 'black'}
+						/>
+					</TouchableOpacity>
 
-						<TouchableOpacity
-							onPress={() => scroll(1, 0)}
-							style={[
-								styles.headerCategory,
-								currSelectedGenre == 1 ? { backgroundColor: COLORS.orange } : {},
-							]}
-						>
-							<MaterialCommunityIcons
-								name='palette-outline'
-								size={24}
-								color={currSelectedGenre == 1 ? 'white' : COLORS.orange}
-							/>
-							<CategoryTitleText
-								text='EATERIES'
-								color={currSelectedGenre == 1 ? 'white' : 'black'}
-							/>
-						</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => scroll(1, 0)}
+						style={[
+							styles.headerCategory,
+							currSelectedGenre == 1 ? { backgroundColor: COLORS.orange } : {},
+						]}
+					>
+						<MaterialCommunityIcons
+							name='palette-outline'
+							size={24}
+							color={currSelectedGenre == 1 ? 'white' : COLORS.orange}
+						/>
+						<CategoryTitleText
+							text='EATERIES'
+							color={currSelectedGenre == 1 ? 'white' : 'black'}
+						/>
+					</TouchableOpacity>
 
-						<TouchableOpacity
-							onPress={() => scroll(2, 0)}
-							style={[
-								styles.headerCategory,
-								currSelectedGenre == 2 ? { backgroundColor: COLORS.orange } : {},
-							]}
-						>
-							<Feather
-								name='camera'
-								size={24}
-								color={currSelectedGenre == 2 ? 'white' : COLORS.orange}
-							/>
-							<CategoryTitleText
-								text='DISCOVER'
-								color={currSelectedGenre == 2 ? 'white' : 'black'}
-							/>
-						</TouchableOpacity>
-					</View>
+					<TouchableOpacity
+						onPress={() => scroll(2, 0)}
+						style={[
+							styles.headerCategory,
+							currSelectedGenre == 2 ? { backgroundColor: COLORS.orange } : {},
+						]}
+					>
+						<Feather
+							name='camera'
+							size={24}
+							color={currSelectedGenre == 2 ? 'white' : COLORS.orange}
+						/>
+						<CategoryTitleText
+							text='DISCOVER'
+							color={currSelectedGenre == 2 ? 'white' : 'black'}
+						/>
+					</TouchableOpacity>
 				</View>
 			</View>
 		);
@@ -373,7 +367,11 @@ const Feed = (props) => {
 				<ListHeaderComponent />
 			</View>
 
-			<View style={{ flex: 4 }}>
+			<View style={{ flex: 1 }}>
+				<HeaderCategoryButtons />
+			</View>
+
+			<View style={{ flex: 8 }}>
 				<SectionList
 					onRefresh={() => refreshPage()}
 					ref={(ref) => (sectionListRef = ref)}
@@ -424,7 +422,6 @@ const styles = StyleSheet.create({
 		color: 'white',
 		fontSize: 20,
 		fontWeight: 'bold',
-		marginBottom: 4,
 		textAlign: 'center',
 	},
 	headerCategory: {
@@ -440,7 +437,12 @@ const styles = StyleSheet.create({
 	},
 	header: {
 		flex: 1,
-		elevation: 0.1,
+		elevation: 1,
+		paddingTop: '10%',
+		paddingBottom: '10%',
+		flexDirection: 'row',
+		backgroundColor: COLORS.orange,
+		justifyContent: 'space-between',
 	},
 	CategoryTitleText: {
 		color: 'black',

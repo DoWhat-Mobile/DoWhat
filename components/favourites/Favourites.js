@@ -17,7 +17,6 @@ import firebase from '../../database/firebase';
 import { handleEventsOf } from '../../reusable-functions/HomeFeedLogic';
 import { TIH_API_KEY } from 'react-native-dotenv';
 import { connect } from 'react-redux';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ReadMore from 'react-native-read-more-text';
 import {
 	setAddingFavourites,
@@ -26,6 +25,11 @@ import {
 } from '../../actions/favourite_event_actions';
 import SelectedFavouritesSummaryModal from './SelectedFavouritesSummaryModal';
 import HomeFavouritesHeader from './HomeFavouritesHeader';
+import FavouritesEventCard from './FavouritesEventCard';
+import { Feather } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { COLORS } from '../../assets/colors';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 /**
  * User feed in home page. Has 3 divisions: Show whats popular, eateries, and activities
@@ -44,12 +48,8 @@ const Feed = (props) => {
 	);
 
 	const [isLoading, setIsLoading] = useState(true);
-	const [whatsPopularData, setWhatsPopularData] = useState([]);
-	const [hungryData, setHungryData] = useState([]);
-	const [somethingNewData, setSomethingNewData] = useState([]);
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const [favourites, setFavourites] = useState([]); // All the favourited events, and whether or not they are selected
-	const [viewFavourites, setViewFavourites] = useState(false); // Between favourites view and all events view
 	const [addingFavouritesToPlan, setAddingFavouritesToPlan] = useState(false); // Selecting which favourited events to use in plan
 	const [anyFavouritesClicked, setAnyFavouritesClicked] = useState(false); // Show bottom summary cart when any clicked
 	const [numberOfFavouritesClicked, setNumberOfFavouritesClicked] = useState(0);
@@ -79,15 +79,7 @@ const Feed = (props) => {
 						}
 						setFavourites(favouritesArr);
 					}
-
-					if (Object.keys(allCategories).length !== 0) {
-						// Check that event has already been loaded from redux state
-						const data = handleEventsOf(allCategories, userData.preferences);
-						setWhatsPopularData(data[0]);
-						setHungryData(data[1]);
-						setSomethingNewData(data[2]);
-						setIsLoading(false);
-					}
+					setIsLoading(false);
 				});
 		} catch (err) {
 			console.log('Error getting data from firebase: ', err);
@@ -274,7 +266,6 @@ const Feed = (props) => {
 		props.setAddingFavouritesToExistsingBoard(true); // Mark redux state before navigating
 		props.addFavouritesToPlan(allEvents);
 		props.navigation.navigate('Plan');
-		setViewFavourites(false);
 		setAddingFavouritesToPlan(false);
 	};
 
@@ -282,7 +273,6 @@ const Feed = (props) => {
 		props.setAddingFavourites(true); // Update redux state before navigating
 		props.addFavouritesToPlan(allEvents);
 		props.navigation.navigate('Plan');
-		setViewFavourites(false);
 		setAddingFavouritesToPlan(false);
 	};
 
@@ -299,371 +289,48 @@ const Feed = (props) => {
 		setFavourites(newFavourites);
 	};
 
-	const checkIfEventIsFavourited = (event) => {
-		var isEventFavourited = false;
-		favourites.forEach((selectedEvent) => {
-			const favouritedEventID = selectedEvent[0].id;
-			if (favouritedEventID == event[0].id) {
-				isEventFavourited = true;
-			}
-		});
-
-		return event[0].favourited || isEventFavourited;
-	};
-
-	// Takes in indivdual event array and inject it to <Card>, for vertical views
-	const renderEventCard = (event, isEventFood, sectionTitle, index, foodIndex) => {
-		const isEventBeingAddedToPlan = event[2];
-
-		var isEventFavourited = false; // Separate variable as .favourited property dont exist
-		if (checkIfEventIsFavourited(event)) {
-			isEventFavourited = true;
-		}
-
-		const renderTruncatedFooter = (handlePress) => {
-			return (
-				<Text
-					style={{
-						color: '#595959',
-						marginVertical: 5,
-					}}
-					onPress={handlePress}
-				>
-					Read more
-				</Text>
-			);
-		};
-
-		const renderRevealedFooter = (handlePress) => {
-			return (
-				<Text
-					style={{
-						color: '#595959',
-						marginVertical: 5,
-					}}
-					onPress={handlePress}
-				>
-					Show less
-				</Text>
-			);
-		};
-
-		var imageURI = event[0].imageURL;
-		const eventRatings = event[1] + '/5';
-
-		// If imageURI is a code, convert it to URI using TIH API
-		if (imageURI.substring(0, 5) != 'https') {
-			imageURI =
-				'https://tih-api.stb.gov.sg/media/v1/download/uuid/' +
-				imageURI +
-				'?apikey=' +
-				TIH_API_KEY;
-		}
-
-		return (
-			<View>
-				<View
-					style={{
-						flex: 1,
-						width: Dimensions.get('window').width,
-						marginVertical: 20,
-						backgroundColor: 'white',
-						elevation: 5,
-					}}
-				>
-					<Image
-						source={{ uri: imageURI }}
-						style={{
-							height: isEventFood ? 100 : 210,
-							width: '100%',
-						}}
-					/>
-
-					<Text
-						style={{
-							fontSize: 18,
-							fontWeight: 'bold',
-							paddingTop: 20,
-							paddingHorizontal: 10,
-							borderTopWidth: 0.5,
-						}}
-					>
-						{event[0].title}
-					</Text>
-					<View
-						style={{
-							flexDirection: 'row',
-							justifyContent: 'space-between',
-							paddingHorizontal: 10,
-							marginBottom: 10,
-						}}
-					>
-						<View style={{ flexDirection: 'row' }}>
-							<MaterialCommunityIcons name='star' color={'#1d3557'} size={24} />
-							<Text
-								style={{
-									fontSize: 16,
-									color: '#1d3557',
-									marginTop: 2,
-								}}
-							>
-								{' '}
-								{eventRatings}
-							</Text>
-						</View>
-						<TouchableOpacity
-							disabled={sectionTitle == 'favourites'}
-							onPress={() =>
-								handleAddToFavourites(event, sectionTitle, index, foodIndex)
-							}
-						>
-							{isEventFavourited ? (
-								<MaterialCommunityIcons name='heart' color={'#e63946'} size={24} />
-							) : (
-								<MaterialCommunityIcons
-									name='heart-outline'
-									color={'black'}
-									size={24}
-								/>
-							)}
-						</TouchableOpacity>
-					</View>
-
-					<View style={{ marginLeft: 10 }}>
-						<ReadMore
-							numberOfLines={1}
-							renderTruncatedFooter={renderTruncatedFooter}
-							renderRevealedFooter={renderRevealedFooter}
-						>
-							<Text
-								style={{
-									marginHorizontal: 10,
-									marginVertical: 5,
-									fontSize: 16,
-								}}
-							>
-								{event[0].description}
-								{'\n'}
-							</Text>
-						</ReadMore>
-					</View>
-
-					{sectionTitle == 'favourites' ? (
-						addingFavouritesToPlan ? (
-							<View
-								style={{
-									flex: 1,
-									flexDirection: 'row',
-									justifyContent: 'space-between',
-									marginTop: 25,
-								}}
-							>
-								<TouchableOpacity
-									style={styles.favouritesButton}
-									onPress={() => handleRemoveFavourites(event, index)}
-								>
-									<Text style={styles.favouritesButtonText}>
-										REMOVE FROM FAVOURITES
-									</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
-									style={styles.favouritesButton}
-									onPress={() => handleFavouriteEventPress(event, index)}
-								>
-									<Text style={styles.favouritesButtonText}>
-										{isEventBeingAddedToPlan ? 'ADDED' : 'ADD TO PLAN'}
-									</Text>
-								</TouchableOpacity>
-							</View>
-						) : (
-							<View
-								style={{
-									flexDirection: 'row',
-									justifyContent: 'space-between',
-									marginTop: 5,
-								}}
-							>
-								<TouchableOpacity
-									style={styles.favouritesButton}
-									onPress={() => handleRemoveFavourites(event)}
-								>
-									<Text style={styles.favouritesButtonText}>
-										REMOVE FROM FAVOURITES
-									</Text>
-								</TouchableOpacity>
-							</View>
-						)
-					) : null}
-				</View>
-			</View>
-		);
-	};
-
-	/**
-	 * Horizontal <FlatList> for food choices
-	 * @param {*} event is a 2D array of [[{eventDetails}, ratings], ...]
-	 */
-	const formatFoodArray = (allEvents, sectionTitle, sectionIndex) => {
-		return (
-			<FlatList
-				data={allEvents}
-				horizontal={true}
-				renderItem={
-					({ item, index }) =>
-						renderEventCard(item, true, sectionTitle, sectionIndex, index) // Food index is the inner flatlist index for food list
-				}
-				keyExtractor={(item, index) => item + index}
-			/>
-		);
-	};
-
-	const renderFeed = (item, section, index) => {
-		if (section.title == 'Hungry?') {
-			return formatFoodArray(item, section.title, index); // Render eateries
-		}
-		return renderEventCard(item, false, section.title, index); // not food
-	};
-
-	const scroll = (sectionIndex, itemIndex) => {
-		sectionListRef.scrollToLocation({
-			sectionIndex: sectionIndex,
-			itemIndex: itemIndex,
-			viewPosition: 0,
-			viewOffSet: 10,
-		});
-	};
-
-	const CategoryTitleText = ({ text }) => {
-		return <Text style={styles.CategoryTitleText}>{text}</Text>;
-	};
-
-	const renderListHeaderComponent = (isFavouritesHeader) => {
+	const ListHeaderComponent = () => {
 		return (
 			<View style={styles.header}>
-				<View
+				<Image
 					style={{
-						flexDirection: 'row',
-						justifyContent: 'space-between',
+						borderRadius: 100,
+						height: 30,
+						width: 30,
+						borderWidth: 1,
+						borderColor: 'white',
+						marginLeft: 16,
 					}}
-				>
-					<Text style={styles.headerText}>
-						{isFavouritesHeader ? 'Plan something!' : 'Welcome to DoWhat'}
-					</Text>
-					{isFavouritesHeader ? null : (
-						<TouchableOpacity onPress={signOut}>
-							<Text
-								style={{
-									color: 'grey',
-									textDecorationLine: 'underline',
-									marginRight: 5,
-									marginTop: 50,
-								}}
-							>
-								Sign out
-							</Text>
-						</TouchableOpacity>
-					)}
-				</View>
-				<Text
-					style={{
-						marginTop: 0,
-						marginBottom: 20,
-						fontWeight: 'bold',
-						marginLeft: 10,
-						fontSize: 16,
-						color: 'gray',
+					source={{
+						uri: props.userProfilePicture,
 					}}
-				>
-					Browse Categories
-				</Text>
+				/>
 
-				{isFavouritesHeader ? (
-					<HomeFavouritesHeader
-						addingFavouritesToPlan={addingFavouritesToPlan}
-						resetAddingFavourites={resetAddingFavourites}
-						setAddFavouritesToPlan={() => setAddingFavouritesToPlan(true)}
-						viewAllEvents={() => setViewFavourites(false)}
-						numOfFavouriteEvents={favourites.length}
-					/>
-				) : (
-					<View
+				<Text style={styles.headerText}>Favourites</Text>
+
+				<View style={{ flexDirection: 'row' }}>
+					<TouchableOpacity
+						onPress={() => alert('Plan with friends')}
 						style={{
-							flex: 1,
-							flexDirection: 'row',
-							justifyContent: 'space-around',
-							marginTop: 5,
+							color: 'white',
+							marginTop: 4,
+							marginRight: 8,
 						}}
 					>
-						<View
-							style={{
-								flex: 2.5,
-								flexDirection: 'row',
-								justifyContent: 'space-around',
-								marginLeft: -5,
-								marginVertical: 15,
-							}}
-						>
-							<View>
-								<TouchableOpacity
-									onPress={() => {
-										setFavouriteSummaryModalVisibile(false);
-										setAddingFavouritesToPlan(false);
-										setAnyFavouritesClicked(false);
-										setNumberOfFavouritesClicked(0);
-										setViewFavourites(true);
-									}}
-									style={[styles.headerCategory, { backgroundColor: '#ffcccc' }]}
-								>
-									<MaterialCommunityIcons
-										name='cards-heart'
-										color={'#d00000'}
-										size={25}
-									/>
-								</TouchableOpacity>
-								<CategoryTitleText text='FAVOURITES' />
-							</View>
-							<View>
-								<TouchableOpacity
-									onPress={() => scroll(0, 0)}
-									style={[styles.headerCategory, { backgroundColor: '#ffffb3' }]}
-								>
-									<MaterialCommunityIcons
-										name='star'
-										color={'#CCCC00'}
-										size={25}
-									/>
-								</TouchableOpacity>
-								<CategoryTitleText text='POPULAR' />
-							</View>
-							<View>
-								<TouchableOpacity
-									onPress={() => scroll(1, 0)}
-									style={[styles.headerCategory, { backgroundColor: '#f2f2f2' }]}
-								>
-									<MaterialCommunityIcons
-										name='silverware-variant'
-										color={'#9d8189'}
-										size={25}
-									/>
-								</TouchableOpacity>
-								<CategoryTitleText text='EATERIES' />
-							</View>
-							<View>
-								<TouchableOpacity
-									onPress={() => scroll(2, 0)}
-									style={[styles.headerCategory, { backgroundColor: '#cce0ff' }]}
-								>
-									<MaterialCommunityIcons
-										name='city'
-										color={'#3d5a80'}
-										size={25}
-									/>
-								</TouchableOpacity>
-								<CategoryTitleText text='DISCOVER' />
-							</View>
-						</View>
-					</View>
-				)}
+						<FontAwesome5 name='clipboard-list' size={20} color='white' />
+					</TouchableOpacity>
+
+					<TouchableOpacity
+						onPress={signOut}
+						style={{
+							color: 'white',
+							marginTop: 4,
+							marginRight: 8,
+						}}
+					>
+						<Feather name='more-horizontal' size={20} color='white' />
+					</TouchableOpacity>
+				</View>
 			</View>
 		);
 	};
@@ -673,8 +340,6 @@ const Feed = (props) => {
 		props.navigation.navigate('Auth');
 	};
 
-	var sectionListRef = {}; // For anchor tag use
-
 	if (isLoading) {
 		return (
 			<View style={{ flex: 1, justifyContent: 'center' }}>
@@ -683,24 +348,29 @@ const Feed = (props) => {
 		);
 	}
 
-	if (viewFavourites) {
-		// Favourites view
-		return (
-			<View style={styles.container}>
+	return (
+		<View style={styles.container}>
+			<View style={{ flex: 1, backgroundColor: COLORS.orange }}>
+				<ListHeaderComponent />
+			</View>
+
+			<View style={{ flex: 9, marginTop: 16 }}>
 				<SectionList
 					onRefresh={() => refreshPage()}
 					ref={(ref) => (sectionListRef = ref)}
-					ListHeaderComponent={() => renderListHeaderComponent(true)}
 					progressViewOffset={100}
 					refreshing={isRefreshing}
 					sections={[{ title: 'My favourites', data: favourites }]}
-					renderItem={({ item, section, index }) =>
-						renderEventCard(item, false, 'favourites', index, 0)
-					}
-					renderSectionHeader={({ section }) => (
-						<View style={styles.sectionHeader}>
-							<Text style={styles.sectionHeaderText}>{section.title}</Text>
-						</View>
+					renderItem={({ item, section, index }) => (
+						<FavouritesEventCard
+							event={item}
+							isEventFood={false}
+							sectionTitle={'favourites'}
+							index={index}
+							foodIndex={0}
+							favourites={favourites}
+							addingFavouritesToPlan={addingFavouritesToPlan}
+						/>
 					)}
 					keyExtractor={(item, index) => index}
 				/>
@@ -828,34 +498,6 @@ const Feed = (props) => {
 					) : null
 				}
 			</View>
-		);
-	}
-
-	// Normal view
-	return (
-		<View style={styles.container}>
-			<SectionList
-				onRefresh={() => refreshPage()}
-				ref={(ref) => (sectionListRef = ref)}
-				ListHeaderComponent={() => renderListHeaderComponent(false)}
-				progressViewOffset={100}
-				refreshing={isRefreshing}
-				sections={[
-					{
-						title: 'Popular',
-						data: whatsPopularData,
-					}, // eventData[0] is an array of data items
-					{ title: 'Hungry?', data: hungryData }, // eventData[1] is an array of one element: [data]
-					{ title: 'Discover', data: somethingNewData }, // eventData[2] is an array data items
-				]}
-				renderItem={({ item, section, index }) => renderFeed(item, section, index)}
-				renderSectionHeader={({ section }) => (
-					<View style={styles.sectionHeader}>
-						<Text style={styles.sectionHeaderText}>{section.title}</Text>
-					</View>
-				)}
-				keyExtractor={(item, index) => index}
-			/>
 		</View>
 	);
 };
@@ -870,6 +512,7 @@ const mapStateToProps = (state) => {
 	return {
 		allEvents: state.add_events.events,
 		userID: state.add_events.userID,
+		userProfilePicture: state.add_events.profilePicture,
 	};
 };
 
@@ -880,24 +523,31 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	headerText: {
-		color: 'black',
-		fontSize: 26,
-		marginLeft: 10,
-		textShadowColor: '#e85d04',
+		color: 'white',
+		fontSize: 20,
 		fontWeight: 'bold',
-		marginBottom: 20,
-		marginTop: 80,
+		marginBottom: 4,
+		textAlign: 'center',
 	},
 	headerCategory: {
-		//borderWidth: 0.5,
-		padding: 15,
+		flexDirection: 'row',
+		borderWidth: 0.2,
+		borderColor: 'grey',
+		paddingLeft: 14,
+		paddingRight: 14,
 		borderRadius: 30,
-		//elevation: 0.01,
 		alignSelf: 'center',
+		backgroundColor: 'white',
+		elevation: 1,
 	},
 	header: {
-		backgroundColor: 'white',
-		elevation: 0.1,
+		flex: 1,
+		elevation: 1,
+		paddingTop: '10%',
+		paddingBottom: '10%',
+		flexDirection: 'row',
+		backgroundColor: COLORS.orange,
+		justifyContent: 'space-between',
 	},
 	CategoryTitleText: {
 		color: 'black',
@@ -913,14 +563,6 @@ const styles = StyleSheet.create({
 		marginBottom: 5,
 		marginTop: 10,
 	},
-	// sectionHeader: {
-	//     marginRight: 15,
-	//     marginTop: 5,
-	//     borderRadius: 5,
-	//     borderWidth: 0.5,
-	//     borderColor: "black",
-	//     //backgroundColor: "#e63946",
-	// },
 	cardButton: {
 		borderRadius: 5,
 		marginLeft: '1%',

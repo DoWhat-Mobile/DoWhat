@@ -1,29 +1,21 @@
 import React from 'react';
-import {
-	View,
-	Text,
-	StyleSheet,
-	SectionList,
-	ActivityIndicator,
-	Image,
-	FlatList,
-	TouchableOpacity,
-	Dimensions,
-	Alert,
-} from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { Card, Badge } from 'react-native-elements';
-import firebase from '../../database/firebase';
-import { handleEventsOf } from '../../reusable-functions/HomeFeedLogic';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { TIH_API_KEY } from 'react-native-dotenv';
-import { connect } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ReadMore from 'react-native-read-more-text';
 
 /**
  * Home feed event card
  */
-const FeedEventCard = ({ event, isEventFood, sectionTitle, index, foodIndex, favourites }) => {
+const FavouritesEventCard = ({
+	event,
+	isEventFood,
+	sectionTitle,
+	index,
+	foodIndex,
+	favourites,
+	addingFavouritesToPlan,
+}) => {
 	const isEventBeingAddedToPlan = event[2];
 
 	const checkIfEventIsFavourited = (event) => {
@@ -220,4 +212,17 @@ const FeedEventCard = ({ event, isEventFood, sectionTitle, index, foodIndex, fav
 	);
 };
 
-export default FeedEventCard;
+export default FavouritesEventCard;
+
+const styles = StyleSheet.create({
+	favouritesButton: {
+		borderWidth: 0.1,
+		padding: 5,
+	},
+	favouritesButtonText: {
+		fontSize: 12,
+		fontWeight: 'bold',
+		textAlign: 'center',
+		color: 'black',
+	},
+});
