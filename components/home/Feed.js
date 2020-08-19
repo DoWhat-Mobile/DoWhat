@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import {
 	View,
 	Text,
+	Image,
 	StyleSheet,
 	SectionList,
 	ActivityIndicator,
@@ -12,13 +13,15 @@ import { useFocusEffect } from '@react-navigation/native';
 import firebase from '../../database/firebase';
 import { handleEventsOf } from '../../reusable-functions/HomeFeedLogic';
 import { connect } from 'react-redux';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {
 	setAddingFavourites,
 	addFavouritesToPlan,
 	setAddingFavouritesToExistsingBoard,
 } from '../../actions/favourite_event_actions';
 import FeedEventCard from './FeedEventCard';
+import { Feather } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { COLORS } from '../../assets/colors';
 
 /**
  * User feed in home page. Has 3 divisions: Show whats popular, eateries, and activities
@@ -42,6 +45,8 @@ const Feed = (props) => {
 	const [somethingNewData, setSomethingNewData] = useState([]);
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const [favourites, setFavourites] = useState([]); // All the favourited events, and whether or not they are selected
+	// 0 , 1 , 2 for Popular, eateries & discover, used to toggle colouring of button when user selects
+	const [currSelectedGenre, setCurrSelectedGenre] = useState(0);
 
 	const getDataFromFirebase = async () => {
 		try {
@@ -126,7 +131,7 @@ const Feed = (props) => {
 		eventWithRating.votes = 0; // For use in collaboration board
 
 		// Visual cue to users, add heart to card
-		if (sectionTitle == 'Hungry?') {
+		if (sectionTitle == 'Eateries') {
 			var newData = hungryData[index][foodIndex];
 			newData[0].favourited = !newData[0].favourited; // Mark as favourited
 			var finalData = [...hungryData[index]];
@@ -199,7 +204,7 @@ const Feed = (props) => {
 	};
 
 	const renderFeed = (item, section, index) => {
-		if (section.title == 'Hungry?') {
+		if (section.title == 'Eateries') {
 			return formatFoodArray(item, section.title, index); // Render eateries
 		}
 		return (
@@ -216,6 +221,7 @@ const Feed = (props) => {
 	};
 
 	const scroll = (sectionIndex, itemIndex) => {
+		setCurrSelectedGenre(sectionIndex); // For coloring of selected button
 		sectionListRef.scrollToLocation({
 			sectionIndex: sectionIndex,
 			itemIndex: itemIndex,
@@ -224,47 +230,50 @@ const Feed = (props) => {
 		});
 	};
 
-	const CategoryTitleText = ({ text }) => {
-		return <Text style={styles.CategoryTitleText}>{text}</Text>;
+	const CategoryTitleText = ({ text, color }) => {
+		return <Text style={[styles.CategoryTitleText, { color: color }]}>{text}</Text>;
 	};
 
-	const renderListHeaderComponent = () => {
+	const ListHeaderComponent = () => {
 		return (
 			<View style={styles.header}>
 				<View
 					style={{
+						flex: 1,
+						paddingTop: '10%',
 						flexDirection: 'row',
+						backgroundColor: COLORS.orange,
 						justifyContent: 'space-between',
 					}}
 				>
-					<Text style={styles.headerText}>Welcome to DoWhat</Text>
+					<Image
+						style={{
+							borderRadius: 100,
+							height: 30,
+							width: 30,
+							borderWidth: 1,
+							borderColor: 'white',
+							marginLeft: 16,
+						}}
+						source={{
+							uri: props.userProfilePicture,
+						}}
+					/>
 
-					<TouchableOpacity onPress={signOut}>
-						<Text
-							style={{
-								color: 'grey',
-								textDecorationLine: 'underline',
-								marginRight: 5,
-								marginTop: 50,
-							}}
-						>
-							Sign out
-						</Text>
+					<Text style={styles.headerText}>Welcome!</Text>
+
+					<TouchableOpacity
+						onPress={signOut}
+						style={{
+							color: 'white',
+							textDecorationLine: 'underline',
+							marginTop: 4,
+							marginRight: 16,
+						}}
+					>
+						<Feather name='more-horizontal' size={24} color='white' />
 					</TouchableOpacity>
 				</View>
-
-				<Text
-					style={{
-						marginTop: 0,
-						marginBottom: 20,
-						fontWeight: 'bold',
-						marginLeft: 10,
-						fontSize: 16,
-						color: 'gray',
-					}}
-				>
-					Browse Categories
-				</Text>
 
 				<View
 					style={{
@@ -283,37 +292,59 @@ const Feed = (props) => {
 							marginVertical: 15,
 						}}
 					>
-						<View>
-							<TouchableOpacity
-								onPress={() => scroll(0, 0)}
-								style={[styles.headerCategory, { backgroundColor: '#ffffb3' }]}
-							>
-								<MaterialCommunityIcons name='star' color={'#CCCC00'} size={25} />
-							</TouchableOpacity>
-							<CategoryTitleText text='POPULAR' />
-						</View>
-						<View>
-							<TouchableOpacity
-								onPress={() => scroll(1, 0)}
-								style={[styles.headerCategory, { backgroundColor: '#f2f2f2' }]}
-							>
-								<MaterialCommunityIcons
-									name='silverware-variant'
-									color={'#9d8189'}
-									size={25}
-								/>
-							</TouchableOpacity>
-							<CategoryTitleText text='EATERIES' />
-						</View>
-						<View>
-							<TouchableOpacity
-								onPress={() => scroll(2, 0)}
-								style={[styles.headerCategory, { backgroundColor: '#cce0ff' }]}
-							>
-								<MaterialCommunityIcons name='city' color={'#3d5a80'} size={25} />
-							</TouchableOpacity>
-							<CategoryTitleText text='DISCOVER' />
-						</View>
+						<TouchableOpacity
+							onPress={() => scroll(0, 0)}
+							style={[
+								styles.headerCategory,
+								currSelectedGenre == 0 ? { backgroundColor: COLORS.orange } : {},
+							]}
+						>
+							<Feather
+								name='zap'
+								size={24}
+								color={currSelectedGenre == 0 ? 'white' : COLORS.orange}
+							/>
+							<CategoryTitleText
+								text='POPULAR'
+								color={currSelectedGenre == 0 ? 'white' : 'black'}
+							/>
+						</TouchableOpacity>
+
+						<TouchableOpacity
+							onPress={() => scroll(1, 0)}
+							style={[
+								styles.headerCategory,
+								currSelectedGenre == 1 ? { backgroundColor: COLORS.orange } : {},
+							]}
+						>
+							<MaterialCommunityIcons
+								name='palette-outline'
+								size={24}
+								color={currSelectedGenre == 1 ? 'white' : COLORS.orange}
+							/>
+							<CategoryTitleText
+								text='EATERIES'
+								color={currSelectedGenre == 1 ? 'white' : 'black'}
+							/>
+						</TouchableOpacity>
+
+						<TouchableOpacity
+							onPress={() => scroll(2, 0)}
+							style={[
+								styles.headerCategory,
+								currSelectedGenre == 2 ? { backgroundColor: COLORS.orange } : {},
+							]}
+						>
+							<Feather
+								name='camera'
+								size={24}
+								color={currSelectedGenre == 2 ? 'white' : COLORS.orange}
+							/>
+							<CategoryTitleText
+								text='DISCOVER'
+								color={currSelectedGenre == 2 ? 'white' : 'black'}
+							/>
+						</TouchableOpacity>
 					</View>
 				</View>
 			</View>
@@ -338,28 +369,33 @@ const Feed = (props) => {
 	// Normal view
 	return (
 		<View style={styles.container}>
-			<SectionList
-				onRefresh={() => refreshPage()}
-				ref={(ref) => (sectionListRef = ref)}
-				ListHeaderComponent={() => renderListHeaderComponent()}
-				progressViewOffset={100}
-				refreshing={isRefreshing}
-				sections={[
-					{
-						title: 'Popular',
-						data: whatsPopularData,
-					}, // eventData[0] is an array of data items
-					{ title: 'Hungry?', data: hungryData }, // eventData[1] is an array of one element: [data]
-					{ title: 'Discover', data: somethingNewData }, // eventData[2] is an array data items
-				]}
-				renderItem={({ item, section, index }) => renderFeed(item, section, index)}
-				renderSectionHeader={({ section }) => (
-					<View style={styles.sectionHeader}>
-						<Text style={styles.sectionHeaderText}>{section.title}</Text>
-					</View>
-				)}
-				keyExtractor={(item, index) => index}
-			/>
+			<View style={{ flex: 1 }}>
+				<ListHeaderComponent />
+			</View>
+
+			<View style={{ flex: 4 }}>
+				<SectionList
+					onRefresh={() => refreshPage()}
+					ref={(ref) => (sectionListRef = ref)}
+					progressViewOffset={100}
+					refreshing={isRefreshing}
+					sections={[
+						{
+							title: 'Popular',
+							data: whatsPopularData,
+						}, // eventData[0] is an array of data items
+						{ title: 'Eateries', data: hungryData }, // eventData[1] is an array of one element: [data]
+						{ title: 'Discover', data: somethingNewData }, // eventData[2] is an array data items
+					]}
+					renderItem={({ item, section, index }) => renderFeed(item, section, index)}
+					renderSectionHeader={({ section }) => (
+						<View style={styles.sectionHeader}>
+							<Text style={styles.sectionHeaderText}>{section.title}</Text>
+						</View>
+					)}
+					keyExtractor={(item, index) => index}
+				/>
+			</View>
 		</View>
 	);
 };
@@ -374,6 +410,7 @@ const mapStateToProps = (state) => {
 	return {
 		allEvents: state.add_events.events,
 		userID: state.add_events.userID,
+		userProfilePicture: state.add_events.profilePicture,
 	};
 };
 
@@ -384,21 +421,25 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	headerText: {
-		color: 'black',
-		fontSize: 26,
-		marginLeft: 10,
-		textShadowColor: '#e85d04',
+		color: 'white',
+		fontSize: 20,
 		fontWeight: 'bold',
-		marginBottom: 20,
-		marginTop: 80,
+		marginBottom: 4,
+		textAlign: 'center',
 	},
 	headerCategory: {
-		padding: 15,
+		flexDirection: 'row',
+		borderWidth: 0.2,
+		borderColor: 'grey',
+		paddingLeft: 14,
+		paddingRight: 14,
 		borderRadius: 30,
 		alignSelf: 'center',
+		backgroundColor: 'white',
+		elevation: 1,
 	},
 	header: {
-		backgroundColor: 'white',
+		flex: 1,
 		elevation: 0.1,
 	},
 	CategoryTitleText: {
@@ -406,11 +447,13 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		fontSize: 13,
 		fontWeight: 'bold',
-		marginTop: 10,
+		marginTop: 2,
+		marginLeft: 4,
 	},
 	sectionHeaderText: {
 		fontSize: 22,
 		fontWeight: 'bold',
+		color: COLORS.orange,
 		marginLeft: 10,
 		marginBottom: 5,
 		marginTop: 10,
