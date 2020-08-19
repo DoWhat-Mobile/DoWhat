@@ -374,19 +374,6 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                     // paddingVertical: 10,
                 }}
             >
-                <Text
-                    style={{
-                        fontSize: 16,
-                        fontWeight: "bold",
-                        paddingLeft: 15,
-                        paddingVertical: 10,
-                        backgroundColor: "#e6e6e6",
-                        borderTopLeftRadius: 15,
-                        borderTopRightRadius: 15,
-                    }}
-                >
-                    {title}
-                </Text>
                 <View style={{ paddingHorizontal: 15, paddingVertical: 10 }}>
                     <Route item={rowData.description} />
                 </View>
@@ -399,6 +386,8 @@ export const renderDetail = (rowData, sectionID, rowID) => {
                 flex: 1,
                 marginBottom: 10,
                 elevation: 5,
+                backgroundColor: "#fff",
+                borderRadius: 8,
             }}
         >
             {desc}

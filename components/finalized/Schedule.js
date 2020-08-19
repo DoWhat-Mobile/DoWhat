@@ -52,7 +52,13 @@ const Schedule = (props) => {
     const directionsArray = async (allRoutes, timings, data) => {
         const result = await Promise.all(
             allRoutes.map(async (route, index, element) => {
-                let obj = { distance: "", duration: "", steps: [] };
+                let obj = {
+                    distance: "",
+                    duration: "",
+                    steps: [],
+                    origin: "",
+                    destination: "",
+                };
                 let steps = [];
                 let distance = "";
                 let duration = "";
@@ -87,6 +93,7 @@ const Schedule = (props) => {
                 obj.steps = steps;
                 obj.distance = distance;
                 obj.duration = timeAddition(steps);
+                console.log(route);
                 return obj;
             })
         );

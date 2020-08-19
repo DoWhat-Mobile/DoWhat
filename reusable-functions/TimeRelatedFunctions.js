@@ -64,7 +64,7 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
     if (
         hourDifference > 0 &&
         parseInt(newStartTime.substring(0, 2)) >=
-        parseInt(newTimingsArray[index].end.substring(0, 2))
+            parseInt(newTimingsArray[index].end.substring(0, 2))
     ) {
         for (let i = index; i < newTimingsArray.length; i++) {
             newTimingsArray[i] = startEndChange(
@@ -96,7 +96,7 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
         hourDifference < 0 &&
         index != 0 &&
         parseInt(newStartTime.substring(0, 2)) >
-        parseInt(newTimingsArray[index - 1].start.substring(0, 2))
+            parseInt(newTimingsArray[index - 1].start.substring(0, 2))
     ) {
         newTimingsArray[index].start = newStartTime;
         newTimingsArray[index - 1].end = newStartTime;
@@ -108,7 +108,7 @@ export const handleRipple = (newTimingsArray, newStartTime, index) => {
         hourDifference < 0 &&
         index != 0 &&
         parseInt(newStartTime.substring(0, 2)) <=
-        parseInt(newTimingsArray[index - 1].start.substring(0, 2))
+            parseInt(newTimingsArray[index - 1].start.substring(0, 2))
     ) {
         for (let i = index; i >= 0; i--) {
             newTimingsArray[i] = startEndChange(
@@ -144,7 +144,7 @@ const timeConvertHourMin = (n) => {
     let minutes = (hours - rhours) * 60;
     let rminutes = Math.round(minutes);
     return rhours !== 0
-        ? rhours + " hour " + rminutes + " mins"
+        ? rhours + "h " + rminutes + "mins"
         : rminutes + " mins";
 };
 
@@ -157,7 +157,7 @@ const timeConvertHourMin = (n) => {
 const parseTime = (colon, hr, minus) => {
     let hour = parseInt(hr.substring(0, 1));
     if (isNaN(hour) || hr == "0 mins") return "-";
-    let minute = parseInt(hr.substring(6, 9));
+    let minute = parseInt(hr.substring(2, 5));
     let minuteDifference =
         hr.length > 8 ? hour * 60 + minute : parseInt(hr.substring(0, 2));
     let c = colon.split(":");
@@ -191,7 +191,6 @@ export const mergeTimings = (timings, direction) => {
     let temp = [];
 
     for (let i = 0; i < timings.length; i++) {
-
         if (i == 0) {
             let newStart = parseTime(
                 timings[i].start,
