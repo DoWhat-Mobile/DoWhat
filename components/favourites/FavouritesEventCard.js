@@ -17,13 +17,10 @@ import { COLORS } from '../../assets/colors';
  */
 const FeedEventCard = ({
 	event,
-	isEventFood,
-	sectionTitle,
 	index,
-	foodIndex,
 	addingFavouritesToPlan,
-	handleAddToFavourites,
 	handleCardPress,
+	handleRemoveFromFavourites,
 	selectFavouriteEventForPlan,
 }) => {
 	var imageURI = event[0].imageURL;
@@ -32,6 +29,7 @@ const FeedEventCard = ({
 
 	const renderHeartOrCheckbox = () => {
 		if (eventIsBeingAdded) {
+			// addingFavourites to plan && event is selected to be added
 			return (
 				<TouchableOpacity onPress={() => selectFavouriteEventForPlan(event, index)}>
 					<Ionicons name='md-checkbox' size={24} color={COLORS.orange} />
@@ -48,9 +46,7 @@ const FeedEventCard = ({
 		}
 
 		return (
-			<TouchableOpacity
-				onPress={() => handleAddToFavourites(event, sectionTitle, index, foodIndex)}
-			>
+			<TouchableOpacity onPress={() => handleRemoveFromFavourites(event, index)}>
 				<MaterialCommunityIcons name='heart' color={COLORS.orange} size={24} />
 			</TouchableOpacity>
 		);
@@ -86,11 +82,7 @@ const FeedEventCard = ({
 				<View style={styles.container}>
 					<View style={styles.body}>
 						<View style={styles.titleContainer}>
-							<Text
-								numberOfLines={1}
-								ellipsizeMode={'tail'}
-								style={[styles.title, { width: isEventFood ? 200 : 250 }]}
-							>
+							<Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.title}>
 								{event[0].title}
 							</Text>
 							<View
@@ -121,7 +113,7 @@ const FeedEventCard = ({
 							style={{
 								color: 'white',
 								fontSize: 13,
-								width: isEventFood ? 300 : 350,
+								width: Dimensions.get('window').width * 0.9,
 							}}
 							numberOfLines={1}
 							ellipsizeMode={'tail'}
@@ -160,6 +152,7 @@ const styles = StyleSheet.create({
 		fontSize: 22,
 		fontWeight: 'bold',
 		color: 'white',
+		width: Dimensions.get('window').width / 1.6,
 	},
 });
 
