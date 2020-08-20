@@ -314,7 +314,7 @@ const Feed = (props) => {
 				<ListHeaderComponent />
 			</View>
 
-			<View style={{ flex: 9, marginTop: 16 }}>
+			<View style={{ flex: 9, marginTop: 36 }}>
 				<SectionList
 					onRefresh={() => refreshPage()}
 					progressViewOffset={100}
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
 	header: {
 		flex: 1,
 		elevation: 1,
-		paddingTop: '10%',
+		paddingTop: '15%',
 		paddingBottom: '10%',
 		flexDirection: 'row',
 		backgroundColor: COLORS.orange,
