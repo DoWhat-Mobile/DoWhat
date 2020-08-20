@@ -10,7 +10,6 @@ import {
 	TouchableOpacity,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { Card, Badge } from 'react-native-elements';
 import firebase from '../../database/firebase';
 import { handleEventsOf } from '../../reusable-functions/HomeFeedLogic';
 import { connect } from 'react-redux';
@@ -19,11 +18,9 @@ import {
 	addFavouritesToPlan,
 	setAddingFavouritesToExistsingBoard,
 } from '../../actions/favourite_event_actions';
-import SelectedFavouritesSummaryModal from './SelectedFavouritesSummaryModal';
 import FavouritesEventCard from './FavouritesEventCard';
 import EventModal from '../home/EventModal';
 import { Feather } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../assets/colors';
 import { FontAwesome5 } from '@expo/vector-icons';
 import FavouritesBottomBar from './FavouritesBottomBar';
@@ -46,6 +43,7 @@ const Feed = (props) => {
 
 	const [isLoading, setIsLoading] = useState(true);
 	const [isRefreshing, setIsRefreshing] = useState(false);
+
 	const [favourites, setFavourites] = useState([]); // All the favourited events, and whether or not they are selected
 	const [addingFavouritesToPlan, setAddingFavouritesToPlan] = useState(false); // Selecting which favourited events to use in plan
 	const [anyFavouritesClicked, setAnyFavouritesClicked] = useState(false); // Show bottom summary cart when any clicked
@@ -121,7 +119,7 @@ const Feed = (props) => {
 		setIsRefreshing(false);
 	};
 
-	const handleDoneSelectingFavourites = () => {
+	const handleDoneSelectingFavourites = (indicator) => {
 		var allEvents = [];
 		favourites.forEach((event) => {
 			// Include all events selected
@@ -131,28 +129,16 @@ const Feed = (props) => {
 			}
 		});
 
-		Alert.alert(
-			'Add to plan',
-			'Where would you like to include all the selected favourite events?',
-			[
-				{
-					text: 'Cancel',
-					onPress: () => console.log('Cancel Pressed'),
-					style: 'cancel',
-				},
-				{
-					text: 'Ongoing collaboration',
-					onPress: () => handleAddFavouriteToCollab(allEvents),
-				},
-				{
-					text: 'Start a new plan',
-					onPress: () => handleAddFavouriteToPersonal(allEvents),
-				},
-			],
-			{ cancelable: true }
-		);
+		if (indicator == 0) {
+			// Start new plan
+			handleAddFavouriteToPersonal(allEvents);
+		} else {
+			// Add to ongoing collab
+			handleAddFavouriteToCollab(allEvents);
+		}
 	};
 
+	// When user stops planning with favourites
 	const resetAddingFavourites = () => {
 		// If any favourites selected, unselect them.
 		var newState = [...favourites];
@@ -177,7 +163,6 @@ const Feed = (props) => {
 			}
 		});
 		setNumberOfFavouritesClicked(noOfFavsClicked);
-		setAnyFavouritesClicked(anyEventSelected);
 	};
 
 	// Toggle for whether or not event will be included in planning when adding to plan
@@ -354,6 +339,7 @@ const Feed = (props) => {
 					numberOfFavouritesClicked={numberOfFavouritesClicked}
 					handleDoneSelectingFavourites={handleDoneSelectingFavourites}
 					favourites={favourites}
+					resetAddingFavourites={resetAddingFavourites}
 				/>
 			</View>
 
