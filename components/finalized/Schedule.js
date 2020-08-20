@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
         color: "#fcf5f2",
-        backgroundColor: "#cc5327",
+        backgroundColor: COLORS.orange,
     },
 });
 const mapDispatchToProps = {
