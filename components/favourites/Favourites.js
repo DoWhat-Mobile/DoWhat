@@ -26,6 +26,7 @@ import { Feather } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../assets/colors';
 import { FontAwesome5 } from '@expo/vector-icons';
+import FavouritesBottomBar from './FavouritesBottomBar';
 
 /**
  * User feed in home page. Has 3 divisions: Show whats popular, eateries, and activities
@@ -270,6 +271,7 @@ const Feed = (props) => {
 								resetAddingFavourites();
 								setAddingFavouritesToPlan(false);
 							} else {
+								setAnyFavouritesClicked(true); // Open bottom modal
 								setAddingFavouritesToPlan(true);
 							}
 						}}
@@ -310,6 +312,34 @@ const Feed = (props) => {
 		);
 	}
 
+	if (favourites.length == 0) {
+		// Empty state screen
+		return (
+			<View style={{ flex: 20, justifyContent: 'center' }}>
+				<Text
+					style={{
+						fontSize: 20,
+						fontWeight: 'bold',
+						textAlign: 'center',
+					}}
+				>
+					No favourites added yet.
+				</Text>
+				<Text
+					style={{
+						margin: 5,
+						fontSize: 14,
+						color: 'grey',
+						textAlign: 'center',
+					}}
+				>
+					Add an event to favourites by clicking on the heart in the event in the home
+					feed.
+				</Text>
+			</View>
+		);
+	}
+
 	return (
 		<View style={styles.container}>
 			<View style={{ flex: 1, backgroundColor: COLORS.orange }}>
@@ -335,128 +365,20 @@ const Feed = (props) => {
 					keyExtractor={(item, index) => index}
 				/>
 
-				{favouriteSummaryModalVisible ? ( // Modal of cart sumamry
-					<SelectedFavouritesSummaryModal
-						onClose={() => setFavouriteSummaryModalVisible(false)}
-						allEvents={favourites}
-						removeSelectedFavourite={removeSelectedFavourite}
-					/>
-				) : null}
+				<SelectedFavouritesSummaryModal
+					favouriteSummaryModalVisible={favouriteSummaryModalVisible}
+					onClose={() => setFavouriteSummaryModalVisible(false)}
+					allEvents={favourites}
+					removeSelectedFavourite={removeSelectedFavourite}
+				/>
 
-				{anyFavouritesClicked ? (
-					<View style={{ opacity: 100 }}>
-						{favouriteSummaryModalVisible ? null : ( // Show opening arrow when modal is not visible
-							<Badge
-								value={
-									<MaterialCommunityIcons
-										name='chevron-up'
-										color={'white'}
-										size={28}
-									/>
-								}
-								badgeStyle={{
-									backgroundColor: '#cc5237',
-									paddingTop: 15,
-									paddingBottom: 15,
-									borderTopLeftRadius: 10,
-									borderTopRightRadius: 10,
-									borderWidth: 0,
-								}}
-								onPress={() => setFavouriteSummaryModalVisible(true)}
-								containerStyle={{
-									position: 'relative',
-									top: 5,
-									right: -100,
-								}}
-							/>
-						)}
-
-						{numberOfFavouritesClicked == 3 ? ( // error message when max number of events clicked
-							<Text
-								style={{
-									position: 'absolute',
-									marginTop: 5,
-									marginLeft: 20,
-									color: 'red',
-									fontWeight: '600',
-								}}
-							>
-								Maximum number of events added
-							</Text>
-						) : null}
-
-						<View
-							style={[
-								styles.summaryCartBottomContainer,
-								favouriteSummaryModalVisible
-									? {
-											borderTopLeftRadius: 0,
-											borderTopRightRadius: 0,
-											borderTopWidth: 0.2,
-											borderTopColor: 'white',
-									  }
-									: {},
-							]}
-						>
-							<Text
-								style={{
-									textAlign: 'center',
-									color: 'white',
-									justifyContent: 'center',
-									fontWeight: 'bold',
-									fontSize: 14,
-									marginTop: 3,
-									marginLeft: 10,
-								}}
-							>
-								{numberOfFavouritesClicked} | Use events for plan
-							</Text>
-
-							<TouchableOpacity
-								onPress={handleDoneSelectingFavourites}
-								style={{
-									padding: 5,
-									backgroundColor: 'white',
-									borderRadius: 5,
-								}}
-							>
-								<MaterialCommunityIcons
-									name='greater-than'
-									color={'black'}
-									size={16}
-								/>
-							</TouchableOpacity>
-						</View>
-					</View>
-				) : null}
-
-				{
-					// Render empty state favourites screen
-					favourites.length == 0 ? (
-						<View style={{ flex: 20, justifyContent: 'center' }}>
-							<Text
-								style={{
-									fontSize: 20,
-									fontWeight: 'bold',
-									textAlign: 'center',
-								}}
-							>
-								No favourites added yet.
-							</Text>
-							<Text
-								style={{
-									margin: 5,
-									fontSize: 14,
-									color: 'grey',
-									textAlign: 'center',
-								}}
-							>
-								Add an event to favourites by clicking on the heart in the event in
-								the home feed.
-							</Text>
-						</View>
-					) : null
-				}
+				<FavouritesBottomBar
+					anyFavouritesClicked={anyFavouritesClicked}
+					favouriteSummaryModalVisible={favouriteSummaryModalVisible}
+					setFavouriteSummaryModalVisible={setFavouriteSummaryModalVisible}
+					numberOfFavouritesClicked={numberOfFavouritesClicked}
+					handleDoneSelectingFavourites={handleDoneSelectingFavourites}
+				/>
 			</View>
 
 			<Modal transparent={true} animated visible={isVisible} animationType='fade'>
@@ -493,17 +415,6 @@ const styles = StyleSheet.create({
 		marginBottom: 4,
 		textAlign: 'center',
 	},
-	headerCategory: {
-		flexDirection: 'row',
-		borderWidth: 0.2,
-		borderColor: 'grey',
-		paddingLeft: 14,
-		paddingRight: 14,
-		borderRadius: 30,
-		alignSelf: 'center',
-		backgroundColor: 'white',
-		elevation: 1,
-	},
 	header: {
 		flex: 1,
 		elevation: 1,
@@ -512,64 +423,5 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		backgroundColor: COLORS.orange,
 		justifyContent: 'space-between',
-	},
-	CategoryTitleText: {
-		color: 'black',
-		textAlign: 'center',
-		fontSize: 13,
-		fontWeight: 'bold',
-		marginTop: 10,
-	},
-	sectionHeaderText: {
-		fontSize: 22,
-		fontWeight: 'bold',
-		marginLeft: 10,
-		marginBottom: 5,
-		marginTop: 10,
-	},
-	cardButton: {
-		borderRadius: 5,
-		marginLeft: '1%',
-		marginRight: '1%',
-		borderWidth: 0.2,
-		borderColor: 'black',
-		backgroundColor: '#457b9d',
-	},
-	moreDetailsButtonText: {
-		color: '#f1faee',
-		fontWeight: '300',
-		textAlign: 'center',
-	},
-	favouritesButton: {
-		borderWidth: 0.1,
-		padding: 5,
-	},
-	favouritesButtonText: {
-		fontSize: 12,
-		fontWeight: 'bold',
-		textAlign: 'center',
-		color: 'black',
-	},
-	modalContainer: {
-		flex: 1,
-		flexDirection: 'column',
-		justifyContent: 'flex-end',
-		alignItems: 'center',
-		borderWidth: 1,
-		borderRadius: 10,
-	},
-	summaryCartBottomContainer: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		padding: 10,
-		borderRadius: 5,
-		marginLeft: '5%',
-		marginRight: '5%',
-		backgroundColor: '#cc5237',
-	},
-	planWithFavouritesButton: {
-		flex: 1,
-		borderRightWidth: 1,
-		marginLeft: 5,
 	},
 });
