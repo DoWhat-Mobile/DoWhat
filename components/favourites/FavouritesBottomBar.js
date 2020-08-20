@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../assets/colors';
+import SelectedFavouritesSummaryModal from './SelectedFavouritesSummaryModal';
 
 /**
  * Bottom tab dynamic tab of favourites list, shown when user is adding favourites for planning
@@ -13,57 +14,51 @@ const FavouritesBottomBar = ({
 	setFavouriteSummaryModalVisible,
 	numberOfFavouritesClicked,
 	handleDoneSelectingFavourites,
+	favourites,
 }) => {
+	const renderTextAndButton = () => {
+		if (favouriteSummaryModalVisible) {
+			return (
+				<SelectedFavouritesSummaryModal
+					numberOfFavouritesClicked={numberOfFavouritesClicked}
+					onClose={() => setFavouriteSummaryModalVisible(false)}
+					allEvents={favourites}
+				/>
+			);
+		}
+
+		return (
+			<View
+				style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 20 }}
+			>
+				<Text style={styles.numberSelected}>
+					{numberOfFavouritesClicked} activities selected
+				</Text>
+
+				<Badge
+					value={
+						<MaterialCommunityIcons name='chevron-up' color={COLORS.orange} size={28} />
+					}
+					badgeStyle={{
+						backgroundColor: 'white',
+					}}
+					onPress={() => setFavouriteSummaryModalVisible(true)}
+					containerStyle={{ marginRight: '5%', marginTop: '3%' }}
+				/>
+			</View>
+		);
+	};
+
 	if (!anyFavouritesClicked) return null;
 
 	return (
-		<View style={{ opacity: 100 }}>
-			{favouriteSummaryModalVisible ? null : ( // Show opening arrow when modal is not visible
-				<Badge
-					value={<MaterialCommunityIcons name='chevron-up' color={'white'} size={28} />}
-					badgeStyle={{
-						backgroundColor: '#cc5237',
-						paddingTop: 15,
-						paddingBottom: 15,
-						borderTopLeftRadius: 10,
-						borderTopRightRadius: 10,
-						borderWidth: 0,
-					}}
-					onPress={() => setFavouriteSummaryModalVisible(true)}
-					containerStyle={{
-						position: 'relative',
-						top: 5,
-						right: -100,
-					}}
-				/>
-			)}
+		<View style={styles.container}>
+			{renderTextAndButton()}
 
-			{numberOfFavouritesClicked == 3 ? ( // error message when max number of events clicked
-				<Text
-					style={{
-						position: 'absolute',
-						marginTop: 5,
-						marginLeft: 20,
-						color: 'red',
-						fontWeight: '600',
-					}}
-				>
-					Maximum number of events added
-				</Text>
-			) : null}
-
-			<View
-				style={[
-					styles.summaryCartBottomContainer,
-					favouriteSummaryModalVisible
-						? {
-								borderTopLeftRadius: 0,
-								borderTopRightRadius: 0,
-								borderTopWidth: 0.2,
-								borderTopColor: 'white',
-						  }
-						: {},
-				]}
+			<TouchableOpacity
+				style={styles.summaryCartButton}
+				disabled={true}
+				onPress={handleDoneSelectingFavourites}
 			>
 				<Text
 					style={{
@@ -72,24 +67,13 @@ const FavouritesBottomBar = ({
 						justifyContent: 'center',
 						fontWeight: 'bold',
 						fontSize: 14,
-						marginTop: 3,
-						marginLeft: 10,
 					}}
 				>
-					{numberOfFavouritesClicked} | Use events for plan
+					Plan outing with favourites{' '}
 				</Text>
 
-				<TouchableOpacity
-					onPress={handleDoneSelectingFavourites}
-					style={{
-						padding: 5,
-						backgroundColor: 'white',
-						borderRadius: 5,
-					}}
-				>
-					<MaterialCommunityIcons name='greater-than' color={'black'} size={16} />
-				</TouchableOpacity>
-			</View>
+				<MaterialCommunityIcons name='greater-than' color={'white'} size={20} />
+			</TouchableOpacity>
 		</View>
 	);
 };
@@ -97,13 +81,25 @@ const FavouritesBottomBar = ({
 export default FavouritesBottomBar;
 
 const styles = StyleSheet.create({
-	summaryCartBottomContainer: {
+	container: {
+		opacity: 100,
+		borderRadius: 8,
+		backgroundColor: 'white',
+	},
+	summaryCartButton: {
 		flexDirection: 'row',
-		justifyContent: 'space-between',
-		padding: 10,
+		justifyContent: 'center',
+		padding: 12,
 		borderRadius: 5,
 		marginLeft: '5%',
 		marginRight: '5%',
-		backgroundColor: '#cc5237',
+		marginBottom: '3%',
+		backgroundColor: '#D3D3D3',
+	},
+	numberSelected: {
+		fontSize: 16,
+		fontWeight: 'bold',
+		marginLeft: '5%',
+		marginTop: '2.5%',
 	},
 });

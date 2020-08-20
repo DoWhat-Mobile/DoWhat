@@ -191,24 +191,6 @@ const Feed = (props) => {
 		setFavourites(newState);
 	};
 
-	// Functionality of remove button in summary cart
-	const removeSelectedFavourite = (eventID) => {
-		var newState = [...favourites];
-		for (var i = 0; i < newState.length; i++) {
-			const currEventID = newState[i][0].id;
-			if (currEventID == eventID) {
-				newState[i][2] = false; // Unselect
-			}
-		}
-		setFavourites(newState);
-		if (numberOfFavouritesClicked - 1 == 0) {
-			// No more favourites clicked, close modals
-			setFavouriteSummaryModalVisible(false);
-			setAnyFavouritesClicked(false);
-		}
-		setNumberOfFavouritesClicked(numberOfFavouritesClicked - 1);
-	};
-
 	const handleAddFavouriteToCollab = (allEvents) => {
 		props.setAddingFavouritesToExistsingBoard(true); // Mark redux state before navigating
 		props.addFavouritesToPlan(allEvents);
@@ -365,19 +347,13 @@ const Feed = (props) => {
 					keyExtractor={(item, index) => index}
 				/>
 
-				<SelectedFavouritesSummaryModal
-					favouriteSummaryModalVisible={favouriteSummaryModalVisible}
-					onClose={() => setFavouriteSummaryModalVisible(false)}
-					allEvents={favourites}
-					removeSelectedFavourite={removeSelectedFavourite}
-				/>
-
 				<FavouritesBottomBar
 					anyFavouritesClicked={anyFavouritesClicked}
 					favouriteSummaryModalVisible={favouriteSummaryModalVisible}
 					setFavouriteSummaryModalVisible={setFavouriteSummaryModalVisible}
 					numberOfFavouritesClicked={numberOfFavouritesClicked}
 					handleDoneSelectingFavourites={handleDoneSelectingFavourites}
+					favourites={favourites}
 				/>
 			</View>
 
@@ -407,6 +383,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(Feed);
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		backgroundColor: '#F0F0F0',
 	},
 	headerText: {
 		color: 'white',
