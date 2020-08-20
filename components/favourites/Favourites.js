@@ -1,31 +1,27 @@
 import React, { useCallback, useState } from 'react';
 import {
 	View,
+	Modal,
 	Text,
 	StyleSheet,
 	SectionList,
 	ActivityIndicator,
 	Image,
-	FlatList,
 	TouchableOpacity,
-	Dimensions,
-	Alert,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Card, Badge } from 'react-native-elements';
 import firebase from '../../database/firebase';
 import { handleEventsOf } from '../../reusable-functions/HomeFeedLogic';
-import { TIH_API_KEY } from 'react-native-dotenv';
 import { connect } from 'react-redux';
-import ReadMore from 'react-native-read-more-text';
 import {
 	setAddingFavourites,
 	addFavouritesToPlan,
 	setAddingFavouritesToExistsingBoard,
 } from '../../actions/favourite_event_actions';
 import SelectedFavouritesSummaryModal from './SelectedFavouritesSummaryModal';
-import HomeFavouritesHeader from './HomeFavouritesHeader';
 import FavouritesEventCard from './FavouritesEventCard';
+import EventModal from '../home/EventModal';
 import { Feather } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../assets/colors';
@@ -53,7 +49,11 @@ const Feed = (props) => {
 	const [addingFavouritesToPlan, setAddingFavouritesToPlan] = useState(false); // Selecting which favourited events to use in plan
 	const [anyFavouritesClicked, setAnyFavouritesClicked] = useState(false); // Show bottom summary cart when any clicked
 	const [numberOfFavouritesClicked, setNumberOfFavouritesClicked] = useState(0);
-	const [favouriteSummaryModalVisible, setFavouriteSummaryModalVisibile] = useState(false); // Summary of all events in cart
+	const [favouriteSummaryModalVisible, setFavouriteSummaryModalVisible] = useState(false); // Summary of all events in cart
+
+	// For show more details of activities modal
+	const [isVisible, setVisible] = useState(false);
+	const [selectedEvent, setSelectedEvent] = useState(null);
 
 	const getDataFromFirebase = async () => {
 		try {
@@ -214,7 +214,7 @@ const Feed = (props) => {
 		});
 		setNumberOfFavouritesClicked(0);
 		setAnyFavouritesClicked(false);
-		setFavouriteSummaryModalVisibile(false);
+		setFavouriteSummaryModalVisible(false);
 		setAddingFavouritesToPlan(false);
 	};
 
@@ -234,7 +234,7 @@ const Feed = (props) => {
 	};
 
 	// Toggle for whether or not event will be included in planning when adding to plan
-	const handleFavouriteEventPress = (event, index) => {
+	const selectFavouriteEventForPlan = (event, index) => {
 		var newState = [...favourites];
 		// Maximum number clicked and attempting to add a fourth event
 		if (numberOfFavouritesClicked == 3 && newState[index][2] == false) return;
@@ -256,7 +256,7 @@ const Feed = (props) => {
 		setFavourites(newState);
 		if (numberOfFavouritesClicked - 1 == 0) {
 			// No more favourites clicked, close modals
-			setFavouriteSummaryModalVisibile(false);
+			setFavouriteSummaryModalVisible(false);
 			setAnyFavouritesClicked(false);
 		}
 		setNumberOfFavouritesClicked(numberOfFavouritesClicked - 1);
@@ -289,6 +289,15 @@ const Feed = (props) => {
 		setFavourites(newFavourites);
 	};
 
+	const handleCardPress = (selectedEvent) => {
+		setSelectedEvent(selectedEvent);
+		setVisible(true);
+	};
+
+	const onModalClose = () => {
+		setVisible(false);
+	};
+
 	const ListHeaderComponent = () => {
 		return (
 			<View style={styles.header}>
@@ -310,7 +319,7 @@ const Feed = (props) => {
 
 				<View style={{ flexDirection: 'row' }}>
 					<TouchableOpacity
-						onPress={() => alert('Plan with friends')}
+						onPress={() => setAddingFavouritesToPlan(!addingFavouritesToPlan)}
 						style={{
 							color: 'white',
 							marginTop: 4,
@@ -368,8 +377,10 @@ const Feed = (props) => {
 							sectionTitle={'favourites'}
 							index={index}
 							foodIndex={0}
-							favourites={favourites}
 							addingFavouritesToPlan={addingFavouritesToPlan}
+							handleAddToFavourites={() => alert('Add to favourites')}
+							handleCardPress={handleCardPress}
+							selectFavouriteEventForPlan={selectFavouriteEventForPlan}
 						/>
 					)}
 					keyExtractor={(item, index) => index}
@@ -377,7 +388,7 @@ const Feed = (props) => {
 
 				{favouriteSummaryModalVisible ? ( // Modal of cart sumamry
 					<SelectedFavouritesSummaryModal
-						onClose={() => setFavouriteSummaryModalVisibile(false)}
+						onClose={() => setFavouriteSummaryModalVisible(false)}
 						allEvents={favourites}
 						removeSelectedFavourite={removeSelectedFavourite}
 					/>
@@ -402,7 +413,7 @@ const Feed = (props) => {
 									borderTopRightRadius: 10,
 									borderWidth: 0,
 								}}
-								onPress={() => setFavouriteSummaryModalVisibile(true)}
+								onPress={() => setFavouriteSummaryModalVisible(true)}
 								containerStyle={{
 									position: 'relative',
 									top: 5,
@@ -498,6 +509,10 @@ const Feed = (props) => {
 					) : null
 				}
 			</View>
+
+			<Modal transparent={true} animated visible={isVisible} animationType='fade'>
+				<EventModal event={selectedEvent} onClose={onModalClose} />
+			</Modal>
 		</View>
 	);
 };
