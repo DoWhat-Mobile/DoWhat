@@ -33,6 +33,7 @@ const FeedEventCard = ({
     foodIndex,
     favourites,
     handleAddToFavourites,
+    handleCardPress,
 }) => {
     const checkIfEventIsFavourited = (event) => {
         var isEventFavourited = false;
@@ -92,84 +93,106 @@ const FeedEventCard = ({
     }
 
     return (
-        <ImageBackground
-            source={{ uri: imageURI }}
-            style={{
-                height: 210,
-                margin: 10,
-            }}
-            imageStyle={{ borderRadius: 10 }}
+        <TouchableOpacity
+            onPress={() =>
+                handleCardPress({
+                    ...event[0],
+                    imageURL: imageURI,
+                    ratings: event[1],
+                })
+            }
         >
-            <View style={styles.container}>
-                <View style={styles.body}>
-                    <View style={styles.titleContainer}>
-                        <Text
-                            numberOfLines={1}
-                            ellipsizeMode={"tail"}
-                            style={styles.title}
-                        >
-                            {event[0].title}
-                        </Text>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                marginLeft: 10,
-                            }}
-                        >
-                            <MaterialCommunityIcons
-                                name="thumb-up"
-                                size={24}
-                                color="white"
-                            />
+            <ImageBackground
+                source={{ uri: imageURI }}
+                style={{
+                    height: 210,
+                    margin: 10,
+                }}
+                imageStyle={{ borderRadius: 10 }}
+            >
+                <View
+                    style={[
+                        styles.container,
+                        { width: isEventFood ? 330 : 380 },
+                    ]}
+                >
+                    <View style={styles.body}>
+                        <View style={styles.titleContainer}>
                             <Text
+                                numberOfLines={1}
+                                ellipsizeMode={"tail"}
+                                style={[
+                                    styles.title,
+                                    { width: isEventFood ? 200 : 250 },
+                                ]}
+                            >
+                                {event[0].title}
+                            </Text>
+                            <View
                                 style={{
-                                    fontSize: 19,
-                                    color: "white",
-                                    fontWeight: "bold",
-                                    marginHorizontal: 5,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    marginLeft: 10,
                                 }}
                             >
-                                {" "}
-                                {eventRatings}
-                            </Text>
+                                <MaterialCommunityIcons
+                                    name="thumb-up"
+                                    size={24}
+                                    color="white"
+                                />
+                                <Text
+                                    style={{
+                                        fontSize: 19,
+                                        color: "white",
+                                        fontWeight: "bold",
+                                        marginHorizontal: 5,
+                                    }}
+                                >
+                                    {" "}
+                                    {eventRatings}
+                                </Text>
+                            </View>
+                            <TouchableOpacity
+                                disabled={sectionTitle == "favourites"}
+                                onPress={() =>
+                                    handleAddToFavourites(
+                                        event,
+                                        sectionTitle,
+                                        index,
+                                        foodIndex
+                                    )
+                                }
+                            >
+                                {isEventFavourited ? (
+                                    <MaterialCommunityIcons
+                                        name="heart"
+                                        color={COLORS.orange}
+                                        size={24}
+                                    />
+                                ) : (
+                                    <MaterialCommunityIcons
+                                        name="heart-outline"
+                                        color={"white"}
+                                        size={24}
+                                    />
+                                )}
+                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity
-                            disabled={sectionTitle == "favourites"}
-                            onPress={() =>
-                                handleAddToFavourites(
-                                    event,
-                                    sectionTitle,
-                                    index,
-                                    foodIndex
-                                )
-                            }
+                        <Text
+                            style={{
+                                color: "white",
+                                fontSize: 13,
+                                width: isEventFood ? 300 : 350,
+                            }}
+                            numberOfLines={1}
+                            ellipsizeMode={"tail"}
                         >
-                            {isEventFavourited ? (
-                                <MaterialCommunityIcons
-                                    name="heart"
-                                    color={COLORS.orange}
-                                    size={24}
-                                />
-                            ) : (
-                                <MaterialCommunityIcons
-                                    name="heart-outline"
-                                    color={"white"}
-                                    size={24}
-                                />
-                            )}
-                        </TouchableOpacity>
+                            {event[0].description}
+                        </Text>
                     </View>
-                    <Text
-                        style={{ color: "white", fontSize: 13, width: 350 }}
-                        numberOfLines={1}
-                        ellipsizeMode={"tail"}
-                    >
-                        {event[0].description}
-                    </Text>
                 </View>
-            </View>
-        </ImageBackground>
+            </ImageBackground>
+        </TouchableOpacity>
         // <View>
         //     <View
         //         style={{
@@ -277,13 +300,13 @@ const FeedEventCard = ({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.15)",
+        backgroundColor: "rgba(0,0,0,0.1)",
         justifyContent: "flex-end",
         borderRadius: 10,
     },
     body: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.15)",
+        backgroundColor: "rgba(0,0,0,0.1)",
         justifyContent: "flex-end",
         borderRadius: 10,
         padding: 15,
@@ -295,7 +318,6 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     title: {
-        width: 250,
         fontSize: 22,
         fontWeight: "bold",
         color: "white",

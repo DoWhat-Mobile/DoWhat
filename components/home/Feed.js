@@ -8,6 +8,7 @@ import {
     ActivityIndicator,
     FlatList,
     TouchableOpacity,
+    Modal,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import firebase from "../../database/firebase";
@@ -19,6 +20,7 @@ import {
     setAddingFavouritesToExistsingBoard,
 } from "../../actions/favourite_event_actions";
 import FeedEventCard from "./FeedEventCard";
+import EventModal from "./EventModal";
 import { Feather } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { COLORS } from "../../assets/colors";
@@ -47,6 +49,8 @@ const Feed = (props) => {
     const [favourites, setFavourites] = useState([]); // All the favourited events, and whether or not they are selected
     // 0 , 1 , 2 for Popular, eateries & discover, used to toggle colouring of button when user selects
     const [currSelectedGenre, setCurrSelectedGenre] = useState(0);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [isVisible, setVisible] = useState(false);
 
     const getDataFromFirebase = async () => {
         try {
@@ -183,6 +187,15 @@ const Feed = (props) => {
             .update(updates);
     };
 
+    const handleCardPress = (selectedEvent) => {
+        setSelectedEvent(selectedEvent);
+        setVisible(true);
+    };
+
+    const onModalClose = () => {
+        setVisible(false);
+    };
+
     /**
      * Horizontal <FlatList> for food choices
      * @param {*} event is a 2D array of [[{eventDetails}, ratings], ...]
@@ -194,6 +207,7 @@ const Feed = (props) => {
                 horizontal={true}
                 renderItem={({ item, index }) => (
                     <FeedEventCard
+                        handleCardPress={handleCardPress}
                         event={item}
                         isEventFood={true}
                         sectionTitle={sectionTitle}
@@ -214,6 +228,8 @@ const Feed = (props) => {
         }
         return (
             <FeedEventCard
+                isEventFood={false}
+                handleCardPress={handleCardPress}
                 event={item}
                 isEventFood={false}
                 sectionTitle={section.title}
@@ -419,6 +435,14 @@ const Feed = (props) => {
                     )}
                     keyExtractor={(item, index) => index}
                 />
+                <Modal
+                    transparent={true}
+                    animated
+                    visible={isVisible}
+                    animationType="fade"
+                >
+                    <EventModal event={selectedEvent} onClose={onModalClose} />
+                </Modal>
             </View>
         </View>
     );
