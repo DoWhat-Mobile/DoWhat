@@ -35,6 +35,7 @@ const Feed = (props) => {
 		useCallback(() => {
 			var isMounted = true;
 			getDataFromFirebase();
+			setAnyFavouritesClicked(false);
 			return () => {
 				isMounted = false;
 			};

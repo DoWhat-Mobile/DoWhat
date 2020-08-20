@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -6,11 +6,7 @@ import { COLORS } from '../../assets/colors';
 import SelectedFavouritesSummaryModal from './SelectedFavouritesSummaryModal';
 import * as Progress from 'react-native-progress';
 import { Entypo } from '@expo/vector-icons';
-import RadioForm, {
-	RadioButton,
-	RadioButtonInput,
-	RadioButtonLabel,
-} from 'react-native-simple-radio-button';
+import RadioForm from 'react-native-simple-radio-button';
 
 /**
  * Bottom DYNAMIC tab of favourites list, shown when user is adding favourites for planning
