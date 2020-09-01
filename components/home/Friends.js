@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import {
 	View,
 	Text,
+	StatusBar,
 	StyleSheet,
 	ActivityIndicator,
 	TouchableOpacity,
@@ -403,7 +404,7 @@ const styles = StyleSheet.create({
 	header: {
 		flex: 1,
 		elevation: 1,
-		paddingTop: '15%',
+		paddingTop: StatusBar.currentHeight,
 		paddingBottom: '10%',
 		flexDirection: 'row',
 		backgroundColor: COLORS.orange,

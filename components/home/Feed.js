@@ -8,6 +8,7 @@ import {
 	ActivityIndicator,
 	FlatList,
 	TouchableOpacity,
+	StatusBar,
 	Modal,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -291,7 +292,6 @@ const Feed = (props) => {
 					flex: 1,
 					flexDirection: 'row',
 					justifyContent: 'space-around',
-					marginTop: 5,
 					backgroundColor: 'white',
 				}}
 			>
@@ -300,7 +300,6 @@ const Feed = (props) => {
 						flex: 2.5,
 						flexDirection: 'row',
 						justifyContent: 'space-around',
-						marginLeft: -5,
 						marginVertical: 15,
 					}}
 				>
@@ -458,7 +457,7 @@ const styles = StyleSheet.create({
 	header: {
 		flex: 1,
 		elevation: 1,
-		paddingTop: '15%',
+		paddingTop: StatusBar.currentHeight,
 		paddingBottom: '10%',
 		flexDirection: 'row',
 		backgroundColor: COLORS.orange,

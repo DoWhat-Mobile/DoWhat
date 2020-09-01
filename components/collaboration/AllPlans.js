@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import {
 	View,
+	StatusBar,
 	Text,
 	StyleSheet,
 	Image,
@@ -307,7 +308,7 @@ const styles = StyleSheet.create({
 	header: {
 		flex: 1,
 		elevation: 1,
-		paddingTop: '15%',
+		paddingTop: StatusBar.currentHeight,
 		paddingBottom: '10%',
 		flexDirection: 'row',
 		backgroundColor: COLORS.orange,

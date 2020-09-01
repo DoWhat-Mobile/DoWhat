@@ -5,6 +5,7 @@ import {
 	Text,
 	StyleSheet,
 	SectionList,
+	StatusBar,
 	ActivityIndicator,
 	Image,
 	TouchableOpacity,
@@ -382,7 +383,7 @@ const styles = StyleSheet.create({
 	header: {
 		flex: 1,
 		elevation: 1,
-		paddingTop: '15%',
+		paddingTop: StatusBar.currentHeight,
 		paddingBottom: '10%',
 		flexDirection: 'row',
 		backgroundColor: COLORS.orange,
