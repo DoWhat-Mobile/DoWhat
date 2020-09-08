@@ -102,12 +102,14 @@ const ListOfPlans = ({
     const getTopVotedFavouriteEvent = (allVotedFavourites) => {
         if (allVotedFavourites == undefined) return {}; // No favourites added
 
-        const topVotedEventKey = Object.keys(allVotedFavourites).reduce((x, y) => {
-            const event1 = allVotedFavourites[x];
-            const event2 = allVotedFavourites[y];
+        const topVotedEventKey = Object.keys(allVotedFavourites).reduce(
+            (x, y) => {
+                const event1 = allVotedFavourites[x];
+                const event2 = allVotedFavourites[y];
 
-            return event1.votes > event2.votes ? x : y;
-        });
+                return event1.votes > event2.votes ? x : y;
+            }
+        );
         return allVotedFavourites[topVotedEventKey];
     };
 
@@ -118,9 +120,9 @@ const ListOfPlans = ({
     ) => {
         const accessRights = boardFromParent.isUserHost ? "host" : "attendee";
 
-        const topVotedFavouriteEvent = [getTopVotedFavouriteEvent(
-            boardFromFirebase.favourites
-        )]; // Format in array for loading.js function
+        const topVotedFavouriteEvent = [
+            getTopVotedFavouriteEvent(boardFromFirebase.favourites),
+        ]; // Format in array for loading.js function
         const topGenres = getTopVoted(boardFromFirebase.preferences, 3);
         var topCuisines = getTopVoted(
             boardFromFirebase.food_filters.cuisine,
@@ -161,7 +163,10 @@ const ListOfPlans = ({
             topVotedEvent: topVotedFavouriteEvent, // If anyone adds suggestions and votes casted
             //userLocation:
         };
-        console.log("navigation props time interval: ", navigationProps.timeInterval)
+        console.log(
+            "navigation props time interval: ",
+            navigationProps.timeInterval
+        );
         navigation.navigate("Loading", navigationProps);
     };
 
@@ -231,29 +236,29 @@ const ListOfPlans = ({
             return isBoardFinalized
                 ? "Timeline generated"
                 : board.isNewlyAddedBoard
-                    ? "Newly added board"
-                    : "Collaboration in progress";
+                ? "Newly added board"
+                : "Collaboration in progress";
         };
 
         const boardSubTitleString = () => {
             return isBoardFinalized
                 ? "Your schedule is ready to view!"
                 : board.isNewlyAddedBoard
-                    ? "Check me out!"
-                    : "Wait for all your friends to finalize their input!";
+                ? "Check me out!"
+                : "Wait for all your friends to finalize their input!";
         };
 
         const cardColorStyle = () => {
             return isBoardFinalized
                 ? { backgroundColor: "#eddcd2" }
                 : board.isNewlyAddedBoard
-                    ? {
-                        backgroundColor: "white",
-                        borderColor: "#eddcd2",
-                        borderWidth: 4,
-                        elevation: 1,
-                    }
-                    : { backgroundColor: "white" };
+                ? {
+                      backgroundColor: "white",
+                      borderColor: "#eddcd2",
+                      borderWidth: 4,
+                      elevation: 1,
+                  }
+                : { backgroundColor: "white" };
         };
 
         // generateFinalizedTimeline(board, isBoardFinalized)
@@ -263,8 +268,8 @@ const ListOfPlans = ({
                     addingFavourite
                         ? handleAddFavourite(event, board.boardID) // Event comes from home feed favourite event
                         : isBoardFinalized
-                            ? handleRouteToFinalized(board)
-                            : viewMoreDetails(board)
+                        ? handleRouteToFinalized(board)
+                        : viewMoreDetails(board)
                 }
             >
                 <View style={[styles.individualPlan, cardColorStyle()]}>
@@ -425,7 +430,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     sectionHeaderText: {
-        fontFamily: "serif",
         color: "#4f4f4f",
         fontSize: 15,
         fontWeight: "bold",

@@ -12,6 +12,7 @@ import { finalizeTimeline } from "../actions/timeline_actions";
 import { AntDesign } from "@expo/vector-icons";
 import Timeline from "./Timeline";
 import moment from "moment";
+import { COLORS } from "../assets/colors";
 
 /**
  * The modal that shows when user selects each of the individual upcoming plans
@@ -105,9 +106,7 @@ const AvailabilityInputModal = ({
     return (
         <View style={styles.modal}>
             <View style={styles.header}>
-                <Text style={styles.headerText}>
-                    Availabilities Input for {styledDate}
-                </Text>
+                <Text style={styles.headerText}>Input Availability</Text>
                 <AntDesign
                     name="close"
                     size={20}
@@ -115,11 +114,6 @@ const AvailabilityInputModal = ({
                     style={styles.close}
                 />
             </View>
-            <Text style={styles.subHeaderText}>
-                {route == "manual"
-                    ? "Please indicate the start and end time of you and your friends' availability on this day."
-                    : "Please indicate the start and end time of your availability on this day."}
-            </Text>
 
             <View style={styles.body}>
                 <Timeline route={route} />
@@ -172,26 +166,22 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        flex: 1,
+        marginBottom: 20,
         flexDirection: "row",
         justifyContent: "space-between",
     },
     headerText: {
         fontWeight: "bold",
-        fontSize: 16,
-        fontFamily: "serif",
+        fontSize: 20,
     },
     subHeaderText: {
         fontWeight: "500",
         fontSize: 12,
-        fontFamily: "serif",
         color: "grey",
         width: "90%",
     },
     body: {
-        flex: 6,
-        borderTopWidth: 0.4,
-        borderColor: "grey",
+        flex: 1,
     },
     footer: {
         flex: 1,
@@ -205,8 +195,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     doneButtonText: {
-        fontFamily: "serif",
-        color: "#E86830",
+        color: COLORS.orange,
         fontWeight: "bold",
         fontSize: 14,
     },

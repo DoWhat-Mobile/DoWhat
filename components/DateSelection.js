@@ -114,7 +114,6 @@ const DateSelection = (props) => {
                                 color: "#ffe0b3",
                                 marginLeft: 5,
                                 fontWeight: "bold",
-                                fontFamily: "serif",
                             }}
                         >
                             SYNC CALENDAR
@@ -133,7 +132,6 @@ const DateSelection = (props) => {
                         style={{
                             color: "#F28333",
                             fontWeight: "bold",
-                            fontFamily: "serif",
                         }}
                     >
                         SYNC CALENDAR
@@ -196,7 +194,12 @@ const DateSelection = (props) => {
                 isVisible={modalVisible}
                 width="auto"
                 height="auto"
-                overlayStyle={{ width: "95%", height: "32%", borderRadius: 20 }}
+                overlayStyle={{
+                    width: "95%",
+                    height:
+                        props.route.params.route == "manual" ? "25%" : "20%",
+                    borderRadius: 20,
+                }}
             >
                 <AvailabilityInputModal
                     onClose={closeModal}
@@ -270,7 +273,7 @@ const DateSelection = (props) => {
                         >
                             <Text
                                 style={[
-                                    { fontWeight: "bold", fontFamily: "serif" },
+                                    { fontWeight: "bold" },
                                     isFinalized
                                         ? { color: "#ffe0b3" }
                                         : { color: "#F28333" },
@@ -323,7 +326,6 @@ const styles = StyleSheet.create({
     header: {
         fontWeight: "bold",
         fontSize: 18,
-        fontFamily: "serif",
         borderTopEndRadius: 5,
         paddingRight: 10,
         paddingLeft: 10,
@@ -332,7 +334,6 @@ const styles = StyleSheet.create({
     date: {
         fontWeight: "500",
         fontSize: 20,
-        fontFamily: "serif",
         paddingRight: 10,
         color: "black",
         textDecorationLine: "underline",

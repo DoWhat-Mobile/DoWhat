@@ -20,7 +20,6 @@ export const buttons = (list, selected, handlePress) =>
             <Text
                 style={{
                     fontSize: 16,
-                    fontFamily: "serif",
                     fontWeight: "bold",
                     color: selected.includes(items) ? "#ffe0b3" : "#F28333",
                 }}

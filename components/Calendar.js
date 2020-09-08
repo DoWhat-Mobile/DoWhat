@@ -22,15 +22,17 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
         var formattedItems = {}; // For use with calendar library
 
         userEvents.forEach((event) => {
-            var startTime = '08:00'
-            var endTime = '23:59'
-            var date = ''
-            if (event.start.hasOwnProperty('dateTime')) { // Not whole day event
+            var startTime = "08:00";
+            var endTime = "23:59";
+            var date = "";
+            if (event.start.hasOwnProperty("dateTime")) {
+                // Not whole day event
                 startTime = event.start.dateTime.substring(11, 16);
                 endTime = event.end.dateTime.substring(11, 16);
                 date = event.start.dateTime.substring(0, 10);
-            } else { // Whole day event doesnt have .dateTime prop
-                date = event.start.date
+            } else {
+                // Whole day event doesnt have .dateTime prop
+                date = event.start.date;
             }
             const name = event.summary;
             const startMoment = moment(date + " " + startTime);
@@ -128,7 +130,6 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
                     style={{
                         fontSize: 16,
                         fontWeight: "bold",
-                        fontFamily: "serif",
                         textAlign: "center",
                     }}
                 >
@@ -138,7 +139,6 @@ const Calendar = ({ currDate, onDateChange, userEvents }) => {
                     style={{
                         fontSize: 13,
                         fontWeight: "500",
-                        fontFamily: "serif",
                         color: "grey",
                         textAlign: "center",
                     }}

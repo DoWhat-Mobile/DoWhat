@@ -5,7 +5,7 @@ import * as Linking from "expo-linking";
 import firebase from "../database/firebase";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { connect } from "react-redux";
-import { formatDateToString } from '../reusable-functions/GoogleCalendarGetBusyPeriods';
+import { formatDateToString } from "../reusable-functions/GoogleCalendarGetBusyPeriods";
 import FriendsDisplay from "./FriendsDisplay";
 
 /**
@@ -40,19 +40,19 @@ const FriendInput = (props) => {
         // Deep linking
         Linking.openURL(
             "https://t.me/share/url?url=" +
-            url +
-            "&text=" +
-            "\n" +
-            "Hey! Let's hang out! Use this link to input your availability!"
+                url +
+                "&text=" +
+                "\n" +
+                "Hey! Let's hang out! Use this link to input your availability!"
         );
     };
 
     const shareWithWhatsapp = (url) => {
         Linking.openURL(
             "whatsapp://send?" +
-            "text=Hey! Let's hang out! Use this link to input your availability!" +
-            "\n" +
-            url
+                "text=Hey! Let's hang out! Use this link to input your availability!" +
+                "\n" +
+                url
         ).catch((err) => alert("Please download WhatsApp to use this feature"));
     };
 
@@ -64,7 +64,7 @@ const FriendInput = (props) => {
     // Hosted on AWS Amplify
     const DoWhatWebURL = "https://master.da00s432t0f9l.amplifyapp.com/";
 
-    if (props.route.params.route == 'collab') {
+    if (props.route.params.route == "collab") {
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
@@ -77,9 +77,10 @@ const FriendInput = (props) => {
                         source={require("../assets/FriendsHangout.png")}
                     />
                     <Text style={styles.subtitleText}>
-                        You have chosen your date and inputted your availabilities,
-                        now it's time to invite some of your friends to join you!
-                </Text>
+                        You have chosen your date and inputted your
+                        availabilities, now it's time to invite some of your
+                        friends to join you!
+                    </Text>
                 </View>
 
                 <View style={{ flex: 5, margin: 10 }}>
@@ -102,17 +103,21 @@ const FriendInput = (props) => {
                                 paddingRight: 25,
                             },
                         ]}
-                        onPress={() => props.navigation.navigate('Plan', { addingFavourite: false })}
+                        onPress={() =>
+                            props.navigation.navigate("Plan", {
+                                addingFavourite: false,
+                            })
+                        }
                     >
                         <Text style={{ fontSize: 16, color: "white" }}>
                             DONE
-                    </Text>
+                        </Text>
                     </TouchableOpacity>
                 </View>
             </View>
         );
-
-    } else { // Invite friends without DoWhat app
+    } else {
+        // Invite friends without DoWhat app
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
@@ -124,9 +129,10 @@ const FriendInput = (props) => {
                         source={require("../assets/FriendsHangout.png")}
                     />
                     <Text style={styles.subtitleText}>
-                        You have chosen your date and inputted your availabilities,
-                        now invite your friends to enter their availabilities as well!
-                </Text>
+                        You have chosen your date and inputted your
+                        availabilities, now invite your friends to enter their
+                        availabilities as well!
+                    </Text>
 
                     <View style={styles.shareButtons}>
                         <TouchableOpacity
@@ -135,11 +141,13 @@ const FriendInput = (props) => {
                                 {
                                     backgroundColor: "#0088CC",
                                     paddingRight: 5,
-                                    paddingLeft: 5
+                                    paddingLeft: 5,
                                 },
                             ]}
                             onPress={() =>
-                                shareWithTelegram(encodeUserInfoToURL(DoWhatWebURL))
+                                shareWithTelegram(
+                                    encodeUserInfoToURL(DoWhatWebURL)
+                                )
                             }
                         >
                             <MaterialCommunityIcons
@@ -147,7 +155,9 @@ const FriendInput = (props) => {
                                 color={"white"}
                                 size={20}
                             />
-                            <Text style={{ color: 'white' }}>Telegram Invite</Text>
+                            <Text style={{ color: "white" }}>
+                                Telegram Invite
+                            </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[
@@ -159,7 +169,9 @@ const FriendInput = (props) => {
                                 },
                             ]}
                             onPress={() =>
-                                shareWithWhatsapp(encodeUserInfoToURL(DoWhatWebURL))
+                                shareWithWhatsapp(
+                                    encodeUserInfoToURL(DoWhatWebURL)
+                                )
                             }
                         >
                             <MaterialCommunityIcons
@@ -167,7 +179,9 @@ const FriendInput = (props) => {
                                 color={"white"}
                                 size={20}
                             />
-                            <Text style={{ color: 'white' }}>Whatsapp Invite</Text>
+                            <Text style={{ color: "white" }}>
+                                Whatsapp Invite
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -185,12 +199,15 @@ const FriendInput = (props) => {
                             },
                         ]}
                         onPress={() =>
-                            props.navigation.navigate("Loading", { route: "link", access: 'host' })
+                            props.navigation.navigate("Loading", {
+                                route: "link",
+                                access: "host",
+                            })
                         }
                     >
                         <Text style={{ fontSize: 16, color: "white" }}>
                             Done Inviting
-                    </Text>
+                        </Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -233,7 +250,6 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
     },
     titleText: {
-        fontFamily: "serif",
         fontSize: 25,
         fontWeight: "600",
     },
@@ -246,7 +262,6 @@ const styles = StyleSheet.create({
     },
     subtitleText: {
         fontSize: 12,
-        fontFamily: "serif",
         color: "grey",
         textAlign: "center",
         marginTop: 20,
@@ -262,6 +277,6 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: "black",
         padding: 4,
-        flexDirection: 'row'
+        flexDirection: "row",
     },
 });

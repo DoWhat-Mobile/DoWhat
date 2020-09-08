@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment-timezone";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { COLORS } from "../assets/colors";
 
 /**
  * This component allows users to input their available timings as well as their friends. The global state will keep track of
@@ -80,9 +81,14 @@ const Timeline = (props) => {
 
     return (
         <View style={styles.container}>
-            <View style={props.route == 'manual' ? styles.timeSelectionMultiple
-                : styles.timeSelectionSolo}>
-                <View style={{ flexDirection: 'row' }}>
+            <View
+                style={
+                    props.route == "manual"
+                        ? styles.timeSelectionMultiple
+                        : styles.timeSelectionSolo
+                }
+            >
+                <View style={{ flexDirection: "row" }}>
                     <Text style={styles.fromToText}>From:</Text>
                     <TouchableOpacity onPress={modifyStartTime}>
                         <Text style={styles.time}>
@@ -93,7 +99,7 @@ const Timeline = (props) => {
                     </TouchableOpacity>
                 </View>
 
-                <View style={{ flexDirection: 'row' }}>
+                <View style={{ flexDirection: "row" }}>
                     <Text style={styles.fromToText}>To:</Text>
                     <TouchableOpacity onPress={modifyEndTime}>
                         <Text style={styles.time}>
@@ -105,67 +111,95 @@ const Timeline = (props) => {
                 </View>
             </View>
 
-            <Text style={{
-                textAlign: 'center', fontSize: 12, fontWeight: '500',
-                color: 'grey'
-            }}>
-                {props.currFocus == 0
-                    ? 'You are adding your own availabilities'
-                    : 'You are adding for friend number ' + (props.currFocus)}
-
+            <Text
+                style={{
+                    textAlign: "center",
+                    fontSize: 12,
+                    fontWeight: "500",
+                    color: "grey",
+                }}
+            >
+                {props.route != "manual"
+                    ? "You are adding your own availabilities"
+                    : props.currFocus != 0
+                    ? "You are adding for friend number " + props.currFocus
+                    : "You are adding your own availabilities"}
             </Text>
 
             <View style={styles.footer}>
-                {props.route == 'manual'
-                    ?
-                    <View style={{ flexDirection: 'row' }}>
-                        <TouchableOpacity style={{
-                            backgroundColor: '#E86380',
-                            borderTopLeftRadius: 15, borderBottomLeftRadius: 15,
-                            padding: 5
-                        }}
-                            onPress={previousFriend}>
-                            <Text style={[styles.AddFriendText, { color: 'white' }]}>
+                {props.route == "manual" ? (
+                    <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                            style={{
+                                backgroundColor: COLORS.orange,
+                                borderTopLeftRadius: 15,
+                                borderBottomLeftRadius: 15,
+                                padding: 5,
+                            }}
+                            onPress={previousFriend}
+                        >
+                            <Text
+                                style={[
+                                    styles.AddFriendText,
+                                    { color: "white" },
+                                ]}
+                            >
                                 BACK
                             </Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={{ borderWidth: 1, padding: 5, borderColor: '#E86380' }}
-                            onPress={addFriend}>
+                        <TouchableOpacity
+                            style={{
+                                borderWidth: StyleSheet.hairlineWidth,
+                                padding: 5,
+                            }}
+                            onPress={addFriend}
+                        >
                             <Text style={styles.AddFriendText}>ADD FRIEND</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={{
-                            backgroundColor: '#E86380',
-                            borderTopRightRadius: 15, borderBottomRightRadius: 15,
-                            padding: 5
-                        }}
-                            onPress={nextFriend}>
-                            <Text style={[styles.AddFriendText, { color: 'white' }]}>
+                        <TouchableOpacity
+                            style={{
+                                backgroundColor: COLORS.orange,
+                                borderTopRightRadius: 15,
+                                borderBottomRightRadius: 15,
+                                padding: 5,
+                            }}
+                            onPress={nextFriend}
+                        >
+                            <Text
+                                style={[
+                                    styles.AddFriendText,
+                                    { color: "white" },
+                                ]}
+                            >
                                 NEXT
                             </Text>
                         </TouchableOpacity>
                     </View>
-                    : null}
-
+                ) : null}
 
                 {show && (
-                    <RNDateTimePicker
-                        testID="dateTimePicker"
-                        timeZoneOffsetInMinutes={480}
-                        value={
-                            modifyingStartTime
-                                ? new Date(props.currTimeFocus.startTime)
-                                : new Date(props.currTimeFocus.endTime)
-                        }
-                        mode={mode}
-                        is24Hour={true}
-                        display="default"
-                        onChange={onChange}
-                        style={{
-                            marginBottom: 110,
-                        }}
-                    />
+                    <View>
+                        <RNDateTimePicker
+                            testID="dateTimePicker"
+                            timeZoneOffsetInMinutes={480}
+                            value={
+                                modifyingStartTime
+                                    ? new Date(props.currTimeFocus.startTime)
+                                    : new Date(props.currTimeFocus.endTime)
+                            }
+                            mode={mode}
+                            is24Hour={true}
+                            display="default"
+                            onChange={onChange}
+                            style={{
+                                marginBottom: 110,
+                                width: "100%",
+                                backgroundColor: "white",
+                            }}
+                        />
+                    </View>
                 )}
             </View>
         </View>
@@ -178,34 +212,39 @@ const styles = StyleSheet.create({
         marginLeft: "2%",
     },
     timeSelectionSolo: {
-        marginTop: '10%',
-        flexDirection: 'row',
-        justifyContent: 'space-around'
+        flexDirection: "row",
+        justifyContent: "space-around",
     },
     timeSelectionMultiple: {
-        marginTop: '4%',
-        flexDirection: 'row',
-        justifyContent: 'space-around'
+        flexDirection: "row",
+        justifyContent: "space-around",
     },
     footer: {
         flexDirection: "row",
         marginTop: 10,
-        justifyContent: 'center'
+        justifyContent: "center",
     },
     fromToText: {
         fontSize: 16,
-        fontWeight: '800',
-        marginRight: '10%'
+        fontWeight: "800",
+        marginRight: "10%",
     },
     AddFriendText: {
-        color: '#E86830', fontWeight: 'bold',
-        fontSize: 12
+        color: COLORS.orange,
+        fontWeight: "bold",
+        fontSize: 12,
     },
     time: {
-        borderWidth: 0.2, padding: 2, backgroundColor: '#E86830',
-        borderColor: 'grey', borderRadius: 5, textAlign: 'center',
-        paddingLeft: 5, paddingRight: 5, color: '#FEFBFA', marginBottom: 15
-    }
+        borderColor: "grey",
+        borderRadius: 5,
+        textAlign: "center",
+        paddingLeft: 5,
+        paddingRight: 5,
+        color: COLORS.orange,
+        marginBottom: 15,
+        fontWeight: "bold",
+        fontSize: 20,
+    },
 });
 
 const mapDispatchToProps = {

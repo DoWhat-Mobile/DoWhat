@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import { findOverlappingIntervals } from "../../reusable-functions/OverlappingIntervals";
 import firebase from "../../database/firebase";
+import { COLORS } from "../../assets/colors";
 
 // might use tab navigator and define a static property
 const Genre = (props) => {
@@ -70,15 +71,14 @@ const Genre = (props) => {
                     styles.button,
                     selected.includes(items)
                         ? {
-                            backgroundColor: "#F28333",
-                        }
+                              backgroundColor: "#F28333",
+                          }
                         : { backgroundColor: "#ffe0b3" },
                 ]}
             >
                 <Text
                     style={{
                         fontSize: 14,
-                        fontFamily: "serif",
                         fontWeight: "bold",
                         color: selected.includes(items) ? "#ffe0b3" : "#F28333",
                     }}
@@ -108,7 +108,6 @@ const Genre = (props) => {
                     style={{
                         fontWeight: "bold",
                         fontSize: 18,
-                        fontFamily: "serif",
                         textAlign: "center",
                         marginTop: 20,
                     }}
@@ -125,8 +124,8 @@ const Genre = (props) => {
                         styles.button,
                         selected.includes("food")
                             ? {
-                                backgroundColor: "#F28333",
-                            }
+                                  backgroundColor: "#F28333",
+                              }
                             : { backgroundColor: "#ffe0b3" },
                     ]}
                     onPress={() => handleFoodPress()}
@@ -135,7 +134,6 @@ const Genre = (props) => {
                         style={{
                             fontSize: 14,
                             fontWeight: "bold",
-                            fontFamily: "serif",
                             color: selected.includes("food")
                                 ? "#ffe0b3"
                                 : "#F28333",
@@ -198,11 +196,11 @@ const styles = StyleSheet.create({
     },
     continueButton: {
         fontSize: 18,
-        fontFamily: "serif",
         textAlign: "center",
         borderRadius: 5,
         backgroundColor: "#ffe0b3",
-        color: "#F28333",
+        fontWeight: "bold",
+        color: COLORS.orange,
     },
 });
 

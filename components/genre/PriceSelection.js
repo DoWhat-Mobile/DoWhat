@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         marginLeft: 5,
-        fontFamily: "serif",
     },
 });
 

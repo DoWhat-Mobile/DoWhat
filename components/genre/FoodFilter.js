@@ -49,7 +49,6 @@ const FoodFilter = ({ onClose, handlePress, selectFilter }) => {
                         style={{
                             fontSize: 30,
                             fontWeight: "bold",
-                            fontFamily: "serif",
                         }}
                     >
                         Filters
@@ -70,7 +69,6 @@ const FoodFilter = ({ onClose, handlePress, selectFilter }) => {
                     >
                         <Text
                             style={{
-                                fontFamily: "serif",
                                 marginLeft: 280,
                                 fontSize: 18,
                                 fontWeight: "bold",
