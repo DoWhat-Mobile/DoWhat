@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Dimensions, ScrollView } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { COLORS } from "../../assets/colors";
 
 const DirectionsModal = ({ details, onClose }) => {
   const CloseButton = () => {
@@ -54,9 +55,24 @@ const DirectionsModal = ({ details, onClose }) => {
 
   const DirectionDescription = (item) => {
     return (
-      <View>
-        <FontAwesome5 name="walking" size={24} color="black" />
-        <Text>{item.start}</Text>
+      <View style={styles.directionCard}>
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <FontAwesome5 name="walking" size={24} color={COLORS.orange} />
+        </View>
+
+        <View style={{ marginLeft: 15 }}>
+          <Text style={{ fontWeight: "bold" }}>{item.start.split(",")[0]}</Text>
+          <View style={{ marginTop: 10 }}>
+            <Text style={{ marginLeft: 20, width: 230, fontSize: 13 }}>
+              {item.instructions}
+            </Text>
+            <View style={styles.cardFooterContainer}>
+              <Text style={styles.descriptionText}>{item.distance} </Text>
+              <View style={styles.longDash} />
+              <Text style={styles.descriptionText}> {item.duration}</Text>
+            </View>
+          </View>
+        </View>
       </View>
     );
   };
@@ -72,7 +88,7 @@ const DirectionsModal = ({ details, onClose }) => {
             <DistanceDurationDescription />
           </View>
           <View style={styles.descriptionContainer}>
-            {DirectionDescription(details.steps[0])}
+            {DirectionDescription(details.steps[2])}
           </View>
         </View>
       </View>
@@ -112,6 +128,23 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "bold",
+  },
+  directionCard: {
+    marginTop: 20,
+    borderWidth: 0.5,
+    padding: 10,
+    borderRadius: 10,
+    flexDirection: "row",
+  },
+  longDash: {
+    backgroundColor: "#737373",
+    height: 1,
+    width: 40,
+  },
+  cardFooterContainer: {
+    alignItems: "center",
+    flexDirection: "row",
+    marginLeft: 20,
   },
 });
 
