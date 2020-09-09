@@ -95,7 +95,6 @@ const Schedule = (props) => {
         obj.steps = steps;
         obj.distance = distance;
         obj.duration = timeAddition(steps);
-        console.log(route);
         return obj;
       })
     );
@@ -140,7 +139,6 @@ const Schedule = (props) => {
     if (event.genre == "directions") {
       setDirectionsVisible(true);
       setDirectionDetails(event.description);
-      console.log(event.description);
     } else if (props.accessRights === "host" && event.genre !== "directions") {
       setUnsatisfied(event);
       setVisible(true);

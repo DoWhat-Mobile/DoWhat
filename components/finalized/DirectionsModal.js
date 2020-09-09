@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions, ScrollView } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { COLORS } from "../../assets/colors";
+import { FlatList } from "react-native-gesture-handler";
 
 const DirectionsModal = ({ details, onClose }) => {
   const CloseButton = () => {
@@ -53,27 +54,65 @@ const DirectionsModal = ({ details, onClose }) => {
     );
   };
 
-  const DirectionDescription = (item) => {
+  const transitIcon = (info) => {
+    if (info.mode == "WALKING") {
+      return <FontAwesome5 name="walking" size={24} color="black" />;
+    } else {
+      if (info.key.includes("Bus")) {
+        return <FontAwesome5 name="bus" size={24} color="black" />;
+      } else {
+        return <FontAwesome5 name="train" size={24} color="black" />;
+      }
+    }
+  };
+  const directionDescriptionCard = (item) => {
     return (
-      <View style={styles.directionCard}>
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <FontAwesome5 name="walking" size={24} color={COLORS.orange} />
-        </View>
+      <View>
+        <View style={styles.directionCard}>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            {transitIcon(item)}
+          </View>
 
-        <View style={{ marginLeft: 15 }}>
-          <Text style={{ fontWeight: "bold" }}>{item.start.split(",")[0]}</Text>
-          <View style={{ marginTop: 10 }}>
-            <Text style={{ marginLeft: 20, width: 230, fontSize: 13 }}>
-              {item.instructions}
+          <View style={{ marginLeft: 25 }}>
+            <Text style={{ fontWeight: "bold", color: "black" }}>
+              {item.start.split(",")[0]}
             </Text>
-            <View style={styles.cardFooterContainer}>
-              <Text style={styles.descriptionText}>{item.distance} </Text>
-              <View style={styles.longDash} />
-              <Text style={styles.descriptionText}> {item.duration}</Text>
+            <View style={{ marginTop: 10 }}>
+              <Text style={{ marginLeft: 20, width: 230, fontSize: 13 }}>
+                {item.instructions}
+              </Text>
+              <View style={styles.cardFooterContainer}>
+                <Text style={styles.descriptionText}>{item.distance} </Text>
+                <View style={styles.longDash} />
+                <Text style={styles.descriptionText}> {item.duration}</Text>
+              </View>
             </View>
           </View>
         </View>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            marginVertical: 10,
+          }}
+        >
+          <AntDesign name="down" size={24} color={COLORS.orange} />
+        </View>
       </View>
+    );
+  };
+
+  const InstructionsList = () => {
+    return (
+      <FlatList
+        data={details.steps}
+        renderItem={({ item }) => directionDescriptionCard(item)}
+        keyExtractor={(item) => item.key}
+        style={{
+          marginTop: 20,
+          height: ((Dimensions.get("window").height - 100) * 3) / 4,
+        }}
+      />
     );
   };
 
@@ -87,9 +126,7 @@ const DirectionsModal = ({ details, onClose }) => {
             <StartEndDescription />
             <DistanceDurationDescription />
           </View>
-          <View style={styles.descriptionContainer}>
-            {DirectionDescription(details.steps[2])}
-          </View>
+          <InstructionsList />
         </View>
       </View>
     </View>
@@ -119,9 +156,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginTop: "5%",
   },
-  descriptionContainer: {
-    marginTop: 10,
-  },
   descriptionText: {
     color: "#737373",
   },
@@ -130,7 +164,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   directionCard: {
-    marginTop: 20,
+    marginTop: 0,
     borderWidth: 0.5,
     padding: 10,
     borderRadius: 10,
