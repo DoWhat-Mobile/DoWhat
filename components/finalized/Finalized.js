@@ -26,6 +26,7 @@ const Finalized = (props) => {
   const [allData, setData] = React.useState([]);
   const [timings, setTimings] = React.useState([]);
   const [isLoading, setLoading] = React.useState(true);
+  const [isEditMode, setEditMode] = React.useState(false);
 
   const data = props.route.params.data;
   const accessRights = props.route.params.access;
@@ -47,6 +48,14 @@ const Finalized = (props) => {
     setTimings(data[1]);
     setLoading(false);
   }, []);
+
+  const onEdit = () => {
+    if (accessRights == "host") {
+      setEditMode(!isEditMode);
+    } else {
+      alert("Only the host can edit events!");
+    }
+  };
 
   const onClose = () => {
     setVisible(false);
@@ -71,6 +80,94 @@ const Finalized = (props) => {
     });
     setRoutes(result);
     // directionsArray(result);
+  };
+
+  const MiniMapView = () => {
+    return (
+      <View
+        style={{
+          height: Dimensions.get("window").height / 3,
+          width: Dimensions.get("window").width + 30,
+        }}
+      >
+        <Minimap coord={coord} />
+        <TouchableOpacity
+          style={{
+            marginLeft: 240,
+            marginTop: Dimensions.get("window").height / 3,
+          }}
+          onPress={() => setVisible(true)}
+        >
+          <Text
+            style={{
+              fontWeight: "bold",
+              opacity: 0.7,
+            }}
+          >
+            Tap Here For Full Map
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const BackButton = () => {
+    return (
+      <TouchableOpacity
+        style={styles.closeButton}
+        onPress={() => props.navigation.pop(2)}
+      >
+        <MaterialCommunityIcons
+          name="keyboard-backspace"
+          size={30}
+          color="black"
+        />
+      </TouchableOpacity>
+    );
+  };
+
+  const TitleHeader = () => {
+    return (
+      <View style={styles.titleHeader}>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={styles.title}>Outing Plan</Text>
+          {weatherIcon(weather)}
+        </View>
+        <TouchableOpacity onPress={() => onEdit()} style={{ marginTop: 15 }}>
+          <MaterialCommunityIcons
+            name="pencil"
+            size={24}
+            color={isEditMode ? COLORS.orange : "black"}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const EmptyState = () => {
+    return (
+      <View style={styles.loadingScreen}>
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            left: 10,
+            top: 40,
+            zIndex: 1,
+          }}
+          onPress={() => props.navigation.pop(2)}
+        >
+          <MaterialCommunityIcons
+            name="keyboard-backspace"
+            size={30}
+            color="black"
+          />
+        </TouchableOpacity>
+        <Text style={{ marginHorizontal: 10, fontSize: 20 }}>
+          Sorry! There are no events available that match your genres and time
+          range
+        </Text>
+      </View>
+    );
   };
 
   const weatherIcon = (weather) => {
@@ -111,93 +208,20 @@ const Finalized = (props) => {
       </View>
     );
   } else {
-    console.log("data is ", data);
     if (data[0].length == 0) {
-      return (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <TouchableOpacity
-            style={{
-              position: "absolute",
-              left: 10,
-              top: 40,
-              zIndex: 1,
-            }}
-            onPress={() => props.navigation.pop(2)}
-          >
-            <MaterialCommunityIcons
-              name="keyboard-backspace"
-              size={30}
-              color="black"
-            />
-          </TouchableOpacity>
-          <Text style={{ marginHorizontal: 10, fontSize: 20 }}>
-            Sorry! There are no events available that match your genres and time
-            range
-          </Text>
-        </View>
-      );
+      return <EmptyState />;
     } else {
       return (
-        <ScrollView style={styles.container}>
-          <TouchableOpacity
-            style={{
-              position: "absolute",
-              left: 10,
-              top: 40,
-              zIndex: 1,
-            }}
-            onPress={() => props.navigation.pop(2)}
-          >
-            <MaterialCommunityIcons
-              name="keyboard-backspace"
-              size={30}
-              color="black"
-            />
-          </TouchableOpacity>
-          <View style={styles.header}></View>
-          <View
-            style={{
-              height: Dimensions.get("window").height / 3,
-              width: Dimensions.get("window").width + 30,
-            }}
-          >
-            <Minimap coord={coord} />
-            <TouchableOpacity
-              style={{
-                marginLeft: 240,
-                marginTop: Dimensions.get("window").height / 3,
-              }}
-              onPress={() => setVisible(true)}
-            >
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  opacity: 0.7,
-                }}
-              >
-                Tap Here For Full Map
-              </Text>
-            </TouchableOpacity>
-          </View>
-
+        <ScrollView
+          style={[
+            styles.container,
+            { backgroundColor: isEditMode ? "#ffd9b3" : "white" },
+          ]}
+        >
+          <BackButton />
+          <MiniMapView />
           <View style={styles.body}>
-            <View
-              style={{
-                marginLeft: 10,
-                marginTop: 20,
-                flexDirection: "row",
-                alignItems: "flex-start",
-              }}
-            >
-              <Text style={styles.title}>Outing Plan</Text>
-              {weatherIcon(weather)}
-            </View>
+            <TitleHeader />
             <Schedule
               data={allData}
               navigation={props.navigation}
@@ -213,6 +237,7 @@ const Finalized = (props) => {
               route={props.route.params.route}
               board={props.route.params.board}
               setTimingsArray={setTimingsArray}
+              isEditMode={isEditMode}
             />
 
             <Modal animated visible={visible} animationType="fade">
@@ -228,11 +253,8 @@ const Finalized = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
   },
-  header: {
-    flex: 0,
-  },
+
   body: {
     flex: 1,
     marginTop: 10,
@@ -254,6 +276,24 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 23,
     fontWeight: "bold",
+  },
+  closeButton: {
+    position: "absolute",
+    left: 10,
+    top: 40,
+    zIndex: 1,
+  },
+  loadingScreen: {
+    flex: 1,
+    justifyContent: "center",
+    alignContent: "center",
+  },
+  titleHeader: {
+    marginHorizontal: 10,
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });
 

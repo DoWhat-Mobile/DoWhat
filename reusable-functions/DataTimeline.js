@@ -261,6 +261,7 @@ export const objectFormatter = (startTime, event, genre) => {
     genre: genre,
     coord: event.coord,
     location: event.location,
+    ratings: event.rating,
   };
   if (event.fav == undefined) {
     obj.fav = 0;

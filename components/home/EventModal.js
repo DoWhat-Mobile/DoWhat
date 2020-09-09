@@ -12,6 +12,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 
 const EventModal = (props) => {
+  console.log(props);
   return (
     <View style={styles.container}>
       <View style={styles.modal}>
@@ -29,7 +30,7 @@ const EventModal = (props) => {
             color: "white",
           }}
         />
-        <Image source={{ uri: props.event.imageURL }} style={styles.image} />
+        <Image source={{ uri: props.event.imageUrl }} style={styles.image} />
         <ScrollView style={styles.textContainer}>
           <View style={styles.header}>
             <Text style={{ fontSize: 22, fontWeight: "bold" }}>

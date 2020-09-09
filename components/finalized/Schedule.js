@@ -32,14 +32,16 @@ import {
 } from "../../reusable-functions/TimeRelatedFunctions";
 import { COLORS } from "../../assets/colors";
 import DirectionsModal from "./DirectionsModal";
+import EventModal from "../home/EventModal";
 
 const Schedule = (props) => {
   const [events, setEvents] = React.useState([]);
   const [directionDetails, setDirectionDetails] = React.useState([]);
-  const [visible, setVisible] = React.useState(false);
   const [unsatisfied, setUnsatisfied] = React.useState("");
-  const [isDirectionsVisible, setDirectionsVisible] = React.useState(false);
   const [isLoading, setLoading] = React.useState(true);
+  const [isOptionsVisible, setOptionsVisible] = React.useState(false);
+  const [isDirectionsVisible, setDirectionsVisible] = React.useState(false);
+  const [isEventModalVisible, setEventModalVisible] = React.useState(false);
 
   React.useEffect(() => {
     directionsArray(props.initRoutes, props.timings, props.data);
@@ -124,26 +126,35 @@ const Schedule = (props) => {
     props.routeUpdate(selected, unsatisfied);
   };
 
-  const onClose = () => {
-    setVisible(false);
+  const onOptionsClose = () => {
+    setOptionsVisible(false);
   };
 
   const onDirectionsClose = () => {
     setDirectionsVisible(false);
+  };
+
+  const onEventClose = () => {
+    setEventModalVisible(false);
   };
   /**
    * Only the host is allowed to edit events. Directions cannot be editted
    * @param {unsatisfied event that will be swapped out} event
    */
   const onEventPress = (event) => {
-    if (event.genre == "directions") {
-      setDirectionsVisible(true);
-      setDirectionDetails(event.description);
-    } else if (props.accessRights === "host" && event.genre !== "directions") {
-      setUnsatisfied(event);
-      setVisible(true);
+    if (props.isEditMode) {
+      if (event.genre !== "directions") {
+        setUnsatisfied(event);
+        setOptionsVisible(true);
+      }
     } else {
-      alert("Only the host can edit events");
+      if (event.genre == "directions") {
+        setDirectionsVisible(true);
+        setDirectionDetails(event.description);
+      } else {
+        setUnsatisfied(event);
+        setEventModalVisible(true);
+      }
     }
   };
 
@@ -173,7 +184,7 @@ const Schedule = (props) => {
 
     setUnsatisfied({ ...unsatisfied, time: newStartTime });
     props.eventsUpdate(updatedData);
-    setVisible(false);
+    setOptionsVisible(false);
   };
 
   // Renders proceed button only for the host of the event
@@ -240,16 +251,24 @@ const Schedule = (props) => {
             details={directionDetails}
           />
         </Modal>
-        <Modal animated visible={visible} animationType="fade">
+        <Modal animated visible={isOptionsVisible} animationType="fade">
           <ActionOptions
             onReselect={onReselect}
-            onClose={onClose}
+            onClose={onOptionsClose}
             unsatisfied={unsatisfied}
             events={props.allEvents}
             genres={props.genres}
             newTimeChange={newTimeChange}
             filters={props.filters}
           />
+        </Modal>
+        <Modal
+          transparent={true}
+          animated
+          visible={isEventModalVisible}
+          animationType="fade"
+        >
+          <EventModal event={unsatisfied} onClose={onEventClose} />
         </Modal>
         <View style={styles.body}>
           <Timeline

@@ -65,7 +65,7 @@ const DirectionsModal = ({ details, onClose }) => {
       }
     }
   };
-  const directionDescriptionCard = (item) => {
+  const directionDescriptionCard = (item, index) => {
     return (
       <View>
         <View style={styles.directionCard}>
@@ -91,12 +91,13 @@ const DirectionsModal = ({ details, onClose }) => {
         </View>
         <View
           style={{
-            justifyContent: "center",
+            flexDirection: "row",
             alignItems: "center",
-            marginVertical: 10,
           }}
         >
-          <AntDesign name="down" size={24} color={COLORS.orange} />
+          {index == details.steps.length - 1 ? null : (
+            <View style={styles.verticalLine} />
+          )}
         </View>
       </View>
     );
@@ -106,8 +107,9 @@ const DirectionsModal = ({ details, onClose }) => {
     return (
       <FlatList
         data={details.steps}
-        renderItem={({ item }) => directionDescriptionCard(item)}
+        renderItem={({ item, index }) => directionDescriptionCard(item, index)}
         keyExtractor={(item) => item.key}
+        showsVerticalScrollIndicator={false}
         style={{
           marginTop: 20,
           height: ((Dimensions.get("window").height - 100) * 3) / 4,
@@ -179,6 +181,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     marginLeft: 20,
+  },
+  verticalLine: {
+    marginLeft: 20,
+    height: 50,
+    borderLeftWidth: 2,
+    borderColor: COLORS.orange,
+    marginRight: 120,
   },
 });
 
