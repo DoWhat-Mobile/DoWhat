@@ -1,12 +1,5 @@
 import React from "react";
-import {
-    Text,
-    View,
-    Image,
-    ScrollView,
-    StyleSheet,
-    ImageBackground,
-} from "react-native";
+import { Text, View, Image, ImageBackground } from "react-native";
 import ReadMore from "react-native-read-more-text";
 import { TIH_API_KEY } from "react-native-dotenv";
 import Route from "../components/finalized/Route";
@@ -20,71 +13,71 @@ import { COLORS } from "../assets/colors";
  * @param {events are all the events}
  */
 export const filterHelper = (filters, events) => {
-    const genre = filters.cuisine.includes("Hawker")
-        ? "hawker"
-        : filters.cuisine.includes("Cafe")
-        ? "cafes"
-        : "restaurants";
+  const genre = filters.cuisine.includes("Hawker")
+    ? "hawker"
+    : filters.cuisine.includes("Cafe")
+    ? "cafes"
+    : "restaurants";
 
-    const eventList = events[genre]["list"];
-    // so there will be a variety of places to choose from
-    let temp = [];
+  const eventList = events[genre]["list"];
+  // so there will be a variety of places to choose from
+  let temp = [];
+  for (let i = 0; i < eventList.length; i++) {
+    const event = eventList[i];
+    const cuisineFilter = (element) =>
+      event.cuisine.toString().includes(element);
+    const areaFilter = (element) => event.tags.includes(element);
+    if (genre === "hawker" && filters.area.some(areaFilter)) {
+      temp.push(event);
+    } else if (
+      genre === "cafes" &&
+      filters.area.some(areaFilter) &&
+      event.price_level == filters.price
+    ) {
+      temp.push(event);
+    } else if (
+      genre === "restaurants" &&
+      filters.area.some(areaFilter) &&
+      event.price_level == filters.price &&
+      filters.cuisine.some(cuisineFilter)
+    ) {
+      temp.push(event);
+    }
+  }
+  if (temp.length == 0) {
     for (let i = 0; i < eventList.length; i++) {
-        const event = eventList[i];
-        const cuisineFilter = (element) =>
-            event.cuisine.toString().includes(element);
-        const areaFilter = (element) => event.tags.includes(element);
-        if (genre === "hawker" && filters.area.some(areaFilter)) {
-            temp.push(event);
-        } else if (
-            genre === "cafes" &&
-            filters.area.some(areaFilter) &&
-            event.price_level == filters.price
-        ) {
-            temp.push(event);
-        } else if (
-            genre === "restaurants" &&
-            filters.area.some(areaFilter) &&
-            event.price_level == filters.price &&
-            filters.cuisine.some(cuisineFilter)
-        ) {
-            temp.push(event);
-        }
+      const event = eventList[i];
+      const cuisineFilter = (element) =>
+        event.cuisine.toString().includes(element);
+      const areaFilter = (element) => event.tags.includes(element);
+      if (genre === "hawker" && filters.area.some(areaFilter)) {
+        temp.push(event);
+      } else if (
+        genre === "cafes" &&
+        filters.area.some(areaFilter) &&
+        event.price_level < filters.price
+      ) {
+        temp.push(event);
+      } else if (
+        genre === "restaurants" &&
+        filters.area.some(areaFilter) &&
+        event.price_level < filters.price &&
+        filters.cuisine.some(cuisineFilter)
+      ) {
+        temp.push(event);
+      }
     }
-    if (temp.length == 0) {
-        for (let i = 0; i < eventList.length; i++) {
-            const event = eventList[i];
-            const cuisineFilter = (element) =>
-                event.cuisine.toString().includes(element);
-            const areaFilter = (element) => event.tags.includes(element);
-            if (genre === "hawker" && filters.area.some(areaFilter)) {
-                temp.push(event);
-            } else if (
-                genre === "cafes" &&
-                filters.area.some(areaFilter) &&
-                event.price_level < filters.price
-            ) {
-                temp.push(event);
-            } else if (
-                genre === "restaurants" &&
-                filters.area.some(areaFilter) &&
-                event.price_level < filters.price &&
-                filters.cuisine.some(cuisineFilter)
-            ) {
-                temp.push(event);
-            }
-        }
-    }
-    if (temp.length == 0) {
-        let backup = {
-            area: filters.area,
-            cuisine: ["Hawker", "Cafe"],
-            price: 2,
-        };
-        return filterHelper(backup, events);
-    }
-    let rand = Math.floor(Math.random() * temp.length);
-    return { [genre]: temp[rand] };
+  }
+  if (temp.length == 0) {
+    let backup = {
+      area: filters.area,
+      cuisine: ["Hawker", "Cafe"],
+      price: 2,
+    };
+    return filterHelper(backup, events);
+  }
+  let rand = Math.floor(Math.random() * temp.length);
+  return { [genre]: temp[rand] };
 };
 
 /**
@@ -96,59 +89,59 @@ export const filterHelper = (filters, events) => {
  * @param {end time range of all participants} endTime
  */
 export const genreEventObjectArray = (
-    userGenres,
-    events,
-    filters,
-    weather,
-    endTime
+  userGenres,
+  events,
+  filters,
+  weather,
+  endTime
 ) => {
-    let currentEvents = [];
-    // See whether dinner event can be scheduled for the user
-    let dinner = 0;
-    if (userGenres.includes("food") && endTime >= 18) dinner = 1;
+  let currentEvents = [];
+  // See whether dinner event can be scheduled for the user
+  let dinner = 0;
+  if (userGenres.includes("food") && endTime >= 18) dinner = 1;
 
-    if (userGenres.includes("food")) {
-        const filterObject = filterHelper(filters, events);
-        currentEvents.push(filterObject);
+  if (userGenres.includes("food")) {
+    const filterObject = filterHelper(filters, events);
+    currentEvents.push(filterObject);
+  }
+  if (weather === "Rain" || weather === "Thunderstorm") {
+    for (let i = 0; i < userGenres.length; i++) {
+      const genre =
+        userGenres[i] === "food"
+          ? "food"
+          : userGenres[i].toLowerCase() === "nightlife"
+          ? "nightlife"
+          : "indoors";
+      if (genre === "indoors" || genre === "nightlife") {
+        const eventObject = events[genre]["list"];
+        const rand = Math.floor(Math.random() * eventObject.length);
+        const event = events[genre]["list"][rand];
+        currentEvents.push({ [genre]: event });
+      }
     }
-    if (weather === "Rain" || weather === "Thunderstorm") {
-        for (let i = 0; i < userGenres.length; i++) {
-            const genre =
-                userGenres[i] === "food"
-                    ? "food"
-                    : userGenres[i].toLowerCase() === "nightlife"
-                    ? "nightlife"
-                    : "indoors";
-            if (genre === "indoors" || genre === "nightlife") {
-                const eventObject = events[genre]["list"];
-                const rand = Math.floor(Math.random() * eventObject.length);
-                const event = events[genre]["list"][rand];
-                currentEvents.push({ [genre]: event });
-            }
-        }
-    } else {
-        for (let i = 0; i < userGenres.length; i++) {
-            const genre = userGenres[i].toLowerCase();
-            if (genre !== "food") {
-                const eventObject = events[genre]["list"];
-                const rand = Math.floor(Math.random() * eventObject.length);
-                currentEvents.push({ [genre]: events[genre]["list"][rand] });
-            }
-        }
+  } else {
+    for (let i = 0; i < userGenres.length; i++) {
+      const genre = userGenres[i].toLowerCase();
+      if (genre !== "food") {
+        const eventObject = events[genre]["list"];
+        const rand = Math.floor(Math.random() * eventObject.length);
+        currentEvents.push({ [genre]: events[genre]["list"][rand] });
+      }
     }
-    if (dinner == 1) {
-        let obj = filterHelper(
-            {
-                area: filters.area.concat("Central"),
-                cuisine: ["Hawker", "Cafe"],
-                price: 3,
-            },
-            events
-        );
-        currentEvents.push(obj);
-    }
-    console.log(currentEvents[0]);
-    return currentEvents;
+  }
+  if (dinner == 1) {
+    let obj = filterHelper(
+      {
+        area: filters.area.concat("Central"),
+        cuisine: ["Hawker", "Cafe"],
+        price: 3,
+      },
+      events
+    );
+    currentEvents.push(obj);
+  }
+  console.log(currentEvents[0]);
+  return currentEvents;
 };
 
 /**
@@ -160,54 +153,54 @@ export const genreEventObjectArray = (
  * @param {food filters the user selected} filters
  */
 export const data_timeline = (timeline, events, currentEvents) => {
-    const data = [];
-    const timingsArray = [];
-    let startTime = timeline[0];
-    let num = currentEvents.length;
-    let locationArray = [];
-    // checks if user selected food so dinner will be included if user has time 6pm onwards
-    let busRoutes = [];
+  const data = [];
+  const timingsArray = [];
+  let startTime = timeline[0];
+  let num = currentEvents.length;
+  let locationArray = [];
+  // checks if user selected food so dinner will be included if user has time 6pm onwards
+  let busRoutes = [];
 
-    // formats data array to be passed into Timeline library
-    while (currentEvents.length !== 0) {
-        for (let i = 0; i < currentEvents.length; i++) {
-            const genre = currentEvents
-                .map((x) => Object.keys(x)[0])
-                [i].toLowerCase();
-            const event = currentEvents[i][genre];
-            if (events[genre].slots.includes(startTime)) {
-                if (startTime + events[genre]["duration"] > timeline[1]) {
-                    break;
-                }
-                let intervalObject = { start: "", end: "" };
-                intervalObject.start =
-                    startTime < 10
-                        ? "0" + startTime.toString() + ":00"
-                        : startTime.toString() + ":00";
-                locationArray.push({ coord: event.coord, name: event.name });
-                busRoutes.push(event.location);
-
-                //data.push({ startTime: startTime, event: event, genre: genre });
-                data.push(objectFormatter(intervalObject.start, event, genre));
-                currentEvents.splice(i, 1);
-                startTime += events[genre]["duration"];
-
-                intervalObject.end =
-                    startTime > timeline[1]
-                        ? timeline[1].toString() + ":00"
-                        : startTime + ":00";
-                timingsArray.push(intervalObject);
-            }
+  // formats data array to be passed into Timeline library
+  while (currentEvents.length !== 0) {
+    for (let i = 0; i < currentEvents.length; i++) {
+      const genre = currentEvents
+        .map((x) => Object.keys(x)[0])
+        [i].toLowerCase();
+      const event = currentEvents[i][genre];
+      if (events[genre].slots.includes(startTime)) {
+        if (startTime + events[genre]["duration"] > timeline[1]) {
+          break;
         }
+        let intervalObject = { start: "", end: "" };
+        intervalObject.start =
+          startTime < 10
+            ? "0" + startTime.toString() + ":00"
+            : startTime.toString() + ":00";
+        locationArray.push({ coord: event.coord, name: event.name });
+        busRoutes.push(event.location);
 
-        if (num === currentEvents.length) {
-            startTime++;
-        } else {
-            num = currentEvents.length; // in case the start time is too early and there are no time slots to schedule
-        }
-        if (startTime >= timeline[1]) break;
+        //data.push({ startTime: startTime, event: event, genre: genre });
+        data.push(objectFormatter(intervalObject.start, event, genre));
+        currentEvents.splice(i, 1);
+        startTime += events[genre]["duration"];
+
+        intervalObject.end =
+          startTime > timeline[1]
+            ? timeline[1].toString() + ":00"
+            : startTime + ":00";
+        timingsArray.push(intervalObject);
+      }
     }
-    return [data, timingsArray, locationArray, busRoutes];
+
+    if (num === currentEvents.length) {
+      startTime++;
+    } else {
+      num = currentEvents.length; // in case the start time is too early and there are no time slots to schedule
+    }
+    if (startTime >= timeline[1]) break;
+  }
+  return [data, timingsArray, locationArray, busRoutes];
 };
 
 /**
@@ -218,179 +211,156 @@ export const data_timeline = (timeline, events, currentEvents) => {
  * @param {genre of the event that the user is reselecting} unsatisfied
  */
 export const data_shuffle = (events, genres, time, unsatisfied, filters) => {
-    let data = [];
-    let selectable = [];
-    for (let i = 0; i < genres.length; i++) {
-        let type = genres[i].toString().toLowerCase();
-        if (type === "food") {
-            if (filters.cuisine.includes("Hawker"))
-                Array.prototype.push.apply(
-                    selectable,
-                    events["hawker"]["list"]
-                );
+  let data = [];
+  let selectable = [];
+  for (let i = 0; i < genres.length; i++) {
+    let type = genres[i].toString().toLowerCase();
+    if (type === "food") {
+      if (filters.cuisine.includes("Hawker"))
+        Array.prototype.push.apply(selectable, events["hawker"]["list"]);
 
-            if (filters.cuisine.includes("Cafe"))
-                Array.prototype.push.apply(selectable, events["cafes"]["list"]);
+      if (filters.cuisine.includes("Cafe"))
+        Array.prototype.push.apply(selectable, events["cafes"]["list"]);
 
-            Array.prototype.push.apply(
-                selectable,
-                events["restaurants"]["list"]
-            );
-        } else {
-            Array.prototype.push.apply(selectable, events[type]["list"]);
-        }
+      Array.prototype.push.apply(selectable, events["restaurants"]["list"]);
+    } else {
+      Array.prototype.push.apply(selectable, events[type]["list"]);
     }
-    for (let i = 0; i < 3; i++) {
-        let randomNumber = Math.floor(Math.random() * selectable.length);
-        let event = selectable[randomNumber];
+  }
+  for (let i = 0; i < 3; i++) {
+    let randomNumber = Math.floor(Math.random() * selectable.length);
+    let event = selectable[randomNumber];
 
-        let obj = objectFormatter(time, event, unsatisfied.toLowerCase());
+    let obj = objectFormatter(time, event, unsatisfied.toLowerCase());
 
-        // ensure no duplicate objects
-        const checkName = (object) => object.title === obj.title;
-        if (!data.some(checkName)) data.push(obj);
-    }
-    return data;
+    // ensure no duplicate objects
+    const checkName = (object) => object.title === obj.title;
+    if (!data.some(checkName)) data.push(obj);
+  }
+  return data;
 };
 
 /**
  * Creates the object with keys (time, title description) that the timeline library accepts
  */
 export const objectFormatter = (startTime, event, genre) => {
-    let imageURI = event.image;
-    if (imageURI.substring(0, 5) != "https") {
-        imageURI =
-            "https://tih-api.stb.gov.sg/media/v1/download/uuid/" +
-            imageURI +
-            "?apikey=" +
-            TIH_API_KEY;
-    }
-    let obj = {
-        time: startTime,
-        title: event.name,
-        description: event.description,
-        lineColor: COLORS.orange,
-        imageUrl: imageURI,
-        genre: genre,
-        coord: event.coord,
-        location: event.location,
-    };
-    if (event.fav == undefined) {
-        obj.fav = 0;
-        return obj;
-    } else {
-        obj.fav = 1;
-        return obj;
-    }
+  let imageURI = event.image;
+  if (imageURI.substring(0, 5) != "https") {
+    imageURI =
+      "https://tih-api.stb.gov.sg/media/v1/download/uuid/" +
+      imageURI +
+      "?apikey=" +
+      TIH_API_KEY;
+  }
+  let obj = {
+    time: startTime,
+    title: event.name,
+    description: event.description,
+    lineColor: COLORS.orange,
+    imageUrl: imageURI,
+    genre: genre,
+    coord: event.coord,
+    location: event.location,
+  };
+  if (event.fav == undefined) {
+    obj.fav = 0;
+    return obj;
+  } else {
+    obj.fav = 1;
+    return obj;
+  }
 };
 
 /**
  * Formats and renders the details in each block of the timeline
  */
 export const renderDetail = (rowData, sectionID, rowID) => {
-    // const renderTruncatedFooter = (handlePress) => {
-    //     return (
-    //         <Text style={{ color: "#595959" }} onPress={handlePress}>
-    //             Read more
-    //         </Text>
-    //     );
-    // };
+  let title = rowData.title;
 
-    // const renderRevealedFooter = (handlePress) => {
-    //     return (
-    //         <Text style={{ color: "#595959" }} onPress={handlePress}>
-    //             Show less
-    //         </Text>
-    //     );
-    // };
-    let title = rowData.title;
-
-    let desc = null;
-    if (rowData.description && rowData.imageUrl) {
-        desc = (
-            <ImageBackground
-                source={{ uri: rowData.imageUrl }}
-                style={{
-                    height: 175,
-                }}
-                imageStyle={{ borderRadius: 10 }}
-            >
-                <View
-                    style={{
-                        flex: 1,
-                        backgroundColor: "rgba(0,0,0,0.2)",
-                        justifyContent: "flex-end",
-                        borderRadius: 10,
-                    }}
-                >
-                    <View
-                        style={{
-                            justifyContent: "flex-end",
-                            padding: 10,
-                            flex: 1,
-                        }}
-                    >
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    fontSize: 22,
-                                    fontWeight: "bold",
-                                    color: "white",
-                                }}
-                            >
-                                {title}
-                            </Text>
-                            {rowData.fav == 1 && (
-                                <MaterialCommunityIcons
-                                    name="heart-outline"
-                                    size={22}
-                                    color={COLORS.lightOrange}
-                                    style={{ marginTop: 5 }}
-                                />
-                            )}
-                        </View>
-                        <Text
-                            style={{ color: "white", fontSize: 14, width: 230 }}
-                            numberOfLines={1}
-                            ellipsizeMode={"tail"}
-                        >
-                            {rowData.description}
-                        </Text>
-                    </View>
-                </View>
-            </ImageBackground>
-        );
-    } else if (rowData.description) {
-        desc = (
-            <View
-                style={{
-                    flex: 1,
-                    // paddingHorizontal: 15,
-                    // paddingVertical: 10,
-                }}
-            >
-                <View style={{ paddingHorizontal: 15, paddingVertical: 10 }}>
-                    <Route item={rowData.description} />
-                </View>
-            </View>
-        );
-    }
-    return (
+  let desc = null;
+  if (rowData.description && rowData.imageUrl) {
+    desc = (
+      <ImageBackground
+        source={{ uri: rowData.imageUrl }}
+        style={{
+          height: 175,
+        }}
+        imageStyle={{ borderRadius: 10 }}
+      >
         <View
-            style={{
-                flex: 1,
-                marginBottom: 10,
-                elevation: 5,
-                backgroundColor: "#fff",
-                borderRadius: 8,
-            }}
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.2)",
+            justifyContent: "flex-end",
+            borderRadius: 10,
+          }}
         >
-            {desc}
+          <View
+            style={{
+              justifyContent: "flex-end",
+              padding: 10,
+              flex: 1,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 22,
+                  fontWeight: "bold",
+                  color: "white",
+                }}
+              >
+                {title}
+              </Text>
+              {rowData.fav == 1 && (
+                <MaterialCommunityIcons
+                  name="heart-outline"
+                  size={22}
+                  color={COLORS.lightOrange}
+                  style={{ marginTop: 5 }}
+                />
+              )}
+            </View>
+            <Text
+              style={{ color: "white", fontSize: 14, width: 230 }}
+              numberOfLines={1}
+              ellipsizeMode={"tail"}
+            >
+              {rowData.description}
+            </Text>
+          </View>
         </View>
+      </ImageBackground>
     );
+  } else if (rowData.description) {
+    desc = (
+      <View
+        style={{
+          flex: 1,
+        }}
+      >
+        <View style={{ paddingHorizontal: 15, paddingVertical: 10 }}>
+          <Route item={rowData.description} />
+        </View>
+      </View>
+    );
+  }
+  return (
+    <View
+      style={{
+        flex: 1,
+        marginBottom: 10,
+        elevation: 5,
+        backgroundColor: "#fff",
+        borderRadius: 8,
+      }}
+    >
+      {desc}
+    </View>
+  );
 };
