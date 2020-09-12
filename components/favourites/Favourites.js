@@ -284,27 +284,32 @@ const Feed = (props) => {
 	if (favourites.length == 0) {
 		// Empty state screen
 		return (
-			<View style={{ flex: 20, justifyContent: 'center' }}>
-				<Text
-					style={{
-						fontSize: 20,
-						fontWeight: 'bold',
-						textAlign: 'center',
-					}}
-				>
-					No favourites added yet.
-				</Text>
-				<Text
-					style={{
-						margin: 5,
-						fontSize: 14,
-						color: 'grey',
-						textAlign: 'center',
-					}}
-				>
-					Add an event to favourites by clicking on the heart in the event in the home
-					feed.
-				</Text>
+			<View style={styles.container}>
+				<View style={{ flex: 1, backgroundColor: COLORS.orange }}>
+					<ListHeaderComponent />
+				</View>
+				<View style={{ flex: 20, justifyContent: 'center' }}>
+					<Text
+						style={{
+							fontSize: 20,
+							fontWeight: 'bold',
+							textAlign: 'center',
+						}}
+					>
+						No favourites added yet.
+					</Text>
+					<Text
+						style={{
+							margin: 5,
+							fontSize: 14,
+							color: 'grey',
+							textAlign: 'center',
+						}}
+					>
+						Add an event to favourites by clicking on the heart in the event in the home
+						feed.
+					</Text>
+				</View>
 			</View>
 		);
 	}
