@@ -322,7 +322,6 @@ const styles = StyleSheet.create({
 		borderRadius: 40,
 		borderBottomLeftRadius: 0,
 		borderBottomRightRadius: 0,
-		paddingBottom: 20,
 		backgroundColor: '#fff5e6',
 	},
 	calendar: {

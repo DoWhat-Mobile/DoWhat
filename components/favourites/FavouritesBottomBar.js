@@ -63,7 +63,7 @@ const FavouritesBottomBar = ({
 	if (selectingOption) {
 		var radio_props = [
 			{ label: 'Start a new plan', value: 0 },
-			{ label: 'Add to ongoing collaboration', value: 1 },
+			// { label: 'Add to ongoing collaboration', value: 1 }, // Route blocked for Beta Release
 		];
 		return (
 			<View style={styles.container}>
@@ -95,7 +95,8 @@ const FavouritesBottomBar = ({
 							containerStyle={{ marginRight: '5%', marginTop: '3%' }}
 						/>
 						<Text style={[styles.numberSelected, { marginLeft: 0 }]}>
-							Select an option to continue
+							Continue planning
+							{/*Select an option to continue // Used for Actual release*/}
 						</Text>
 					</View>
 

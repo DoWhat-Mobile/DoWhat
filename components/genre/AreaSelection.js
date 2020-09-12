@@ -27,13 +27,6 @@ const AreaSelection = ({ handleAreaPress }) => {
 };
 
 const styles = StyleSheet.create({
-	button: {
-		borderRadius: 2,
-		padding: 5,
-		borderWidth: StyleSheet.hairlineWidth,
-		marginHorizontal: 5,
-		marginVertical: 10,
-	},
 	buttonContainer: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
