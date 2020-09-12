@@ -247,21 +247,10 @@ const Feed = (props) => {
 						style={{
 							color: 'white',
 							marginTop: 4,
-							marginRight: 8,
+							marginRight: 16,
 						}}
 					>
 						<FontAwesome5 name='clipboard-list' size={20} color='white' />
-					</TouchableOpacity>
-
-					<TouchableOpacity
-						onPress={signOut}
-						style={{
-							color: 'white',
-							marginTop: 4,
-							marginRight: 8,
-						}}
-					>
-						<Feather name='more-horizontal' size={20} color='white' />
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -384,6 +373,7 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 		marginBottom: 4,
 		textAlign: 'center',
+		marginLeft: 8,
 	},
 	header: {
 		flex: 1,

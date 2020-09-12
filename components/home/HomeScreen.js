@@ -60,6 +60,7 @@ const MyTabs = (props) => {
 				}}
 			/>
 
+			{/*
 			<Tab.Screen
 				name='Friends'
 				component={Friends}
@@ -71,6 +72,7 @@ const MyTabs = (props) => {
 					),
 				}}
 			/>
+			*/}
 		</Tab.Navigator>
 	);
 };

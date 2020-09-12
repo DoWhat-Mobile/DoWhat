@@ -25,6 +25,7 @@ import EventModal from './EventModal';
 import { Feather } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../assets/colors';
+import { Entypo } from '@expo/vector-icons';
 
 /**
  * User feed in home page. Has 3 divisions: Show whats popular, eateries, and activities
@@ -279,7 +280,7 @@ const Feed = (props) => {
 						marginRight: 16,
 					}}
 				>
-					<Feather name='more-horizontal' size={24} color='white' />
+					<Entypo name='log-out' size={24} color='white' />
 				</TouchableOpacity>
 			</View>
 		);
