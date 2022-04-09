@@ -35,7 +35,7 @@
         "expo-location": "~8.1.0",
         "expo-permissions": "~8.1.0",
         "firebase": "7.9.0",
-        "moment": "^2.26.0",
+        "moment": "^2.29.2",
         "moment-timezone": "^0.5.31",
         "react": "^16.13.1",
         "react-addons-test-utils": "^15.6.2",
