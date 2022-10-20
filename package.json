@@ -50,7 +50,7 @@
         "react-native-maps-directions": "^1.8.0",
         "react-native-progress": "^4.1.2",
         "react-native-read-more-text": "^1.1.2",
-        "react-native-reanimated": "~1.7.0",
+        "react-native-reanimated": "~2.10.0",
         "react-native-safe-area-context": "0.7.3",
         "react-native-screens": "~2.2.0",
         "react-native-simple-radio-button": "^2.7.4",
